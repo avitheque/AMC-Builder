@@ -1,37 +1,15 @@
-## Welcome to GitHub Pages
+## AMC-Builder
+###Application Web destinée aux centres de formation.
 
-You can use the [editor on GitHub](https://github.com/avitheque/AMC-Builder/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+Sous Linux, l'application _[Auto-Multiple-Choice](http://home.gna.org/auto-qcm/index.fr) (AMC)_ répond aux exigences des centres de formation qui ont besoin de réaliser des questionnaires à choix multiples _(QCM)_ à grand volume avec correction automatique des copies de tous les candidats. Les questionnaires sont produits sur support papier.
+La force d'_AMC_ réside dans le fait que pour chaque copie, les questions sont toutes mélangées entre elles et les réponses sont elles-mêmes mélangées dans chaque question...
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+Au final, aucune copie n'est identique et les suspicions de tricheries ne sont plus possibles !
 
-### Markdown
+À la fin de l'épreuve, les copies sont automatiquement corrigées via une fonctionnalité de reconnaissance optique _OCR_.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Cependant, le code exploité par l'application _AMC_ est au format _LaTeX_, un langage permettant de créer un fichier _PDF_, très difficile à manipuler pour les nons initiés...
 
-```markdown
-Syntax highlighted code block
+**_AMC-Builder_ se veut donc être une interface utilisateur simple et intuitive permettant de générer le code _LaTeX_ exploitable directement par l'application _Auto-Multiple-Choice_.**
 
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/avitheque/AMC-Builder/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+Vous pouver accéder à l'application en développement à l'adresse suivante : _[AMC-Builder](https://amc-builder.avitheque.net/)_
