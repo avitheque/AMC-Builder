@@ -1,0 +1,55 @@
+@CHARSET "UTF-8";
+/**
+ *	Feuille de style du formulaire QCM.
+ *
+ * @author		durandcedric@avitheque.net
+ * @update		$LastChangedBy: durandcedric $
+ * @version		$LastChangedRevision: 2 $
+ * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ */
+
+fieldset									{
+	background:								rgba(119, 173, 207, 0.5);
+}
+
+fieldset.disabled							{
+	background:								rgba(0, 0, 0, 0.1);
+}
+
+fieldset label								{
+	min-width:								50px;
+}
+
+fieldset#general label						{
+	min-width:								125px;
+}
+
+fieldset#epreuve label						{
+	min-width:								225px;
+}
+
+label[for=idDomaine],
+label[for=idSousDomaine],
+label[for=idCategorie],
+label[for=idSousCategorie]					{
+	min-width:								120px;
+}
+
+select#idDomaine,
+select#idSousDomaine,
+select#idCategorie,
+select#idSousCategorie						{
+	width:									50%;
+}
+
+/** BOUTON D'AJOUT D'UNE QUESTION DANS L'ENTÊTE TABS *********************************************/
+input[type=checkbox]:checked + label {
+	color:									rgba(44, 56, 194, 1);
+	font-weight:							bold;
+}
+
+/** BOUTON D'AJOUT D'UNE QUESTION DANS L'ENTÊTE TABS *********************************************/
+
+button#bouton-ajouter						{
+	margin:									3px 1px !important;
+}

@@ -1,0 +1,40 @@
+<?php
+/**
+ * @brief	Test
+ *
+ * Vue du contenu de l'élément sélectionné dans GalleryHelper.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ * 
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+
+// Récupération de l'instance du singleton InstanceStorage permettant de gérer les échanges avec le contrôleur
+$oInstanceStorage = InstanceStorage::getInstance();
+
+// Récupération de l'identifiant de l'élément de GalleryHelper sélectionné
+$sIdGallery = $oInstanceStorage->getData('id_gallery');
+
+// Présentation d'un article
+$sArticle = "<h3>Élément $sIdGallery</h3>
+			<p>
+				Vous pouvez ajouter l'élément <span class=\"strong\">$sIdGallery</span> dans le panneau du formulaire :
+				<ul>
+					<li>- en déplaçant l'élément ;</li>
+					<li>- en cliquant directement sur sur le bouton [+].</li>
+				</ul>
+			</p>
+			<hr />
+			<p>
+				Ensuite, pour retirer l'élément <span class=\"strong\">$sIdGallery</span> du panneau, vous pouvez :
+				<ul>
+					<li>- retourner l'élément dans la bibliothèque ;</li>
+					<li>- cliquer directement sur sur le bouton [corbeille].</li>
+				</ul>
+			</p>";
+
+// Rendu final de la vue
+print $sArticle;

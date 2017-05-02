@@ -1,0 +1,32 @@
+@CHARSET "UTF-8";
+/**
+ *	Feuille de style des icônes de l'application.
+ *
+ * @li Feuille de style principale
+ * @see main.css
+ *
+ * @author		durandcedric@avitheque.net
+ * @update		$LastChangedBy: durandcedric $
+ * @version		$LastChangedRevision: 2 $
+ * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ */
+
+.icon-red						{
+	background-image:			url("/jquery/jquery-ui-1.11.4/themes/redmond/images/ui-icons_cd0a0a_256x240.png");
+	color:						transparent;
+	height:						16px;
+	width:						16px;
+	margin:						0 4px;
+}
+
+.icon-blue						{
+	background-image:			url("/jquery/jquery-ui-1.11.4/themes/redmond/images/ui-icons_217bc0_256x240.png");
+	color:						transparent;
+	height:						16px;
+	width:						16px;
+	margin:						0 4px;
+}
+
+.icon-reset						{
+	background-position:		-64px -80px;
+}

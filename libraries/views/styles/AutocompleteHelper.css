@@ -1,0 +1,46 @@
+/**
+ * Feuille de style relative à la à la classe AutocompleteHelper.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ *
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+@CHARSET "UTF-8";
+
+input.ui-autocomplete-input				{
+	border-radius:						4px 0 0 4px;
+}
+
+label.drop-down							{
+	background:							#A6C9E2;
+	border:								solid 1px #C3C3C3;
+	border-radius:						0 4px 4px 0;
+	color:								#222222;
+	font-size:							33px;
+	font-weight:						bold;
+	line-height:						5px;
+	min-width:							8px !important;
+	padding-bottom:						3px;
+}
+
+label.drop-down:hover					{
+	color:								#2C38C2;
+}
+
+label.drop-down:active					{
+	background:							#BFE4FF;
+	color:								#777777;
+}
+
+ul.ui-autocomplete						{
+	width:								auto !important;
+}
+
+ul.ui-autocomplete li.ui-menu-item		{
+	font-size:							14px;
+	white-space:						nowrap;
+	padding-right:						5px;
+}

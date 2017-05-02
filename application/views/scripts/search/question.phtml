@@ -1,0 +1,36 @@
+<?php
+/**
+ * @brief	Affichage de QUESTION.
+ *
+ * @li	Une seule question est à afficher.
+ *
+ * @li	Le contenu de cette page est injecté dans un formulaire via AJAX.
+ * @li	La bibliothèque jQuery est déjà active.
+ *
+ * Vue de permettant l'affichage du contenu d'une question dans un formulaire MODALE.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ * 
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+
+// Récupération de l'instance du singleton InstanceStorage permettant de gérer les échanges avec le contrôleur
+$oInstanceStorage	= InstanceStorage::getInstance();
+
+// Récupération des paramètres de la question
+$aQuestion			= $oInstanceStorage->getData("question_search");
+
+// Instanciation du Helper des questions
+$oQuestion			= new QuestionHelper($aQuestion, true);
+
+// Masquage du numéro de question
+$oQuestion->setShowQuestion(false);
+
+// Construction du contenu de la 1ère question
+$oQuestion->buildQuestion(0);
+
+// Affichage du résultat
+print $oQuestion->renderHTML(true);

@@ -1,0 +1,192 @@
+<?php
+/**
+ * @brief	Gestion
+ *
+ * Vue principale de gestion de l'application.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ * 
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+
+// Récupération de l'instance du singleton InstanceStorage permettant de gérer les échanges avec le contrôleur
+$oInstanceStorage = InstanceStorage::getInstance();
+
+// Initialisation de l'article
+$sArticle = "<section class=\"tabs\">
+				<ul>
+					<li><a href=\"#tabs-stages\">Stages</a></li>
+					<li><a href=\"#tabs-candidats\">Candidats</a></li>
+					<li><a href=\"#tabs-utilisateurs\">Utilisateurs</a></li>
+					<li><a href=\"#tabs-referentiels\">Référentiels</a></li>
+				</ul>";
+
+//=================================================================================================
+// GESTION DES STAGES
+//=================================================================================================
+
+// Gestion des stages
+$sArticle .= "<div id=\"tabs-stages\">
+				<span id=\"tabs-stages-top\"><a class=\"page-top\" href=\"#tabs-stages-bottom\" title=\"Bas de page...\">&#8595;</a></span>
+				<h2>Gestion des stages<a href=\"/gestion/stage\" class=\"button blue right margin-0\">Ajouter un stage</a></h2>
+				<p>
+				</p>";
+
+// Récupération de la liste des candidats
+$aListeStages = $oInstanceStorage->getData('liste_stages');
+$oStages = new DatatableHelper("table-stages", $aListeStages);
+$oStages->setClassColumn("align-left strong",	"libelle_stage");
+$oStages->setFormatOnColumn('date_debut_stage',	DataHelper::DATA_TYPE_DATE);
+$oStages->setFormatOnColumn('date_fin_stage',	DataHelper::DATA_TYPE_DATE);
+
+// Personnalisation des noms de colonne
+$aColonnes = array(
+	'libelle_stage'				=> "LIBELLÉ DU STAGE",
+	'libelle_domaine'			=> "LIBELLÉ DU DOMAINE",
+	'COUNT(id_stage_candidat)'	=> "NOMBRE DE CANDIDATS",
+	'date_debut_stage'			=> "DEBUT",
+	'date_fin_stage'			=> "FIN"
+);
+$oStages->renameColumns($aColonnes, true);
+
+// Tri du tableau sur la colonne FIN par ordre DESC
+$oStages->setOrderColumn('FIN', 'asc');
+
+// Ajout d'une colonne [ACTION] avec un lien HREF
+$oStages->addAnchorOnColumn("ACTION", 0, "Éditer", "/gestion/stage?id=");
+$oStages->disableOrderingOnColumn('ACTION');
+
+// Ajout du tableau à l'article
+$sArticle .= $oStages->renderHTML();
+$sArticle .= "<span id=\"tabs-stages-bottom\"><a class=\"page-bottom\" href=\"#tabs-stages-top\" title=\"Haut de page...\">&#8593;</a></span>
+			</div>";
+
+//=================================================================================================
+// GESTION DES CANDIDATS
+//=================================================================================================
+
+// Gestion des candidats
+$sArticle .= "<div id=\"tabs-candidats\">
+				<span id=\"tabs-candidats-top\"><a class=\"page-top\" href=\"#tabs-candidats-bottom\" title=\"Bas de page...\">&#8595;</a></span>
+				<h2>Gestion des candidats<a href=\"/gestion/candidat\" class=\"button blue right margin-0\">Ajouter un candidat</a></h2>
+				<p>
+				</p>";
+
+// Récupération de la liste des candidats
+$aListeCandidats = $oInstanceStorage->getData('liste_candidats');
+$oCandidats = new DatatableHelper("table-candidats", $aListeCandidats);
+$oCandidats->setClassColumn("align-left", array("libelle_court_grade", "nom_candidat", "prenom_candidat", "unite_candidat"));
+
+// Ajout de la valeur d'ordre du grade à la colonne [libelle_court_grade] masquée
+$oCandidats->prependValueIntoColumn("libelle_court_grade", "ordre_grade", "%03d", "hidden");
+
+// Personnalisation des noms de colonne
+$aColonnes = array(
+	'libelle_court_grade'		=> "GRADE",
+	'nom_candidat'				=> "NOM",
+	'prenom_candidat'			=> "PRÉNOM",
+	'unite_candidat'			=> "UNITÉ",
+	'id_candidat'				=> "IDENTIFIANT"
+);
+$oCandidats->renameColumns($aColonnes, true);
+
+// Tri du tableau sur la colonne GRADE par ordre DESC
+$oCandidats->setOrderColumn('GRADE', 'desc');
+
+// Ajout d'une colonne [ACTION] avec un lien HREF
+$oCandidats->addAnchorOnColumn("ACTION", "id_candidat", "Éditer", "/gestion/candidat?id=");
+$oCandidats->disableOrderingOnColumn('ACTION');
+
+// Ajout du tableau à l'article
+$sArticle .= $oCandidats->renderHTML();
+$sArticle .= "<span id=\"tabs-candidats-bottom\"><a class=\"page-bottom\" href=\"#tabs-candidats-top\" title=\"Haut de page...\">&#8593;</a></span>
+			</div>";
+
+//=================================================================================================
+// GESTION DES UTILISATEURS
+//=================================================================================================
+
+// Gestion des candidats
+$sArticle .= "<div id=\"tabs-utilisateurs\">
+				<span id=\"tabs-utilisateurs-top\"><a class=\"page-top\" href=\"#tabs-utilisateurs-bottom\" title=\"Bas de page...\">&#8595;</a></span>
+				<h2>Gestion des utilisateurs<a href=\"/gestion/utilisateur\" class=\"button blue right margin-0\">Ajouter un utilisateur</a></h2>
+				<p>
+				</p>";
+
+// Récupération de la liste des candidats
+$aListeUtilisateurs = $oInstanceStorage->getData('liste_utilisateurs');
+$oUtilisateurs = new DatatableHelper("table-utilisateurs", $aListeUtilisateurs);
+$oUtilisateurs->setClassColumn("align-left", array("libelle_court_grade", "nom_utilisateur", "prenom_utilisateur"));
+$oUtilisateurs->setClassColumn("align-left strong", "libelle_profil");
+
+// Ajout de la valeur d'ordre du grade à la colonne [libelle_court_grade] masquée
+$oUtilisateurs->prependValueIntoColumn("libelle_court_grade", "ordre_grade", "%03d", "hidden");
+
+// Personnalisation des noms de colonne
+$aColonnes = array(
+	'libelle_court_grade'		=> "GRADE",
+	'nom_utilisateur'			=> "NOM",
+	'prenom_utilisateur'		=> "PRÉNOM",
+	'libelle_profil'			=> "PROFIL",
+	'id_utilisateur'			=> "IDENTIFIANT"
+);
+$oUtilisateurs->renameColumns($aColonnes, true);
+
+// Tri du tableau sur la colonne GRADE par ordre DESC
+$oUtilisateurs->setOrderColumn('GRADE', 'desc');
+
+// Ajout d'une colonne [ACTION] avec un lien HREF
+$oUtilisateurs->addAnchorOnColumn("ACTION", "id_utilisateur", "Éditer", "/gestion/utilisateur?id=");
+$oUtilisateurs->disableOrderingOnColumn('ACTION');
+
+// Ajout du tableau à l'article
+$sArticle .= $oUtilisateurs->renderHTML();
+$sArticle .= "<span id=\"tabs-utilisateurs-bottom\"><a class=\"page-bottom\" href=\"#tabs-utilisateurs-top\" title=\"Haut de page...\">&#8593;</a></span>
+			</div>";
+
+//=================================================================================================
+// GESTION DES RÉFÉRENTIELS
+//=================================================================================================
+
+// Gestion des candidats
+$sArticle .= "<div id=\"tabs-referentiels\">
+				<span id=\"tabs-referentiels-top\"><a class=\"page-top\" href=\"#tabs-referentiels-bottom\" title=\"Bas de page...\">&#8595;</a></span>
+				<h2>Gestion des référentiels</h2>
+				<p>
+				</p>";
+
+// Récupération de la liste des référentiels
+$aListeReferentiels = $oInstanceStorage->getData('liste_referentiels');
+$oReferentiels = new TableHelper("referentiels", $aListeReferentiels);
+$oReferentiels->setClassColumn("align-left strong", "libelle_referentiel");
+
+// Personnalisation des noms de colonne
+$aColonnes = array(
+	'libelle_referentiel'		=> "NOM DU RÉFÉRENTIEL",
+	'count_referentiel'			=> "NOMBRE D'ENTRÉES",
+	'date_debut_referentiel'	=> "DEBUT",
+	'date_fin_referentiel'		=> "FIN"
+);
+$oReferentiels->renameColumns($aColonnes, true);
+
+// Ajout d'une colonne [ACTION] avec un lien HREF
+$oReferentiels->addAnchorOnColumn("ACTION", "table_referentiel", "Consulter", "/referentiel/consulter?table=", "blue");
+
+// Ajout du tableau à l'article
+$sArticle .= $oReferentiels->renderHTML();
+$sArticle .= "<span id=\"tabs-referentiels-bottom\"><a class=\"page-bottom\" href=\"#tabs-referentiels-top\" title=\"Haut de page...\">&#8593;</a></span>
+			</div>";
+
+
+//=================================================================================================
+// FINALISATION DE LA PAGE
+//=================================================================================================
+
+// Ajout du contenu au VIEW_MAIN
+ViewRender::addToMain($sArticle);
+
+// Rendu final de la vue
+ViewRender::render();

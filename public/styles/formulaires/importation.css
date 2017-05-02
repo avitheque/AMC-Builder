@@ -1,0 +1,19 @@
+@CHARSET "UTF-8";
+/**
+ *	Feuille de style du formulaire d'importation.
+ *
+ * @author		durandcedric@avitheque.net
+ * @update		$LastChangedBy: durandcedric $
+ * @version		$LastChangedRevision: 2 $
+ * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ */
+
+#article-importation		{
+	background:				radial-gradient(circle at 20% -120% , rgb(255, 255, 255) 70%, #777 100%) no-repeat scroll center center transparent;
+	height:					auto;
+	width:					70%;
+	margin:					10% auto;
+	padding:				20px;
+	border-radius:			10px 10px;
+	v-align:				auto;
+}

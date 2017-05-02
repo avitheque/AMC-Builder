@@ -1,0 +1,67 @@
+/**
+ * Feuille de style relative à la à la classe DatatableHelper.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ *
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+@CHARSET "UTF-8";
+
+.dataTables_wrapper				{ background:		#3C75BF;	border-radius:		5px;	border:			1px solid #446693; }
+.dataTables_wrapper label		{ margin:			5px;		font-weight:		bold;	color:			#DDD; }
+.dataTables_info				{ margin-left:		5px;		font-weight:		bold;	color:			#DDD !important; }
+.dataTables_wrapper	.table		{ border:			0; }
+
+
+/* PAGINATION */
+.dataTables_wrapper .dataTables_paginate										{
+	padding:					0 4px 4px 0;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button						{
+	background:					linear-gradient(to bottom, white 0%, #C5DBEC 100%) repeat scroll 0 0 rgba(0, 0, 0, 0) !important;
+	border:						1px solid #979797;
+	font-size:					small;
+	margin:						0;
+}
+
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.previous				{
+	border-radius:				5px 0 0 5px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current				{
+	background:					linear-gradient(to top, #C5DBEC 0%, white 20%) repeat scroll 0 0 rgba(0, 0, 0, 0) !important;
+	border:						1px solid #979797;
+	font-weight:				bold;
+	font-size:					large;
+	color:						#446693 !important;
+	box-shadow:					6px 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.next					{
+	border-radius:				0 5px 5px 0;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:not(.current):hover	{
+	background:					linear-gradient(to top, white 0%, #C5DBEC 100%) repeat scroll 0 0 rgba(0, 0, 0, 0) !important;
+	border:						1px solid #446693;
+	color:						#446693 !important;
+	text-shadow:				#446693 1px 1px 1px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover			{
+	cursor:						default;
+	color:						#446693 !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover		{
+	background: 				rgba(255,255,255,0.3) !important;
+	border:						1px solid #446693 !important;
+	color:						#446693 !important;
+	text-shadow:				none;
+}

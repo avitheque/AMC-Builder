@@ -1,0 +1,108 @@
+<?php
+/**
+ * @brief	Génération
+ *
+ * Vue principale de la génération d'une épreuve QCM.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ * 
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+
+// Récupération des données de la session
+$oInstanceStorage = InstanceStorage::getInstance();
+
+// Bouton [BAS DE PAGE]
+ViewRender::addToMain("<span id=\"top\"><a class=\"page-top\" href=\"#bottom\" title=\"Bas de page...\">&#8595;</a></span>");
+
+// ================================================================================================
+// GÉNÉRATION
+// ================================================================================================
+
+// Titre de la page
+$sTitrePage =  "<h2>Génération d'une épreuve</h2>
+				<p>
+				</p>";
+ViewRender::addToMain($sTitrePage);
+
+// Récupération de la liste des formulaires QCM en attente de validation
+$aListeQCMGeneration	= $oInstanceStorage->getData('liste_generation');
+
+// Construction du tableau récapitulatif des formulaires
+$oGeneration = new DatatableHelper("table-generation", $aListeQCMGeneration);
+$oGeneration->setClassColumn("align-left strong", "titre_formulaire");
+
+// Formatage du champ DATETIME
+$oGeneration->setFormatOnColumn('date_modification_formulaire',	DataHelper::DATA_TYPE_DATETIME);
+
+// Personnalisation des noms de colonne
+$aColonnes = array(
+	'titre_formulaire'				=> "TITRE",
+	'libelle_domaine'				=> "DOMAINE",
+	'COUNT(id_question)'			=> "QUESTIONS",
+	'date_modification_formulaire'	=> "MODIFICATION",
+	'libelle_redacteur'				=> "REDACTEUR",
+	'libelle_valideur'				=> "VALIDEUR"
+);
+$oGeneration->renameColumns($aColonnes, true);
+
+// Indicateur de domaine non défini
+$oGeneration->setConditionalClassOnColumn('id_domaine', '<=', "0", "grey", "TITRE");
+$oGeneration->setConditionalClassOnColumn('id_domaine', '<=', "0", "strong red", "DOMAINE");
+
+// Ajout d'une colonne [ACTION] avec un lien HREF
+$oGeneration->addAnchorOnColumn("ACTION",	"id_formulaire",	"Générer",	"/generation?id_formulaire=",			"green tooltip-track",	null,		"Générer le QCM pour une épreuve");
+
+// Ajout du tableau à VIEW_MAIN
+ViewRender::addToMain($oGeneration->renderHTML());
+
+// ================================================================================================
+// ÉPREUVES
+// ================================================================================================
+
+// Titre de la page
+$sTitrePage =  "<hr class=\"blue margin-V-30\" />
+				<h2>Ensemble des épreuves par stage</h2>
+				<p>
+				</p>";
+ViewRender::addToMain($sTitrePage);
+
+// Récupération de la liste des épreuves
+$aListeEpreuves			= $oInstanceStorage->getData('liste_epreuves');
+
+// Construction du tableau récapitulatif des formulaires
+$oEpreuves = new DatatableHelper("table-epreuves", $aListeEpreuves);
+$oEpreuves->setClassColumn("align-left strong", "titre_formulaire");
+
+// Formatage du champ DATE
+$oEpreuves->setFormatOnColumn('date_epreuve',	DataHelper::DATA_TYPE_DATE);
+
+// Personnalisation des noms de colonne
+$aColonnes = array(
+	'libelle_epreuve'				=> "ÉPREUVE",
+	'SUM(capacite_statut_salle)'	=> "CAPACITÉ D'ACCUEIL",
+	'COUNT(id_stage_candidat)'		=> "NOMBRE DE CANDIDATS",
+	'date_epreuve'					=> "DATE DE L'ÉPREUVE",
+	'heure_epreuve'					=> "HEURE DE L'ÉPREUVE",
+	'duree_epreuve'					=> "DURÉE (en&nbsp;minutes)"
+);
+$oEpreuves->renameColumns($aColonnes, true);
+
+// Ajout d'une colonne [ACTION] avec un lien HREF
+$oEpreuves->addAnchorOnColumn("ACTION",		"id_epreuve",		"Imprimer",	"/generation/epreuve?id_epreuve=",		"blue tooltip-track",	"_blanck",	"Éditer l'épreuve");
+$oEpreuves->addAnchorOnColumn("ACTION",		"id_epreuve",		"Annuler",	"/generation/supprimer?id_epreuve=",	"red tooltip-track",	null,		"Annuler l'épreuve");
+
+// Coloration de l'épreuve en ROUGE si il y a une erreur
+$oEpreuves->setConditionalClassOnColumn('SUM(capacite_statut_salle)', '<', 'COUNT(id_stage_candidat)', "error", array("ÉPREUVE", "CAPACITÉ D'ACCUEIL", "NOMBRE DE CANDIDATS"));
+
+// Ajout du tableau à VIEW_MAIN
+ViewRender::addToMain($oEpreuves->renderHTML());
+
+// BOUTON [HAUT DE PAGE]
+ViewRender::addToMain("<span id=\"bottom\"><a class=\"page-bottom\" href=\"#top\" title=\"Haut de page...\">&#8593;</a></span>");
+
+// Rendu final de la vue
+ViewRender::render();

@@ -1,0 +1,46 @@
+<?php
+/**
+ * @brief	Importation réalisée
+ *
+ * Vue d'affichage du formulaire QCM après importation réalisée avec succès.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ * 
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+
+//#################################################################################################
+// INTERFACE DE CRÉATION DU QUESTIONNAIRE
+//#################################################################################################
+
+// Initialisation du formulaire
+ViewRender::addToFormStart("<form action=\"#\" method=\"post\" name=\"importation\">");
+
+// Construction du formulaire QCM
+$oFormulaire = new FormulaireHelper(false, true, false, false);
+
+// Création de l'entête du formulaire
+$sArticle = "<h2>Importation d'un formulaire QCM</h2>
+			<p>
+				Cette interface permet d'enregistrer l'importation du formulaire QCM.
+			</p>";
+// Ajout du contenu au VIEW_MAIN
+ViewRender::addToMain($sArticle);
+
+// Zone du QCM injecté dans $_SESSION[VIEW_MAIN]
+ViewRender::addToMain($oFormulaire->render());
+
+
+//#################################################################################################
+// VALIDATION DU FORMULAIRE
+//#################################################################################################
+
+// Création des boutons du formulaire
+$oGroupButton = new GroupButtonHelper(true, false);
+ViewRender::addToFooter($oGroupButton->render());
+
+// Rendu final de la vue
+ViewRender::render();

@@ -1,0 +1,63 @@
+<?php
+/**
+ * @brief	Référentiel
+ *
+ * Vue principale du référentiel de l'application.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ * 
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+
+// Récupération des données de la session
+$oInstanceStorage = InstanceStorage::getInstance();
+
+// Bouton [BAS DE PAGE]
+ViewRender::addToMain("<span id=\"top\"><a class=\"page-top\" href=\"#bottom\" title=\"Bas de page...\">&#8595;</a></span>");
+
+// Titre de la page
+$sTitrePage =  "<h2>Gestion du référentiel</h2>
+				<p>
+				</p>";
+// Ajout du contenu à VIEW_MAIN
+ViewRender::addToMain($sTitrePage);
+
+// Récupération de la liste des référentiels
+$aListeReferentiels	= $oInstanceStorage->getData('liste_referentiels');
+$oReferentiels = new TableHelper("liste", $aListeReferentiels);
+$oReferentiels->setClassColumn("align-left strong", "libelle_referentiel");
+
+// Personnalisation des noms de colonne
+$aColonnes = array(
+	'libelle_referentiel'		=> "NOM DU RÉFÉRENTIEL",
+	'count_referentiel'			=> "NOMBRE D'ENTRÉES",
+	'date_debut_referentiel'	=> "DEBUT",
+	'date_fin_referentiel'		=> "FIN"
+);
+$oReferentiels->renameColumns($aColonnes, true);
+
+// Ajout d'une colonne [ACTION] avec un lien HREF
+$oReferentiels->addAnchorOnColumn("ACTION", "table_referentiel", "Consulter", "/referentiel/consulter?table=", "blue");
+
+// Ajout du tableau à VIEW_MAIN
+ViewRender::addToMain($oReferentiels->renderHTML());
+
+// BOUTON [HAUT DE PAGE]
+ViewRender::addToMain("<span id=\"bottom\"><a class=\"page-bottom\" href=\"#top\" title=\"Haut de page...\">&#8593;</a></span>");
+
+
+//#################################################################################################
+// RETOUR À LA PAGE DE GESTION
+//#################################################################################################
+
+// Finalisation du questionnaire
+$sBottom = "<div class=\"group-button\">
+				<a class=\"button red\" href=\"/gestion\">Retour à la page de gestion</a>
+			</div>";
+ViewRender::addToFooter($sBottom);
+
+// Rendu final de la vue
+ViewRender::render();

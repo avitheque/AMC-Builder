@@ -1,0 +1,63 @@
+<?php
+/**
+ * @brief	Tâches
+ *
+ * Vue permettant l'affichage des tâches disponibles pour le PLANNING.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ * 
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+
+// Récupération de l'instance du singleton InstanceStorage permettant de gérer les échanges avec le contrôleur
+$oInstanceStorage = InstanceStorage::getInstance();
+
+// Liste des tâches disponibles
+$aListeElements	= $oInstanceStorage->issetData('liste_taches')	? $oInstanceStorage->getData('liste_taches')	: array();
+
+// Durée par défaut
+$nDureeDefaut	= $oInstanceStorage->issetData('item_duree')	? $oInstanceStorage->getData('item_duree')		: 1;
+
+// Construction de chaque élément disponible
+foreach ($aListeElements as $aItem) {
+	// ID			: identifiant en base de données pour l'enregistrement
+	$nId			= DataHelper::get($aItem,	'planning_id',			DataHelper::DATA_TYPE_INT,		null);
+	// TACHE		: identifiant de la tâche en base de données (élément du planning, cours, ...)
+	$nTacheId 		= DataHelper::get($aItem,	'tache_id',				DataHelper::DATA_TYPE_INT,		null);
+	// TITRE		: titre de présentation de la tâche
+	$sTitre			= DataHelper::get($aItem,	'tache_titre',			DataHelper::DATA_TYPE_STR,		null);
+	// TEXTE		: texte de description de la tâche
+	$sTexte			= DataHelper::get($aItem,	'tache_texte',			DataHelper::DATA_TYPE_TXT,		null);
+	// PARTICIPANT	: liste des personnels participants à la tâche
+	$aParticipant	= DataHelper::get($aItem,	'tache_participant',	DataHelper::DATA_TYPE_ARRAY,	null);
+	// ANNEE		: année du PLANNING
+	$nAnnee			= DataHelper::get($aItem,	'tache_annee',			DataHelper::DATA_TYPE_INT,		null);
+	// MOIS			: mois du PLANNING
+	$nMois			= DataHelper::get($aItem,	'tache_mois',			DataHelper::DATA_TYPE_INT,		null);
+	// JOUR			: jour de positionnement de la tâche
+	$nJour			= DataHelper::get($aItem,	'tache_jour',			DataHelper::DATA_TYPE_INT,		null);
+	// HEURE		: heure de début dans le JOUR
+	$nHeure			= DataHelper::get($aItem,	'tache_heure',			DataHelper::DATA_TYPE_INT,		null);
+	// DUREE		: durée de la tâche si présente, sinon celle par défaut
+	$nDuree 		= DataHelper::get($aItem,	'tache_duree',			DataHelper::DATA_TYPE_INT,		$nDureeDefaut);
+
+	// Contenu HTMl de l'élément
+	$sContent		=  "<p>
+							$sTexte
+						</p>
+						<input type=\"hidden\" name=\"planning_id[]\"		value=\"$nId\" />
+						<input type=\"hidden\" name=\"tache_id[]\"			value=\"$nTacheId\" />
+						<input type=\"hidden\" name=\"tache_participant[]\"	value=\"" . implode(",", $aParticipant) . "\" />
+						<input type=\"hidden\" name=\"tache_annee[]\"		value=\"$nAnnee\" />
+						<input type=\"hidden\" name=\"tache_mois[]\"		value=\"$nMois\" />
+						<input type=\"hidden\" name=\"tache_jour[]\"		value=\"$nJour\" />
+						<input type=\"hidden\" name=\"tache_heure[]\"		value=\"$nHeure\" />
+						<input type=\"hidden\" name=\"tache_duree[]\"		value=\"$nDuree\" />";
+
+	// Création d'un nouvel élément
+	$oItem = new Planning_ItemHelper($sTitre, $sContent);
+	print $oItem->renderHTML();
+}

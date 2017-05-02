@@ -1,0 +1,57 @@
+<?php
+/**
+ * @brief	Recherche de SALLE.
+ *
+ * @li	Le contenu de cette page est injecté dans un formulaire via AJAX.
+ * @li	La bibliothèque jQuery est déjà active.
+ *
+ * Vue de recherche d'une salle disponible.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ * 
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+
+// Récupération de l'instance du singleton InstanceStorage permettant de gérer les échanges avec le contrôleur
+$oInstanceStorage	= InstanceStorage::getInstance();
+
+// Récupération de la liste des candidats
+$aListeSalles		= $oInstanceStorage->getData('liste_salles');
+$aChoixSalles		= $oInstanceStorage->getData('epreuve_liste_salles');
+
+//#################################################################################################
+// CODE HTML
+//#################################################################################################
+
+// Initialisation du code HTML du choix des salles
+$sChoixSalles		= "";
+
+// Fonctionnalité réalisée si des salles d'épreuve sont disponibles
+if (DataHelper::isValidArray($aListeSalles)) {
+	// Parcours de la liste des salles disponibles
+	$nOccurrence = 1;
+	foreach ($aListeSalles as $nId => $sLibelle) {
+		// Création d'un élément CHECKBOX
+		$oCheckbox	= new InputHelper("epreuve_liste_salles[]", $nId, InputHelper::TYPE_CHECKBOX, $sLibelle);
+
+		// Fonctionnalité réalisée si la salle est sélectionnée
+		if (DataHelper::isValidArray($aChoixSalles) && in_array($nId, $aChoixSalles)) {
+			$oCheckbox->setAttribute("checked", "checked");
+		}
+
+		// Ajout du choix de la salle
+		$sChoixSalles .= $oCheckbox->renderHTML();
+
+		// Fonctionnalité réalisée si le nombre n'est pas encore atteint
+		if ($nOccurrence < count($aListeSalles)) {
+			$sChoixSalles .= "<span class=\"margin-10\">&nbsp</span>";
+		}
+		$nOccurrence++;
+	}
+}
+
+// Affichage du résultat
+print $sChoixSalles;

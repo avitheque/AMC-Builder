@@ -1,0 +1,109 @@
+<?php
+/**
+ * @brief	Login
+ *
+ * Vue de connexion à l'application.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ * 
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+
+// Récupération de l'instance du singleton InstanceStorage permettant de gérer les échanges avec le contrôleur
+$oInstanceStorage = InstanceStorage::getInstance();
+
+//#################################################################################################
+// INITIALISATION DES VALEURS PAR DÉFAUT
+//#################################################################################################
+
+// Données du formulaire
+$aData = $oInstanceStorage->getData('LOGIN');
+
+//#################################################################################################
+// PARAMÈTRAGE DU QUESTIONNAIRE
+//#################################################################################################
+
+// Initialisation des valeurs par défaut
+$sLogin		= isset($aData['login'])	? DataHelper::get($aData, 'login')		: null;
+$sPassword	= isset($aData['password'])	? DataHelper::get($aData, 'password')	: null;
+
+
+//#################################################################################################
+// INTERFACE DU QUESTIONNAIRE
+//#################################################################################################
+
+// Initialisation du formulaire
+ViewRender::addToFormStart("<form action=\"#\" method=\"post\" name=\"login\">");
+
+// Ajout d'un article
+$sArticle = "<article class=\"modal-25 padding-V-20 center\" id=\"article-login\">
+				<h2>Connexion à un compte</h2>";
+
+// Création du formulaire
+$sArticle .= "	<table id=\"table-login\">
+					<tr>
+						<td>
+							<label for=\"idLogin\" >Login : </label>
+						</td>
+						<td>
+							</span><input type=\"text\" id=\"idLogin\" name=\"login\" value=\"" . $sLogin . "\" required/>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<span><label for=\"idPassword\" >Mot de passe : </label>
+						</td>
+						<td>
+							</span><input type=\"password\" id=\"idPassword\" name=\"password\" value=\"" . $sPassword . "\" required/>
+						</td>
+					</tr>
+					<tr>
+						<td colspan=2 class=\"center\">
+							<button type=\"submit\" id=\"idConnexion\" class=\"button blue\" name=\"button\" value=\"connexion\" role=\"touche_C\">Connexion</button>
+						</td>
+					</tr>
+				</table>";
+
+
+//#################################################################################################
+// VALIDATION DU FORMULAIRE
+//#################################################################################################
+
+// Finalisation du questionnaire
+$sArticle .= "</article>";
+
+// Ajout du contenu au VIEW_FORM_START pour l'exploitation du MODAL
+ViewRender::addToFormStart($sArticle);
+
+// Ajout de la feuille de style
+ViewRender::linkFormulaireStyle("login.css");
+
+// Ajout de la feuille de style
+ViewRender::linkFormulaireScript("login.js");
+
+
+//#################################################################################################
+// DEMO
+
+// Message de DEMO
+ViewRender::setMessageInfo("Démonstration des fonctionnalités de l'application", "Pour tester l'application, vous pouvez utiliser les comptes <span class=\"strong cyan italic pointer\">redacteur</span>, <span class=\"strong cyan italic pointer\">valideur</span> ou <span class=\"strong cyan italic pointer\">administrateur</span> avec le mot-de-passe <span class=\"strong green italic\">demo</span> !");
+
+// Script permettant d'injecter directement les authentifications des comptes de DEMO
+$sJQuery = '$("span.pointer").click(function() {
+				// Injection du login sélectionné
+				$("input#idLogin").val($(this).text());
+				// Injection du mot-de-passe de démo
+				$("input#idPassword").val("demo");
+			});';
+
+// Compression du script avec JavaScriptPacker
+ViewRender::addToJQuery($sJQuery);
+
+//#################################################################################################
+
+
+// Rendu final de la vue
+ViewRender::render();

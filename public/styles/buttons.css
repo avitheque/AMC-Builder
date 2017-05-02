@@ -1,0 +1,152 @@
+@CHARSET "UTF-8";
+/**
+ *	Feuille de style des boutons de l'application.
+ *
+ * @li Feuille de style principale
+ * @see main.css
+ *
+ * @author		durandcedric@avitheque.net
+ * @update		$LastChangedBy: durandcedric $
+ * @version		$LastChangedRevision: 2 $
+ * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ */
+
+/** STANDARD *************************************************************************************/
+button:focus,
+button::-moz-focus-inner	{
+	border:					0;
+	outline:				none;
+}
+
+button,
+a.button					{
+	border:					none;
+	border-radius:			5px;
+	padding:				5px 10px;
+	margin:					15px 20px;
+	text-decoration:		none;
+	font-size:				16px;
+	font-weight:			700;
+
+	background-color:		rgba(218, 218, 218, 1);
+	border-top:				white 1px solid;
+	border-right:			grey 1px solid;
+	border-bottom:			grey 1px solid;
+	border-left:			white 1px solid;
+	color:					#333;
+	box-shadow:				6px 6px 12px rgba(0, 0, 0, 0.3);
+	text-shadow:			#FFF 0 1px 0;
+
+	white-space:			nowrap;
+	cursor:					pointer;
+	z-index:				5;
+}
+
+button:hover,
+a.button:hover				{
+	background:				linear-gradient(to bottom, rgba(218, 218, 218, 1) 0%, rgba(177, 177, 177, 1) 50%, rgba(161, 161, 161, 1) 51%, rgba(188, 188, 188, 1) 100%);
+	box-shadow:				6px 6px 12px rgba(218, 218, 218, 1);
+}
+
+button:active,
+a.button:active				{
+	background:				rgba(188, 188, 188, 1);
+	border-top:				grey 1px solid;
+	border-right:			white 1px solid;
+	border-bottom:			white 1px solid;
+	border-left:			grey 1px solid;
+	box-shadow:				0px 0px 24px rgba(188, 188, 188, 1);
+	color:					rgba(218, 218, 218, 1);
+}
+
+/** RED ******************************************************************************************/
+button.red,
+a.button.red				{
+	background:				rgba(255, 177, 177, 1);
+	color:					red;
+}
+button.red:hover,
+a.button.red:hover			{
+	background:				linear-gradient(to bottom, rgba(255,177,177,1) 0%, rgba(210,101,101,1) 50%, rgba(206,87,87,1) 51%, rgba(221,87,87,1) 100%);
+	box-shadow:				6px 6px 12px rgba(255, 177, 177, 1);
+}
+button.red:active,
+a.button.red:active			{
+	background:				rgba(221, 87, 87, 1);
+	box-shadow:				0px 0px 24px rgba(221, 87, 87, 1);
+	color:					rgba(255, 177, 177, 1);
+}
+
+/** GREEN ****************************************************************************************/
+button.green,
+a.button.green				{
+	background:				rgba(191, 210, 85, 1);
+	color:					green;
+}
+button.green:hover,
+a.button.green:hover		{
+	background:				linear-gradient(to bottom, rgba(191,210,85,1) 0%, rgba(142,185,42,1) 50%, rgba(114,170,0,1) 51%, rgba(158,203,45,1) 100%);
+	box-shadow:				6px 6px 12px rgba(191, 210, 85, 1);
+}
+button.green:active,
+a.button.green:active		{
+	background:				rgba(158, 203, 45, 1);
+	box-shadow:				0px 0px 24px rgba(158, 203, 45, 1);
+	color:					rgba(191, 210, 85, 1);
+}
+
+/** BLUE *****************************************************************************************/
+button.blue,
+a.button.blue				{
+	background:				rgba(125, 185, 232, 1);
+	color:					blue;
+}
+button.blue:hover,
+a.button.blue:hover			{
+	background:				linear-gradient(to bottom, rgba(125, 185, 232, 1) 0%, rgba(41,137,216,1) 50%, rgba(32,124,202,1) 51%, rgba(76,158,217,1) 100%);
+	box-shadow:				6px 6px 12px rgba(125, 185, 232, 1);
+}
+button.blue:active,
+a.button.blue:active		{
+	background:				rgba(76, 158, 217, 1);
+	box-shadow:				0px 0px 24px rgba(76, 158, 217, 1);
+	color:					rgba(125, 185, 232, 1);
+}
+
+
+/** DISABLED *************************************************************************************/
+button[disabled],
+button[disabled]:hover,
+button[disabled]:active		{
+	background:				linear-gradient(to bottom, rgb(176, 176, 176) 0%, rgb(104, 104, 104) 50%, rgb(95, 95, 95) 51%, rgb(123, 123, 123) 100%);
+	border-top:				silver 1px solid;
+	border-right:			grey 1px solid;
+	border-bottom:			rgb(104, 104, 104) 1px solid;
+	border-left:			silver 1px solid;
+	color:					rgba(176, 176, 176, 1);
+
+	text-shadow:			#5c5c5c 0 1px 0;
+	box-shadow:				6px 6px 12px rgba(77, 77, 77, 0.8);
+	cursor:					default;
+}
+
+
+/** GROUPES DE BOUTONS ***************************************************************************/
+div.group-button			{
+	position:				absolute;
+	bottom:					0;
+	margin:					0 25%;
+	padding-bottom:			2px;
+	width:					50%;
+	height:					30px;
+	text-align:				center;
+}
+
+div.group-button button,
+div.group-button a.button	{
+	margin:					0;
+}
+
+div.group-button a.button	{
+	display:				inline-table;
+}

@@ -1,0 +1,40 @@
+###############################################################################
+# AMC-BUILER
+# amc-builder/documentation/Installation/_LISEZ-MOI_.txt
+#
+# Cette documentation est succeptible d'évoluer avec le temps...
+# Merci pour votre compréhension.
+# DURAND Cédric
+# durandcedric@avitheque.net
+#
+# INSTALLATION DE L'APPLICATION
+###############################################################################
+
+L'application doit être installée sur un serveur PHP / Apache2.
+Il est recommandé de mettre en place des hôtes virtuelles afin de cloisonner la
+partie développement de la partie production.
+
+L'application a été développée en PHP 5.
+Lors des tests d'intégration sous PHP 7, il en ressort que le format de fichier
+de configuration *.conf ont évolués, c'est pourquoi vous trouverez les deux :
+    - fichier *.conf        :   pour la version PHP 5 ;
+    - fichier *-php7.0.conf :   pour la version PHP 7.
+
+Afin de fonctionner correctement, l'application nécessite une base de donnée de
+type MySQL. L'intégration exploite les scripts présentés dans la documentation
+dédiée suivante : `amc-builder/documentation/BDD/_LISEZ-MOI_.txt`.
+
+
+###############################################################################
+PROBLÈME CONNU AVEC MySQL
+###############################################################################
+
+La configuration `ONLY_FULL_GROUP_BY` sur un serveur MySQL, oblige de déclarer
+les champs dans la partie [SELECT] afin de pouvoir les exploiter dans la partie
+[GROUP BY].
+
+Deux possibilités s'offrent à vous afin de ne plus être confronté à ce problème
+    - désactiver le sql_mode=ONLY_FULL_GROUP_BY dans la console MySQL
+      SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
+    - activer l'option `pdo_mysql.disable_full_group_by` dans le fichier de
+      configuration `application/configs/application.ini`

@@ -1,0 +1,60 @@
+<?php
+/**
+ * @brief	Édition
+ *
+ * Vue principale de l'édition d'un formulaire QCM.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ * 
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+
+// Récupération de l'instance du singleton InstanceStorage permettant de gérer les échanges avec le contrôleur
+$oInstanceStorage = InstanceStorage::getInstance();
+
+// Titre de la page
+$sTitrePage =  "<h2>Édition d'un formulaire QCM</h2>
+				<p>
+				</p>";
+ViewRender::addToMain($sTitrePage);
+
+// Récupération de la liste des formulaires QCM
+$aListeQCMEdition = $oInstanceStorage->getData('liste_edition');
+
+// Construction du tableau récapitulatif des formulaires
+$oEdition = new DatatableHelper("table-edition", $aListeQCMEdition);
+$oEdition->setClassColumn("align-left strong", "titre_formulaire");
+
+// Formatage du champ DATETIME
+$oEdition->setFormatOnColumn('date_modification_formulaire',	DataHelper::DATA_TYPE_DATETIME);
+
+// Personnalisation des noms de colonne
+$aColonnes = array(
+	'titre_formulaire'				=> "TITRE",
+	'libelle_domaine'				=> "DOMAINE",
+	'COUNT(id_question)'			=> "QUESTIONS",
+	'date_modification_formulaire'	=> "MODIFICATION",
+	'libelle_redacteur'				=> "REDACTEUR",
+	'libelle_valideur'				=> "VALIDEUR"
+);
+$oEdition->renameColumns($aColonnes, true);
+
+// Indicateur de domaine non défini
+$oEdition->setConditionalClassOnColumn('id_domaine', '<=', "0", "grey", "TITRE");
+$oEdition->setConditionalClassOnColumn('id_domaine', '<=', "0", "strong red", "DOMAINE");
+
+// Ajout d'une colonne [ACTION] avec un lien HREF conditionnel selon l'état de validation
+$oEdition->setConditionalAnchorOnColumn("VALIDEUR",	"validation_formulaire", 0, "id_formulaire", "Terminer",	"/edition/terminer?id_formulaire=",	"blue tooltip-track",	"Soumettre le QCM à validation");
+$oEdition->setConditionalTextOnColumn("VALIDEUR",	"validation_formulaire", 1, "En attente...", "strong");
+$oEdition->setConditionalAnchorOnColumn("ACTION",	"validation_formulaire", 0, "id_formulaire", "Modifier",	"/edition?id_formulaire=",			"green tooltip-track",	"Modifier le QCM");
+$oEdition->setConditionalAnchorOnColumn("ACTION",	"validation_formulaire", 1, "id_formulaire", "Éditer",		"/edition?id_formulaire=",			"blue tooltip-track",	"Éditer le QCM avant sa validation");
+$oEdition->setConditionalAnchorOnColumn("ACTION",	"validation_formulaire", 2, "id_formulaire", "Corriger",	"/edition?id_formulaire=",			"red tooltip-track",	"Revoir le QCM déjà validé");
+
+// Ajout du tableau à VIEW_MAIN
+ViewRender::addToMain($oEdition->renderHTML());
+
+// Rendu final de la vue
+ViewRender::render();

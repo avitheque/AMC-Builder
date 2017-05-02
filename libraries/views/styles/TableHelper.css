@@ -1,0 +1,25 @@
+/**
+ * Feuille de style relative à la à la classe TableHelper.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ *
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+@CHARSET "UTF-8";
+
+.table							{ font-size:		15px; }
+
+.table tbody tr.odd				{ background:		#FFFFFF; }
+.table tbody tr.even			{ background:		#E9F9F9; }
+.table tbody tr:hover			{ background:		#81B7FF; }
+
+.table tbody tr.error td,
+.table tbody td.error			{ background:		#FF9999;	color:			red;	font-weight:	bold; }
+
+.table tbody tr.error button,
+.table tbody tr.error a.button,
+.table tbody td.error button,
+.table tbody td.error a.button	{ display:			none; }

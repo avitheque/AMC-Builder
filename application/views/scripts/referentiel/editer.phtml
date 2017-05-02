@@ -1,0 +1,76 @@
+<?php
+/**
+ * @brief	Éditer un référentiel
+ *
+ * Vue de modification d'un référentiel.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ * 
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+
+// Récupération de l'instance d'authentification
+$oAuth				= AuthenticateManager::getInstance();
+
+// Récupération des données de la session
+$oInstanceStorage	= InstanceStorage::getInstance();
+
+// Nom de session des données
+$sSessionNameSpace	= $oInstanceStorage->getData('SESSION_NAMESPACE');
+
+// Données du stage
+$aFormulaire		= $oInstanceStorage->getData($sSessionNameSpace);
+
+// Récupération des paramètres d'édition de l'élément
+$sAction			= $oInstanceStorage->getData('ACTION');
+
+// Bouton [BAS DE PAGE]
+ViewRender::addToMain("<span id=\"top\"><a class=\"page-top\" href=\"#bottom\" title=\"Bas de page...\">&#8595;</a></span>");
+
+
+//#################################################################################################
+// INITIALISATION DE L'ENTÊTE DU FORMULAIRE
+//#################################################################################################
+
+// Initialisation du formulaire
+ViewRender::addToFormStart("<form action=\"#\" method=\"post\" name=\"referentiel\">");
+
+// Zone du formulaire injecté dans $_SESSION[VIEW_MAIN]
+$oReferentiel = new ReferentielHelper(!$oAuth->isModifiable());
+ViewRender::addToMain($oReferentiel->render());
+
+// BOUTON [HAUT DE PAGE]
+ViewRender::addToMain("<span id=\"bottom\"><a class=\"page-bottom\" href=\"#top\" title=\"Haut de page...\">&#8593;</a></span>");
+
+
+//#################################################################################################
+// VALIDATION DU FORMULAIRE
+//#################################################################################################
+
+// Finalisation du questionnaire
+if ($oAuth->isModifiable()) {
+	// L'utilisateur a le droit d'enregistrer le formulaire
+	$sBottom = "<div class=\"group-button\">
+					<button type=\"submit\" class=\"red confirm left\" name=\"button\" value=\"fermer\">Fermer</button>
+					<a href=\"/referentiel/ajouter\" class=\"button blue confirm\">Annuler</a>
+					<button type=\"submit\" class=\"green right\" name=\"button\" value=\"enregistrer\">Enregistrer</button>
+				</div>";
+} else {
+	// Information à l'utilisateur sur la limitation de ses droits
+	ViewRender::setMessageWarning("Droits limités !", "Vous n'avez pas la possibilité de modifier le formulaire...");
+
+	// L'utilisateur ne peux revenir qu'à la page précédente
+	$sBottom = "<div class=\"group-button\">
+					<button type=\"submit\" class=\"red left\" name=\"button\" value=\"fermer\">Fermer</button>
+					<button type=\"reset\" class=\"right\" disabled=\"disabled\">Enregistrer</button>
+				</div>";
+}
+
+// Ajout du contenu au VIEW_BOTTOM
+ViewRender::addToFooter($sBottom);
+
+// Rendu final de la vue
+ViewRender::render();

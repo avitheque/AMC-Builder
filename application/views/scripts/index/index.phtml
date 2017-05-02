@@ -1,0 +1,50 @@
+<?php
+/**
+ * @brief	Index
+ *
+ * Vue principale de l'application.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ * 
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+
+// Récupération de l'instance du singleton InstanceStorage permettant de gérer les échanges avec le contrôleur
+$oInstanceStorage = InstanceStorage::getInstance();
+
+// Bouton [BAS DE PAGE]
+ViewRender::addToMain("<span id=\"top\"><a class=\"page-top\" href=\"#bottom\" title=\"Bas de page...\">&#8595;</a></span>");
+
+// Présentation d'un article
+$sArticle = "<h2>Bienvenue sur <span class=\"strong italic\">" . APP_NAME . "</span> !</h2>
+			<h3 class=\"right italic green\">Application Web destinée aux centres de formation</h3>
+			<ol class=\"margin-top-10p justify\">
+				<li class=\"margin-20\">
+					Sous Linux, l'application <a href=\"http://home.gna.org/auto-qcm/index.fr\" target=\"_blank\" class=\"text italic strong\">Auto Multiple Choice</a> (AMC) répond aux exigences des centres de formation qui ont besoin de réaliser des questionnaires à choix multiples (QCM) à grand volume sur support papier avec correction automatique des copies de tous les candidats.
+				</li>
+				<li class=\"margin-20\">
+					La force d'AMC réside dans le fait que pour chaque copie, les questions sont toutes mélangées entre elles et les réponses sont elles-mêmes mélangées dans chaque question...
+					Au final, aucune copie n'est identique et les suspicions de tricheries ne sont plus possibles !
+				</li>
+				<li class=\"margin-20\">
+					À la fin de l'épreuve, les copies sont automatiquement corrigées via une fonctionnalité de reconnaissance optique OCR.
+				</li>
+				<li class=\"margin-20\">
+					Cependant, le code exploité par l'application AMC est au format LaTeX, un langage permettant de créer un fichier PDF, très difficile à manipuler pour les non initiés.
+				</li>
+				<li class=\"margin-20 strong italic\">
+					Cette application se veut donc être une interface utilisateur simple et intuitive permettant de générer le code LaTeX exploitable directement par l'application AMC.
+				</li>
+			</ol>";
+
+// Ajout du contenu au VIEW_MAIN
+ViewRender::addToMain($sArticle);
+
+// BOUTON [HAUT DE PAGE]
+ViewRender::addToMain("<span id=\"bottom\"><a class=\"page-bottom\" href=\"#top\" title=\"Haut de page...\">&#8593;</a></span>");
+
+// Rendu final de la vue
+ViewRender::render();

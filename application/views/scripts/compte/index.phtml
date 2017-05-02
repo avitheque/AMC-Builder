@@ -1,0 +1,71 @@
+<?php
+/**
+ * @brief	Compte
+ *
+ * Vue principale du compte d'un utilisateur.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ * 
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+
+// Récupération de l'instance d'authentification
+$oAuth				= AuthenticateManager::getInstance();
+
+// Récupération de l'instance du singleton InstanceStorage permettant de gérer les échanges avec le contrôleur
+$oInstanceStorage	= InstanceStorage::getInstance();
+
+// Bouton [BAS DE PAGE]
+ViewRender::addToMain("<span id=\"top\"><a class=\"page-top\" href=\"#bottom\" title=\"Bas de page...\">&#8595;</a></span>");
+
+//#################################################################################################
+// INITIALISATION DE L'ENTÊTE DU FORMULAIRE
+//#################################################################################################
+ViewRender::addToFormStart("<form action=\"#\" method=\"post\" name=\"gestion\">");
+
+//#################################################################################################
+// INTERFACE DE CRÉATION DU FORMULAIRE
+//#################################################################################################
+
+// Initialisation du formulaire de l'utilisateur
+$oUser				= new UtilisateurHelper(true, $oAuth->isModifiable());
+$sArticle			= $oUser->render();
+
+//#################################################################################################
+// FINALISATION DE LA PAGE
+//#################################################################################################
+
+// Ajout du contenu au VIEW_MAIN
+ViewRender::addToMain($sArticle);
+
+// BOUTON [HAUT DE PAGE]
+ViewRender::addToMain("<span id=\"bottom\"><a class=\"page-bottom\" href=\"#top\" title=\"Haut de page...\">&#8593;</a></span>");
+
+//#################################################################################################
+// VALIDATION DU FORMULAIRE
+//#################################################################################################
+if ($oAuth->isModifiable()) {
+	// Finalisation du questionnaire
+	$sBottom		= "<div class=\"group-button\">
+							<button type=\"submit\" class=\"red confirm left\" name=\"button\" value=\"annuler\">Annuler</button>
+							<button type=\"submit\" class=\"green submit right\" name=\"button\" value=\"enregistrer\">Enregistrer</button>
+						</div>";
+} else {
+	// Information à l'utilisateur sur la limitation de ses droits
+	ViewRender::setMessageWarning("Droits limités !", "Vous n'avez pas la possibilité de modifier le formulaire...");
+
+	// Finalisation du questionnaire
+	$sBottom		= "<div class=\"group-button\">
+							<button type=\"reset\" class=\"left\" disabled=\"disabled\">Annuler</button>
+							<button type=\"reset\" class=\"right\" disabled=\"disabled\">Enregistrer</button>
+						</div>";
+}
+
+// Ajout du contenu au VIEW_BOTTOM
+ViewRender::addToFooter($sBottom);
+
+// Rendu final de la vue
+ViewRender::render();

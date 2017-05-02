@@ -1,0 +1,66 @@
+<?php
+/**
+ * @brief	Validation
+ *
+ * Vue principale de la validation d'un formulaire QCM.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ * 
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+
+// Récupération des données de la session
+$oInstanceStorage = InstanceStorage::getInstance();
+
+// Bouton [BAS DE PAGE]
+ViewRender::addToMain("<span id=\"top\"><a class=\"page-top\" href=\"#bottom\" title=\"Bas de page...\">&#8595;</a></span>");
+
+// Titre de la page
+$sTitrePage =  "<h2>Validation d'un formulaire QCM</h2>
+				<p>
+				</p>";
+ViewRender::addToMain($sTitrePage);
+
+// Récupération de la liste des formulaires QCM en attente de validation
+$aListeQCMValidation	= $oInstanceStorage->getData('liste_validation');
+
+// Construction du tableau récapitulatif des formulaires
+$oValidation = new DatatableHelper("table-validation", $aListeQCMValidation);
+$oValidation->setClassColumn("align-left strong", "titre_formulaire");
+
+// Formatage du champ DATETIME
+$oValidation->setFormatOnColumn('date_modification_formulaire',	DataHelper::DATA_TYPE_DATETIME);
+
+// Personnalisation des noms de colonne
+$aColonnes = array(
+	'titre_formulaire'				=> "TITRE",
+	'libelle_domaine'				=> "DOMAINE",
+	'COUNT(id_question)'			=> "QUESTIONS",
+	'date_modification_formulaire'	=> "MODIFICATION",
+	'libelle_redacteur'				=> "REDACTEUR",
+	'libelle_valideur'				=> "VALIDEUR"
+);
+$oValidation->renameColumns($aColonnes, true);
+
+// Indicateur de domaine non défini
+$oValidation->setConditionalClassOnColumn('id_domaine', '<=', "0", "grey", "TITRE");
+$oValidation->setConditionalClassOnColumn('id_domaine', '<=', "0", "strong red", "DOMAINE");
+
+// Ajout d'une colonne [ACTION] avec un lien HREF conditionnel selon l'état de validation
+$oValidation->setConditionalAnchorOnColumn("ACTION", "validation_formulaire", 1, "id_formulaire", "Valider", "/validation?id_formulaire=", "green tooltip-track",	"Valider le QCM pour une épreuve");
+$oValidation->setConditionalAnchorOnColumn("ACTION", "validation_formulaire", 2, "id_formulaire", "Générer", "/generation?id_formulaire=", "blue tooltip-track",	"Générer le QCM pour une épreuve");
+
+// Tri du tableau sur la colonne FIN par ordre DESC
+$oValidation->setOrderColumn('ACTION', 'desc');
+
+// Ajout du tableau à VIEW_MAIN
+ViewRender::addToMain($oValidation->renderHTML());
+
+// BOUTON [HAUT DE PAGE]
+ViewRender::addToMain("<span id=\"bottom\"><a class=\"page-bottom\" href=\"#top\" title=\"Haut de page...\">&#8593;</a></span>");
+
+// Rendu final de la vue
+ViewRender::render();

@@ -1,0 +1,42 @@
+#####################
+#    AMC-Builder    #
+#####################
+
+Application Web destinée aux centres de formation.
+
+Sous Linux, l'application Auto-Multiple-Choice (AMC) répond aux exigences des
+centres de formation qui ont besoin de réaliser des questions QCM à grand volume
+avec correction automatique des copies de tous les candidats. Les questionnaires
+sont produits sur support papier.
+
+Cependant, la force d'AMC réside dans le fait que pour chaque copie, les
+questions sont toutes mélangées entre elles et les réponses sont elles-mêmes
+mélangées dans chaque question...
+Au final, aucune copie n'est identique et les suspicions de tricheries ne sont
+plus possibles !
+
+À la fin de l'épreuve, les copies sont automatiquement corrigées via une
+fonctionnalité de reconnaissance optique OCR.
+
+Or, le code exploité par l'application AMC est au format LaTeX, un langage
+permettant de créer un fichier PDF, très difficile à manipuler pour les non
+initiés...
+
+L'outil que je suis en train de développer se veut être une interface
+utilisateur simple et intuitive permettant de générer le code LaTeX exploitable
+directement par l'application AMC.
+
+
+######################
+#    Architecture    #
+######################
+
+L'application fonctionne selon le design pattern Modèle-Vue-Contrôleur (MVC).
+L'architecture est basée sur un FrameWork développé par mes soins, selon une
+structure similaire à celle rencontrée dans la librairie Zend FrameWork 1.x.
+
+J'ai ainsi souhaité garder cette organisation qui m'était familiaire mais sans
+la lourdeur de la bibliothèque de Zend !!!
+
+DURAND Cédric
+durandcedric@avitheque.net

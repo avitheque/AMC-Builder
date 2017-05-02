@@ -1,0 +1,63 @@
+@CHARSET "UTF-8";
+/**
+ *	Feuille de style du formulaire QCM.
+ *
+ * @author		durandcedric@avitheque.net
+ * @update		$LastChangedBy: durandcedric $
+ * @version		$LastChangedRevision: 2 $
+ * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ */
+
+/** QUESTIONNAIRES *******************************************************************************/
+
+section.accordion .item-content				{
+	background:								rgba(119, 173, 207, 0.5);
+}
+
+section.accordion.disabled .item-content	{
+	background:								rgba(0, 0, 0, 0.1);
+}
+
+/** RÉPONSES *************************************************************************************/
+
+dd[id^=valeur],
+dd[id^=penalite]							{
+	position:								relative;
+	text-align:								right;
+}
+
+dd.valide label	,
+dd.valide input								{
+	color:									green;
+	font-weight:							bold;
+}
+
+dd.valide input								{
+	background:								rgba(0, 255, 0, 0.2);
+}
+
+dd.sanction label,
+dd.sanction input							{
+	color:									red;
+	font-weight:							bold;
+}
+
+dd.sanction input							{
+	background:								rgba(255, 0, 0, 0.2);
+}
+
+/** SUPPRESSION D'UNE QUESTION *******************************************************************/
+
+button.delete								{
+	border:									1px solid;
+	border-radius:							20px;
+	height:									30px;
+	width:									30px;
+	margin:									0;
+	padding:								0;
+}
+
+button.delete:hover {
+	background:								red;
+	color:									white;
+}

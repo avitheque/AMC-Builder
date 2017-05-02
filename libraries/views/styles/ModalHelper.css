@@ -1,0 +1,20 @@
+/**
+ * Feuille de style relative à la à la classe ModalHelper.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ *
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+@CHARSET "UTF-8";
+
+.ui-draggable .ui-dialog-titlebar,
+.ui-draggable .ui-dialog-titlebar span	{
+	cursor:			move;
+}
+
+.ui-draggable article.blue				{
+	background:		rgba(119, 173, 207, 0.3);
+}

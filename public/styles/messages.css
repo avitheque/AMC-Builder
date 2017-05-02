@@ -1,0 +1,117 @@
+@CHARSET "UTF-8";
+/**
+ *	Feuille de style des messages de l'application.
+ *
+ * @li Feuille de style principale
+ * @see main.css
+ *
+ * @author		durandcedric@avitheque.net
+ * @update		$LastChangedBy: durandcedric $
+ * @version		$LastChangedRevision: 2 $
+ * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ */
+
+/** MODAL jQuery *********************************************************************************/
+
+.ui-dialog						{
+	z-index:					5000;
+}
+
+/** MESSAGES PAR DÉFAUT **************************************************************************/
+
+section.message					{
+	position:					fixed;
+	top:						44px;
+	background:					rgba(179, 176, 176, 1);
+	margin:						0 5%;
+	border-radius:				10px;
+	border:						1px solid;
+	width:						90%;
+	z-index:					50;
+}
+
+section.message a.close			{
+	position:					relative;
+	top:						0;
+	background:					rgba(0, 0, 0, 0.5);
+	border-radius:				10px;
+	color:						rgba(255, 255, 255, 0.8);
+	height:						21px;
+	width:						21px;
+	font-weight:				bold;
+	text-decoration:			none;
+	text-align:					center;
+	float:						right;
+}
+
+section.message a.close:hover	{
+	background:					rgba(0, 0, 0, 0.7);
+	border-color:				grey;
+	color:						red;
+}
+
+section.message a.close:active	{
+	background:					rgba(255, 0, 0, 0.7);
+	border-color:				red;
+	color:						white;
+}
+
+/** MESSAGES D'ERREUR ****************************************************************************/
+section.message.alert			{
+	background:					rgba(251, 127, 127, 1);
+	border-color:				red;
+}
+/* TITRE */
+section.message.alert h4 {
+	color:						#ffeeee;
+	text-shadow:				#ff0000 2px 2px 5px;
+}
+/* TEXT */
+section.message.alert p {
+	color:						darkred;
+}
+
+/** MESSAGES D'INFORMATION ***********************************************************************/
+section.message.info			{
+	background:					rgba(127, 251, 233, 1);
+	border-color:				blue;
+}
+/* TITRE */
+section.message.info h4 {
+	color:						darkblue;
+	text-shadow:				#74ceff 2px 2px 5px;
+}
+/* TEXT */
+section.message.info p {
+	color:						darkblue;
+}
+
+/** MESSAGES DE SUCCÈS ***************************************************************************/
+section.message.success			{
+	background:					rgba(127, 251, 146, 1);
+	border-color:				green;
+}
+/* TITRE */
+section.message.success h4 {
+	color:						green;
+	text-shadow:				#ccffbc 2px 2px 5px;
+}
+/* TEXT */
+section.message.success p {
+	color:						darkgreen;
+}
+
+/** MESSAGES D'AVERTISSEMENT *********************************************************************/
+section.message.warning			{
+	background:					rgba(255, 240, 155, 1);
+	border-color:				yellow;
+}
+/* TITRE */
+section.message.warning h4 {
+	color:						maroon;
+	text-shadow:				#ffdd22 2px 2px 5px;
+}
+/* TEXT */
+section.message.warning p {
+	color:						maroon;
+}

@@ -1,0 +1,194 @@
+@CHARSET "UTF-8";
+/**
+ *	Feuille de style des formulaires de l'application.
+ *
+ * @li Feuille de style principale
+ * @see main.css
+ *
+ * @author		durandcedric@avitheque.net
+ * @update		$LastChangedBy: durandcedric $
+ * @version		$LastChangedRevision: 2 $
+ * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ */
+
+input:not([readonly]),
+input:not([disabled]),
+textarea:not([readonly]),
+textarea:not([disabled])							{
+	cursor:											text;
+}
+
+a,
+a *,
+input[type=button],
+input[type=button] *,
+input[type=cancel],
+input[type=cancel] *,
+input[type=submit],
+input[type=submit] *,
+input[type=radio],
+input[type=checkbox],
+input[type=file],
+select:not([disabled]),
+label[for]											{
+	cursor:											pointer;
+}
+
+input,
+select,
+textarea											{
+	background:										#F3F3F3;
+	border:											solid 1px #C3C3C3;
+	border-radius:									4px;
+	font-size:										15px !important;
+	outline:										none !important;
+	user-select:									text;
+	-moz-user-select:								text;
+}
+
+input,
+textarea											{
+	padding-left:									2px;
+}
+
+select												{
+	padding-right:									2px;
+	min-width:										50px;
+}
+
+input:focus,
+select:focus,
+textarea:focus										{
+	border-color:									#4297d7;
+}
+
+/* Désactivation du outline de focus sous FireFox */
+select:-moz-focusring {
+    color:											transparent;
+    text-shadow:									0 0 0 #000;
+}
+
+input:-moz-focusring {
+    color:											#000;
+}
+
+input[readonly],
+input[readonly]:focus,
+input[disabled],
+input[disabled]:focus,
+select[disabled],
+select[disabled]:focus,
+textarea[readonly],
+textarea[readonly]:focus,
+textarea[disabled],
+textarea[disabled]:focus							{
+	background:										rgba(255, 255, 255, 0.5);
+	color:											transparent;
+	border-color:									#C3C3C3;
+    text-shadow:									0 0 0 #000;
+	cursor:											default;
+	user-select:									none !important;
+	-moz-user-select:								none !important;
+	padding-right:									5px;
+}
+
+.readonly label,
+input[readonly] + label,
+input[disabled] + label,
+select[disabled] + label,
+textarea[readonly] + label,
+textarea[disabled] + label,
+section.disabled label,
+fieldset.disabled label								{
+	cursor:											default !important;
+}
+
+/************************************************/
+
+input[type=checkbox],
+input[type=radio]									{
+	display:										none;
+}
+
+input[type=checkbox] + label:before,
+input[type=radio] + label:before					{
+	content:										"&nbsp;";
+	background:										#F3F3F3;
+	border:											1px solid #C3C3C3;
+	color:											transparent;
+	padding:										0 1.5px 1.5px 1px;
+	margin-right:									5px;
+	font-size:										11px;
+	height:											13px;
+	width:											20px;
+}
+
+input[type=checkbox] + label:before					{
+	border-radius:									3px;
+	content:										"■";
+	padding:										0 2px;
+}
+input[type=checkbox]:checked + label:before			{
+	color:											rgba(0, 0, 255, 0.7);
+	content:										"✔";
+	font-weight:									bold;
+}
+
+input[type=radio] + label:before					{
+	border-radius:									50%;
+	content:										"○";
+	padding:										0 3px 2px;
+}
+input[type=radio]:checked + label:before			{
+	color:											rgba(0, 0, 255, 0.7);
+	content:										"●";
+	font-weight:									bold;
+}
+
+input[type=checkbox]:disabled + label:before,
+input[type=radio]:disabled + label:before,
+input[type=checkbox][readonly] + label:before,
+input[type=radio][readonly] + label:before			{
+	background:										rgba(255, 255, 255, 0.5);
+}
+
+input[type=checkbox]:checked:disabled + label:before,
+input[type=radio]:checked:disabled + label:before,
+input[type=checkbox][readonly]:checked + label:before,
+input[type=radio][readonly]:checked + label:before	{
+	color:											#333;
+}
+
+/*************************************************/
+
+input.date											{
+	width:											100px;
+	text-align:										center;
+	cursor:											pointer;
+}
+
+input.time											{
+	width:											50px;
+	text-align:										center;
+	cursor:											pointer;
+}
+
+textarea											{
+	resize:											vertical;
+}
+
+label												{
+	display:										inline-table;
+	vertical-align:									top;
+	font-size:										15px;
+	white-space:									nowrap;
+}
+
+/*************************************************/
+
+input.loading,
+select.loading,
+textarea.loading									{
+	background:										#F3F3F3 url('/images/loading.gif') no-repeat;
+	color:											transparent;
+}

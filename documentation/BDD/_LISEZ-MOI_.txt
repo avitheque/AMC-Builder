@@ -1,0 +1,32 @@
+###############################################################################
+# AMC-BUILER
+# amc-builder/documentation/BDD/_LISEZ-MOI_.txt
+#
+# Cette documentation est succeptible d'évoluer avec le temps...
+# Merci pour votre compréhension.
+# DURAND Cédric
+# durandcedric@avitheque.net
+#
+# INSTALLATION DE LA BASE DE DONNÉES
+###############################################################################
+
+Plusieurs scripts sont présentés dans le répertoire à installer dans l'ordre :
+    - 01_structure.sql      : structure de base ;
+    - 02_referentiel.sql    : référentiel de l'application ;
+    - 03_demo.sql           : données de démonstration avec utilisateurs ;
+    - 04_exemple.sql        : exemple de formulaire préchargé.
+
+# IL N'EST PAS NÉCESSAIRE D'INTÉGRER TOUS LES SCRIPTS...
+# Seul le fichier `01_structure.sql` est vital !
+    
+Le fichier `phpmyadmin-MCD.sql` permet d'intégrer le projet dans PhpMyAdmin et
+ainsi de pouvoir bénéficier de la présentation du MCD configurée comme dans la
+capture présente dans le fichier `00_MCD.png`.
+
+Après avoir intégré le premier script `01_structure.sql`, les informations de
+connexion à l'application sont les suivantes pour le profil [Webmaster] :
+    - Login : webmaster
+    - Pass  : demo
+
+Le Webmaster peut alors ajouter de nouveaux utilisateurs.
+Pour des raisons de sécurité, il est conseillé de changer le mot de passe.

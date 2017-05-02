@@ -1,0 +1,91 @@
+<?php
+/**
+ * @brief	Consulter un référentiel
+ *
+ * Vue de consultation d'un référentiel.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ * 
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+
+// Récupération des données de la session
+$oInstanceStorage	= InstanceStorage::getInstance();
+
+// Récupération des paramètres d'édition de l'élément
+$sAction			= $oInstanceStorage->getData('ACTION');
+
+// Récupération du nom de la table
+$sTableName			= $oInstanceStorage->getData('TABLE_NAME');
+
+// Bouton [BAS DE PAGE]
+ViewRender::addToMain("<span id=\"top\"><a class=\"page-top\" href=\"#bottom\" title=\"Bas de page...\">&#8595;</a></span>");
+
+// Titre de la page
+$sTitrePage			=  "<h2>
+							Consultation du référentiel <span class=\"strong upper\">" . $sTableName . "</span>
+							<a id=\"ajouter\" class=\"button blue right margin-0\" href=\"/referentiel/ajouter#\">Ajouter au référentiel</a>
+						</h2>
+						<p>
+						</p>";
+// Ajout du contenu à VIEW_MAIN
+ViewRender::addToMain($sTitrePage);
+
+// Récupération de la liste du référentiel
+$aListeReferentiel	= $oInstanceStorage->getData('liste_referentiel');
+
+// Construction du tableau
+$oReferentiel		= new DatatableHelper("table-consulter", $aListeReferentiel);
+$oReferentiel->setClassColumn("align-left strong",			"libelle_referentiel");
+$oReferentiel->setFormatOnColumn('date_debut_referentiel',	DataHelper::DATA_TYPE_DATE);
+$oReferentiel->setFormatOnColumn('date_fin_referentiel',	DataHelper::DATA_TYPE_DATE);
+
+// Personnalisation des noms de colonne
+$aColonnes = array(
+	'libelle_referentiel'				=> "LIBELLÉ"
+);
+
+// Fonctionnalité réalisée si le référentiel est lié à un parent
+if (array_key_exists($sTableName, ReferentielManager::$REF_TABLE_PARENT)) {
+	$oReferentiel->setClassColumn("align-left",				"libelle_parent");
+	$aColonnes['libelle_parent']		= "PARENT";
+}
+
+// Fonctionnalité réalisée si le référentiel correspond à la table `salle`
+if ($sTableName == ReferentielManager::TABLE_SALLE) {
+	// Ajout du champ CAPACITÉ
+	$aColonnes['capacite_statut_salle']	= "CAPACITÉ";
+}
+
+$aColonnes['date_debut_referentiel']	= "DEBUT";
+$aColonnes['date_fin_referentiel']		= "FIN";
+$oReferentiel->renameColumns($aColonnes, true);
+
+// Tri du tableau sur la colonne LIBELLÉ par ordre ASC
+$oReferentiel->setOrderColumn('LIBELLÉ', 'asc');
+
+// Ajout d'une colonne [ACTION] avec un lien HREF
+$oReferentiel->addAnchorOnColumn("ACTION", 0, "Éditer", "/referentiel/editer?table=" . $sTableName . "&id=");
+
+// Ajout du tableau à l'article
+ViewRender::addToMain($oReferentiel->renderHTML());
+
+// BOUTON [HAUT DE PAGE]
+ViewRender::addToMain("<span id=\"bottom\"><a class=\"page-bottom\" href=\"#top\" title=\"Haut de page...\">&#8593;</a></span>");
+
+
+//#################################################################################################
+// RETOUR À LA LISTE
+//#################################################################################################
+
+// Finalisation du questionnaire
+$sBottom = "<div class=\"group-button\">
+				<a class=\"button blue\" href=\"/referentiel\">Retour à la liste complète</a>
+			</div>";
+ViewRender::addToFooter($sBottom);
+
+// Rendu final de la vue
+ViewRender::render();

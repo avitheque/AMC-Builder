@@ -1,0 +1,48 @@
+<?php
+/**
+ * @brief	Affichage de la BIBLIOTHÈQUE.
+ *
+ * @li	Une ou plusieurs questions sont à afficher.
+ *
+ * @li	Le contenu de cette page est injecté dans un formulaire via AJAX.
+ * @li	La bibliothèque jQuery est déjà active.
+ *
+ * Vue de recherche de l'ensemble des questions de la bibliothèque selon les critères de recherche.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ * 
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+
+// Récupération de l'instance du singleton InstanceStorage permettant de gérer les échanges avec le contrôleur
+$oInstanceStorage	= InstanceStorage::getInstance();
+
+// Initialisation du conteneur GalleryHelper
+$oGallery			= new GalleryHelper();
+
+// Récupération des paramètres de la question
+$aListeBibliotheque	= $oInstanceStorage->getData("liste_bibliotheque");
+
+// Initialisation du Helper
+$oBibliotheque		= new QuestionHelper($aListeBibliotheque, true);
+$oBibliotheque->setMiniRender(true);
+
+// Parcours de la liste de la bibliothèque
+if (isset($aListeBibliotheque['question_id'])) {
+	for ($nOccurrence = 0 ; $nOccurrence < count($aListeBibliotheque['question_id']) ; $nOccurrence++) {
+		// Construction de la bibliothèque
+		$oBibliotheque->buildQuestion($nOccurrence);
+
+		// Récupération de l'identifiant
+		$nId		= $oBibliotheque->getQuestionIdByOccurrence($nOccurrence);
+
+		// Ajout de la liste des questions
+		$oGallery->addItem($oBibliotheque->renderHTML(true), $nId, "/search/question?id=%d");
+	}
+}
+
+// Affichage du résultat
+print $oGallery->getGallery();

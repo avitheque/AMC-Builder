@@ -1,0 +1,46 @@
+<?php
+/**
+ * @brief	Édition d'un stage / candidat
+ *
+ * Vue de gestion d'un stage ou d'un candidat.
+ *
+ * @li	Récupération du contenu selon le type de l'élément à charger.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ * 
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+
+// Récupération de l'instance du singleton InstanceStorage permettant de gérer les échanges avec le contrôleur
+$oInstanceStorage		= InstanceStorage::getInstance();
+
+// Récupération des paramètres d'édition de l'élément
+$sAction				= $oInstanceStorage->getData('ACTION');
+
+// Construction du tableau récapitulatif
+$oTableauImportation	= new TableHelper("import", $aImport);
+$aColonnes				= $oTableauImportation->getColumns();
+
+// Construction des listes pour les filtres
+$aFiltreColumns			= $oInstanceStorage->getData('filtre_columns');
+foreach ($aColonnes as $sColumn) {
+	// Ajout du champ SELECT
+	$oTableauImportation->addSelectOnHeadColumn("filtre[]", $aFiltreColumns, null, $sColumn, null, true);
+}
+
+// Boutons du MODAL
+$aButtons = array(
+	"<button type=\"button\" class=\"red closeDialog left\" name=\"button\" value=\"fermer\">Annuler</button>",
+	"<button type=\"submit\" class=\"green right\" name=\"button\" value=\"importer_$sAction\">Enregistrer</button>"
+);
+
+// Construction d'un formulaire MODAL dans lequel le tableau sera injecté
+$oModal = new ModalHelper("import");
+$oModal->linkContent($oTableauImportation->renderHTML());
+$oModal->linkContent($aButtons);
+$oModal->setVisible(true);
+$oModal->setWidth(800);
+ViewRender::addToBody($oModal->renderHTML());

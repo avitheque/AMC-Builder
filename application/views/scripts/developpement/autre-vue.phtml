@@ -1,0 +1,35 @@
+<?php
+/**
+ * @brief	Test
+ *
+ * Autre vue de développement de l'application.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ * 
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+
+// Récupération de l'instance du singleton InstanceStorage permettant de gérer les échanges avec le contrôleur
+$oInstanceStorage = InstanceStorage::getInstance();
+
+// Présentation d'un article
+$sArticle = "<h2>Autre vue du contrôleur DeveloppementController</h2>
+			<p>
+				Le contenu de cette page fait toujours partie du contrôleur <span class=\"strong\">DeveloppementController</span>.
+			</p>
+			<p>
+				Il est ainsi possible de concevoir une suite logique d'étapes pour l'exécution d'une fonctionnalité
+				ou lors de la validation d'un formulaire.
+			</p>
+			<p>
+				<a href=\"/developpement\" class=\"button blue\">Retour à la page principale de <i>DeveloppementController</i>...</a>
+			</p>";
+
+// Ajout du contenu au VIEW_MAIN
+ViewRender::addToMain($sArticle);
+
+// Rendu final de la vue
+ViewRender::render();

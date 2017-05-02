@@ -1,0 +1,21 @@
+@CHARSET "UTF-8";
+/**
+ *	Feuille de style des tableaux de l'application.
+ *
+ * @li Feuille de style principale
+ * @see main.css
+ *
+ * @author		durandcedric@avitheque.net
+ * @update		$LastChangedBy: durandcedric $
+ * @version		$LastChangedRevision: 2 $
+ * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ */
+
+/** STANDARD *************************************************************************************/
+
+.table							{ background:	white;		border-collapse:	collapse;	border:			1px solid #3C75BF; }
+.table thead, .table tfoot		{ background:	#3C75BF;	color:				white; }
+.table thead th,
+.table tfoot td					{ padding:		0 5px;		line-height:		30px;		border:			1px solid #3C75BF; }
+.table tbody tr td				{ padding:		2px 5px;	line-height:		30px;		border-right:	1px solid #446693; }
+.table tbody tr td:last-child	{ border:		0; }

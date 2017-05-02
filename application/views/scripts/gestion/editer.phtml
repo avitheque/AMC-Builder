@@ -1,0 +1,81 @@
+<?php
+/**
+ * @brief	Édition d'un CANDIDAT / STAGE / UTILISATEUR
+ *
+ * Vue de gestion d'un candidat, d'un stage ou d'un utilisateur.
+ *
+ * @li	Récupération du contenu selon le type de l'élément à charger.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ * 
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+
+// Récupération de l'instance d'authentification
+$oAuth	= AuthenticateManager::getInstance();
+
+// Récupération de l'instance du singleton InstanceStorage permettant de gérer les échanges avec le contrôleur
+$oInstanceStorage = InstanceStorage::getInstance();
+
+// Nom de session
+$sSessionNameSpace	= $oInstanceStorage->getData('SESSION_NAMESPACE');
+
+// Récupération des paramètres d'édition de l'élément
+$sAction	= $oInstanceStorage->getData('ACTION');
+
+// Fonctionnalité réalisée lorsqu'une importation est en cours
+if ($aImport = $oInstanceStorage->getData('liste_import')) {
+	//#############################################################################################
+	// CHARGEMENT DU CONENU DE L'IMPORTATION
+	//#############################################################################################
+	require_once 'import.phtml';
+}
+
+// Bouton [BAS DE PAGE]
+ViewRender::addToMain("<span id=\"top\"><a class=\"page-top\" href=\"#bottom\" title=\"Bas de page...\">&#8595;</a></span>");
+
+
+//#################################################################################################
+// INITIALISATION DE L'ENTÊTE DU FORMULAIRE
+//#################################################################################################
+ViewRender::addToFormStart("<form action=\"#\" method=\"post\" name=\"gestion\">");
+
+//#################################################################################################
+// CHARGEMENT DU CONENU DU FORMULAIRE À ÉDITER
+//#################################################################################################
+require_once sprintf('%s/%s_editer.php', $sAction, $sAction);
+
+// BOUTON [HAUT DE PAGE]
+ViewRender::addToMain("<span id=\"bottom\"><a class=\"page-bottom\" href=\"#top\" title=\"Haut de page...\">&#8593;</a></span>");
+
+
+//#################################################################################################
+// VALIDATION DU FORMULAIRE
+//#################################################################################################
+
+// Finalisation du questionnaire
+if ($oAuth->isModifiable()) {
+	// L'utilisateur a le droit d'enregistrer le formulaire
+	$sBottom = "<div class=\"group-button\">
+					<button type=\"submit\" class=\"red confirm left tooltip\" name=\"button\" value=\"fermer\" title=\"Retour à la page précédente\">Fermer</button>
+					<button type=\"submit\" class=\"green submit right tooltip\" name=\"button\" value=\"enregistrer_$sAction\" title=\"Enregistrer les modifications\">Enregistrer</button>
+				</div>";
+} else {
+	// Information à l'utilisateur sur la limitation de ses droits
+	ViewRender::setMessageWarning("Droits limités !", "Vous n'avez pas la possibilité de modifier le formulaire...");
+
+	// L'utilisateur ne peux revenir qu'à la page précédente
+	$sBottom = "<div class=\"group-button\">
+					<button type=\"submit\" class=\"red left tooltip\" name=\"button\" value=\"fermer\" title=\"Retour à la page précédente\">Fermer</button>
+					<button type=\"reset\" class=\"right\" disabled=\"disabled\">Enregistrer</button>
+				</div>";
+}
+
+// Ajout du contenu au VIEW_BOTTOM
+ViewRender::addToFooter($sBottom);
+
+// Rendu final de la vue
+ViewRender::render();

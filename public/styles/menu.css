@@ -1,0 +1,100 @@
+@CHARSET "UTF-8";
+/**
+ *	Feuille de style du menu de l'application.
+ *
+ * @li Feuille de style principale
+ * @see main.css
+ *
+ * @author		durandcedric@avitheque.net
+ * @update		$LastChangedBy: durandcedric $
+ * @version		$LastChangedRevision: 2 $
+ * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ */
+
+/** MENU *****************************************************************************************/
+
+nav:hover											{
+	z-index:										5000;
+}
+
+nav ul												{
+	position:										fixed;
+	list-style:										none;
+	width:											100%;
+	z-index:										50;
+}
+
+nav ul.sub-menu										{
+	position:										relative;
+	left:											0;
+	margin-left:									0;
+	text-align:										center;
+	width:											auto;
+}
+
+nav a												{
+	background:										#009cb8;
+	display:										block;
+	min-width:										150px;
+	padding:										0 5px;
+	line-height:									44px;
+	text-decoration:								none;
+	font-size:										18px;
+	color:											#f0f0f0;
+	letter-spacing:									1px;
+}
+
+nav .selected > a,
+nav ul li:hover > a,
+nav a:hover											{
+	background:										#ffffff;
+	font-weight:									bold;
+	color:											#ff8e33;
+	letter-spacing:									3px;
+}
+
+nav li:hover										{
+	z-index:										501;
+}
+
+nav li:not(.selected) > a:hover						{
+	border:											1px solid #009cb8;
+}
+
+nav .selected > a,
+nav ul.sub-menu	li.selected:hover > a				{
+	background:										#237D9E;
+	color:											#A9FFEC;
+}
+
+nav ul.sub-menu	li.selected:hover > a				{
+	cursor:											default;
+}
+
+nav ul#ul-nav > li.selected > a {
+	border-radius: 5px;
+}
+
+#ul-nav > li										{
+	display:										block;
+	float:											left;
+	text-align:										center;
+}
+
+#ul-nav > li:hover > a:first-child	{
+	border-radius:									5px 5px 0 0;
+}
+
+#ul-nav li li										{
+	display:										none;
+	white-space:									nowrap;
+	border-radius:									0;
+}
+
+#ul-nav li:hover li									{
+	display:										block;
+}
+
+nav ul.sub-menu li:last-child a						{
+	border-radius:									0 0 5px 5px;
+}

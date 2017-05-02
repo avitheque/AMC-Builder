@@ -1,0 +1,53 @@
+<?php
+/**
+ * @brief	Validation
+ *
+ * Vue de validation du formulaire QCM.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ * 
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+
+//#################################################################################################
+// INTERFACE DE CRÉATION DU QUESTIONNAIRE
+//#################################################################################################
+
+// Initialisation du formulaire
+ViewRender::addToFormStart("<form action=\"#\" method=\"post\" name=\"validation\">");
+
+// Construction du formulaire
+$oFormulaire = new FormulaireHelper(true, false, false, false);
+
+// Création de l'entête du formulaire
+$sArticle = "<h2>
+				Validation d'un formulaire QCM
+				" . $oFormulaire->getCorrectionButton() . "
+			</h2>
+			<p>
+				Cette interface permet de valider le questionnaire QCM.
+			</p>";
+// Ajout du contenu au VIEW_MAIN
+ViewRender::addToMain($sArticle);
+
+// Zone du QCM injecté dans $_SESSION[VIEW_MAIN]
+ViewRender::addToMain($oFormulaire->render());
+
+
+//#################################################################################################
+// VALIDATION DU FORMULAIRE
+//#################################################################################################
+
+// Création des boutons du formulaire
+$sBottom = "<div class=\"group-button\">
+				<button type=\"submit\" class=\"blue confirm left tooltip\" name=\"button\" value=\"fermer\" title=\"Retour à la page précédente\" role=\"touche_F\">Fermer</button>
+				<button type=\"submit\" class=\"red tooltip confirm-delete\" name=\"button\" value=\"supprimer\" title=\"Supprimer le QCM\" role=\"touche_S\">Supprimer</button>
+				<button type=\"submit\" class=\"green right tooltip\" name=\"button\" value=\"valider\" title=\"Valider le QCM\" role=\"touche_V\">Valider</button>
+			</div>";
+ViewRender::addToFooter($sBottom);
+
+// Rendu final de la vue
+ViewRender::render();

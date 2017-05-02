@@ -1,0 +1,88 @@
+<?php
+/**
+ * @brief	Recherche de CANDIDAT.
+ *
+ * @li	Le contenu de cette page est injecté dans un formulaire MODAL via AJAX.
+ * @li	La bibliothèque jQuery est déjà active.
+ *
+ * Vue de recherche d'un candidat.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ * 
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+
+// Récupération de l'instance du singleton InstanceStorage permettant de gérer les échanges avec le contrôleur
+$oInstanceStorage	= InstanceStorage::getInstance();
+
+// Récupération de la liste des candidats
+$aListeCandidats	= $oInstanceStorage->getData('liste_candidats');
+
+// Construction du tableau
+$oCandidats			= new DatatableHelper("import_candidats", $aListeCandidats);
+$oCandidats->setClassColumn("align-left", array("libelle_court_grade", "nom_candidat", "prenom_candidat", "unite_candidat"));
+
+// Ajout de la valeur d'ordre du grade à la colonne [libelle_court_grade] masquée
+$oCandidats->prependValueIntoColumn("libelle_court_grade", "ordre_grade", "%03d", "hidden");
+
+// Personnalisation des noms de colonne
+$aColonnes			= array(
+	'libelle_court_grade'	=> "GRADE",
+	'nom_candidat'			=> "NOM",
+	'prenom_candidat'		=> "PRÉNOM",
+	'unite_candidat'		=> "UNITÉ",
+	'id_candidat'			=> "IDENTIFIANT"
+);
+$oCandidats->renameColumns($aColonnes, true);
+$oCandidats->addInputOnColumn("AJOUTER", "id_candidat", "candidat_id[]", "checkbox");
+
+//#################################################################################################
+// CODE HTML
+//#################################################################################################
+
+print "<section class=\"tabs\">
+			<ul>
+				<li><a href=\"#tabs-candidats\">Ajouter des candidats à partir d'une liste</a></li>
+				<li><a href=\"#tabs-import\">Importer à partir d'un fichier</a></li>
+			</ul>
+			
+			<div id=\"tabs-candidats\">
+				<fieldset id=\"liste\"><legend>Liste des candidats disponibles</legend>
+					" . $oCandidats->renderHTML() . "
+				</fieldset>
+				<hr class=\"blue\" />
+				<div class=\"center\">
+					<button type=\"button\" class=\"grey left margin-0 closeDialog\" name=\"button\" value=\"annuler_stage_candidat\">Annuler</button>
+					<button type=\"submit\" class=\"blue right margin-0\" name=\"button\" value=\"ajouter_stage_candidat\">Ajouter</button>
+				</div>
+			</div>
+			<div id=\"tabs-import\">
+				<fieldset id=\"import\" class=\"center\"><legend>Fichier au format CSV</legend>
+					<input type=\"file\" name=\"file_name\" value=\"\" />
+				</fieldset>
+				<hr class=\"blue\" />
+				<div class=\"center\">
+					<button type=\"button\" class=\"grey left margin-0 closeDialog\" name=\"button\" value=\"annuler_stage_candidat\">Annuler</button>
+					<button type=\"submit\" class=\"blue right margin-0\" name=\"button\" value=\"importer_stage_candidat\">Importer</button>
+				</div>
+			</div>
+		</section>";
+
+//#################################################################################################
+// JAVASCRIPT
+//#################################################################################################
+
+// JavaScript exécuté lors du chargement du contenu dans le MODAL
+print '<script type="texte/javascript">
+			// Fonctionnalité réalisée à la fin du chargement par le client
+			$("section#search").ready(function() {
+				// Activation du plugin jQuery Tabs
+				$(".tabs").tabs();
+				
+				// Activation du plugin jQuery DataTables avec tri du tableau par ordre de grade
+				$("#import_candidats").dataTable({language: DATATABLE_LANGUAGE, order: [[0, "desc"]], columnDefs: [{orderable: "", targets: 5}]});
+			});
+		</script>';

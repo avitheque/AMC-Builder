@@ -1,0 +1,76 @@
+<?php
+/**
+ * @brief	Test
+ *
+ * Vue javascript de développement de l'application.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ * 
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+
+// Récupération de l'instance du singleton InstanceStorage permettant de gérer les échanges avec le contrôleur
+$oInstanceStorage = InstanceStorage::getInstance();
+
+/**
+ * Procédure JavaScript permettant d'afficher d'un message au clic de la souris
+ * @param string message : texte à afficher au clic de la souris.
+ */
+$sScript = 'function afficher(message) {
+				if (typeof(message) != undefined) {
+					alert(message);	
+				}
+			}';
+
+// Compression du script avec JavaScriptPacker
+ViewRender::addToScripts($sScript);
+
+// Exemple de script à exécuter à l'évènement [onclick] sur le bouton
+$sExemple = "afficher('Test OK !');";
+
+// Présentation d'un article
+$sArticle = "<h2>Insertion JavaScript</h2>
+			<p>
+				Le contenu de cette page fait toujours partie du contrôleur <span class=\"strong\">DeveloppementController</span>.
+			</p>
+			<div>
+				<span class=\"titre\">Il est possible d'insérer un script JavaScript au chargement de la page via la méthode de classe <em>ViewRender::addToScripts()</em> :</span>
+				<section class=\"code\">
+					<div class=\"php\">&lt;?php</div>
+					<span class=\"commentaire\">
+						/**<br />
+						&nbsp;* Procédure JavaScript permettant d'afficher d'un message au clic de la souris<br />
+						&nbsp;* @param string message : texte à afficher.<br />
+						&nbsp;*/
+					</span>
+					<br />
+					\$sScript = <span class=\"texte\">'function afficher(message) {<br />
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (typeof(message) != undefined) {<br />
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;alert(message);<br />
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}';
+					</span><br />
+					<br />
+					<span class=\"commentaire\">// Insertion du script</span><br />
+					<span>ViewRender::addToScripts(\$sScript);</span><br />
+					<br />
+					<span class=\"commentaire\">// Ajout d'un bouton au contenu du VIEW_MAIN</span><br />
+					ViewRender::addToMain(<span class=\"texte\">\"&lt;a href=\\\"#\\\" class=\\\"button red right\\\" onclick=\\\"" . $sExemple . "\\\"><em>Cliquez sur le bouton...</em>&lt;/a&gt;\"</span>);
+				</section>
+			</div>
+			<p>
+				<a href=\"/developpement\" class=\"button blue left\">Retour à la page principale de <i>DeveloppementController</i>...</a>
+				<a href=\"#\" class=\"button red right\" onclick=\"" . $sExemple . "\"><em>Cliquez sur le bouton...</em></a>
+			</p>";
+
+// Ajout du contenu au VIEW_MAIN
+ViewRender::addToMain($sArticle);
+
+// Ajout de la feuille de style CSS
+ViewRender::linkFormulaireStyle('test.css');
+
+// Rendu final de la vue
+ViewRender::render();

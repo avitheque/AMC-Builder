@@ -1,0 +1,267 @@
+<?php
+/**
+ * @brief	Documentation destinée au(x) développeur(s).
+ *
+ * Vue principale de développement de l'application.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ * 
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+
+global $sArticle;
+// Initialisation du répertoire courant
+define("ARTICLES_PATH", dirname(__FILE__) . '/articles');
+
+// Récupération de l'instance du singleton InstanceStorage permettant de gérer les échanges avec le contrôleur
+$oInstanceStorage = InstanceStorage::getInstance();
+
+// Bouton [BAS DE PAGE]
+ViewRender::addToMain("<span id=\"top\"><a class=\"page-top\" href=\"#bottom\" title=\"Bas de page...\">&#8595;</a></span>");
+
+// Récupération de la variable par son nom
+$aConnexion = $oInstanceStorage->getData('connexion');
+
+// Présentation d'un article
+$sArticle = "<h2>Documentation de développement</h2>
+			<p>
+				Le contenu de cet article a pour but de présenter un ensemble non exhaustif de fonctionnalités. Cette documentation est destinée au(x) développeur(s) en charge de maintenir cette application.
+			</p>
+			<p>
+				<span class=\"strong\">Afin de profiter pleinement des exemples fournis, il vous est recommandé d'afficher votre navigateur en plein écran !</span>
+			</p>";
+
+
+// Initialisation d'un système d'onglets
+$sArticle .= "<section class=\"tabs\">
+				<ul>
+					<li><a href=\"#tabs-architecture\">Architecture</a></li>
+					<li><a href=\"#tabs-models\">Modèles</a></li>
+					<li><a href=\"#tabs-controllers\">Contrôleurs</a></li>
+					<li><a href=\"#tabs-views\">Vues</a></li>
+					<li><a href=\"#tabs-formulaires\">Formulaires</a></li>
+					<li><a href=\"#tabs-helpers\">Helpers</a></li>
+					<li><a href=\"#tabs-styles\">Style CSS</a></li>
+				</ul>";
+
+
+//=================================================================================================
+// ARCHITECTURE
+//=================================================================================================
+$sArticle .= "<div id=\"tabs-architecture\">";
+// Présentation de l'architecture
+require_once ARTICLES_PATH . "/architecture.php";
+$sArticle .= "</div>";
+
+
+//=================================================================================================
+// MODÈLES
+//=================================================================================================
+$sArticle .= "<div id=\"tabs-models\">";
+// Présentation de l'exploitation des modèles
+require_once ARTICLES_PATH . "/models.php";
+$sArticle .= "</div>";
+
+
+//=================================================================================================
+// CONTRÔLEURS
+//=================================================================================================
+$sArticle .= "<div id=\"tabs-controllers\">";
+// Présentation de l'exploitation des contrôleurs
+require_once ARTICLES_PATH . "/controllers.php";
+$sArticle .= "</div>";
+
+
+//=================================================================================================
+// VUES
+//=================================================================================================
+$sArticle .= "<div id=\"tabs-views\">";
+// Présentation de l'exploitation des vues
+require_once ARTICLES_PATH . "/views.php";
+$sArticle .= "</div>";
+
+
+//=================================================================================================
+// FORMULAIRES
+//=================================================================================================
+$sArticle .= "<div id=\"tabs-formulaires\">";
+// Présentation de l'exploitation des formulaires
+require_once ARTICLES_PATH . "/formulaires.php";
+$sArticle .= "</div>";
+
+
+//=================================================================================================
+// HELPERS
+//=================================================================================================
+
+// Initialisation de la liste à exploiter dans le Helper
+$aListeItem	= array(
+	array(
+		// Key		=> VALEUR DE LA COLONNE
+		'column_1'	=> "A1",
+		'column_2'	=> "B1",
+		'column_3'	=> "C1",
+		'column_4'	=> "D1",
+		'column_5'	=> "E1",
+		'date_debut'=> "1970-01-01",
+		'date_fin'	=> "1979-09-22"
+	),
+	array(
+		// Key		=> VALEUR DE LA COLONNE
+		'column_1'	=> "A2",
+		'column_2'	=> "B2",
+		'column_3'	=> "C2",
+		'column_4'	=> "D2",
+		'column_5'	=> "E2",
+		'date_debut'=> "1979-09-22",
+		'date_fin'	=> date("Y-m-d")
+	),
+	array(
+		// Key		=> VALEUR DE LA COLONNE
+		'column_1'	=> "A3",
+		'column_2'	=> "B3",
+		'column_3'	=> "C3",
+		'column_4'	=> "D3",
+		'column_5'	=> "E3",
+		'date_debut'=> date("Y-m-d"),
+		'date_fin'	=> "9999-12-31",
+	)
+);
+
+// Personnalisation des noms de colonnes
+$aTitreItem	= array(
+	// Key		=> TITRE DE LA COLONNE
+	'column_1'	=> "Titre A",
+	'column_2'	=> "Titre B",
+	'column_3'	=> "Titre C",
+	'column_4'	=> "Titre D",
+	'column_5'	=> "Titre E",
+	'date_debut'=> "Début",
+	'date_fin'	=> "Fin",
+);
+
+$sArticle .= "<div id=\"tabs-helpers\">";
+
+// Présentation de la variable $aTitreItem
+$sArticle .= "	<div class='justify width-45p right green'>Soit la variable <strong class='pointer italic'>\$aTitreItem</strong>
+ 					un tableau associatif entre les clés du tableau <strong class='italic blue'>\$aListeItem</strong>
+ 					et le libellé de colonne à afficher<br />
+					<br/>
+					<div id='hidden-aListe2' class='code black padding-H-20 hidden'>
+						<span class=\"commentaire\">// Contenu de la variable \$aTitreItem</span><br/>
+						<span class='variable'>\$aTitreItem</span> = " . DataHelper::debugArray($aTitreItem) . "
+					</div>
+				</div>";
+
+// Présentation de la variable $aListeItem
+$sArticle .= "	<div class='justify width-45p blue border-right-solid'>Soit la variable <strong class='italic'>\$aListeItem</strong>
+ 					un tableau BIDIMENTIONNEL à afficher<br />
+					<br/>
+					<div id='hidden-aListe1' class='code black padding-H-20 hidden-aListe hidden'>
+						<button onClick='$(\"#hidden-aListe1, #hidden-aListe2\").addClass(\"hidden\");$(\"#visible-aListe\").removeClass(\"hidden\");'>Masquer le code</button><br />
+						<br/>
+						<span class=\"commentaire\">// Contenu de la variable \$aListeItem</span><br />
+						<span class='variable'>\$aListeItem</span> = " . DataHelper::debugArray($aListeItem) . "
+					</div>
+					<div id='visible-aListe' class='code padding-H-20 transparent'>
+						<button onClick='$(\"#visible-aListe\").addClass(\"hidden\");$(\"#hidden-aListe1, #hidden-aListe2\").removeClass(\"hidden\");'>Voire le code</button>
+					</div>
+				</div>
+				<br />
+				<div class='max-width'>
+					<section class='accordion'>";
+
+//=================================================================================================
+// @todo	DATATABLEHELPER
+
+// Présentation de l'exploitation de l'objet DatatableHelper
+$sArticle .= "			<h3 class=\"item-title\">DatatableHelper</h3>
+						<div class=\"item-content auto-height\" id=\"article-datatable\">";
+							// Ajout de l'article relatif à DatatableHelper
+							require_once ARTICLES_PATH . "/DatatableHelper.php";
+$sArticle .= "			</div>";
+
+//=================================================================================================
+// @todo	GALLERYHELPER
+
+// Présentation de l'exploitation de l'objet GalleryHelper
+$sArticle .= "			<h3 class=\"item-title\">GalleryHelper</h3>
+						<div class=\"item-content auto-height\" id=\"article-gallery\">";
+							// Ajout de l'article relatif à GalleryHelper
+							require_once ARTICLES_PATH . "/GalleryHelper.php";
+$sArticle .= "			</div>";
+
+//=================================================================================================
+// @todo	PLANNINGHELPER
+
+// Présentation de l'exploitation de l'objet PlanningHelper
+$sArticle .= "			<h3 class=\"item-title\">PlanningHelper</h3>
+						<div class=\"item-content auto-height\" id=\"article-planning\">";
+							// Ajout de l'article relatif à PlanningHelper
+							require_once ARTICLES_PATH . "/PlanningHelper.php";
+$sArticle .= "			</div>";
+
+//=================================================================================================
+// @todo	TABLEHELPER
+
+// Présentation de l'exploitation de l'objet TableHelper
+$sArticle .= "			<h3 class=\"item-title\">TableHelper</h3>
+						<div class=\"item-content auto-height\" id=\"article-table\">";
+							// Ajout de l'article relatif à TableHelper
+							require_once ARTICLES_PATH . "/TableHelper.php";
+$sArticle .= "			</div>";
+
+//=================================================================================================
+// @todo	FIN DE L'ACCORDÉON
+
+$sArticle .= "		</section>
+				</div>
+			</div>";
+
+
+//=================================================================================================
+// STYLE CSS
+//=================================================================================================
+$sArticle .= "<div id=\"tabs-styles\">";
+// Présentation de l'exploitation des boutons
+require_once ARTICLES_PATH . "/boutons.php";
+
+// Séparateur vertical
+$sArticle .= "<hr />";
+
+// Présentation de l'exploitation des tableaux
+require_once ARTICLES_PATH . "/tableaux.php";
+$sArticle .= "</div>";
+
+// Ajout du contenu au VIEW_MAIN
+ViewRender::addToMain($sArticle);
+
+// BOUTON [HAUT DE PAGE]
+ViewRender::addToMain("<span id=\"bottom\"><a class=\"page-bottom\" href=\"#top\" title=\"Haut de page...\">&#8593;</a></span>");
+
+//#################################################################################################
+// VALIDATION DU FORMULAIRE
+//#################################################################################################
+
+// Ajout d'un bouton si l'utilisateur est Webmaster
+$sWebmaster	= "";
+if ($aConnexion['webmaster']) {
+	$sWebmaster = "<a href=\"/developpement/phpinfo\" class=\"button green\" target=\"_blank\">PHPInfo</a>
+					<span class=\"margin-left-50 margin-right-50\">&nbsp;</span>";
+}
+
+// Présentation d'un bouton en bas, dans la barre des tâches de la page grâce au CSS
+$sBottom = "<div class=\"group-button\">
+				$sWebmaster
+				<a href=\"" . JQUERY_PATH . "/" .JQUERY_UI_VERSION . "\" class=\"button green\" target=\"_blank\">Bibliothèque jQuery</a>
+			</div>";
+ViewRender::addToFooter($sBottom);
+
+// Ajout de la feuille de style CSS
+ViewRender::linkFormulaireStyle('test.css');
+
+// Rendu final de la vue
+ViewRender::render();

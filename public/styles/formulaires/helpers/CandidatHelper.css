@@ -1,0 +1,13 @@
+@CHARSET "UTF-8";
+/**
+ *	Feuille de style du formulaire CANDIDAT.
+ *
+ * @author		durandcedric@avitheque.net
+ * @update		$LastChangedBy: durandcedric $
+ * @version		$LastChangedRevision: 2 $
+ * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ */
+
+fieldset#general label		{
+	min-width:				200px;
+}

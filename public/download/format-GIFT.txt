@@ -1,0 +1,20 @@
+// Exemple de question avec un seul et unique choix
+::Q001::Quelle est la capitale de l'Australie ? {
+	=Canberra #Bonne réponse, donne la totalité des points
+	~Sydney #Mauvaise réponse
+	~Cranberry #Une autre mauvaise réponse !
+}
+
+// Exemple de question avec choix multiple
+::Q002::Parmi les années suivantes, lesquels sont bissextiles ? {
+	~%-50%1998 #Réponse fausse, retire 50% des points !
+	~%-50%2001 #Réponse fausse, retire 50% des points !
+	=%50%2012 #Réponse juste, donne 50% des points
+	=%50%2016 #Réponse juste, donne également 50% des points
+}
+
+// Exemple de question Vrai/Faux
+::Q003::Une journée est composée de 24 heures ? {TRUE #La bonne réponse est dans la question !}
+
+// Autre forme possible pour une question Vrai/Faux
+::Q004::3 x 8 = 36 {F #La bonne réponse était 24 !}

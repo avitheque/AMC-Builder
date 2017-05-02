@@ -1,0 +1,120 @@
+<?php
+/**
+ * @brief	Importation
+ *
+ * Vue principale de l'importation d'un formulaire QCM.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ * 
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+
+// Initialisation du répertoire courant
+define("ARTICLES_PATH", dirname(__FILE__) . '/articles');
+
+// Récupération de l'instance du singleton InstanceStorage permettant de gérer les échanges avec le contrôleur
+$oInstanceStorage 	= InstanceStorage::getInstance();
+
+// Nom de session du QCM
+$sSessionNameSpace	= $oInstanceStorage->getData('SESSION_NAMESPACE');
+
+// Données du QCM
+$aQCM				= $oInstanceStorage->getData($sSessionNameSpace);
+
+// Initialisation du formulaire
+ViewRender::addToFormStart("<form action=\"#\" method=\"post\" name=\"importation\" enctype=\"multipart/form-data\">");
+
+// Article de la page
+$sArticle = "<article id=\"article-importation\">
+				<h2>Importation d'un fichier texte</h2>
+				<p>
+					Cette interface permet d'importer un formulaire QCM à partir un fichier texte au format <span class='tabs-link strong italic pointer' for='tabs-GIFT'>GIFT</span>.
+				</p>
+				<br />
+				<section class=\"tabs\">
+					<ul id='tabs'>
+						<li><a href=\"#tabs-importer\">Importer</a></li>
+						<li><a href=\"#tabs-GIFT\">Le format GIFT</a></li>
+					</ul>";
+
+// Nom du questionnaire
+$sNomFormulaire		= DataHelper::get($aQCM,	'formulaire_titre',		DataHelper::DATA_TYPE_STR,	null);
+
+// Fonctionnalité réalisée si le nom du formulaire est trop long
+if (strlen($sNomFormulaire) > FormulaireManager::FORMULAIRE_NOM_MAXLENGTH) {
+	$sTitre = DataHelper::subString($sNomFormulaire, 0, FormulaireManager::FORMULAIRE_NOM_MAXLENGTH - 3);
+}
+
+// Pénalité des questions du formulaire
+$pPenaliteDefaut	= DataHelper::get($aQCM,	'formulaire_penalite',	DataHelper::DATA_TYPE_INT_ABS,  FormulaireManager::PENALITE_DEFAUT);
+
+// Attente d'une réponse stricte
+$bStrictFormulaire	= DataHelper::get($aQCM,	'formulaire_strict',	DataHelper::DATA_TYPE_BOOL,		FormulaireManager::QUESTION_STRICTE_IMPORT);
+$sStrictChecked		= $bStrictFormulaire	? "checked=\"checked\""	: "";
+$sClassFacteur		= $bStrictFormulaire	? "hidden"				: "";
+
+$sArticle .= "		<div id=\"tabs-importer\">
+						<fieldset class=\"center width-80p margin-auto-H margin-top-3p\">
+							<legend>Généralités</legend>
+							<ol>
+								<li>
+									<input type=\"checkbox\" id=\"idStricteCheckboxDefaut\" name=\"formulaire_strict\" value=\"true\" $sStrictChecked />
+									<label for=\"idStricteCheckboxDefaut\">Réponses strictes attendues aux questions par défaut (tout ou rien)</label>
+								</li>
+								<li id=\"idPenalite\" class=\"" . $sClassFacteur . "\">
+									<label for=\"idPenaliteDefaut\" class=\"strong\">Facteur de pénalité par défaut pour les questions à choix multiple</label>
+									<input maxlength=3 type=\"number\" id=\"idPenaliteDefaut\" class=\"numeric center width-50\" name=\"formulaire_penalite\" value=\"" . $pPenaliteDefaut . "\" />
+									<label for=\"idPenaliteDefaut\" class=\"strong no-margin\">%</label>
+								</li>
+							</ol>
+						</fieldset>
+
+						<p class=\"center\">
+							<input type=\"file\" name=\"file_name\" value=\"\"/>
+							<span class=\"ui-icon ui-icon-pencil inline-block absolute margin-top-5\">&nbsp;</span>
+						</p>
+						<div align=\"center\" class=\"max-width\">
+							<button type=\"submit\" class=\"blue tooltip\" name=\"button\" value=\"importer\" title=\"Importer dans un nouveau QCM\">Importer</button>
+						</div>
+					</div>";
+
+//=================================================================================================
+// FORMAT GIFT
+//=================================================================================================
+$sArticle .= "		<div id=\"tabs-GIFT\"><a class='button small green right' href='/downloader?file=format-GIFT.txt' target='_blank'>Télécharger le fichier</a>";
+// Présentation de l'architecture
+require_once ARTICLES_PATH . "/format-GIFT.php";
+$sArticle .= "		</div>";
+
+//=================================================================================================
+// FINALISATION DE L'ARTICLE
+//=================================================================================================
+$sArticle .= "		</section>
+				</article>";
+
+// Ajout du contenu au VIEW_FORM_START pour l'exploitation du MODAL
+ViewRender::addToFormStart($sArticle);
+
+// Ajout de la feuille de style
+ViewRender::linkFormulaireStyle("importation.css");
+
+// JavaScript à insérer dans la page
+$sJQuery = '// Fonctionnalité réalisée lors de la sélection des réponses strictes
+			$("#idStricteCheckboxDefaut").click(function() {
+				if ($(this).is(":checked")) {
+					// Masquage du facteur de pénalité
+					$("li#idPenalite").addClass("hidden");
+				} else {
+					// Affichage du facteur de pénalité
+					$("li#idPenalite").removeClass("hidden");
+				}
+			});';
+
+// Compression du script avec JavaScriptPacker
+ViewRender::addToJQuery($sJQuery);
+
+// Rendu final de la vue
+ViewRender::render();
