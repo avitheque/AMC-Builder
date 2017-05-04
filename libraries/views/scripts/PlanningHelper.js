@@ -945,16 +945,7 @@ function initPlanning(MD5) {
 		}
 	});
 
-	// Suppression de tous l'indicateur de survol par défaut pour tout le PLANNING
-	/*
-	$("td[class*=day-]", "section#" + MD5).mouseover(function() {
-		var role = $(this).attr("role");
-		
-		$("th[class*=week-]", "section#" + MD5).removeClass("hover");
-		$("th[class*=week-]", "section#" + MD5).addClass("hover");
-	});// Action au survol de l'élément du CALENDAR
-	*/
-	
+	// Mise en évidence de la semaine au survol du PLANNING
 	$("td[class*=day-]", "section#" + MD5).mouseenter(function(event) {
 		var role = $(this).attr("role");
 		$("th." + role, "section#" + MD5).addClass("hover");

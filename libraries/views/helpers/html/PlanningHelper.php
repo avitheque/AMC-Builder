@@ -589,7 +589,13 @@ class PlanningHelper {
 		// Construction du planning du jour
 		$this->_semaine[$nIdSemaine][$nIdJour]	= $this->_buildProgression($sClassName, $IdProgression, $dDatePlanning, $aProgression);
 	}
-	
+
+	/**
+	 * Construction du planning sous forme de PROGRESSION horizontale.
+	 * 
+	 * @param	string		$sFormat		: format de construction.
+	 * @return	void
+	 */
 	private function _getProgressionStandard($sFormat = "%s") {
 		foreach ($this->_semaine as $nIdSemaine => $aProgressionHTML) {
 			// Construction de la progression avec la SEMAINE
@@ -600,7 +606,9 @@ class PlanningHelper {
 	}
 	
 	/**
-	 * Construction du tableau
+	 * Construction du planning sous forme de TABLEAU.
+	 * 
+	 * @return	void
 	 */
 	private function _getProgressionTable() {
 			// Calcul de la largeur de chaque volume horaire
