@@ -10,8 +10,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 15 $
- * @since		$LastChangedDate: 2017-04-29 21:33:00 +0200 (sam., 29 avr. 2017) $
+ * @version		$LastChangedRevision: 26 $
+ * @since		$LastChangedDate: 2017-05-04 19:34:05 +0200 (Thu, 04 May 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -476,7 +476,7 @@ class PlanningHelper {
 			$this->_planning_jour_id	= date("N", $dDatePlanning);
 			$sLibelleJour				= $this->_planning_semaine[$this->_planning_jour_id];
 			$sLibelleDate				= date('d/m/Y', $dDatePlanning);
-	
+
 			// Libellé du jour
 			$sTitreJour			= strtoupper($sLibelleJour) . " " . $sLibelleDate;
 			if ($this->_planning_format == self::FORMAT_CALENDAR) {
@@ -562,7 +562,7 @@ class PlanningHelper {
 
 	/**
 	 * @brief	Construction de la progression
-	 * 
+	 *
 	 * @li	Ajout de la progression à la semaine.
 	 *
 	 * @param	string	$IdProgression		: identifiant de la CELLULE.
@@ -578,11 +578,11 @@ class PlanningHelper {
 
 		// Calcul de la largeur de chaque volume horaire
 		$this->_planning_jour_width				= intval(self::PLANNING_MAX_WIDTH / ($this->_planning_fin - $this->_planning_debut));
-		
+
 		// Détermination du nombre de jours dans le même identifiant de semaine
 		$nIdSemaine								= date('W', $dDatePlanning);
 		$nIdJour								= date("N", $dDatePlanning);
-		
+
 		// Affectation de la CLASSE selon si le jour est férié
 		$sClassName								= in_array($IdProgression, $this->_planning_deprecated_dates) ? self::PLANNING_HOLIDAY_CLASSNAME : self::PLANNING_DEFAULT_CLASSNAME;
 
@@ -591,8 +591,8 @@ class PlanningHelper {
 	}
 
 	/**
-	 * Construction du planning sous forme de PROGRESSION horizontale.
-	 * 
+	 * @brief	Construction du planning sous forme de PROGRESSION horizontale.
+	 *
 	 * @param	string		$sFormat		: format de construction.
 	 * @return	void
 	 */
@@ -604,17 +604,17 @@ class PlanningHelper {
 			}
 		}
 	}
-	
+
 	/**
-	 * Construction du planning sous forme de TABLEAU.
-	 * 
+	 * @brief	Construction du planning sous forme de TABLEAU.
+	 *
 	 * @return	void
 	 */
 	private function _getProgressionTable() {
 			// Calcul de la largeur de chaque volume horaire
 			$fDayWidth			= number_format(self::PLANNING_WIDTH_RATIO / $this->_planning_duree, 2);
 			$sDiaryStyle		= "style=\"width: " . $fDayWidth . "%\"";
-			
+
 			// Construction du HEAD
 			$this->planning		.= "	<table class=\"max-width\" cellspacing=0 cellpadding=0>
 											<tbody>
@@ -623,9 +623,9 @@ class PlanningHelper {
 				// Initialisation des éléments de la SEMAINE
 				$sTitre			= $this->_planning_format == self::FORMAT_PROGRESSION	? "Semaine $nIdSemaine"	: $nIdSemaine;
 				$sClassTitre	= $this->_planning_format == self::FORMAT_PROGRESSION	? "vertical"			: "horizontal";
-				
+
 				// Construction du numéro de SEMAINE
-				$this->planning	.= "				<th class=\"center no-wrap week-$nIdSemaine ui-widget-content\" colspan=\"" . count($aProgressionHTML) . "\">$sTitre</th>";
+				$this->planning	.= "				<th class=\"week-$nIdSemaine center $sClassTitre no-wrap ui-widget-content\" colspan=\"" . count($aProgressionHTML) . "\">$sTitre</th>";
 			}
 			// Fin du HEAD
 			$this->planning		.= "			</tr>";
@@ -636,13 +636,12 @@ class PlanningHelper {
 				// Construction de la progression avec la SEMAINE
 				foreach ($aProgressionSemaine as $nIdJour => $sProgressionHTML) {
 					$this->planning	.= "			<td role=\"week-$nIdSemaine\" class=\"day-$nIdJour center\" $sDiaryStyle>" . $sProgressionHTML . "</td>";
-					$nCount++;
 				}
 			}
 
 			// Création d'une entête à la PROGRESSION
 			$this->planning		.= "				<td class=\"left no-wrap hidden\"><br />" . $this->_buildProgression() . "</td>";
-			
+
 			// Fin de la construction du BODY
 			$this->planning		.= "			</tr>
 											</tbody>
@@ -696,13 +695,13 @@ class PlanningHelper {
 				// Identifiant du jour de la semaine sous la forme [Y-m-d]
 				$aJours[]		= date('Y-m-d', mktime(0, 0, 0, $this->_planning_mois, ($this->_planning_jour + $i), $this->_planning_annee));
 			}
-			
+
 			foreach ($aJours as $IdProgression) {
 				/**
 				 * @todo	CONTENU DE LA PROGRESSION
 				 */
 				$aProgression	= array();
-			
+
 				// Récupération de la progression selon l'identifiant du jour
 				$this->_buildProgressionByWeek($IdProgression, $aProgression);
 			}
@@ -718,7 +717,7 @@ class PlanningHelper {
 				// Construction de la progression
 				$this->_getProgressionStandard();
 			}
-			
+
 
 			// Finalisation de la zone de progression
 			$this->planning		.= "</section>";

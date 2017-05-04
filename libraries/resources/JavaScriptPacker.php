@@ -72,12 +72,13 @@
  * ----------------------------------------------------------------------
  *
  * @name		JavaScriptPacker
- * @package		Helpers
+ * @category	Resource
+ * @package		Main
  * @subpackage	Framework
  * @author		Dean Edwards
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 19 $
- * @since		$LastChangedDate: 2017-04-30 15:27:06 +0200 (dim., 30 avr. 2017) $
+ * @version		$LastChangedRevision: 26 $
+ * @since		$LastChangedDate: 2017-05-04 19:34:05 +0200 (Thu, 04 May 2017) $
  */
 class JavaScriptPacker {
 	// constants

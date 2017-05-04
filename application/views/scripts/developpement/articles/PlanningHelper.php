@@ -4,7 +4,7 @@
  * User: durandcedric
  * Date: 25/09/16
  * Time: 11:43
- * 
+ *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
@@ -25,7 +25,7 @@ $oPlanningHelper->setModalAction("/planning/tache");
 // Ajout du Datatable à l'article
 $sArticle .= "<fieldset class='padding-H-20'>
 							<legend>Exploitation de l'objet <span class='strong italic'>PlanningHelper</span> avec le rendu <span class='strong red italic'>PlanningHelper::</span><span class='strong italic'>FORMAT_PROGRESSION</span></legend>
-							" . $oPlanningHelper->renderHTML() . "<br/>
+							" . $oPlanningHelper->renderHTML() . "
 							<p id='hidden-PlanningHelper' class='code padding-20 hidden'>
 								<button onClick='$(\"#hidden-PlanningHelper\").addClass(\"hidden\");$(\"#visible-PlanningHelper\").removeClass(\"hidden\");'>Masquer le code</button><br />
 								<br/>
@@ -63,7 +63,7 @@ $oPlanningCalendar->setModalAction("/planning/tache");
 // Ajout du Datatable à l'article
 $sArticle .= "<fieldset class='padding-H-20'>
 							<legend>Exploitation de l'objet <span class='strong italic'>PlanningHelper</span> avec le rendu <span class='strong red italic'>PlanningHelper::</span><span class='strong italic'>FORMAT_CALENDAR</legend>
-							" . $oPlanningCalendar->renderHTML() . "<br /><br />
+							" . $oPlanningCalendar->renderHTML() . "
 							<p id='hidden-PlanningHelper-Calendar' class='code padding-20 hidden'>
 								<button onClick='$(\"#hidden-PlanningHelper-Calendar\").addClass(\"hidden\");$(\"#visible-PlanningHelper-Calendar\").removeClass(\"hidden\");'>Masquer le code</button><br />
 								<br/>

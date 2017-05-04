@@ -4,7 +4,7 @@
  * User: durandcedric
  * Date: 25/09/16
  * Time: 11:43
- * 
+ *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
@@ -24,7 +24,7 @@ $oTableau	= new TableHelper("TableHelper-simple", $aListeItem);
 // Ajout du tableau à l'article
 $sArticle .= "	<fieldset class='padding-H-20'>
 					<legend>Exploitation de l'objet <span class='strong italic'>TableHelper</span> simple</legend>
-					" . $oTableau->renderHTML() . "<br />
+					" . $oTableau->renderHTML() . "
 					<p id='hidden-simple' class='code padding-20 hidden'>
 						<button onClick='$(\"#hidden-simple\").addClass(\"hidden\");$(\"#visible-simple\").removeClass(\"hidden\");''>Masquer le code</button><br />
 						<br/>
