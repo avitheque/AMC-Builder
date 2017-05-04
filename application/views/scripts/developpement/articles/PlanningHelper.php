@@ -44,7 +44,7 @@ $sArticle .= "<fieldset class='padding-H-20'>
 								<span class='native'>print</span> <span class='variable'>\$oPlanningHelper</span>->renderHTML();
 							</p>
 							<p id='visible-PlanningHelper' class='code padding-H-20 transparent'>
-								<button onClick='$(\"#visible-PlanningHelper\").addClass(\"hidden\");$(\"#hidden-PlanningHelper\").removeClass(\"hidden\");'>Voire le code</button>
+								<button onClick='$(\"#visible-PlanningHelper\").addClass(\"hidden\");$(\"#hidden-PlanningHelper\").removeClass(\"hidden\");'>Voir le code</button>
 							</p>
 						</fieldset>
 						<hr class=\"blue\"/>";
@@ -82,6 +82,6 @@ $sArticle .= "<fieldset class='padding-H-20'>
 								<span class='native'>print</span> <span class='variable'>\$oPlanningCalendar</span>->renderHTML();
 							</p>
 							<p id='visible-PlanningHelper-Calendar' class='code padding-H-20 transparent'>
-								<button onClick='$(\"#visible-PlanningHelper-Calendar\").addClass(\"hidden\");$(\"#hidden-PlanningHelper-Calendar\").removeClass(\"hidden\");'>Voire le code</button>
+								<button onClick='$(\"#visible-PlanningHelper-Calendar\").addClass(\"hidden\");$(\"#hidden-PlanningHelper-Calendar\").removeClass(\"hidden\");'>Voir le code</button>
 							</p>
 						</fieldset>";

@@ -226,6 +226,6 @@ $sArticle .= "	<fieldset class='padding-H-20'>
 						&lt;/table&gt;</strong>
 					</div>
 					<p id='visible-tableau' class='code padding-H-20 transparent'>
-						<button onClick='$(\"#visible-tableau\").addClass(\"hidden\");$(\"#hidden-tableau\").removeClass(\"hidden\");'>Voire le code</button>
+						<button onClick='$(\"#visible-tableau\").addClass(\"hidden\");$(\"#hidden-tableau\").removeClass(\"hidden\");'>Voir le code</button>
 					</p>
 				</fieldset>";

@@ -34,8 +34,9 @@
 
 /* CIBLE - RENDU SOUS FORME DE CALENDRIER */
 .calendar												{ display: inline-flex; }
-.calendar .diary										{ display: table; float: left; margin: 5px 0; padding-top: 2px; }
+.calendar .diary										{ display: table; float: left; }
 .calendar .diary dt										{ padding-top: 2px; margin-bottom: 2px; }
+.calendar .diary h3										{ font-weight: normal; }
 .calendar .planning-item								{ min-height: 20px; }
 .calendar .planning										{ display: list-item; min-height: 0; height: 22px; width: 100%; margin: 0; padding: 0; border: 1px solid #c5dbec; }
 .calendar .planning ul									{ border: none; }
@@ -74,7 +75,7 @@ main .planning-item li.item								{ position: absolute; }
 
 
 /* CIBLE - Intéractivité avec l'utilisateur */
-dl.hover												{ background: white; color: orange; border: 1px solid rgba(44, 56, 194, 1); }
+dl.hover												{ background: white; color: orange; border: 1px solid rgba(44, 56, 194, 1); z-index: 10; }
 dl.hover dt	 											{ font-weigth: bold; }
 dl.hover dd.planning:not(.set)					 	 	{ border-top-color: transparent; border-right: 0; border-bottom-color: transparent; border-left: 0; }
 dl.hover dd.planning:not(.ui-state-disabled):not(.set)	{ background: rgba(0, 255, 0, 0.3); }
@@ -82,6 +83,14 @@ dl.hover dd.planning:not(.ui-state-disabled):not(.set)	{ background: rgba(0, 255
 .planning:hover h4										{ text-shadow: 0 0 2px orange; }
 a.ui-draggable-handle:active,
 a.ui-icon-pin-w											{ cursor: move !important; }
+
+
+/* SOURCE / CIBLE - Apparence de l'élément au format TABLEAU */
+.calendar table th										{ background: #c5dbec; color: #2e6e9e; border: 1px solid #3c75bf; margin: 0; padding: 0; }
+.calendar table th.hover								{ background: white; color: orange; border: 1px solid orange; z-index: 10; }
+.calendar table td										{ margin: 0; padding: 0; }
+.calendar table td.day-7								{ padding-right: 5px; }
+.calendar table td dl									{ width: 100%; margin: 0; padding: 0; }
 
 
 /* SOURCE / CIBLE - Apparence de l'élément au format CALENDRIER */

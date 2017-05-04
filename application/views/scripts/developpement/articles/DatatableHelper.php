@@ -48,6 +48,6 @@ $sArticle .= "<fieldset class='padding-H-20'>
 						<span class=\"native\">print</span> <span class=\"variable\">\$oDataTable</span>->renderHTML();
 					</p>
 					<p id='visible-DatatableHelper' class='code padding-H-20 transparent'>
-						<button onClick='$(\"#visible-DatatableHelper\").addClass(\"hidden\");$(\"#hidden-DatatableHelper\").removeClass(\"hidden\");'>Voire le code</button>
+						<button onClick='$(\"#visible-DatatableHelper\").addClass(\"hidden\");$(\"#hidden-DatatableHelper\").removeClass(\"hidden\");'>Voir le code</button>
 					</p>
 				</fieldset>";

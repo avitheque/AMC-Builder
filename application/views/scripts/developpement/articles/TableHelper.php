@@ -35,7 +35,7 @@ $sArticle .= "	<fieldset class='padding-H-20'>
 						<span class=\"native\">print</span> <span class=\"variable\">\$oTableau</span>->renderHTML();
 					</p>
 					<p id='visible-simple' class='code padding-H-20 transparent'>
-						<button onClick='$(\"#visible-simple\").addClass(\"hidden\");$(\"#hidden-simple\").removeClass(\"hidden\");'>Voire le code</button>
+						<button onClick='$(\"#visible-simple\").addClass(\"hidden\");$(\"#hidden-simple\").removeClass(\"hidden\");'>Voir le code</button>
 					</p>
 				</fieldset><hr />";
 
@@ -67,7 +67,7 @@ $sArticle .= "	<fieldset class='padding-H-20'>
 						<span class=\"native\">print</span> <span class=\"variable\">\$oTableau</span>->renderHTML();
 					</p>
 					<p id='visible-renameColumns' class='code padding-H-20 transparent'>
-						<button onClick='$(\"#visible-renameColumns\").addClass(\"hidden\");$(\"#hidden-renameColumns\").removeClass(\"hidden\");'>Voire le code</button>
+						<button onClick='$(\"#visible-renameColumns\").addClass(\"hidden\");$(\"#hidden-renameColumns\").removeClass(\"hidden\");'>Voir le code</button>
 					</p>
 				</fieldset><hr />";
 
@@ -105,7 +105,7 @@ $sArticle .= "	<fieldset class='padding-H-20'>
 						<span class=\"native\">print</span> <span class=\"variable\">\$oTableau</span>->renderHTML();
 					</p>
 					<p id='visible-removeColumn' class='code padding-H-20 transparent'>
-						<button onClick='$(\"#visible-removeColumn\").addClass(\"hidden\");$(\"#hidden-removeColumn\").removeClass(\"hidden\");'>Voire le code</button>
+						<button onClick='$(\"#visible-removeColumn\").addClass(\"hidden\");$(\"#hidden-removeColumn\").removeClass(\"hidden\");'>Voir le code</button>
 					</p>
 				</fieldset>";
 

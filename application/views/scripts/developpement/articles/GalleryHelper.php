@@ -108,6 +108,6 @@ $sArticle .= "<fieldset class='padding-H-20'>
 						<span class=\"native\">print</span> <span class=\"variable\">\$oGallery</span>->renderHTML();
 					</p>
 					<p id='visible-GalleryHelper' class='code padding-H-20 transparent'>
-						<button onClick='$(\"#visible-GalleryHelper\").addClass(\"hidden\");$(\"#hidden-GalleryHelper\").removeClass(\"hidden\");'>Voire le code</button>
+						<button onClick='$(\"#visible-GalleryHelper\").addClass(\"hidden\");$(\"#hidden-GalleryHelper\").removeClass(\"hidden\");'>Voir le code</button>
 					</p>
 				</fieldset>";
