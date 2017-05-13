@@ -78,7 +78,7 @@
  * @author		Dean Edwards
  * @update		$LastChangedBy: durandcedric $
  * @version		$LastChangedRevision: 26 $
- * @since		$LastChangedDate: 2017-05-04 19:34:05 +0200 (Thu, 04 May 2017) $
+ * @since		$LastChangedDate: 2017-05-04 19:34:05 +0200 (jeu., 04 mai 2017) $
  */
 class JavaScriptPacker {
 	// constants

@@ -2,31 +2,31 @@
 # AMC-BUILER
 # amc-builder/documentation/BDD/_LISEZ-MOI_.txt
 #
-# Cette documentation est succeptible d'évoluer avec le temps...
-# Merci pour votre compréhension.
-# DURAND Cédric
+# Cette documentation est succeptible d'Ã©voluer avec le temps...
+# Merci pour votre comprÃ©hension.
+# DURAND CÃ©dric
 # durandcedric@avitheque.net
 #
-# INSTALLATION DE LA BASE DE DONNÉES
+# INSTALLATION DE LA BASE DE DONNÃ‰ES
 ###############################################################################
 
-Plusieurs scripts sont présentés dans le répertoire à installer dans l'ordre :
+Plusieurs scripts sont prÃ©sentÃ©s dans le rÃ©pertoire Ã  installer dans l'ordre :
     - 01_structure.sql      : structure de base ;
-    - 02_referentiel.sql    : référentiel de l'application ;
-    - 03_demo.sql           : données de démonstration avec utilisateurs ;
-    - 04_exemple.sql        : exemple de formulaire préchargé.
+    - 02_referentiel.sql    : rÃ©fÃ©rentiel de l'application ;
+    - 03_demo.sql           : donnÃ©es de dÃ©monstration avec utilisateurs ;
+    - 04_exemple.sql        : exemple de formulaire prÃ©chargÃ©.
 
-# IL N'EST PAS NÉCESSAIRE D'INTÉGRER TOUS LES SCRIPTS...
+# IL N'EST PAS NÃ‰CESSAIRE D'INTÃ‰GRER TOUS LES SCRIPTS...
 # Seul le fichier `01_structure.sql` est vital !
-    
-Le fichier `phpmyadmin-MCD.sql` permet d'intégrer le projet dans PhpMyAdmin et
-ainsi de pouvoir bénéficier de la présentation du MCD configurée comme dans la
-capture présente dans le fichier `00_MCD.png`.
 
-Après avoir intégré le premier script `01_structure.sql`, les informations de
-connexion à l'application sont les suivantes pour le profil [Webmaster] :
+Le fichier `phpmyadmin-MCD.sql` permet d'intÃ©grer le projet dans PhpMyAdmin et
+ainsi de pouvoir bÃ©nÃ©ficier de la prÃ©sentation du MCD configurÃ©e comme dans la
+capture prÃ©sente dans le fichier `00_MCD.png`.
+
+AprÃ¨s avoir intÃ©grÃ© le premier script `01_structure.sql`, les informations de
+connexion Ã  l'application sont les suivantes pour le profil [Webmaster] :
     - Login : webmaster
     - Pass  : demo
 
 Le Webmaster peut alors ajouter de nouveaux utilisateurs.
-Pour des raisons de sécurité, il est conseillé de changer le mot de passe.
+Pour des raisons de sÃ©curitÃ©, il est conseillÃ© de changer le mot de passe.

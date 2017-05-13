@@ -14,7 +14,7 @@ require_once FW_HELPERS . "/fpdf/fpdf.php";
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
  * @version		$LastChangedRevision: 24 $
- * @since		$LastChangedDate: 2017-04-30 20:38:39 +0200 (Sun, 30 Apr 2017) $
+ * @since		$LastChangedDate: 2017-04-30 20:38:39 +0200 (dim., 30 avr. 2017) $
  * @see			{ROOT_PATH}/libraries/helpers/fpdf.php
  * 
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)

@@ -39,8 +39,8 @@ if (typeof(PLANNING_ITEM) == 'undefined') {
 	// Constantes du MODAL
 	var MODAL_MD5_PREFIXE		= "search-content-";
 
-	// Constantes du PLANNING
-	var PLANNING_ITEM			= new Array();
+	// Constantes de gestion du PLANNING
+	var PLANNING				= new Array();
 	var PLANNING_MD5_PREFIXE	= "planning-item-";
 	var PLANNING_ITEM_REGEXP	= /^planning-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]+$/;
 	var PLANNING_ITEM_FACTEUR	= 0.65;
@@ -59,70 +59,6 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 //=================================================================================================
 
 /**
- * Déclaration du planning
- */
-function Planning(id_planning) {
-	this.id			= id_planning;
-	this.liste		= new Array();	// Liste des jours
-};
-
-function Entity(id, annee, mois, jour) {
-	this.id			= id;
-	this.annee		= annee;
-	this.mois		= mois;
-	this.jour		= jour;
-	this.liste		= new Array();	// Liste des évènements
-};
-
-/**
- * Ajout d'une entrée du planning
- */
-Planning.prototype.addEntity = function(annee, mois, jour) {
-	var oEntity		= new Entity(this.liste.length, annee, mois, jour);
-	this.liste.push(oEntity);
-};
-
-/**
- * Récupération d'une entrée du planning par son identifiant
- */
-Planning.prototype.getEntity = function(id) {
-	return this.liste[id];
-};
-
-/**
- * Suppression d'une entrée du planning
- */
-Planning.prototype.deleteEntity = function(id) {
-	this.liste[id]	= null;
-};
-
-/**
- * Déclaration d'un évènement à une entrée du planning
- */
-function Event(id, debut, duree) {
-	this.id			= id;
-	this.debut		= debut;
-	this.duree		= debut;
-};
-
-/**
- * Ajout d'un évènement à l'entrée du planning
- */
-Entity.prototype.addEvent = function(debut, duree) {
-	var oEvent	= new Event(this.liste.length, debut, duree);
-	this.liste.push(oEvent);
-};
-
-/**
- * Suppression d'un évènement à l'entrée du planning
- */
-Entity.prototype.deleteEvent = function(id) {
-	this.liste[id]	= null;
-};
-
-//=================================================================================================
-
-/**
  * @brief	Construction du PLANNING.
  *
  * @param	string		MD5		: identifiant du PLANNING au format MD5.
@@ -130,7 +66,7 @@ Entity.prototype.deleteEvent = function(id) {
  */
 function setPlanning(MD5) {
 	// Construction d'un nouveau planning
-	PLANNING_ITEM[MD5] = new Planning(MD5);
+	PLANNING[MD5] = new Planning(MD5);
 }
 
 /**
@@ -141,13 +77,16 @@ function setPlanning(MD5) {
  */
 function getPlanning(MD5) {
 	// Fonctionnalité réalisée si le planning n'existe pas
-	if (typeof(PLANNING_ITEM[MD5]) == 'undefined') {
+	if (typeof(PLANNING[MD5]) == 'undefined') {
 		// Construction d'un nouveau PLANNING
 		setPlanning(MD5);
 	};
 
+	// Récupération de la largeur des cellules dans le navigateur CLIENT
+	PLANNING_CELL_WIDTH[MD5] = $("dd.planning", "section#" + MD5).innerWidth();
+
 	// Renvoi du PLANNING
-	return PLANNING_ITEM[MD5];
+	return PLANNING[MD5];
 }
 
 (function(factory){
@@ -432,13 +371,13 @@ function getPlanning(MD5) {
 				});
 			});
 
-			// Actualisation de la largeur des cellules lors du redimentionnement de la fenêtre
-			updateCellWidth(true);
+			// Actualisation des cellules du PLANNING
+			updatePlanning(MD5);
 		});
 	};
 
 	// Modification de la durée de la tâche avec dedimensionnement de la CELLULE
-	$.fn.updateDuree = function(newDuree) {
+	$.fn.updateDuree = function(newDuree, MD5) {
 		// Récupération de l'identifiant unique de la tâche
 		var origineUniqueId	= this.getUniqueId();
 		// Récupération de la valeur de l'attribut de durée d'origine
@@ -447,7 +386,7 @@ function getPlanning(MD5) {
 		// Fonctionnalité réalisée si la valeur de la durée de la tâche est différente
 		if (newDuree != undefined && newDuree != origineDuree) {
 			// Récupération de l'identifiant du PLANNING
-			var MD5 = $(this).parents("section").attr("id").replace(MODAL_MD5_PREFIXE, "");
+			MD5 = $(this).parents("section").attr("id").replace(MODAL_MD5_PREFIXE, "");
 
 			// Suppression de l'ancien indicateur d'occupation
 			$("dd[class*=planning]." + origineUniqueId, "section#" + MD5).removeClass(origineUniqueId);
@@ -499,15 +438,21 @@ function getPlanning(MD5) {
 			newDuree	= origineDuree;
 		}
 
-		// Redimentionnement de la CELLULE
-		var newWidth = PLANNING_CELL_WIDTH;
-		if (!$(this).parents("section").hasClass("calendar") && !$(this).parents("section").hasClass("static")) {
-            var facteur	= (newWidth * newDuree / PLANNING_CELL_WIDTH - PLANNING_ITEM_MARGIN) + (PLANNING_ITEM_MARGIN * PLANNING_ITEM_FACTEUR * newDuree / PLANNING_ITEM_MARGIN);
-            var facteur	= (newWidth * newDuree / PLANNING_CELL_WIDTH - PLANNING_ITEM_MARGIN) + (PLANNING_ITEM_FACTEUR * newDuree);
-			newWidth	= newWidth * newDuree + facteur;
-		} else {
-            newWidth	= PLANNING_CELL_WIDTH - PLANNING_ITEM_MARGIN;
+		// Fonctionnalité réalisée si la largeur de cellule par défaut est connue
+		if (typeof(newDuree) == 'undefined' || typeof(PLANNING_CELL_WIDTH[MD5]) == 'undefined' || parseFloat(PLANNING_CELL_WIDTH[MD5]) == 0) {
+			// Stop !!!
+			return false;
 		}
+
+		// Fonctionnalité réalisée si la largeur de la cellule ne dépend par de la durée
+		if ($(this).parents("section").hasClass("calendar") || $(this).parents("section").hasClass("static")) {
+			newDuree	= 1;
+		}
+
+		// Redimentionnement de la CELLULE
+		var newWidth	= PLANNING_CELL_WIDTH[MD5];
+        var facteur		= (newWidth * newDuree / PLANNING_CELL_WIDTH[MD5] - PLANNING_ITEM_MARGIN) + (PLANNING_ITEM_FACTEUR * newDuree);
+		newWidth		= newWidth * newDuree + facteur;
 
 		// Affectation de la nouvelle valeur à la CELLULE
 		$(this).css({width: newWidth + "px"});
@@ -665,6 +610,7 @@ function addItem(MD5, $destination, $source) {
 	$($content).find("input[name^=tache_mois]").val(attributes[2]);
 	$($content).find("input[name^=tache_jour]").val(attributes[3]);
 	$($content).find("input[name^=tache_heure]").val(attributes[4]);
+	$($content).find("input[name^=tache_minute]").val(attributes[5]);
 
 	// Ajoute l'élément sélectionné
 	$content.fadeOut(function() {
@@ -745,13 +691,25 @@ function updateCellWidth(bResize, MD5) {
 		// Récupération de la durée du formulaire MODAL
 		var duree	= $("#id_item_duree", "#" + MODAL_MD5_PREFIXE + MD5).val();
 
+
+		/*
+		var width	= 0;
+		var element	= $("section#" + MD5);
+		while (width == 0 || width == 100) {
+			element	= element.parent();
+			width	= element.width();
+		}
+		alert(element.width());
+		*/
+
+
 		// Récupération de la largeur des cellules dans le navigateur CLIENT
-		PLANNING_CELL_WIDTH = $("dd.planning", "section#" + MD5).width();
+		PLANNING_CELL_WIDTH[MD5] = $("dd.planning", "section#" + MD5).innerWidth();
 
 		// Actualisation des éléments déjà affichés dans le MODAL
 		$("li.item", "section#" + MODAL_MD5_PREFIXE + MD5).each(function() {
 			// Mise à jour de la taille des tâches récupérées dans le moteur de recherche du MODAL
-			$(this).updateDuree(duree);
+			$(this).updateDuree(duree, MD5);
 		});
 
 		// Fonctionnalité réalisée si le paramètre d'entrée active le redimentionnement des tâches du PLANNING
@@ -763,7 +721,7 @@ function updateCellWidth(bResize, MD5) {
 					// Récupération de la durée contenue dans les attributs de la tâche
 					duree	= $(this).find("input[name^=tache_duree]").val();
 					// Modification de la durée de la tâche
-					$(this).updateDuree(duree);
+					$(this).updateDuree(duree, MD5);
 				});
 			});
 		}
@@ -902,7 +860,7 @@ function initPlanning(MD5) {
 	});
 
 	// Déclaration des éléments SOURCE / CIBLE
-	var $item		= $("#" + PLANNING_MD5_PREFIXE + MD5);									// Liste des éléments de la progression sous forme de cellule
+	var $item		= $("#" + PLANNING_MD5_PREFIXE + MD5);							// Liste des éléments de la progression sous forme de cellule
 
 	// Initialisation du déplacement de la SOURCE : création d'un clône
 	$("li.item", $item).draggable({
@@ -931,7 +889,7 @@ function initPlanning(MD5) {
 			if ($parent.attr("id") == (PLANNING_MD5_PREFIXE + MD5)) {
 				// Actualisation de la postition du clône par rapport au MODAL
 				ui.position.top += $parent.offset().top - $("a.draggable-item").height();
-				ui.position.left += $parent.offset().left - $("a.draggable-item").width();
+				ui.position.left += $parent.offset().left - $("a.draggable-item").innerWidth();
 
 				// Modification du style pour extraire le clône de sont conteneur
 				$position = "fixed";
@@ -955,7 +913,8 @@ function initPlanning(MD5) {
 	});
 
 	// Actualisation des cellules du PLANNING
-	updateCellWidth(false, MD5);
+	//updateCellWidth(false, MD5);
+	updatePlanning(MD5);
 };
 
 /**

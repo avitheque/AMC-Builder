@@ -1,5 +1,5 @@
 /**
- * Feuille de style relative à la à la classe PlanningHelper.
+ * Feuille de style relative à la classe PlanningHelper.
  * User: durandcedric
  * Date: 25/09/16
  * Time: 11:43
@@ -14,7 +14,7 @@
 .diary													{ margin: 5px 0 20px; }
 .planning-item											{ float: left; display: block; overflow: auto; }
 .planning-item.custom-state-active						{ background: #FBEC88; border: solid 1px #FAD42E; }
-.planning-item li										{ float: left; width: auto; padding: 4px; text-align: center; white-space: nowrap; }
+.planning-item li										{ float: left; padding: 4px; text-align: center; white-space: nowrap; }
 .planning-item li h5									{ margin: 0 0 0.4em; cursor: move; }
 .planning-item li a										{ float: left; }
 .planning-item li a.ui-icon-trash						{ position: absolute; left: 0; bottom: 0; }

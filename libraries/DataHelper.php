@@ -10,8 +10,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 24 $
- * @since		$LastChangedDate: 2017-04-30 20:38:39 +0200 (Sun, 30 Apr 2017) $
+ * @version		$LastChangedRevision: 27 $
+ * @since		$LastChangedDate: 2017-05-13 10:10:30 +0200 (Sat, 13 May 2017) $
  * 
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -185,12 +185,12 @@ class DataHelper {
 
 		if (preg_match('@^([0-9]+)\:([0-9]+).*@', $sString, $aMatches)) {
 			// Base 60
-			$nHeure		= $aMatches[1];
-			$nMinute	= $aMatches[2];
+			$nHeure		= (int) $aMatches[1];
+			$nMinute	= (int) $aMatches[2];
 		} elseif (preg_match('@^([0-9]+)[\.\,]([0-9]+)@', $sString, $aMatches)) {
 			// Base 10
-			$nHeure		= $aMatches[1];
-			$nMinute	= $aMatches[2] * 6;
+			$nHeure		= (int) $aMatches[1];
+			$nMinute	= (int) $aMatches[2] * 6;
 		}
 
 		// Renvoi du résultat au format [H:i]
@@ -208,9 +208,9 @@ class DataHelper {
 	 */
 	public static function dateFrToMy($sDate) {
 		if (preg_match('@^([0-9]{2}).([0-9]{2}).([0-9]{4})@', $sDate, $aMatches)) {
-			//return date("Y-m-d", mktime(0, 0, 0, $aMatches[2], $aMatches[1], $aMatches[3]));
-			return sprintf('%d-%02d-%02d', $aMatches[3], $aMatches[2], $aMatches[1]);
+			return sprintf('%d-%02d-%02d', (int) $aMatches[3], (int) $aMatches[2], (int) $aMatches[1]);
 		} else {
+			// Le paramètre est déjà au bon format
 			return	$sDate;
 		}
 	}
@@ -225,10 +225,28 @@ class DataHelper {
 	 */
 	public static function dateMyToFr($sDate) {
 		if (preg_match('@^([0-9]{4}).([0-9]{2}).([0-9]{2})@', $sDate, $aMatches)) {
-			//return date($sFormat, mktime(0, 0, 0, $aMatches[2], $aMatches[3], $aMatches[1]));
-			return sprintf('%02d/%02d/%d', $aMatches[3], $aMatches[2], $aMatches[1]);
+			return sprintf('%02d/%02d/%d', (int) $aMatches[3], (int) $aMatches[2], (int) $aMatches[1]);
 		} else {
+			// Le paramètre est déjà au bon format
 			return	$sDate;
+		}
+	}
+
+	/** @brief	Converti un dateTime Français au format MySQL
+	 *
+	 * @todo	ATTENTION au passage au 2032-12-31...
+	 *
+	 * La fonction transforme une date [JJ/MM/AAAA H:i:s] au format [YYYY-MM-DD H:i:s]
+	 * @param	date		$sDateTime		: chaîne de caractères formant une date Y-m-d H:i:s.
+	 * @param	string		$sFormat		: chaîne de caractères correspondant au format attendu, par défaut [d/m/Y H:i:s].
+	 * @return	chaîne de caractères représentant la date, au format FR.
+	 */
+	public static function dateTimeFrToMy($sDateTime, $sFormat = "Y-m-d H:i:s") {
+		if (preg_match('@^([0-9]+)\/([0-9]+)\/([0-9]+)\s([0-9]+):([0-9]+):*([0-9]*)@', $sDateTime, $aMatches)) {
+			return date($sFormat, mktime((int) $aMatches[4], (int) $aMatches[5], (int) $aMatches[6], (int) $aMatches[2], (int) $aMatches[1], (int) $aMatches[3]));
+		} else {
+			// Le paramètre est déjà au bon format
+			return	$sDateTime;
 		}
 	}
 
@@ -237,18 +255,19 @@ class DataHelper {
 	 * @todo	ATTENTION au passage au 31/12/2032...
 	 *
 	 * La fonction transforme une date [YYYY-MM-DD H:i:s] au format [JJ/MM/AAAA H:i:s]
-	 * @param	date		$sDate			: chaîne de caractères formant une date Y-m-d H:i:s.
+	 * @param	date		$sDateTime		: chaîne de caractères formant une date Y-m-d H:i:s.
 	 * @param	string		$sFormat		: chaîne de caractères correspondant au format attendu, par défaut [d/m/Y H:i:s].
 	 * @return	chaîne de caractères représentant la date, au format FR.
 	 */
-	public static function dateTimeMyToFr($sDate, $sFormat = "d/m/Y H:i:s") {
-		if (preg_match('@^([0-9]+)\-([0-9]+)\-([0-9]+)\s([0-9]+):([0-9]+):([0-9]+)@', $sDate, $aMatches)) {
-			return date($sFormat, mktime($aMatches[4], $aMatches[5], $aMatches[6], $aMatches[2], $aMatches[3], $aMatches[1]));
+	public static function dateTimeMyToFr($sDateTime, $sFormat = "d/m/Y H:i:s") {
+		if (preg_match('@^([0-9]+)\-([0-9]+)\-([0-9]+)\s([0-9]+):([0-9]+):*([0-9]*)@', $sDateTime, $aMatches)) {
+			return date($sFormat, mktime((int) $aMatches[4], (int) $aMatches[5], (int) $aMatches[6], (int) $aMatches[2], (int) $aMatches[3], (int) $aMatches[1]));
 		} else {
-			return	$sDate;
+			// Le paramètre est déjà au bon format
+			return	$sDateTime;
 		}
 	}
-
+	
 	/**
 	 * @brief	Vérifie si le format d'une date saisie est jj/mm/aaaa.
 	 *

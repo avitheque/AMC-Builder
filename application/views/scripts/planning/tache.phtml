@@ -6,7 +6,7 @@
  * User: durandcedric
  * Date: 25/09/16
  * Time: 11:43
- * 
+ *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
@@ -34,30 +34,25 @@ foreach ($aListeElements as $aItem) {
 	// PARTICIPANT	: liste des personnels participants à la tâche
 	$aParticipant	= DataHelper::get($aItem,	'tache_participant',	DataHelper::DATA_TYPE_ARRAY,	null);
 	// ANNEE		: année du PLANNING
-	$nAnnee			= DataHelper::get($aItem,	'tache_annee',			DataHelper::DATA_TYPE_INT,		null);
+	$nYear			= DataHelper::get($aItem,	'tache_annee',			DataHelper::DATA_TYPE_INT,		null);
 	// MOIS			: mois du PLANNING
-	$nMois			= DataHelper::get($aItem,	'tache_mois',			DataHelper::DATA_TYPE_INT,		null);
+	$nMonth			= DataHelper::get($aItem,	'tache_mois',			DataHelper::DATA_TYPE_INT,		null);
 	// JOUR			: jour de positionnement de la tâche
-	$nJour			= DataHelper::get($aItem,	'tache_jour',			DataHelper::DATA_TYPE_INT,		null);
+	$nDay			= DataHelper::get($aItem,	'tache_jour',			DataHelper::DATA_TYPE_INT,		null);
 	// HEURE		: heure de début dans le JOUR
-	$nHeure			= DataHelper::get($aItem,	'tache_heure',			DataHelper::DATA_TYPE_INT,		null);
+	$nHour			= DataHelper::get($aItem,	'tache_heure',			DataHelper::DATA_TYPE_INT,		null);
 	// DUREE		: durée de la tâche si présente, sinon celle par défaut
-	$nDuree 		= DataHelper::get($aItem,	'tache_duree',			DataHelper::DATA_TYPE_INT,		$nDureeDefaut);
+	$nDuration 		= DataHelper::get($aItem,	'tache_duree',			DataHelper::DATA_TYPE_INT,		$nDureeDefaut);
 
 	// Contenu HTMl de l'élément
-	$sContent		=  "<p>
-							$sTexte
-						</p>
-						<input type=\"hidden\" name=\"planning_id[]\"		value=\"$nId\" />
-						<input type=\"hidden\" name=\"tache_id[]\"			value=\"$nTacheId\" />
-						<input type=\"hidden\" name=\"tache_participant[]\"	value=\"" . implode(",", $aParticipant) . "\" />
-						<input type=\"hidden\" name=\"tache_annee[]\"		value=\"$nAnnee\" />
-						<input type=\"hidden\" name=\"tache_mois[]\"		value=\"$nMois\" />
-						<input type=\"hidden\" name=\"tache_jour[]\"		value=\"$nJour\" />
-						<input type=\"hidden\" name=\"tache_heure[]\"		value=\"$nHeure\" />
-						<input type=\"hidden\" name=\"tache_duree[]\"		value=\"$nDuree\" />";
+	$sContent		=  "<input type=\"hidden\" name=\"tache_participant[]\"	value=\"" . implode(",", $aParticipant) . "\" />";
 
 	// Création d'un nouvel élément
-	$oItem = new Planning_ItemHelper($sTitre, $sContent);
+	$oItem = new Planning_ItemHelper($nTacheId, $sTitre, $sTexte, $sContent);
+	$oItem->setYear($nYear);
+	$oItem->setMonth($nMonth);
+	$oItem->setDay($nDay);
+	$oItem->setHour($nHour);
+	$oItem->setDuration($nDuration);
 	print $oItem->renderHTML();
 }
