@@ -19,6 +19,7 @@
 .planning-item li a										{ float: left; }
 .planning-item li a.ui-icon-trash						{ position: absolute; left: 0; bottom: 0; }
 .planning-item li a.ui-icon-zoomin						{ position: absolute; right: 0; bottom: 0; }
+.planning-item li.conflict,
 .planning-item li.error									{ background: red !important; }
 .planning-item li article								{ border-radius: 0; }
 .planning-item li .ui-icon								{ border: 1px solid transparent; border-radius: 5px; color: transparent; }
@@ -58,8 +59,10 @@
 .holiday .planning    			        				{ background: #3C75BF; border-color: #3C75BF; }
 .planning.set											{ background: #446693; border-color: #446693; opacity: 1; }
 .planning.hover											{ background: orange !important; opacity: 1; border-color: transparent; }
+.planning.conflict,
 .planning.error,
 .holiday .planning.set,
+.planning.conflict li,										
 .planning.error li										{ background: red !important; border-color: red !important; }
 
 
@@ -76,7 +79,7 @@ main .planning-item li.item								{ position: absolute; }
 
 /* CIBLE - Intéractivité avec l'utilisateur */
 dl.hover												{ background: white; color: orange; border: 1px solid rgba(44, 56, 194, 1); z-index: 10; }
-dl.hover dt	 											{ font-weigth: bold; }
+dl.hover dt	 											{ font-weight: bold; }
 dl.hover dd.planning:not(.set)					 	 	{ border-top-color: transparent; border-right: 0; border-bottom-color: transparent; border-left: 0; }
 dl.hover dd.planning:not(.ui-state-disabled):not(.set)	{ background: rgba(0, 255, 0, 0.3); }
 

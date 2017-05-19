@@ -15,14 +15,16 @@
  * 	</dl>
  * @endcode
  *
- * @li	Variables injectées par PHP
+ * @li	Variables injectées par PHP via la classe PlanningHelper
  * @code
- * 	globale	PLANNING_CURRENT
+ * 	globale	PLANNING_DEBUG		: boolean
+ * 	globale	PLANNING_MD5		: array
+ *  globale PLANNING_CELL_WIDTH	: array
  * @endcode
  *
  * @li	Variables déclarées dans `main.js`
  * @code
- * 	globale	MODIFICATION
+ * 	globale	MODIFICATION		: boolean
  * @endcode
  * User: durandcedric
  * Date: 25/09/16
@@ -35,59 +37,24 @@
 
 var PLANNING_CURRENT_MD5		= "";
 
-if (typeof(PLANNING_ITEM) == 'undefined') {
+// Variable d'instance de PLANNING_HELPER
+if (typeof(PLANNING_HELPER) == 'undefined') {
 	// Constantes du MODAL
 	var MODAL_MD5_PREFIXE		= "search-content-";
 
 	// Constantes de gestion du PLANNING
-	var PLANNING				= new Array();
 	var PLANNING_MD5_PREFIXE	= "planning-item-";
-	var PLANNING_ITEM_REGEXP	= /^planning-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]+$/;
+	var PLANNING_ITEM_REGEXP	= /^planning-[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}-[0-9]+$/;
 	var PLANNING_ITEM_FACTEUR	= 0.65;
 	var PLANNING_ITEM_MARGIN	= 10;
 	var PLANNING_ITEM_ATTRIBUTE	= ["tache_annee", "tache_mois", "tache_jour", "tache_heure"];
-	var PLANNING_IGNORE			= ["tache_participant", "tache_duree"];
-	var PLANNING_MOUSEHOVER		= false;
+	var PLANNING_ITEM_IGNORE	= ["tache_participant", "tache_duree"];
+	var PLANNING_MOUSEHOVER		= false;														
 	var PLANNING_ERROR			= false;
-}
-
-// Variable d'instance de PLANNING
-if (typeof(PLANNING_HELPER) == 'undefined') {
-	var PLANNING_HELPER = {};
+	var PLANNING_HELPER			= new Array();
 }
 
 //=================================================================================================
-
-/**
- * @brief	Construction du PLANNING.
- *
- * @param	string		MD5		: identifiant du PLANNING au format MD5.
- * @return	object
- */
-function setPlanning(MD5) {
-	// Construction d'un nouveau planning
-	PLANNING[MD5] = new Planning(MD5);
-}
-
-/**
- * @brief	Récupération du PLANNING par son identifiant.
- *
- * @param	string		MD5		: identifiant du PLANNING au format MD5.
- * @return	object
- */
-function getPlanning(MD5) {
-	// Fonctionnalité réalisée si le planning n'existe pas
-	if (typeof(PLANNING[MD5]) == 'undefined') {
-		// Construction d'un nouveau PLANNING
-		setPlanning(MD5);
-	};
-
-	// Récupération de la largeur des cellules dans le navigateur CLIENT
-	PLANNING_CELL_WIDTH[MD5] = $("dd.planning", "section#" + MD5).innerWidth();
-
-	// Renvoi du PLANNING
-	return PLANNING[MD5];
-}
 
 (function(factory){
 	if (typeof define === 'function' && define.amd){
@@ -146,7 +113,7 @@ function getPlanning(MD5) {
 			var $duree = ui.helper.find("input[name^=tache_duree]").val();
 
 			// Suppression de la coloration erronée de la cellule par défaut
-			$("dd[class*=planning].error", "section#" + MD5).removeClass("error");
+			$("dd[class*=planning].conflict", "section#" + MD5).removeClass("conflict");
 
 			// Coloration des cellules voisines sur toute la période de la tâche
 			var $aConflictItems	= [];
@@ -154,7 +121,7 @@ function getPlanning(MD5) {
 				// Période de l'élément
 				var $periode = i > 0 ? 1 : 0;
 				// Récupération de l'heure à partir des éléments contenus dans ID d'origine
-				$aItem[$aItem.length - 1] = parseInt($aItem[$aItem.length - 1]) + $periode;
+				$aItem[4] = parseInt($aItem[4]) + $periode;
 
 				// Mise en évidence de la cellule voisine
 				$("#" + $aItem.join("-"), "section#" + MD5).addClass("hover");
@@ -171,7 +138,7 @@ function getPlanning(MD5) {
 							// La cellule est déjà occupée !
 							$aConflictItems.push($aClass[k]);
 							// Ajout de l'indicateur de conflit
-							$("#" + $aItem.join("-"), "section#" + MD5).addClass("error");
+							$("#" + $aItem.join("-"), "section#" + MD5).addClass("conflict");
 						}
 					}
 				}
@@ -193,8 +160,8 @@ function getPlanning(MD5) {
 				debug_info = " : OK";
 
 				// Suppression de la coloration de la cellule
-				$("dd[class*=planning].error", "section#" + MD5).each(function() {
-					$(this).removeClass("error");
+				$("dd[class*=planning].conflict", "section#" + MD5).each(function() {
+					$(this).removeClass("conflict");
 				});
 			}
 		}
@@ -209,6 +176,37 @@ function getPlanning(MD5) {
 		$(this).each(function() {
 			// Récupération de l'identifiant du PLANNING
 			var MD5 = $(this).attr("id");
+			
+			var parent = $(this).parents(".accordion");
+			if (typeof(parent.accordion) == 'function' ) {
+				// Fonctionnalité réalisée dans le cas d'une inclusion dans un plugin jQuery.accordion();
+				parent.accordion({
+					activate:	function(event, ui) {
+						// Protection contre le syndrome du cliqueur intempestif
+						event.stopPropagation();
+						
+						// Fonctionnalité réalisée pour chaque session de PLANNING
+						for (var session in PLANNING) {
+							// Actualisation de la largeur des cellules
+							updateCellWidth(true, session);
+						}
+					}
+				});
+			} else if (typeof(parent.tabs) == 'function' ) {
+				// Fonctionnalité réalisée dans le cas d'une inclusion dans un plugin jQuery.tabs();
+				parent.tabs({
+					activate:	function(event, ui) {
+						// Protection contre le syndrome du cliqueur intempestif
+						event.stopPropagation();
+						
+						// Fonctionnalité réalisée pour chaque session de PLANNING
+						for (var session in PLANNING) {
+							// Actualisation de la largeur des cellules
+							updateCellWidth(true, session);
+						}
+					}
+				});
+			}
 
 			// Déplacement d'un élément entre les progressions du même PLANNING
 			$(this).droppable({
@@ -221,12 +219,16 @@ function getPlanning(MD5) {
 				out:				function(event, ui) {
 					PLANNING_MOUSEHOVER	= false;
 					// Fonctionnalité réalisée lorsque la souris sort du PLANNING
-					updatePlanning(MD5);
+					if (typeof(PLANNING[MD5]) != 'undefined') {
+						PLANNING[MD5].render();
+					}
 				},
 				// Fonctionnalité réalisée lorsque la fonctionnalité est terminée
 				deactivate:			function(event, ui) {
 					// Fonctionnalité réalisée lorsque la souris sort du PLANNING
-					updatePlanning(MD5);
+					if (typeof(PLANNING[MD5]) != 'undefined') {
+						PLANNING[MD5].render();
+					}
 				}
 			});
 
@@ -271,7 +273,7 @@ function getPlanning(MD5) {
 
 						// Fonctionnalité réalisée si la CELLULE est compatible avec la SOURCE
 						if (sectionItem == MD5) {
-							// Simulation de la future position de la tâche sur le PLANNING
+							// Prévisualisation de la future position de la tâche sur le PLANNING
 							$(this).dragging(event, ui);
 						} else {
 							// Message informant de l'incompatibilité de la CELLULE
@@ -287,21 +289,15 @@ function getPlanning(MD5) {
 						// Fonctionnalité réalisée si la CELLULE est compatible avec la SOURCE
 						if (sectionItem == MD5) {
 							// Ajout du clône dans la nouvelle cellule dans le PLANNING
-							addItem(MD5, this, ui);
+							addItem(MD5, ui, this);
 						} else {
 							// Message informant de l'incompatibilité de la CELLULE
 							$("#var-debug").text('Emplacement non compatible !');
 							return false;
 						}
-
-						// Nettoyage du survol
-						clearPlanning(MD5);
 					},
 					// Fonctionnalité réalisée lors déplacement d'un élément dans la cellule
 					deactivate:			function(event, ui) {
-						// Récupération de l'identifiant de la SECTION parent (MODAL pour l'ajout / PLANNING pour le déplacement)
-						var sectionItem		= ui.helper.parents("section").attr("id").replace(MODAL_MD5_PREFIXE, "");
-
 						// Nettoyage du survol
 						clearPlanning(MD5);
 					}
@@ -311,12 +307,12 @@ function getPlanning(MD5) {
 				$(this).mouseenter(function(event) {
 					if ($(this).parents("section").is(".calendar")) {
 						var $aItem = $(this).attr("id").split("-");
-						var $heure = $aItem[$aItem.length - 1];
+						var $heure = $aItem[4];
 
 						// Ajout d'un indicateur de survol
 						$(this).parents("dl").addClass("hover");
 
-						// Affichage de l'heure
+						// Affichage de l'heure positionnée en entête de tableau
 						if (! $("h4", "section#" + MD5 + " dd[id=planning-0-" + $heure + "]").hasClass("visible")) {
 							$("h4", "section#" + MD5 + " dd[id=planning-0-" + $heure + "]").addClass("visible");
 						}
@@ -324,12 +320,12 @@ function getPlanning(MD5) {
 				}).mouseleave(function(event) {
 					if ($(this).parents("section").is(".calendar")) {
 						var $aItem = $(this).attr("id").split("-");
-						var $heure = $aItem[$aItem.length - 1];
+						var $heure = $aItem[4];
 
 						// Suppression de l'indicateur de survol
 						$(this).parents("dl").removeClass("hover");
 
-						// Masquage de l'heure
+						// Masquage de l'heure positionnée en entête de tableau
 						$("h4", "section#" + MD5 + " dd[id^=planning-0-" + $heure + "]").removeClass("visible");
 					}
 				});
@@ -363,16 +359,10 @@ function getPlanning(MD5) {
 						updateCellWidth(true, MD5);
 					});
 
-					// Actualisation de la largeur des cellules
-					updateCellWidth(false, MD5);
-
 					// Annulation de l'événement
 					event.preventDefault();
 				});
 			});
-
-			// Actualisation des cellules du PLANNING
-			updatePlanning(MD5);
 		});
 	};
 
@@ -406,7 +396,7 @@ function getPlanning(MD5) {
 				// Période de l'élément
 				var $periode = i > 0 ? 1 : 0;
 				// Récupération de l'heure à partir des éléments contenus dans ID d'origine
-				$aItem[$aItem.length - 1] = parseInt($aItem[$aItem.length - 1]) + $periode;
+				$aItem[4] = parseInt($aItem[4]) + $periode;
 
 				// Mise en évidence de la cellule voisine
 				if (typeof($("dd#" + $aItem.join("-"), "section#" + MD5).attr("class")) != 'undefined') {
@@ -430,18 +420,29 @@ function getPlanning(MD5) {
 				// Ajout de l'identifiant de la tâche dans la CELLULE
 				$("#" + $aItem.join("-"), "section#" + MD5).addClass(uniqueId);
 			}
-
-			// Mise à jour des éléments du PLANNING
-			updatePlanning(MD5);
 		} else {
 			// Écrasement de la valeur par la durée d'origine
 			newDuree	= origineDuree;
 		}
 
+		// Fonctionnalité réalisée si le MODE_DEBUG est actif sur `PLANNING_HELPER`
+		if (typeof(PLANNING_DEBUG) == 'boolean' && PLANNING_DEBUG) {
+			console.debug("$.fn.updateDuree(" + newDuree + ", '", MD5 + "')");
+		}
+
 		// Fonctionnalité réalisée si la largeur de cellule par défaut est connue
 		if (typeof(newDuree) == 'undefined' || typeof(PLANNING_CELL_WIDTH[MD5]) == 'undefined' || parseFloat(PLANNING_CELL_WIDTH[MD5]) == 0) {
+			// Affichage d'un message de DEBUGGAGE en mode `PLANNING_DEBUG`
+			if (typeof(PLANNING[MD5]) != 'undefined') {
+				PLANNING[MD5].debug("\tERROR !");
+			}
 			// Stop !!!
 			return false;
+		}
+
+		// Mise à jour de l'instance du PLANNING ***************************************************
+		if (typeof(PLANNING[MD5]) != 'undefined') {
+			PLANNING[MD5].update(this, newDuree, true);
 		}
 
 		// Fonctionnalité réalisée si la largeur de la cellule ne dépend par de la durée
@@ -460,6 +461,11 @@ function getPlanning(MD5) {
 
 	// Affichage d'un MODAL contenant la tâche sélectionnée
 	$.fn.viewItem = function() {
+		// Fonctionnalité réalisée si le MODE_DEBUG est actif sur `PLANNING_HELPER`
+		if (typeof(PLANNING_DEBUG) == 'boolean' && PLANNING_DEBUG) {
+			console.debug("$.fn.viewItem()");
+		}
+
 		if (typeof(compteurModal) == 'undefined') {
 			var compteurModal = 0;
 		} else {
@@ -490,6 +496,7 @@ function getPlanning(MD5) {
 
 			// Variables temporaires de manipulation des éléments
 			var $item		= $(this);
+			var MD5			= $item.parents("section").attr("id");
 			var $dureeItem	= $item.find("input[name^=tache_duree]");
 			var dureeValue	= $dureeItem.val();
 
@@ -522,13 +529,19 @@ function getPlanning(MD5) {
 						$("#var-debug").html("Création du MODAL #id_modal_duree");
 					},
 					buttons: {
-						"Annuler": function () {
+						"Annuler": function() {
 							// Fermeture du MODAL
 							$(this).dialog("close");
 						},
-						"Valider": function () {
+						"Valider": function() {
 							// Mise à jour de la durée de l'élément
-							$item.updateDuree($("#id_modal_duree").val());
+							$item.updateDuree($("#id_modal_duree").val(), MD5);
+							
+							// Mise à jour de la durée de la tâche
+							if (typeof(PLANNING[MD5]) != 'undefined') {
+								PLANNING[MD5].update($item, $("#id_modal_duree").val(), true);
+							}
+
 							// Fermeture du MODAL
 							$modal.dialog("close");
 							// Suppression du modal
@@ -567,8 +580,10 @@ function getPlanning(MD5) {
 			$(this).find("a.ui-icon-trash").each(function() { $(this).remove(); });
 		});
 
-		// Mise à jour des éléments du PLANNING
-		updatePlanning(MD5);
+		// Mise à jour de l'instance du PLANNING ***************************************************
+		if (typeof(PLANNING[MD5]) != 'undefined') {
+			PLANNING[MD5].remove($(this), true);
+		}
 	};
 }));
 
@@ -578,16 +593,22 @@ function getPlanning(MD5) {
  * @li	Parcours chaque tâche afin d'actualiser les dimensions selon la durée et le rapport en pixels du volume horaire.
  *
  * @param	string		MD5				: Identifiant du PLANNING.
- * @param	string		$destination	: Sélecteur servant de support à l'élément.
  * @param	string		$source			: Source d'origine contenu.
+ * @param	string		$destination	: Sélecteur servant de support à l'élément.
  */
-function addItem(MD5, $destination, $source) {
+function addItem(MD5, $source, $destination) {
+	// Fonctionnalité réalisée si le MODE_DEBUG est actif sur `PLANNING_HELPER`
+	if (typeof(PLANNING_DEBUG) == 'boolean' && PLANNING_DEBUG) {
+		console.debug("addItem('" + MD5 + "', '" + $source + "', '" + $destination + ")");
+	}
+
 	// Annulation si une erreur est détectée
 	if (PLANNING_ERROR) {
 		// STOP !
 		return false;
 	}
 
+	// Récupération du contenu en cours de déplacement
 	$content = $source.draggable;
 
 	// Bouton d'ajout de l'élément à la liste
@@ -606,11 +627,11 @@ function addItem(MD5, $destination, $source) {
 	var attributes = $($destination).attr("id").split('-');
 
 	// Mise à jour des attributs de la CELLULE
-	$($content).find("input[name^=tache_annee]").val(attributes[1]);
-	$($content).find("input[name^=tache_mois]").val(attributes[2]);
-	$($content).find("input[name^=tache_jour]").val(attributes[3]);
-	$($content).find("input[name^=tache_heure]").val(attributes[4]);
-	$($content).find("input[name^=tache_minute]").val(attributes[5]);
+	$($content).find("input[name^=tache_annee]").val(attributes[1]);	// Valeur de l'année
+	$($content).find("input[name^=tache_mois]").val(attributes[2]);		// Valeur du mois
+	$($content).find("input[name^=tache_jour]").val(attributes[3]);		// Valeur du jours
+	$($content).find("input[name^=tache_heure]").val(attributes[4]);	// Valeur de l'heure
+	$($content).find("input[name^=tache_minute]").val(attributes[5]);	// Valeur de la minute
 
 	// Ajoute l'élément sélectionné
 	$content.fadeOut(function() {
@@ -647,17 +668,19 @@ function addItem(MD5, $destination, $source) {
 		// Coloration des cellules voisines sur toute la période de la tâche
 		for (var i = 1 ; i < parseInt($duree) ; i++) {
 			// Récupération de l'heure à partir des éléments contenus dans ID
-			$aItem[$aItem.length - 1] = parseInt($aItem[$aItem.length - 1]) + 1;
+			$aItem[4] = parseInt($aItem[4]) + 1;
 			// Mise en évidence de la cellule voisine
 			$("#" + $aItem.join("-"), "section#" + MD5).addClass(uniqueIdContent);
 		}
-
-		// Mise à jour des éléments du PLANNING
-		updatePlanning(MD5);
 	});
 
 	// Affichage en MODE_DEBUG
 	$("#var-debug").html($($destination).attr("id"));
+	
+	// Mise à jour de l'instance du PLANNING *******************************
+	if (typeof(PLANNING[MD5]) != 'undefined') {
+		PLANNING[MD5].move($source, $destination, true);
+	}
 };
 
 /**
@@ -669,9 +692,14 @@ function addItem(MD5, $destination, $source) {
  * @param	string		MD5				: Identifiant du PLANNING au format MD5.
  */
 function updateCellWidth(bResize, MD5) {
+	// Fonctionnalité réalisée si le MODE_DEBUG est actif sur `PLANNING_HELPER`
+	if (typeof(PLANNING_DEBUG) == 'boolean' && PLANNING_DEBUG) {
+		console.debug("updateCellWidth(" + bResize + ", '" + MD5 + "')");
+	}
+
 	var LISTE_MD5 = new Array();
 	if (typeof(MD5) == 'undefined') {
-		$("section.week").each(function() {
+		$("section.planningHelper").each(function() {
 			// Récupération de l'identifiant
 			var MD5 = $(this).attr("id");
 
@@ -690,18 +718,9 @@ function updateCellWidth(bResize, MD5) {
 
 		// Récupération de la durée du formulaire MODAL
 		var duree	= $("#id_item_duree", "#" + MODAL_MD5_PREFIXE + MD5).val();
-
-
-		/*
-		var width	= 0;
-		var element	= $("section#" + MD5);
-		while (width == 0 || width == 100) {
-			element	= element.parent();
-			width	= element.width();
+		if (duree <= 0) {
+			return false;
 		}
-		alert(element.width());
-		*/
-
 
 		// Récupération de la largeur des cellules dans le navigateur CLIENT
 		PLANNING_CELL_WIDTH[MD5] = $("dd.planning", "section#" + MD5).innerWidth();
@@ -715,9 +734,9 @@ function updateCellWidth(bResize, MD5) {
 		// Fonctionnalité réalisée si le paramètre d'entrée active le redimentionnement des tâches du PLANNING
 		if (typeof(bResize) == 'boolean' && bResize == true) {
 			// Redimentionnement des éléments déjà affichés dans le PLANNING
-			$("dd[class*=planning]", "section#" + MD5).each(function () {
+			$("dd[class*=planning]", "section#" + MD5).each(function() {
 				// Fonctionnalité réalisée pour chaque cellule
-				$("li.item", this).each(function () {
+				$("li.item", this).each(function() {
 					// Récupération de la durée contenue dans les attributs de la tâche
 					duree	= $(this).find("input[name^=tache_duree]").val();
 					// Modification de la durée de la tâche
@@ -739,6 +758,11 @@ function updateCellWidth(bResize, MD5) {
  * @return	boolean
  */
 function isSupPlanningItem($a, $b) {
+	// Fonctionnalité réalisée si le MODE_DEBUG est actif sur `PLANNING_HELPER`
+	if (typeof(PLANNING_DEBUG) == 'boolean' && PLANNING_DEBUG) {
+		console.debug("isSupPlanningItem('" + $a + ", '" + $b + "')");
+	}
+
 	// Récupération des paramètres de la CLASSE du type `planning-AAAA-MM-JJ-HH`
 	var $aItemA = $a.split("-");
 	var $aItemB = $b.split("-");
@@ -760,66 +784,16 @@ function isSupPlanningItem($a, $b) {
  * @param	string		MD5				: Identifiant du PLANNING au format MD5.
  */
 function setPlanningItemAttribute(name, value, MD5) {
+	// Fonctionnalité réalisée si le MODE_DEBUG est actif sur `PLANNING_HELPER`
+	if (typeof(PLANNING_DEBUG) == 'boolean' && PLANNING_DEBUG) {
+		console.debug("setPlanningItemAttribute('" + name + "', " + value + ", '" + MD5 + "')");
+	}
+
 	// Parcours chaque entrée caché
 	$("li.item", "#" + PLANNING_MD5_PREFIXE + MD5).each(function() {
 		// Change le contenu de la valeur input
 		$("input[name^=" + name + "]", this).val(value);
 	});
-};
-
-/**
- * @brief	Mise à jour des tâches du PLANNING et évaluation des conflits
- *
- * Parcours l'ensemble du PLANNING afin de recalculer les CELLULES et alerter si des entrées se chevauchent.
- *
- * @li	Fonctionnalité appelée lors de l'ajout et la suppression d'éléments du PLANNING
- *
- * @param	string		MD5				: identifiant du PLANNING au format MD5.
- */
-function updatePlanning(MD5) {
-	// Affichage en MODE_DEBUG
-	$("#var-debug").html("updatePlanning()");
-
-	// Suppression de tous l'indicateur de survol par défaut pour tout le PLANNING
-	$("dl[class*=diary].hover").removeClass("hover");
-
-	// Ajout de la mise en valeur des cellules occupées
-	var $aConflictItem	= {};
-	$("dd[id^=planning-]", "section#" + MD5).each(function() {
-		// Suppression de l'indicateur de survol
-		$(this).removeClass("hover");
-
-		// Extraction des attributs de la classe
-		var $aClass	= $(this).attr("class").split(" ");
-		var $itemId	= $(this).attr("id");
-
-		// Initialisation de la collection sur la CELLULE
-		$aConflictItem[$itemId]	= [];
-
-		// Recherche dans les attributs de la classe si la cellule est déjà affectée
-		for (var $x in $aClass) {
-			// Fonctionnalité réalisée si un attribut correspont à une autre tâche
-			if (PLANNING_ITEM_REGEXP.exec($aClass[$x])) {
-				// Récupération du nom de cellule
-				$aConflictItem[$itemId].push($aClass[$x]);
-			}
-		}
-
-		// Fonctionnalité réalisée si un conflit est détecté
-		if ($aConflictItem[$itemId].length > 1) {
-			// Ajout d'un indicateur d'erreur
-			$(this).addClass("set").addClass("error");
-		} else if ($aConflictItem[$itemId].length > 0) {
-			// Ajout d'un indicateur de présence
-			$(this).addClass("set").removeClass("error");
-		} else {
-			// Suppression d'un indicateur de présence
-			$(this).removeClass("set").removeClass("error");
-		}
-	});
-
-	// Actualisation des cellules du PLANNING
-	updateCellWidth(false, MD5);
 };
 
 /**
@@ -830,13 +804,58 @@ function updatePlanning(MD5) {
  * @param	string		MD5				: identifiant du PLANNING au format MD5.
  */
 function clearPlanning(MD5) {
+	// Fonctionnalité réalisée si le MODE_DEBUG est actif sur `PLANNING_HELPER`
+	if (typeof(PLANNING_DEBUG) == 'boolean' && PLANNING_DEBUG) {
+		console.debug("clearPlanning('" + MD5 + "')");
+	}
+
 	// Suppression de l'indicateur de survol
-	$("dl.hover", "section#" + MD5).removeClass("hover");
-	$("dd.hover", "section#" + MD5).each(function() {
-		// Suppression de l'indicateur de survol
-		$(this).removeClass("hover");
-	});
+	$("dl.hover",		"section#" + MD5).removeClass("hover");
+	$("dd.hover",		"section#" + MD5).removeClass("hover");
+	$("dd.conflict",	"section#" + MD5).removeClass("conflict");
 };
+
+/**
+ * @brief	Construction du PLANNING.
+ *
+ * @param	string		MD5		: identifiant du PLANNING au format MD5.
+ * @return	object
+ */
+function setPlanning(MD5) {
+	// Fonctionnalité réalisée si le MODE_DEBUG est actif sur `PLANNING_HELPER`
+	if (typeof(PLANNING_DEBUG) == 'boolean' && PLANNING_DEBUG) {
+		console.debug("setPlanning('" + MD5 + "')");
+	}
+    
+	// Construction d'un nouveau planning
+	PLANNING[MD5] = new Planning(MD5);
+	
+	// Parcours des tâches déjà présentes afin de les intégrer à l'instance en cours
+	$("li.item", "section#" + MD5).each(function() {
+		// Ajout de la tâche à la collection
+		PLANNING[MD5].add($(this));
+	});
+
+	// Actualisation des cellules du PLANNING
+	PLANNING[MD5].render();
+}
+
+/**
+ * @brief	Récupération du PLANNING par son identifiant.
+ *
+ * @param	string		MD5		: identifiant du PLANNING au format MD5.
+ * @return	object
+ */
+function getPlanning(MD5) {
+	// Fonctionnalité réalisée si le planning n'existe pas
+	if (typeof(PLANNING[MD5]) == 'undefined') {
+		// Construction d'un nouveau PLANNING
+		setPlanning(MD5);
+	};
+
+	// Renvoi du PLANNING
+	return PLANNING[MD5];
+}
 
 /**
  * @brief	Initialisation de la gestion de la plannification depuis la SOURCE
@@ -850,6 +869,11 @@ function clearPlanning(MD5) {
  * @param	string		MD5				: identifiant du PLANNING au format MD5.
  */
 function initPlanning(MD5) {
+	// Fonctionnalité réalisée si le MODE_DEBUG est actif sur `PLANNING_HELPER`
+	if (typeof(PLANNING_DEBUG) == 'boolean' && PLANNING_DEBUG) {
+		console.debug("initPlanning('" + MD5 + "')");
+	}
+
 	// Création de l'objet s'il n'existe pas déjà
 	var $oPlanning	= getPlanning(MD5);
 
@@ -904,17 +928,16 @@ function initPlanning(MD5) {
 	});
 
 	// Mise en évidence de la semaine au survol du PLANNING
-	$("td[class*=day-]", "section#" + MD5).mouseenter(function(event) {
+	$("td[class*=day-]",	"section#" + MD5).mouseenter(function(event) {
 		var role = $(this).attr("role");
-		$("th." + role, "section#" + MD5).addClass("hover");
+		$("th." + role,		"section#" + MD5).addClass("hover");
 	}).mouseleave(function(event) {
 		var role = $(this).attr("role");
-		$("th." + role, "section#" + MD5).removeClass("hover");
+		$("th." + role,		"section#" + MD5).removeClass("hover");
 	});
 
 	// Actualisation des cellules du PLANNING
-	//updateCellWidth(false, MD5);
-	updatePlanning(MD5);
+	updateCellWidth(false, MD5);
 };
 
 /**
@@ -922,10 +945,10 @@ function initPlanning(MD5) {
  */
 $(document).ready(function() {
 	// Initialisation de la fonctionnalité de planification
-	$("section.week").planning();
+	$("section.planningHelper").planning();
 
 	// Actions réalisée lors du clic sur l'icône ZOOM
-	$(document).on("click", "a.ui-icon-zoomin", function (event) {
+	$(document).on("click", "a.ui-icon-zoomin", function(event) {
 		// Protection contre le syndrome du cliqueur intempestif
 		event.stopPropagation();
 
@@ -940,7 +963,7 @@ $(document).ready(function() {
 	});
 
 	// Actions réalisée lors du clic sur l'icône POUBELLE
-	$(document).on("click", "a.ui-icon-trash", function (event) {
+	$(document).on("click", "a.ui-icon-trash", function(event) {
 		// Protection contre le syndrome du cliqueur intempestif
 		event.stopPropagation();
 
@@ -955,7 +978,7 @@ $(document).ready(function() {
 	});
 
 	// Action réalisée au double-clic sur une tâche
-	$(document).on("dblclick", "li.item", function (event) {
+	$(document).on("dblclick", "li.item", function(event) {
 		// Édition de la tâche sélectionnée
 		$(this).viewItem();
 	});

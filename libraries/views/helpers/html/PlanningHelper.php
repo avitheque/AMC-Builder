@@ -10,8 +10,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 27 $
- * @since		$LastChangedDate: 2017-05-13 10:10:30 +0200 (Sat, 13 May 2017) $
+ * @version		$LastChangedRevision: 28 $
+ * @since		$LastChangedDate: 2017-05-19 18:37:18 +0200 (Fri, 19 May 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -501,7 +501,7 @@ class PlanningHelper {
 		}
 
 		// Découpage du volume horaire
-		$nTranche			= $this->_planning_timer_size/60;
+		$nTranche			= $this->_planning_timer_size / 60;
 		$nWidth				= intval($this->_planning_jour_width * $nTranche);
 		$fWidthItem			= $nWidth - 1.5;
 		$sClassItem			= "width-" . $nWidth . "p";
@@ -573,19 +573,24 @@ class PlanningHelper {
 			 * $sPlanningHTML	.= "<dd id=\"planning-" . $IdProgression . "-" . $h . "-" . $m . "\" class=\"planning " . $sClassPlanning . " " . $sClassItem . "\">
 			 */
 			$oItemElement	= DataHelper::get($this->_aItems[$IdProgression], $sTimeIndex, DataHelper::DATA_TYPE_ANY, null);
-			//$sClassSet		= !is_null($oItemElement) ? "planning-" . $IdProgression . "-" . $h : null;
 			$sClassSet		= null;
-
-			$sItemHTML	= null;
+			$sItemHTML		= null;
+			
+			// Extraction des éléments `Y`, `m` et `d`
+			preg_match("@^([0-9]+)\-([0-9]+)\-([0-9]+)$@", $IdProgression, $aMatched);
+			// Initialisation de l'identifiant de la CELLULE à partir de l'identifiant de la PROGRESSION sous forme `planning-Y-m-d-H` sans la caractère [0] de début
+			$sIdItemElement	= sprintf("planning-%d-%d-%d-%d", $aMatched[1], $aMatched[2], $aMatched[3], $h);
+			
 			// Fonctionnalité réalisée si un élément du PLANNING est présent
 			if ($oItemElement instanceof Planning_ItemHelper) {
-				$sClassSet	= "planning-" . $IdProgression . "-" . $h . " set";
+				// La classe porte l'identifiant de la tâche
+				$sClassSet	= $sIdItemElement . " set";
 				$oItemElement->addClass($sClassWidthItem);
 				$sItemHTML	= $oItemElement->renderHTML();
 			}
 
 			// Construction de la CELLULE
-			$sPlanningHTML	.= "<dd id=\"planning-" . $IdProgression . "-" . $h . "\" class=\"planning " . $sClassPlanning . " " . $sClassSet . " " . $sClassItem . "\">
+			$sPlanningHTML	.= "<dd id=\"" . $sIdItemElement . "\" class=\"planning " . $sClassPlanning . " " . $sClassSet . " " . $sClassItem . "\">
 									<h4 class=\"ui-widget-header\">" . $sTimeIndex . "</h4>
 									<ul class=\"planning-item ui-helper-reset ui-helper-clearfix\">
 										" . $sItemHTML . "
@@ -727,7 +732,7 @@ class PlanningHelper {
 			}
 
 			// Construction de chaque zone de progression selon l'identifiant du jour
-			$this->planning		= "<section id=\"" . $this->_md5 . "\" class=\"$this->_planning_format week left center max-width no-wrap\">";
+			$this->planning		= "<section id=\"" . $this->_md5 . "\" class=\"planningHelper $this->_planning_format week left center max-width no-wrap\">";
 
 			// Fonctionnalité réalisée si le format à afficher est au format CALENDAR
 			if ($this->_planning_format == self::FORMAT_CALENDAR) {
@@ -742,7 +747,7 @@ class PlanningHelper {
 			$this->planning		.= "</section>
 									<script type='text/javascript'>
 										// Fonctionnalité de déclaration si les éléments n'existent pas
-										if (typeof(PLANNING_CURRENT) == 'undefined')		{ var PLANNING_CURRENT = ''; }
+										if (typeof(PLANNING_DEBUG) == 'undefined')			{ var PLANNING_DEBUG = " . ((bool) MODE_DEBUG ? "true" : "false") . "; }
 										if (typeof(PLANNING_MD5) == 'undefined')			{ var PLANNING_MD5 = []; }
 										if (typeof(PLANNING_CELL_WIDTH) == 'undefined')		{ var PLANNING_CELL_WIDTH = []; }
 					
