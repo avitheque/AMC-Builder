@@ -10,8 +10,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 27 $
- * @since		$LastChangedDate: 2017-05-13 10:10:30 +0200 (Sat, 13 May 2017) $
+ * @version		$LastChangedRevision: 29 $
+ * @since		$LastChangedDate: 2017-05-24 22:30:27 +0200 (Wed, 24 May 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -375,7 +375,7 @@ class Planning_ItemHelper {
 									<input type=\"hidden\" value=\"{}\" name=\"tache_participant[]\">					
 								</div>
 							</article>
-							<section class='item-bottom tooltip-track'>
+							<section class='item-bottom'>
 								<a class='ui-icon ui-icon-pin-s draggable-item' title='Déplacer cet élément' href='#'>&nbsp;</a>
 								$sZoomIn
 								$sTrash

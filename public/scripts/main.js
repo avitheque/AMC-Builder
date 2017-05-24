@@ -80,6 +80,7 @@ function setDatePicker(selector) {
 		}
 	});
 }
+
 // Initialisation du plugin TimePicker
 function setTimePicker(selector) {
 	// Le champ ne doit pas être en lecture seule
@@ -101,6 +102,7 @@ function setTimePicker(selector) {
 		'isRTL':			false
 	});
 }
+
 // Initialisation de la boîte de dialogue de confirmation
 function setDialogConfirm(selector, button_or_url) {
 	$(selector).dialog({
@@ -154,6 +156,7 @@ function setDialogConfirm(selector, button_or_url) {
 		}
 	});
 }
+
 /**
  * Méthode de comparaison entre deux tableaux
  * @param	array	a1
@@ -172,6 +175,7 @@ function arrayCompare(a1, a2) {
 	}
 	return true;
 }
+
 /**
  * Méthode de recherche d'une entrée dans un tableau
  * @param	string	needle
@@ -191,6 +195,7 @@ function inArray(needle, haystack) {
 	}
 	return false;
 }
+
 /**
  * Méthode de récupération de la clé d'une entrée dans un tableau
  * @param	string	needle
@@ -210,6 +215,7 @@ function getArrayKey(needle, haystack) {
 	}
 	return null;
 }
+
 /**
  * Méthode de protection du chargement de la page contre les cliqueurs intempestifs
  * @param	object	event
@@ -231,6 +237,7 @@ function waitingStatement(event) {
 		}, 1000);
 	}
 }
+
 // Initialisation de l'indicateur de modification du formulaire
 var MODIFICATION = false;
 
@@ -244,12 +251,17 @@ $(document).ready(function() {
 
 	// Activation du plugin TimePicker sur les champs INPUT de classe TIME
 	setTimePicker("input.time");
-
+	
 	// Activation des TOOLTIPS de pagination
 	$(".page-top, .page-bottom").tooltip({
 		position:	{my: "left+20", at: "center"}
 	});
 
+	// Activation des TOOLTIPS disposés à côté du bouton DELETE
+	$(".delete").tooltip({
+		position:	{my: "left+10", at: "right center"}
+	});
+	
 	// Activation des TOOLTIPS statiques
 	$(".tooltip").tooltip({
 		position:	{my: "top+20", at: "center"}
@@ -258,11 +270,6 @@ $(document).ready(function() {
 	// Activation des TOOLTIPS qui suivent la souris de l'utilisateur
 	$(".tooltip-track").tooltip({
 		track:		true,
-		position:	{my: "left+10", at: "right center"}
-	});
-
-	// Activation des TOOLTIPS disposés à côté du bouton DELETE
-	$(".delete").tooltip({
 		position:	{my: "left+10", at: "right center"}
 	});
 

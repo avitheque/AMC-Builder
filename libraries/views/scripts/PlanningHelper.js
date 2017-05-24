@@ -185,24 +185,30 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 						// Protection contre le syndrome du cliqueur intempestif
 						event.stopPropagation();
 						
-						// Fonctionnalité réalisée pour chaque session de PLANNING
-						for (var session in PLANNING) {
-							// Actualisation de la largeur des cellules
-							updateCellWidth(true, session);
+						// Fonctionnalité réalisée si le PANEL activé contient le PLANNING
+						if (typeof(ui.newPanel.find("section.planningHelper").html()) != 'undefined') {
+							// Fonctionnalité réalisée pour chaque session de PLANNING
+							for (var session in PLANNING) {
+								// Actualisation de la largeur des cellules
+								updateCellWidth(true, session);
+							}
 						}
 					}
 				});
-			} else if (typeof(parent.tabs) == 'function' ) {
+			} else if (parent = $(this).parents(".tabs") && typeof(parent.tabs) == 'function' ) {
 				// Fonctionnalité réalisée dans le cas d'une inclusion dans un plugin jQuery.tabs();
 				parent.tabs({
 					activate:	function(event, ui) {
 						// Protection contre le syndrome du cliqueur intempestif
 						event.stopPropagation();
 						
-						// Fonctionnalité réalisée pour chaque session de PLANNING
-						for (var session in PLANNING) {
-							// Actualisation de la largeur des cellules
-							updateCellWidth(true, session);
+						// Fonctionnalité réalisée si le PANEL activé contient le PLANNING
+						if (typeof(ui.newPanel.find("section.planningHelper").html()) != 'undefined') {
+							// Fonctionnalité réalisée pour chaque session de PLANNING
+							for (var session in PLANNING) {
+								// Actualisation de la largeur des cellules
+								updateCellWidth(true, session);
+							}
 						}
 					}
 				});
@@ -236,6 +242,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 			$("dl.diary dd.planning", this).each(function() {
 				// Initialisation du déplacement des éléments sur la grille
 				$("li.item", this).draggable({
+					handle:				"a.draggable-item",						// Icône en forme de PUNAISE qui permet de déplacer la cellule
 					revert:				"false",
 					containment:		"document",
 					helper:				"clone",
@@ -466,9 +473,12 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 			console.debug("$.fn.viewItem()");
 		}
 
+		// Fonctionnalité réalisée si le compteur n'existe pas encore
 		if (typeof(compteurModal) == 'undefined') {
+			// Initialisation du compteur
 			var compteurModal = 0;
 		} else {
+			// Incrémentation du compteur
 			compteurModal = compteurModal + 1;
 		}
 
@@ -533,7 +543,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 							// Fermeture du MODAL
 							$(this).dialog("close");
 						},
-						"Valider": function() {
+						"Valider": function(event) {
 							// Mise à jour de la durée de l'élément
 							$item.updateDuree($("#id_modal_duree").val(), MD5);
 							
@@ -561,6 +571,11 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 
 	// Suppression de la tâche dans la PROGRESSION
 	$.fn.removeItem = function() {
+		// Fonctionnalité réalisée si le MODE_DEBUG est actif sur `PLANNING_HELPER`
+		if (typeof(PLANNING_DEBUG) == 'boolean' && PLANNING_DEBUG) {
+			console.debug("$.fn.removeItem()");
+		}
+		
 		// Récupération de l'identifiant du PLANNING
 		var MD5 = $(this).parents("section").attr("id");
 
@@ -877,12 +892,6 @@ function initPlanning(MD5) {
 	// Création de l'objet s'il n'existe pas déjà
 	var $oPlanning	= getPlanning(MD5);
 
-	// Activation des TOOLTIPS qui suivent la souris de l'utilisateur
-	$(".tooltip-track").tooltip({
-		track:		true,
-		position:	{my: "left+10", at: "right center"}
-	});
-
 	// Déclaration des éléments SOURCE / CIBLE
 	var $item		= $("#" + PLANNING_MD5_PREFIXE + MD5);							// Liste des éléments de la progression sous forme de cellule
 
@@ -951,7 +960,7 @@ $(document).ready(function() {
 	$(document).on("click", "a.ui-icon-zoomin", function(event) {
 		// Protection contre le syndrome du cliqueur intempestif
 		event.stopPropagation();
-
+		
 		// Récupération du conteneur parent
 		var $target = $(this).parents("li.item");
 
