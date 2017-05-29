@@ -10,8 +10,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 29 $
- * @since		$LastChangedDate: 2017-05-24 22:30:27 +0200 (Wed, 24 May 2017) $
+ * @version		$LastChangedRevision: 30 $
+ * @since		$LastChangedDate: 2017-05-29 23:21:02 +0200 (Mon, 29 May 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -359,8 +359,8 @@ class Planning_ItemHelper {
 			// Ajout d'un élément
 			$this->_html = "<li class='item " . $this->_class . " ui-widget-content ui-corner-tr ui-draggable' align='center'>
 							<article title='" . $this->_title . "' class='job padding-0' align='center'>
-								<h3 class='strong left'>" . $this->_title . "</h3>
-								<div class='content'>
+								<h3 class='strong left max-width'>" . $this->_title . "</h3>
+								<div class='content center'>
 									<p>" . $this->_describe . "</p>
 									
 									" . $this->_content . "

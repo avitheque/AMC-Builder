@@ -88,10 +88,10 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 		var debug_info;
 
 		// Récupération des informations de l'élément en cours de déplacement
-		var uniqueId = ui.helper.getUniqueId();
+		var uniqueId	= ui.helper.getUniqueId();
 
 		// Récupération de l'identifiant du PLANNING
-		var MD5		= $(this).parents("section").attr("id");
+		var MD5			= $(this).parents("section").attr("id");
 
 		// Suppression de tous l'indicateur de survol par défaut pour tout le PLANNING
 		$("dl[class*=diary].hover", "section#" + MD5).removeClass("hover");
@@ -175,9 +175,9 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 		// Fonctionnalité réalisée pour chaque PLANNING
 		$(this).each(function() {
 			// Récupération de l'identifiant du PLANNING
-			var MD5 = $(this).attr("id");
+			var MD5		= $(this).attr("id");
 			
-			var parent = $(this).parents(".accordion");
+			var parent	= $(this).parents(".accordion");
 			if (typeof(parent.accordion) == 'function' ) {
 				// Fonctionnalité réalisée dans le cas d'une inclusion dans un plugin jQuery.accordion();
 				parent.accordion({
