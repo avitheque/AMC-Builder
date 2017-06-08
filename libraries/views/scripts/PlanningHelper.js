@@ -84,6 +84,9 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 
 	// Survol d'une tâche sur la cellule : coloration selon l'occupation de la PROGRESSION
 	$.fn.dragging = function(event, ui) {
+		// Protection contre la propagation intempestive
+		event.stopPropagation();
+		
 		// Message de debuggage
 		var debug_info;
 
@@ -182,7 +185,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 				// Fonctionnalité réalisée dans le cas d'une inclusion dans un plugin jQuery.accordion();
 				parent.accordion({
 					activate:	function(event, ui) {
-						// Protection contre le syndrome du cliqueur intempestif
+						// Protection contre la propagation intempestive
 						event.stopPropagation();
 						
 						// Fonctionnalité réalisée si le PANEL activé contient le PLANNING
@@ -199,7 +202,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 				// Fonctionnalité réalisée dans le cas d'une inclusion dans un plugin jQuery.tabs();
 				parent.tabs({
 					activate:	function(event, ui) {
-						// Protection contre le syndrome du cliqueur intempestif
+						// Protection contre la propagation intempestive
 						event.stopPropagation();
 						
 						// Fonctionnalité réalisée si le PANEL activé contient le PLANNING
@@ -219,10 +222,16 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 				accept:				"#" + PLANNING_MD5_PREFIXE + MD5 + " li.item",
 				// Fonctionnalité réalisée lorsque la souris survole le PLANNING tout entier
 				over:				function(event, ui) {
+					// Protection contre la propagation intempestive
+					event.stopPropagation();
+					
 					PLANNING_MOUSEHOVER	= true;
 				},
 				// Fonctionnalité réalisée lorsque la souris ne survole aucun PLANNING
 				out:				function(event, ui) {
+					// Protection contre la propagation intempestive
+					event.stopPropagation();
+					
 					PLANNING_MOUSEHOVER	= false;
 					// Fonctionnalité réalisée lorsque la souris sort du PLANNING
 					if (typeof(PLANNING[MD5]) != 'undefined') {
@@ -231,6 +240,9 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 				},
 				// Fonctionnalité réalisée lorsque la fonctionnalité est terminée
 				deactivate:			function(event, ui) {
+					// Protection contre la propagation intempestive
+					event.stopPropagation();
+					
 					// Fonctionnalité réalisée lorsque la souris sort du PLANNING
 					if (typeof(PLANNING[MD5]) != 'undefined') {
 						PLANNING[MD5].render();
@@ -249,6 +261,9 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 					refreshPositions:	true,
 					zIndex:				5000,
 					drag:				function(event, ui) {
+						// Protection contre la propagation intempestive
+						event.stopPropagation();
+						
 						// Récupération du parent
 						var $parent = $(this).parent();
 						var $position = "absolute";
@@ -269,12 +284,18 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 					accept:				"li.item",
 					activeClass:		"ui-state-highlight",
 					activate:			function(event, ui) {
+						// Protection contre la propagation intempestive
+						event.stopPropagation();
+						
 						// Initialisation des variables de gestion des conflits
 						PLANNING_ERROR		= false;
 						PLANNING_MOUSEHOVER	= false;
 					},
 					// Fonctionnalité réalisée lorsque la souris survole la cellule
 					over:				function(event, ui) {
+						// Protection contre la propagation intempestive
+						event.stopPropagation();
+						
 						// Récupération de l'identifiant de la SECTION parent (MODAL pour l'ajout / PLANNING pour le déplacement)
 						var sectionItem		= ui.helper.parents("section").attr("id").replace(MODAL_MD5_PREFIXE, "");
 
@@ -290,13 +311,20 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 					},
 					// Fonctionnalité réalisée lors déplacement d'un élément dans la cellule
 					drop:				function(event, ui) {
+						// Protection contre la propagation intempestive
+						event.stopPropagation();
+						
 						// Récupération de l'identifiant de la SECTION parent (MODAL pour l'ajout / PLANNING pour le déplacement)
 						var sectionItem		= ui.helper.parents("section").attr("id").replace(MODAL_MD5_PREFIXE, "");
 
 						// Fonctionnalité réalisée si la CELLULE est compatible avec la SOURCE
-						if (sectionItem == MD5) {
+						if (sectionItem == MD5 && ui.draggable.getUniqueId() != this.id) {
 							// Ajout du clône dans la nouvelle cellule dans le PLANNING
 							addItem(MD5, ui, this);
+						} else if (sectionItem == MD5) {
+							// Message informant que la CELLULE de destination est identique à la source
+							$("#var-debug").text('Emplacement identique !');
+							return false;
 						} else {
 							// Message informant de l'incompatibilité de la CELLULE
 							$("#var-debug").text('Emplacement non compatible !');
@@ -305,8 +333,17 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 					},
 					// Fonctionnalité réalisée lors déplacement d'un élément dans la cellule
 					deactivate:			function(event, ui) {
-						// Nettoyage du survol
-						clearPlanning(MD5);
+						// Protection contre la propagation intempestive
+						event.stopPropagation();
+						
+						// Récupération de l'identifiant de la SECTION parent (MODAL pour l'ajout / PLANNING pour le déplacement)
+						var sectionItem		= ui.helper.parents("section").attr("id").replace(MODAL_MD5_PREFIXE, "");
+
+						// Fonctionnalité réalisée afin de limiter la fonctionnalité au PLANNING en cours
+						if (sectionItem == MD5) {
+							// Nettoyage du survol
+							clearPlanning(sectionItem);
+						}
 					}
 				});
 
@@ -363,7 +400,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 						setPlanningItemAttribute('tache_duree', $(this).val(), MD5);
 
 						// Actualisation de la largeur des cellules
-						updateCellWidth(true, MD5);
+						updateCellWidth(false, MD5);
 					});
 
 					// Annulation de l'événement
@@ -434,7 +471,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 
 		// Fonctionnalité réalisée si le MODE_DEBUG est actif sur `PLANNING_HELPER`
 		if (typeof(PLANNING_DEBUG) == 'boolean' && PLANNING_DEBUG) {
-			console.debug("$.fn.updateDuree(" + newDuree + ", '", MD5 + "')");
+			console.debug("$.fn.updateDuree(" + newDuree + ", '" + MD5 + "')");
 		}
 
 		// Fonctionnalité réalisée si la largeur de cellule par défaut est connue
@@ -459,7 +496,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 
 		// Redimentionnement de la CELLULE
 		var newWidth	= PLANNING_CELL_WIDTH[MD5];
-        var facteur		= (newWidth * newDuree / PLANNING_CELL_WIDTH[MD5] - PLANNING_ITEM_MARGIN) + (PLANNING_ITEM_FACTEUR * newDuree);
+        var facteur		= (newDuree - PLANNING_ITEM_MARGIN) + (PLANNING_ITEM_FACTEUR * newDuree);
 		newWidth		= newWidth * newDuree + facteur;
 
 		// Affectation de la nouvelle valeur à la CELLULE
@@ -535,6 +572,9 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 					maxHeight:	document.body.clientHeight - 100,
 					modal:		true,
 					create:		function(event, ui) {
+						// Protection contre la propagation intempestive
+						event.stopPropagation();
+						
 						// Affichage en MODE_DEBUG
 						$("#var-debug").html("Création du MODAL #id_modal_duree");
 					},
@@ -544,6 +584,9 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 							$(this).dialog("close");
 						},
 						"Valider": function(event) {
+							// Protection contre la propagation intempestive
+							event.stopPropagation();
+							
 							// Mise à jour de la durée de l'élément
 							$item.updateDuree($("#id_modal_duree").val(), MD5);
 							
@@ -559,6 +602,8 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 						}
 					},
 					close:		function(event, ui) {
+						// Protection contre la propagation intempestive
+						event.stopPropagation();
 						// Suppression du modal
 						$modal.remove();
 						// Réinitialisation du compteur
@@ -740,12 +785,6 @@ function updateCellWidth(bResize, MD5) {
 		// Récupération de la largeur des cellules dans le navigateur CLIENT
 		PLANNING_CELL_WIDTH[MD5] = $("dd.planning", "section#" + MD5).innerWidth();
 
-		// Actualisation des éléments déjà affichés dans le MODAL
-		$("li.item", "section#" + MODAL_MD5_PREFIXE + MD5).each(function() {
-			// Mise à jour de la taille des tâches récupérées dans le moteur de recherche du MODAL
-			$(this).updateDuree(duree, MD5);
-		});
-
 		// Fonctionnalité réalisée si le paramètre d'entrée active le redimentionnement des tâches du PLANNING
 		if (typeof(bResize) == 'boolean' && bResize == true) {
 			// Redimentionnement des éléments déjà affichés dans le PLANNING
@@ -757,6 +796,12 @@ function updateCellWidth(bResize, MD5) {
 					// Modification de la durée de la tâche
 					$(this).updateDuree(duree, MD5);
 				});
+			});
+		} else {
+			// Actualisation des éléments déjà affichés dans le MODAL
+			$("li.item", "section#" + MODAL_MD5_PREFIXE + MD5).each(function() {
+				// Mise à jour de la taille des tâches récupérées dans le moteur de recherche du MODAL
+				$(this).updateDuree(duree, MD5);
 			});
 		}
 	}
@@ -904,6 +949,9 @@ function initPlanning(MD5) {
 		refreshPositions:	true,													// Actualisation des positions (X, Y)
 		zIndex:				5000,													// Option de l'attribut CSS `z-index`
 		drag:				function(event, ui) {									// Fonctionnalités réalisées lors du déplacement du clône
+			// Protection contre la propagation intempestive
+			event.stopPropagation();
+			
 			// Récupération de l'identifiant de la SECTION parent (MODAL pour l'ajout / PLANNING pour le déplacement)
 			var sectionItem		= ui.helper.parents("section").attr("id").replace(MODAL_MD5_PREFIXE, "");
 
@@ -938,9 +986,15 @@ function initPlanning(MD5) {
 
 	// Mise en évidence de la semaine au survol du PLANNING
 	$("td[class*=day-]",	"section#" + MD5).mouseenter(function(event) {
+		// Protection contre la propagation intempestive
+		event.stopPropagation();
+		
 		var role = $(this).attr("role");
 		$("th." + role,		"section#" + MD5).addClass("hover");
 	}).mouseleave(function(event) {
+		// Protection contre la propagation intempestive
+		event.stopPropagation();
+		
 		var role = $(this).attr("role");
 		$("th." + role,		"section#" + MD5).removeClass("hover");
 	});

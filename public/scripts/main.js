@@ -312,7 +312,7 @@ $(document).ready(function() {
 			var item	= inputs.index(this) + 1;
 
 			// Déplacement du focus
-			inputs.eq( item ).focus();
+			inputs.eq(item).focus();
 
 			// Annulation de l'événement
 			event.preventDefault();
