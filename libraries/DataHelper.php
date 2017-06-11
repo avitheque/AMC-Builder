@@ -10,9 +10,9 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 27 $
- * @since		$LastChangedDate: 2017-05-13 10:10:30 +0200 (Sat, 13 May 2017) $
- * 
+ * @version		$LastChangedRevision: 32 $
+ * @since		$LastChangedDate: 2017-06-11 01:31:10 +0200 (Sun, 11 Jun 2017) $
+ *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
@@ -101,7 +101,7 @@ class DataHelper {
 	 */
 	static function isValidArray($aArray, $nCount = null) {
 		$bValide = false;
-		if ((is_array($aArray) || is_object($aArray)) && count($aArray) > 0) {
+		if (!is_null($aArray) && (is_array($aArray) || is_object($aArray)) && count($aArray) > 0) {
 			$bValide = true;
 
 			// Fonctionnalité réalisée si le tableau n'est pas vide
@@ -267,7 +267,7 @@ class DataHelper {
 			return	$sDateTime;
 		}
 	}
-	
+
 	/**
 	 * @brief	Vérifie si le format d'une date saisie est jj/mm/aaaa.
 	 *
@@ -929,7 +929,7 @@ class DataHelper {
 		return $aResultat;
 	}
 
-	/** @brief Extraction d'un tableau BIDIMENTIONNEL.
+	/** @brief Extraction d'un tableau BIDIMENSIONNEL.
 	 * Méthode permettant d'extraire un ensemble de libellés à partir d'une requête.
 	 *
 	 * @li Extraction des champs dans l'ordre de la construction du filtre.
@@ -1302,6 +1302,45 @@ class DataHelper {
 				}
 			break;
 		}
+	}
+
+	/**
+	 * @brief	Insertion d'une entrée dans un tableau MULTIDIMENSIONNEL selon l'identifiant.
+	 *
+	 * @param	array		$aInput			: Tableau à traiter d'entrée.
+	 * @param	array		$aWhere			: Tableau associatif de la clé recherchée et sa valeur attendue.
+	 * @param	array		$aData			: Tableau associatif de la clé à ajouter et de sa valeur correspondante.
+	 * @return	array
+	 */
+	public static function arrayMerge($aInput, $aWhere = array('id' => 0), $aData = array('items' => array())) {
+		// Élément à rechercher
+		$aSearch		= array_keys($aWhere);
+		$sSearchKey		= $aSearch[0];
+		$sSearchValue	= $aWhere[$sSearchKey];
+
+		// Données à ajouter
+		$aMerge			= array_keys($aData);
+		$sMergeKey		= $aMerge[0];
+		$xMergeValue	= $aData[$sMergeKey];
+
+		// Parcours du contenu de façon récursive
+		foreach ($aInput as $sKey => $xValue) {
+			// Fonctionnalité réalisée si l'élément recherché correspond
+			if ($sSearchKey == $sKey && $xValue == $sSearchValue) {
+				// Ajout des données
+				$aInput[$sMergeKey][] = $xMergeValue;
+			} elseif (self::isValidArray($xValue)) {
+				// Parcours du sous-ensemble
+				if (array_key_exists($sSearchKey, $xValue) && $xValue[$sSearchKey] == $sSearchValue) {
+					$aInput[$sKey][$sMergeKey][] = $xMergeValue;
+				} else {
+					$aInput[$sKey] = self::arrayMerge($xValue, $aWhere, $aData);
+				}
+			}
+		}
+
+		// Renvoi du résultat
+		return $aInput;
 	}
 
 	const SQL_TYPE_UNDEFINED	= 0;			# Type non reconnu

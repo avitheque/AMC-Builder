@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 6 $
- * @since		$LastChangedDate: 2017-03-03 00:04:19 +0100 (ven., 03 mars 2017) $
+ * @version		$LastChangedRevision: 33 $
+ * @since		$LastChangedDate: 2017-06-11 21:24:20 +0200 (Sun, 11 Jun 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -120,8 +120,12 @@ class UtilisateurHelper {
 		$nIdGradeUtilisateur		= DataHelper::get($this->_aFormulaire, 'utilisateur_grade',			DataHelper::DATA_TYPE_INT,	null);
 		$sGradeOptions				= HtmlHelper::buildListOptions($this->_oInstanceStorage->getData('liste_grades'), $nIdGradeUtilisateur, null, null, $this->_bReadonly);
 
+		// Construction de la liste déroulante du GROUPE
+		$nIdGroupeUtilisateur		= DataHelper::get($this->_aFormulaire, 'utilisateur_groupe',			DataHelper::DATA_TYPE_INT,	null);
+		$sGroupeOptions				= HtmlHelper::buildListArborescenceOptions($this->_oInstanceStorage->getData('liste_groupes'), $nIdGroupeUtilisateur, array('id_groupe' => 'libelle_groupe'), $this->_bReadonly);
+
 		// Identifiant de l'utilisateur
-		$nIdUtilisateur				= DataHelper::get($this->_aFormulaire, 'utilisateur_id', 			DataHelper::DATA_TYPE_STR,	null);
+		$nIdUtilisateur				= DataHelper::get($this->_aFormulaire, 'utilisateur_id',			DataHelper::DATA_TYPE_STR,	null);
 		// Nom de l'utilisateur
 		$sNomUtilisateur			= DataHelper::get($this->_aFormulaire, 'utilisateur_nom',			DataHelper::DATA_TYPE_STR,	null);
 		// Prénom de l'utilisateur
@@ -142,6 +146,9 @@ class UtilisateurHelper {
 
 		// Date de modification de l'utilisateur
 		$dDateModification			= DataHelper::get($this->_aFormulaire, 'utilisateur_datetime',		DataHelper::DATA_TYPE_DATETIME);
+
+		// Protection contre la modification de l'utilisateur
+		$bUtilisateurModifiable		= DataHelper::get($this->_aFormulaire, 'utilisateur_modifiable',		DataHelper::DATA_TYPE_BOOL);
 
 		// Initialisation du mode d'accès au formulaire
 		if ($this->_bReadonly) {
@@ -176,6 +183,10 @@ class UtilisateurHelper {
 										<section id=\"utilisateur\">
 											<fieldset $sClassField id=\"general\"><legend>Généralités</legend>
 												<ol class=\"no-wrap\">
+													<li>
+														<label for=\"idGroupeUtilisateur\">Groupe de l'utilisateur</label>
+														<select id=\"idGroupeUtilisateur\" name=\"utilisateur_groupe\" $sDisabled>" . $sGroupeOptions . "</select>
+													</li>
 													<li>
 														<label for=\"idGradeUtilisateur\">Grade de l'utilisateur</label>
 														<select id=\"idGradeUtilisateur\" name=\"utilisateur_grade\" $sDisabled>" . $sGradeOptions . "</select>
@@ -299,6 +310,7 @@ class UtilisateurHelper {
 													<br/>
 													<u>Il peut également en plus du profil <span class='accordion-link strong italic pointer' for='tabs-administrateur'>Administrateur</span> :</u>
 													<ul>
+														<li>&bull; Administrer les groupes d'utilisateurs ;</li>
 														<li>&bull; Superviser le serveur de l'application.</li>
 													</ul>
 												</div>

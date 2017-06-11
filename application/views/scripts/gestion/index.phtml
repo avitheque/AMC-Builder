@@ -6,7 +6,7 @@
  * User: durandcedric
  * Date: 25/09/16
  * Time: 11:43
- * 
+ *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
@@ -21,6 +21,7 @@ $sArticle = "<section class=\"tabs\">
 					<li><a href=\"#tabs-stages\">Stages</a></li>
 					<li><a href=\"#tabs-candidats\">Candidats</a></li>
 					<li><a href=\"#tabs-utilisateurs\">Utilisateurs</a></li>
+					<li><a href=\"#tabs-groupes\">Groupes</a></li>
 					<li><a href=\"#tabs-referentiels\">Référentiels</a></li>
 				</ul>";
 
@@ -118,25 +119,32 @@ $sArticle .= "<div id=\"tabs-utilisateurs\">
 
 // Récupération de la liste des candidats
 $aListeUtilisateurs = $oInstanceStorage->getData('liste_utilisateurs');
-$oUtilisateurs = new DatatableHelper("table-utilisateurs", $aListeUtilisateurs);
+$oUtilisateurs	= new DatatableHelper("table-utilisateurs", $aListeUtilisateurs);
 $oUtilisateurs->setClassColumn("align-left", array("libelle_court_grade", "nom_utilisateur", "prenom_utilisateur"));
-$oUtilisateurs->setClassColumn("align-left strong", "libelle_profil");
+$oUtilisateurs->setClassColumn("align-left strong", array("libelle_profil", "libelle_groupe"));
+
+// Ajout de la valeur de l'identifiant du profil à la colonne [libelle_groupe] masquée
+$oUtilisateurs->prependValueIntoColumn("libelle_profil", "id_profil", "%d", "hidden");
 
 // Ajout de la valeur d'ordre du grade à la colonne [libelle_court_grade] masquée
 $oUtilisateurs->prependValueIntoColumn("libelle_court_grade", "ordre_grade", "%03d", "hidden");
 
+// Ajout de la valeur de la borne gauche à la colonne [libelle_groupe] masquée
+$oUtilisateurs->prependValueIntoColumn("libelle_groupe", "borne_gauche", "%09d", "hidden");
+
 // Personnalisation des noms de colonne
 $aColonnes = array(
+	'libelle_profil'			=> "PROFIL",
 	'libelle_court_grade'		=> "GRADE",
 	'nom_utilisateur'			=> "NOM",
 	'prenom_utilisateur'		=> "PRÉNOM",
-	'libelle_profil'			=> "PROFIL",
+	'libelle_groupe'			=> "GROUPE",
 	'id_utilisateur'			=> "IDENTIFIANT"
 );
 $oUtilisateurs->renameColumns($aColonnes, true);
 
 // Tri du tableau sur la colonne GRADE par ordre DESC
-$oUtilisateurs->setOrderColumn('GRADE', 'desc');
+$oUtilisateurs->setOrderColumn('PROFIL', 'desc');
 
 // Ajout d'une colonne [ACTION] avec un lien HREF
 $oUtilisateurs->addAnchorOnColumn("ACTION", "id_utilisateur", "Éditer", "/gestion/utilisateur?id=");
@@ -145,6 +153,32 @@ $oUtilisateurs->disableOrderingOnColumn('ACTION');
 // Ajout du tableau à l'article
 $sArticle .= $oUtilisateurs->renderHTML();
 $sArticle .= "<span id=\"tabs-utilisateurs-bottom\"><a class=\"page-bottom\" href=\"#tabs-utilisateurs-top\" title=\"Haut de page...\">&#8593;</a></span>
+			</div>";
+
+//=================================================================================================
+// GESTION DES GROUPES
+//=================================================================================================
+
+// Gestion des groupes
+$sArticle .= "<div id=\"tabs-groupes\">
+				<span id=\"tabs-groupes-top\"><a class=\"page-top\" href=\"#tabs-groupes-bottom\" title=\"Bas de page...\">&#8595;</a></span>
+				<h2>Gestion des groupes<a href=\"/gestion/groupe\" class=\"button blue right margin-0\">Ajouter un groupe</a></h2>
+				<p>
+				</p>";
+
+// Récupération de la liste des groupes
+$aListeGroupes = $oInstanceStorage->getData('liste_groupes');
+// Initialisation de l'instance
+$oArborescence = new ArborescenceHelper('groupes');
+$oArborescence->setIdPosition('id_groupe');
+$oArborescence->setLabelPositionInterval('libelle_groupe');
+$oArborescence->setLeftPosition('borne_gauche');
+$oArborescence->setRightPosition('borne_droite');
+// Chargement à partir de la liste exploitant des intervalles
+$oArborescence->setListeItemsFromIntervalles($aListeGroupes);
+
+// Rendu de l'affichage
+$sArticle .= $oArborescence->renderHtml() . "
 			</div>";
 
 //=================================================================================================

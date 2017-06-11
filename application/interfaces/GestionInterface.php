@@ -11,8 +11,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 33 $
+ * @since		$LastChangedDate: 2017-06-11 21:24:20 +0200 (Sun, 11 Jun 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -53,12 +53,18 @@ abstract class GestionInterface {
 		'utilisateur_id'			=> DataHelper::DATA_TYPE_STR,
 		'utilisateur_confirmation'	=> DataHelper::DATA_TYPE_STR,
 		'utilisateur_grade'			=> DataHelper::DATA_TYPE_INT,
+		'utilisateur_groupe'		=> DataHelper::DATA_TYPE_INT,
 		'utilisateur_login'			=> DataHelper::DATA_TYPE_STR,
+		'utilisateur_modifiable'	=> DataHelper::DATA_TYPE_BOOL,
 		'utilisateur_nom'			=> DataHelper::DATA_TYPE_STR,
 		'utilisateur_password'		=> DataHelper::DATA_TYPE_STR,
 		'utilisateur_prenom'		=> DataHelper::DATA_TYPE_STR,
 		'utilisateur_profil'		=> DataHelper::DATA_TYPE_INT,
-		'utilisateur_datetime'		=> DataHelper::DATA_TYPE_DATETIME
+		'utilisateur_datetime'		=> DataHelper::DATA_TYPE_DATETIME,
+
+		// GROUPE *********************************************************** (ordre alphabétique)
+		'groupe_id'					=> DataHelper::DATA_TYPE_INT,
+		'groupe_datetime'			=> DataHelper::DATA_TYPE_DATETIME
 	);
 
 }

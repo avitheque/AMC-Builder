@@ -15,8 +15,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 33 $
+ * @since		$LastChangedDate: 2017-06-11 21:24:20 +0200 (Sun, 11 Jun 2017) $
  * @see			{ROOT_PATH}/libraries/models/MySQLManager.php
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
@@ -26,10 +26,12 @@
 class AdministrationManager extends MySQLManager {
 
 	const	ID_CANDIDAT						= 'ID_CANDIDAT';
+	const	ID_GROUPE						= 'ID_GROUPE';
 	const	ID_STAGE						= 'ID_STAGE';
 	const	ID_UTILISATEUR					= 'ID_UTILISATEUR';
 
 	const	TYPE_CANDIDAT					= "candidat";
+	const	TYPE_GROUPE						= "groupe";
 	const	TYPE_STAGE						= "stage";
 	const	TYPE_UTILISATEUR				= "utilisateur";
 
@@ -167,10 +169,10 @@ class AdministrationManager extends MySQLManager {
 		$aBind	= array(
 			":libelle_grade" => strtoupper($sLabel)
 		);
-		
+
 		// Exécution de la requête et récupération du premier résultat
 		$aResultat = $this->executeSQL($aQuery, $aBind, 0);
-		
+
 		// Renvoi de l'identifiant
 		return DataHelper::get($aResultat, 'id_grade', DataHelper::DATA_TYPE_INT, 0);
 	}
@@ -298,6 +300,99 @@ class AdministrationManager extends MySQLManager {
 
 		// Exécution de la requête et renvoi du premier résultat
 		return $this->executeSQL($aQuery, $aBind, 0);
+	}
+
+	/**********************************************************************************************
+	 * @todo	GROUPES
+	 **********************************************************************************************/
+
+	/**
+	 * @brief	Méthode de recherche de tous les groupes.
+	 *
+	 * @li	Tri des groupes par leurs intervalles.
+	 *
+	 * @return	array, tableau contenant l'ensemble des résultats de la requête.
+	 * @throws	ApplicationException si la requête ne fonctionne pas.
+	 */
+	public function findAllGroupes() {
+		// Requête SELECT
+		$aQuery = array(
+			"SELECT * FROM groupe",
+			"ORDER BY borne_gauche ASC, borne_droite ASC"
+		);
+
+		try {
+			// Exécution de la requête et renvoi du résultat sous forme de tableau
+			return $this->selectSQL($aQuery);
+		} catch (Exception $e) {
+			throw new ApplicationException(Constantes::ERROR_BADQUERY, DataHelper::queryToString($sQuery));
+		}
+	}
+
+	/**
+	 * @brief	Méthode de recherche de tous les groupes d'un utilisateur.
+	 *
+	 * @li	Tri des groupes par leurs intervalles.
+	 *
+	 * @return	array, tableau contenant l'ensemble des résultats de la requête.
+	 * @throws	ApplicationException si la requête ne fonctionne pas.
+	 */
+	public function findGroupesByUtilisateur($nId) {
+		// Requête SELECT
+		$aQuery = array(
+			"SELECT	groupe.*",
+			"FROM utilisateur, groupe",
+			"WHERE id_utilisateur = :id_utilisateur",
+			"AND id_groupe IN(utilisateur.liste_groupes)",
+			"ORDER BY borne_gauche ASC, borne_droite ASC"
+		);
+
+		// Construction du tableau associatif des étiquettes et leurs valeurs
+		$aBind	= array(
+			":id_utilisateur"	=> $nId
+		);
+
+		try {
+			// Exécution de la requête et renvoi du résultat sous forme de tableau
+			return $this->executeSQL($aQuery, $aBind);
+		} catch (Exception $e) {
+			throw new ApplicationException(Constantes::ERROR_BADQUERY, $e);
+		}
+	}
+
+	/**
+	 * @brief	Méthode de récupération d'un groupe par son identifiant.
+	 *
+	 * @param	integer		$nId				: identifiant du groupe.
+	 * @return	array, tableau ne contenant qu'un seul résultat.
+	 * @code
+	 * 		array(
+	 * 			'id_groupe'			=> "INTEGER	: identifiant du groupe",
+	 * 			'libelle_groupe'	=> "STRING	: libellé du groupe",
+	 * 			'borne_gauche'		=> "INTEGER	: borne gauche de l'intervalle",
+	 * 			'borne_droite'		=> "INTEGER	: borne droite de l'intervalle"
+	 * 		);
+	 * @endcode
+	 * @throws	ApplicationException si la requête ne fonctionne pas.
+	 */
+	public function getGroupeById($nId) {
+		// Requête préparée de sélection
+		$aQuery[]		= "SELECT * FROM groupe";
+
+		// Clause WHERE
+		$aQuery[]		= "WHERE id_groupe = :id_groupe";
+
+		// Liste des étiquettes et leurs valeurs
+		$aBind			= array(
+			':id_groupe'		=> $nId
+		);
+
+		try {
+			// Exécution de la requête avec récupération de la première occurrence [0]
+			return $this->executeSQL($aQuery, $aBind, 0);
+		} catch (Exception $e) {
+			throw new ApplicationException(Constantes::ERROR_BADQUERY, $aQuery);
+		}
 	}
 
 	/**********************************************************************************************
@@ -447,6 +542,7 @@ class AdministrationManager extends MySQLManager {
 			"SELECT	*,",
 			self::LIBELLE_UTILISATEUR . " AS libelle_utilisateur",
 			"FROM utilisateur",
+			"JOIN groupe USING(id_groupe)",
 			"JOIN grade USING(id_grade)",
 			"JOIN profil USING(id_profil)",
 			"WHERE editable_utilisateur >= :editable_utilisateur",
@@ -476,7 +572,9 @@ class AdministrationManager extends MySQLManager {
 		// Requête SELECT
 		$aQuery = array(
 			"SELECT * FROM utilisateur",
+			"JOIN groupe USING(id_groupe)",
 			"JOIN grade USING(id_grade)",
+			"JOIN profil USING(id_profil)",
 			"WHERE id_utilisateur = :id_utilisateur"
 		);
 
@@ -599,6 +697,7 @@ class AdministrationManager extends MySQLManager {
 	 * 	$aUtilisateur = array(
 	 * 		// UTILISATEUR ************************************************************************
 	 * 		'utilisateur_id'		=> "Identifiant du stage",
+	 * 		'utilisateur_groupe'	=> "Identifiant du groupe de l'utilisateur",
 	 * 		'utilisateur_grade'		=> "Identifiant du grade de l'utilisateur",
 	 * 		'utilisateur_nom'		=> "Nom de l'utilisateur",
 	 * 		'utilisateur_prenom'	=> "Prénom de l'utilisateur",
@@ -626,6 +725,7 @@ class AdministrationManager extends MySQLManager {
 			}
 
 			// Chargement des données du formulaire
+			$this->_aFormulaire['utilisateur_groupe']	= DataHelper::get($aResultat, 'id_groupe',					DataHelper::DATA_TYPE_INT);
 			$this->_aFormulaire['utilisateur_grade']	= DataHelper::get($aResultat, 'id_grade',						DataHelper::DATA_TYPE_INT);
 			$this->_aFormulaire['utilisateur_nom']		= DataHelper::get($aResultat, 'nom_utilisateur',				DataHelper::DATA_TYPE_STR);
 			$this->_aFormulaire['utilisateur_prenom']	= DataHelper::get($aResultat, 'prenom_utilisateur',				DataHelper::DATA_TYPE_STR);
@@ -804,6 +904,7 @@ class AdministrationManager extends MySQLManager {
 	 * 	$aUtilisateur = array(
 	 * 		// UTILISATEUR ************************************************************************
 	 * 		'utilisateur_id'		=> "Identifiant du stage",
+	 * 		'utilisateur_groupe'	=> "Identifiant du groupe de l'utilisateur",
 	 * 		'utilisateur_grade'		=> "Identifiant du grade de l'utilisateur",
 	 * 		'utilisateur_nom'		=> "Nom de l'utilisateur",
 	 * 		'utilisateur_prenom'	=> "Prénom de l'utilisateur",
@@ -831,14 +932,16 @@ class AdministrationManager extends MySQLManager {
 			2 => "login_utilisateur = :login_utilisateur,",
 			3 => null,	/** @todo	Modification du mot de passe *********************************/
 			// Paramètres de l'utilisateur
-			4 => "id_grade = :id_grade,",
-			5 => "nom_utilisateur = :nom_utilisateur,",
-			6 => "prenom_utilisateur = :prenom_utilisateur",
+			4 => "id_groupe = :id_groupe,",
+			5 => "id_grade = :id_grade,",
+			6 => "nom_utilisateur = :nom_utilisateur,",
+			7 => "prenom_utilisateur = :prenom_utilisateur",
 		);
 
 		// Construction du tableau associatif des étiquettes et leurs valeurs
 		$aBind	= array(
 			':id_utilisateur'			=> DataHelper::get($aUtilisateur, "utilisateur_id",			DataHelper::DATA_TYPE_STR),
+			':id_groupe'				=> DataHelper::get($aUtilisateur, "utilisateur_groupe",		DataHelper::DATA_TYPE_INT),
 			':id_grade'					=> DataHelper::get($aUtilisateur, "utilisateur_grade",		DataHelper::DATA_TYPE_INT),
 			':nom_utilisateur'			=> DataHelper::get($aUtilisateur, "utilisateur_nom",		DataHelper::DATA_TYPE_STR),
 			':prenom_utilisateur'		=> DataHelper::get($aUtilisateur, "utilisateur_prenom",		DataHelper::DATA_TYPE_STR),

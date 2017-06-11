@@ -8,8 +8,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 33 $
+ * @since		$LastChangedDate: 2017-06-11 21:24:20 +0200 (Sun, 11 Jun 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -81,6 +81,7 @@ class HtmlHelper {
 		$sOptions = "";
 		if (DataHelper::isValidArray($aListe)) {
 			foreach ($aListe as $nId => $sLibelle) {
+				// Fonctionnalité réalisée si l'élément est sélectionné
 				$sSelected = in_array($nId, (array) $xValues) ? "selected=\"selected\"" : null;
 				if ($bDisabled && empty($sSelected)) {
 					continue;
@@ -96,6 +97,40 @@ class HtmlHelper {
 		}
 
 		return $sPrefix . $sOptions;
+	}
+
+	/**
+	 * @brief	Méthode de création de listes d'options sous forme d'arborescence pour les champs SELECT.
+	 *
+	 * @param	array		$aArborescence	: liste d'éléments de la forme d'une arborescence.
+	 * @param	array		$xValues		: liste des identifiants sélectionnés.
+	 * @param	string		$sFirst			: première valeur du champ.
+	 * @param	const		$sTri			: (optionnel) préférence de tri des valeurs, NULL par défaut.
+	 * @param	boolean		$bDisabled		: (optionnel) champ en lecture seule, seule la valeur est renseignée.
+	 * @param	string		$sFormat		: (optionnel) format HTML de chaque entrée de balise OPTION.
+	 * @return	string
+	 * @author durandcedric
+	 */
+	public static function buildListArborescenceOptions($aArborescence, $xValues = array(), $sFormatList = array('id' => 'libelle'), $bDisabled = false, $sFormat = "<option %s value=\"%s\" >%s</option>") {
+		// Manipulation du premier paramètre sous forme de liste
+		$aListe	= DataHelper::requestToList($aArborescence, $sFormatList, null, 'none');
+
+		// Initialisation de la liste
+		$sOptions = "";
+		if (DataHelper::isValidArray($aListe)) {
+			foreach ($aListe as $nId => $sLibelle) {
+				// Fonctionnalité réalisée si l'élément est sélectionné
+				$sSelected = in_array($nId, (array) $xValues) ? "selected=\"selected\"" : null;
+				if ($bDisabled && empty($sSelected)) {
+					continue;
+				}
+				// Ajout de l'option
+				$sOptions .= sprintf($sFormat, $sSelected, $nId, $sLibelle);
+			}
+		}
+
+		// Renvoi de la liste des options
+		return $sOptions;
 	}
 
 	/**********************************************************************************************

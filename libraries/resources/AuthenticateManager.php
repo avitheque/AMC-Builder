@@ -11,8 +11,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 26 $
- * @since		$LastChangedDate: 2017-05-04 19:34:05 +0200 (jeu., 04 mai 2017) $
+ * @version		$LastChangedRevision: 33 $
+ * @since		$LastChangedDate: 2017-06-11 21:24:20 +0200 (Sun, 11 Jun 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -21,6 +21,7 @@
 class AuthenticateManager {
 
 	const		DEFAULT_ID_UTILISATEUR			= 0;
+	const		DEFAULT_ID_GROUPE				= 0;
 	const		DEFAULT_ID_GRADE				= 0;
 	const		DEFAULT_MODIFIABLE_UTILISATEUR	= false;
 	const		DEFAULT_ID_PROFIL				= AclManager::ID_PROFIL_UNDEFINED;
@@ -36,6 +37,7 @@ class AuthenticateManager {
 	 */
 	static public $DEFAULT_PARAMS 				= array(
 		'display_name'				=> self::DEFAULT_DISPLAY_NAME,								// STRING	Libellé de l'utilisateur
+		'id_groupe'					=> self::DEFAULT_ID_GROUPE,									// INTEGER	Identifiant du groupe de l'utilisateur
 		'id_grade'					=> self::DEFAULT_ID_GRADE,									// INTEGER	Identifiant du grade de l'utilisateur
 		'id_profil'					=> self::DEFAULT_ID_PROFIL,									// INTEGER	Identifiant du profil de l'utilisateur
 		'id_utilisateur'			=> self::DEFAULT_ID_UTILISATEUR,							// STRING	Identifiant de l'utilisateur
@@ -82,6 +84,7 @@ class AuthenticateManager {
 	 * 		integer	$aUtilisateur['id_profil']				: identifiant du profil
 	 * 		string	$aUtilisateur['libelle_profil']			: libellé du profil
 	 * 		string	$aUtilisateur['role_profil']			: rôle de l'utilisateur
+	 * 		integer	$aUtilisateur['id_groupe']				: identifiant du groupe
 	 * 		integer	$aUtilisateur['id_grade']				: identifiant du grade
 	 * 		string	$aUtilisateur['libelle_grade']			: libellé du grade
 	 * 		string	$aUtilisateur['libelle_court_grade']	: libellé court du grade
@@ -236,6 +239,7 @@ class AuthenticateManager {
 	 * 		integer	$aUtilisateur['id_profil']				: identifiant du profil
 	 * 		string	$aUtilisateur['libelle_profil']			: libellé du profil
 	 * 		string	$aUtilisateur['role_profil']			: rôle de l'utilisateur
+	 * 		integer	$aUtilisateur['id_groupe']				: identifiant du groupe
 	 * 		integer	$aUtilisateur['id_grade']				: identifiant du grade
 	 * 		string	$aUtilisateur['libelle_grade']			: libellé du grade
 	 * 		string	$aUtilisateur['libelle_court_grade']	: libellé court du grade
@@ -299,6 +303,15 @@ class AuthenticateManager {
 	 */
 	public function getIdProfil() {
 		return $this->_params['id_profil'];
+	}
+
+	/**
+	 * @brief	Récupère l'identifiant du groupe de l'utilisateur.
+	 *
+	 * @return	string
+	 */
+	public function getIdGroupe() {
+		return $this->_params['id_groupe'];
 	}
 
 	/**

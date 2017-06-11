@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 32 $
+ * @since		$LastChangedDate: 2017-06-11 01:31:10 +0200 (Sun, 11 Jun 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -22,15 +22,12 @@
  */
 class GestionController extends AbstractFormulaireController {
 
-	const		ID_CANDIDAT					= 'ID_CANDIDAT';
-	const		ID_STAGE					= 'ID_STAGE';
-	const		ID_UTILISATEUR				= 'ID_UTILISATEUR';
-
-	const		TYPE_CANDIDAT				= "candidat";
-	const		TYPE_STAGE					= "stage";
-	const		TYPE_UTILISATEUR			= "utilisateur";
-
+	/**
+	 * @brief	Variable d'instance de l'identifiant de l'élément sélectionné.
+	 * @var		integer
+	 */
 	private		$_idCandidat				= null;
+	private		$_idGroupe					= null;
 	private		$_idStage					= null;
 	private		$_idUtilisateur				= null;
 
@@ -81,6 +78,7 @@ class GestionController extends AbstractFormulaireController {
 		$this->_idCandidat					= $this->getDataFromSession(AdministrationManager::ID_CANDIDAT);
 		$this->_idStage						= $this->getDataFromSession(AdministrationManager::ID_STAGE);
 		$this->_idUtilisateur				= $this->getDataFromSession(AdministrationManager::ID_UTILISATEUR);
+		$this->_idGroupe					= $this->getDataFromSession(AdministrationManager::ID_GROUPE);
 
 		// Fonctionnalité réalisée selon l'action du bouton
 		switch ($sAction) {
@@ -171,6 +169,7 @@ class GestionController extends AbstractFormulaireController {
 		$this->resetDataIntoSession(AdministrationManager::ID_CANDIDAT);
 		$this->resetDataIntoSession(AdministrationManager::ID_STAGE);
 		$this->resetDataIntoSession(AdministrationManager::ID_UTILISATEUR);
+		$this->resetDataIntoSession(AdministrationManager::ID_GROUPE);
 
 		// Effacement des données du formulaire
 		$this->resetFormulaire();
@@ -182,10 +181,13 @@ class GestionController extends AbstractFormulaireController {
 		$this->addToData('liste_candidats',				$this->_oAdministrationManager->findAllCandidats());
 
 		// Construction de la liste des stages
-		$this->addToData('liste_stages',				$this->_oAdministrationManager->findAllStages());
+		$this->addToData('liste_stages',					$this->_oAdministrationManager->findAllStages());
 
 		// Construction de la liste des utilisateurs
 		$this->addToData('liste_utilisateurs',			$this->_oAdministrationManager->findAllUtilisateurs());
+
+		// Construction de la liste des groupes
+		$this->addToData('liste_groupes',					$this->_oAdministrationManager->findAllGroupes());
 	}
 
 	/******************************************************************************************************
@@ -223,7 +225,27 @@ class GestionController extends AbstractFormulaireController {
 					// Rendu de la vue de modification
 					$this->render($this->_controller);
 				}
-			break;
+				break;
+
+			// Chargement d'un GROUPE
+			case AdministrationManager::TYPE_GROUPE:
+				// Fonctionnalité réalisée si les données du formulaire ne sont pas encore chargées
+				if (!empty($nId) && $this->isEmptyFormulaire('groupe_id')) {
+					// Actualisation des données du formulaire GROUPE
+					$this->resetFormulaire(
+						// Initialisation du formulaire avec les données en base
+						$this->_oAdministrationManager->chargerGroupe($nId)
+					);
+
+					// Enregistrement de l'identifiant du groupe en session
+					if ($this->getFormulaire('groupe_id')) {
+						$this->sendDataToSession($nId, AdministrationManager::ID_GROUPE);
+					}
+				} elseif (!$this->isEmptyFormulaire('groupe_id')) {
+					// Rendu de la vue de modification
+					$this->render($this->_controller);
+				}
+				break;
 
 			// Chargement d'un STAGE
 			case AdministrationManager::TYPE_STAGE:
@@ -243,7 +265,7 @@ class GestionController extends AbstractFormulaireController {
 					// Rendu de la vue de modification
 					$this->render($this->_controller);
 				}
-			break;
+				break;
 
 			// Chargement d'un UTILISATEUR
 			case AdministrationManager::TYPE_UTILISATEUR:
@@ -263,12 +285,12 @@ class GestionController extends AbstractFormulaireController {
 					// Rendu de la vue de modification
 					$this->render($this->_controller);
 				}
-			break;
+				break;
 
 			default:
 				// Message de débuggage
 				$this->debug("Type inconnu");
-			break;
+				break;
 		}
 
 		// Redirection afin d'effacer les éléments présents en GET
@@ -287,6 +309,7 @@ class GestionController extends AbstractFormulaireController {
 
 		// Récupération de l'identifiant du candidat en session
 		$this->_idCandidat						= $this->getDataFromSession(AdministrationManager::ID_CANDIDAT);
+		$this->resetDataIntoSession(AdministrationManager::ID_GROUPE);
 		$this->resetDataIntoSession(AdministrationManager::ID_STAGE);
 		$this->resetDataIntoSession(AdministrationManager::ID_UTILISATEUR);
 
@@ -299,10 +322,42 @@ class GestionController extends AbstractFormulaireController {
 			$this->chargerAction(AdministrationManager::TYPE_CANDIDAT, $nIdCandidat);
 		} else {
 			// Message de débuggage
-			$this->debug("ID_CANDIDAT = $this->_idCandidat");
+			$this->debug(AdministrationManager::ID_CANDIDAT . " = $this->_idCandidat");
 
 			// Liste des stages du candidat
 			$this->addToData('liste_stages_candidat',	$this->_oAdministrationManager->findStagesByCandidat($this->_idCandidat));
+		}
+
+		// Changement de vue
+		$this->render('editer');
+	}
+
+	/**
+	 * @brief	Action du contrôleur pour la gestion d'un groupe.
+	 */
+	public function groupeAction() {
+		// Message de débuggage
+		$this->debug(__CLASS__ . ".groupeAction()");
+
+		// Récupération de l'identifiant du groupe en session
+		$this->_idGroupe						= $this->getDataFromSession(AdministrationManager::ID_GROUPE);
+		$this->resetDataIntoSession(AdministrationManager::ID_CANDIDAT);
+		$this->resetDataIntoSession(AdministrationManager::ID_STAGE);
+		$this->resetDataIntoSession(AdministrationManager::ID_UTILISATEUR);
+
+		// Construction de la liste des groupes
+		$this->addToData('liste_groupes',				$this->_oAdministrationManager->findAllGroupes());
+
+		// Récupération de l'identifiant du groupe passé en GET
+		$nIdGroupe								= $this->getParam('id');
+
+		// Chargement du formulaire si l'identifiant est présent en session
+		if ($nIdGroupe && empty($this->_idGroupe)) {
+			// Chargement du groupe sélectionné
+			$this->chargerAction(AdministrationManager::TYPE_GROUPE, $nIdGroupe);
+		} else {
+			// Message de débuggage
+			$this->debug(AdministrationManager::ID_GROUPE . " = $this->_idGroupe");
 		}
 
 		// Changement de vue
@@ -319,16 +374,17 @@ class GestionController extends AbstractFormulaireController {
 		// Récupération de l'identifiant du stage en session
 		$this->_idStage							= $this->getDataFromSession(AdministrationManager::ID_STAGE);
 		$this->resetDataIntoSession(AdministrationManager::ID_CANDIDAT);
+		$this->resetDataIntoSession(AdministrationManager::ID_GROUPE);
 		$this->resetDataIntoSession(AdministrationManager::ID_UTILISATEUR);
 
 		// Récupération de l'identifiant du stage passé en GET
 		$nIdStage								= $this->getParam('id');
 
 		// Construction de la liste des domaines
-		$this->addToData('liste_domaines',				$this->_oReferentielManager->findListeDomaines());
+		$this->addToData('liste_domaines',			$this->_oReferentielManager->findListeDomaines());
 
 		// Construction de la liste des sous-domaines
-		$this->addToData('liste_sous_domaines',			$this->_oReferentielManager->findListeSousDomaines());
+		$this->addToData('liste_sous_domaines',		$this->_oReferentielManager->findListeSousDomaines());
 
 		// Construction de la liste des catégories
 		$this->addToData('liste_categories',			$this->_oReferentielManager->findListeCategories());
@@ -342,7 +398,7 @@ class GestionController extends AbstractFormulaireController {
 			$this->chargerAction(AdministrationManager::TYPE_STAGE, $nIdStage);
 		} else {
 			// Message de débuggage
-			$this->debug("ID_STAGE = $this->_idStage");
+			$this->debug(AdministrationManager::ID_STAGE . " = $this->_idStage");
 
 			// Liste des candidats du stage
 			$this->addToData('liste_candidats_stage',	$this->_oAdministrationManager->findCandidatsByStage($this->_idStage));
@@ -365,9 +421,13 @@ class GestionController extends AbstractFormulaireController {
 		// Construction de la liste des profiles
 		$this->addToData('liste_profils',				$this->_oReferentielManager->findListeProfiles());
 
+		// Construction de la liste des groupes
+		$this->addToData('liste_groupes',				$this->_oAdministrationManager->findAllGroupes());
+
 		// Récupération de l'identifiant du stage en session
 		$this->_idUtilisateur					= $this->getDataFromSession(AdministrationManager::ID_UTILISATEUR);
 		$this->resetDataIntoSession(AdministrationManager::ID_CANDIDAT);
+		$this->resetDataIntoSession(AdministrationManager::ID_GROUPE);
 		$this->resetDataIntoSession(AdministrationManager::ID_STAGE);
 
 		// Récupération de l'identifiant de l'utilisateur passé en GET
@@ -379,7 +439,7 @@ class GestionController extends AbstractFormulaireController {
 			$this->chargerAction(AdministrationManager::TYPE_UTILISATEUR, $nIdUtilisateur);
 		} else {
 			// Message de débuggage
-			$this->debug("ID_UTILISATEUR = $this->_idUtilisateur");
+			$this->debug(AdministrationManager::ID_UTILISATEUR . " = $this->_idUtilisateur");
 		}
 
 		// Changement de vue
@@ -431,6 +491,25 @@ class GestionController extends AbstractFormulaireController {
 
 					// Affichage d'un message d'erreur
 					ViewRender::setMessageWarning("Erreur de saisie !", $aMessage);
+				}
+				break;
+
+			case AdministrationManager::TYPE_GROUPE:
+				// Fonctionnalité réalisée si le libellé du groupe n'est pas valide
+				if (!empty($aParams['groupe_libelle'])) {
+					// Actualisation des données du formulaire au cours de l'enregistrement
+					$this->resetFormulaire(
+					// Enregistrement du candidat
+						$this->_oAdministrationManager->enregistrerGroupe($aParams, $this->_idGroupe)
+					);
+
+					// Enregistrement de l'identifiant du candidat en session
+					if ($nId = $this->getFormulaire('groupe_id')) {
+						$this->sendDataToSession($nId,	AdministrationManager::ID_GROUPE);
+					}
+				} else {
+					// Affichage d'un message d'erreur
+					ViewRender::setMessageWarning("Erreur de saisie !", "Veuillez renseigner un libellé de groupe valide");
 				}
 				break;
 
@@ -512,6 +591,11 @@ class GestionController extends AbstractFormulaireController {
 				$this->_oAdministrationManager->deleteUtilisateurById($this->_idUtilisateur);
 				break;
 
+			case AdministrationManager::TYPE_GROUPE:
+				// Suppression de l'utilisateur
+				$this->_oAdministrationManager->deleteGroupeById($this->_idGroupe);
+				break;
+
 			default:
 				// Message de débuggage
 				$this->debug("Type inconnu");
@@ -557,6 +641,10 @@ class GestionController extends AbstractFormulaireController {
 				/** @todo	RAS */
 				break;
 
+			case AdministrationManager::TYPE_GROUPE:
+				/** @todo	RAS */
+				break;
+
 			default:
 				// Message de débuggage
 				$this->debug("Type inconnu");
@@ -599,6 +687,10 @@ class GestionController extends AbstractFormulaireController {
 				break;
 
 			case AdministrationManager::TYPE_UTILISATEUR:
+				/** @todo	RAS */
+				break;
+
+			case AdministrationManager::TYPE_GROUPE:
 				/** @todo	RAS */
 				break;
 
@@ -753,6 +845,10 @@ class GestionController extends AbstractFormulaireController {
 				/** @todo	RAS */
 				break;
 
+			case AdministrationManager::TYPE_GROUPE:
+				/** @todo	RAS */
+				break;
+
 			default:
 				// Message de débuggage
 				$this->debug("Type inconnu");
@@ -831,6 +927,10 @@ class GestionController extends AbstractFormulaireController {
 
 			// Document d'utilisateur
 			case AdministrationManager::TYPE_UTILISATEUR:
+				/** @todo	RAS */
+				break;
+
+			case AdministrationManager::TYPE_GROUPE:
 				/** @todo	RAS */
 				break;
 

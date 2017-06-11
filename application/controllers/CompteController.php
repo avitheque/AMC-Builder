@@ -11,8 +11,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 33 $
+ * @since		$LastChangedDate: 2017-06-11 21:24:20 +0200 (Sun, 11 Jun 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -115,6 +115,8 @@ class CompteController extends AbstractFormulaireController {
 		// Récupération des paramètres du formulaire
 		$aParams						= $this->getParamsLike('utilisateur_');
 
+		// Protection contre le changement de groupe
+		$aParams['utilisateur_groupe']	= $this->_oAuth->getIdGroupe();
 		// Protection contre le changement de grade
 		$aParams['utilisateur_grade']	= $this->_oAuth->getIdGrade();
 		// Protection contre le changement d'identifiant

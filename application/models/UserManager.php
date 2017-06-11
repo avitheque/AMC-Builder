@@ -13,7 +13,7 @@
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
  * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (Mon, 27 Feb 2017) $
  * @see			{ROOT_PATH}/libraries/models/AbstractDataManager.php
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)

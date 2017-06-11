@@ -256,8 +256,6 @@ CREATE TABLE IF NOT EXISTS `grade` (
   PRIMARY KEY (`id_grade`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
--- --------------------------------------------------------
-
 --
 -- Contenu de la table `grade`
 --
@@ -285,6 +283,28 @@ INSERT INTO `grade` (`id_grade`, `libelle_grade`, `libelle_court_grade`, `descri
 (19, 'COLONEL', 'COL', NULL, 19, NULL, NULL, '2016-04-21 10:34:59'),
 (20, 'Monsieur', 'Mr.', NULL, 20, NULL, NULL, '2016-04-21 10:34:59'),
 (21, 'Madame', 'Mme.', NULL, 21, NULL, NULL, '2016-04-21 10:34:59');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `groupe`
+--
+
+CREATE TABLE IF NOT EXISTS `groupe` (
+  `id_groupe` int(11) NOT NULL AUTO_INCREMENT,
+  `libelle_groupe` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `borne_gauche` int(11) NOT NULL,
+  `borne_droite` int(11) NOT NULL,
+  `date_modification_groupe` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_groupe`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `groupe`
+--
+
+INSERT INTO `groupe` (`id_groupe`, `libelle_groupe`, `borne_gauche`, `borne_droite`, `date_modification_groupe`) VALUES
+(0, 'public', 1, 2, '2017-06-10 10:34:59');
 
 -- --------------------------------------------------------
 
@@ -379,6 +399,31 @@ CREATE TABLE IF NOT EXISTS `log_generation` (
 -- RELATIONS POUR LA TABLE `log_generation`:
 --   `id_generation`
 --       `generation` -> `id_generation`
+--   `id_utilisateur`
+--       `utilisateur` -> `id_utilisateur`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `log_groupe`
+--
+
+CREATE TABLE IF NOT EXISTS `log_groupe` (
+  `id_log_groupe` int(11) NOT NULL AUTO_INCREMENT,
+  `type_action` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `id_groupe` int(32) NOT NULL,
+  `id_utilisateur` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+  `date_log_groupe` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_log_groupe`),
+  KEY `id_utilisateur` (`id_utilisateur`),
+  KEY `id_groupe` (`id_groupe`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+--
+-- RELATIONS POUR LA TABLE `log_groupe`:
+--   `id_groupe`
+--       `groupe` -> `id_groupe`
 --   `id_utilisateur`
 --       `utilisateur` -> `id_utilisateur`
 --
@@ -817,6 +862,7 @@ CREATE TABLE IF NOT EXISTS `statut_salle` (
 CREATE TABLE IF NOT EXISTS `utilisateur` (
   `id_utilisateur` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
   `id_profil` int(11) NOT NULL DEFAULT '1',
+  `id_groupe` int(11) NOT NULL DEFAULT '0',
   `id_grade` int(11) NOT NULL,
   `login_utilisateur` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
   `password_utilisateur` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
@@ -827,6 +873,7 @@ CREATE TABLE IF NOT EXISTS `utilisateur` (
   `date_modification_utilisateur` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_utilisateur`),
   KEY `id_profil` (`id_profil`),
+  KEY `id_groupe` (`id_groupe`),
   KEY `id_grade` (`id_grade`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -834,6 +881,8 @@ CREATE TABLE IF NOT EXISTS `utilisateur` (
 -- RELATIONS POUR LA TABLE `utilisateur`:
 --   `id_grade`
 --       `grade` -> `id_grade`
+--   `id_groupe`
+--       `groupe` -> `id_groupe`
 --   `id_profil`
 --       `profil` -> `id_profil`
 --
@@ -960,6 +1009,7 @@ ALTER TABLE `statut_salle`
 --
 ALTER TABLE `utilisateur`
   ADD CONSTRAINT `utilisateur_grade` FOREIGN KEY (`id_grade`) REFERENCES `grade` (`id_grade`),
+  ADD CONSTRAINT `utilisateur_groupe` FOREIGN KEY (`id_groupe`) REFERENCES `groupe` (`id_groupe`),
   ADD CONSTRAINT `utilisateur_profil` FOREIGN KEY (`id_profil`) REFERENCES `profil` (`id_profil`);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

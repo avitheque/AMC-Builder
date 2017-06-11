@@ -8,8 +8,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 15 $
- * @since		$LastChangedDate: 2017-04-29 21:33:00 +0200 (sam., 29 avr. 2017) $
+ * @version		$LastChangedRevision: 32 $
+ * @since		$LastChangedDate: 2017-06-11 01:31:10 +0200 (Sun, 11 Jun 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -48,6 +48,7 @@ class MenuHelper extends ViewRender {
 		'compte_logout'			=> 'compte',		// Déconnexion de l'utilisateur connecté
 
 		'referentiel'			=> 'gestion',		// Gestion du référentiel
+		'gestion_groupe'		=> 'gestion',		// Gestion des groupes
 		'gestion_utilisateur'	=> 'gestion',		// Gestion des utilisateur de l'application
 		'gestion_stage'			=> 'gestion',		// Gestion d'un stage
 		'gestion_candidat'		=> 'gestion'		// Gestion des candidats
