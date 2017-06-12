@@ -426,106 +426,6 @@ $(document).ready(function() {
 		}
 	});
 
-    //#############################################################################################
-    // RACCOURCIS CLAVIERS SUR LES BOUTONS
-    //#############################################################################################
-
-    // Fonctionnalité réalisée lors du click sur un élément `.tabs-link` ayant un attribut FOR associé à un TABS
-    $(document).on("keypress", "body, input, select, textarea", function(event) {
-        // Protection contre le syndrome du cliqueur intempestif
-        event.stopImmediatePropagation();
-        var message = "...";
-
-        // Fonctionnalité réalisée dans le cas de la touche [SAVE]
-        if (event.ctrlKey) {
-        	switch (event.which) {
-
-                case 65:				// Touche [a]
-                case 97:				// Touche [A]
-                    message = "TOUCHE A";
-                    $("[role=touche_A]").click();
-                    break;
-
-                case 67:				// Touche [c]
-                case 99:				// Touche [C]
-                    message = "TOUCHE C";
-                    $("[role=touche_C]").click();
-                    break;
-
-                case 68:				// Touche [d]
-                case 100:				// Touche [D]
-                    message = "TOUCHE D";
-                    $("[role=touche_D]").click();
-                    break;
-
-                case 69:				// Touche [e]
-                case 101:				// Touche [E]
-                    message = "TOUCHE E";
-                    $("[role=touche_E]").click();
-                    break;
-
-                case 70:				// Touche [f]
-                case 102:				// Touche [F]
-                    message = "TOUCHE F";
-                    $("[role=touche_F]").click();
-                    break;
-
-                case 78:				// Touche [n]
-                case 110:				// Touche [N]
-                    message = "TOUCHE N";
-                    $("[role=touche_N]").click();
-                    break;
-
-                case 80:				// Touche [p]
-                case 112:				// Touche [P]
-                    message = "TOUCHE P";
-                    $("[role=touche_P]").click();
-                    break;
-
-                case 82:				// Touche [r]
-                case 114:				// Touche [R]
-                    message = "RELOAD";
-                    window.location.reload(true);
-                    break;
-
-                case 13:				// Touche [Entrée]
-                case 83:				// Touche [s]
-                case 115:				// Touche [S]
-                    message = "TOUCHE S";
-                    $("[role=touche_S]").click();
-                    break;
-
-                case 84:				// Touche [t]
-				case 116:				// Touche [T]
-                    message = "TOUCHE T";
-                    $("[role=touche_T]").click();
-					break;
-
-                case 86:				// Touche [v]
-                case 118:				// Touche [V]
-                    message = "TOUCHE V";
-                    $("[role=touche_V]").click();
-                    break;
-
-                case 88:				// Touche [x]
-                case 120:				// Touche [X]
-                    message = "TOUCHE X";
-                    $("[role=touche_X]").click();
-                    break;
-
-				default:
-                    message = "[Ctrl] + ";
-					break;
-			}
-		}
-
-        // Message de debuggage
-        $("#var-debug").text(message + " [" + event.which + "]");
-
-        // Annulation de l'événement
-        event.preventDefault();
-    });
-
 	//#############################################################################################
 	// RACCOURCIS D'ACTIVATION D'UN ÉLÉMENT TABS
 	//#############################################################################################
@@ -536,15 +436,15 @@ $(document).ready(function() {
 		$("a[href=\"#" + $(this).attr("for") + "\"]").click();
 	});
 
-    //#############################################################################################
-    // RACCOURCIS D'ACTIVATION D'UN ÉLÉMENT ACCORDION
-    //#############################################################################################
+	//#############################################################################################
+	// RACCOURCIS D'ACTIVATION D'UN ÉLÉMENT ACCORDION
+	//#############################################################################################
 
-    // Fonctionnalité réalisée lors du click sur un élément `.accordion-link` ayant un attribut FOR associé à un ACCORDION
-    $(".accordion-link[for]").click(function() {
-        // Séléction de l'onglet par son ID selon l'attribut FOR
-        $("h3[id=\"" + $(this).attr("for") + "\"]").click();
-    });
+	// Fonctionnalité réalisée lors du click sur un élément `.accordion-link` ayant un attribut FOR associé à un ACCORDION
+	$(".accordion-link[for]").click(function() {
+		// Séléction de l'onglet par son ID selon l'attribut FOR
+		$("h3[id=\"" + $(this).attr("for") + "\"]").click();
+	});
 
 	//#############################################################################################
 	// PROTECTION CONTRE LE SYNDROME DU CLIQUEUR INTEMPESTIF !
