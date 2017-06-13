@@ -15,8 +15,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 33 $
- * @since		$LastChangedDate: 2017-06-11 21:24:20 +0200 (Sun, 11 Jun 2017) $
+ * @version		$LastChangedRevision: 35 $
+ * @since		$LastChangedDate: 2017-06-13 06:38:00 +0200 (Tue, 13 Jun 2017) $
  * @see			{ROOT_PATH}/libraries/models/MySQLManager.php
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
@@ -137,7 +137,7 @@ class AdministrationManager extends MySQLManager {
 					'count_referentiel'		=> $nCount
 				);
 			} catch (Exception $e) {
-				throw new ApplicationException(Constantes::ERROR_BADQUERY, $e);
+				throw new ApplicationException(Constantes::ERROR_SQL_BADQUERY, $e);
 			}
 		}
 
@@ -203,7 +203,7 @@ class AdministrationManager extends MySQLManager {
 		try {
 			return $this->executeSQL($aQuery);
 		} catch (Exception $e) {
-			throw new ApplicationException(Constantes::ERROR_BADQUERY, $e);
+			throw new ApplicationException(Constantes::ERROR_SQL_BADQUERY, $e);
 		}
 	}
 
@@ -238,7 +238,7 @@ class AdministrationManager extends MySQLManager {
 			// Exécution de la requête et renvoi du résultat sous forme de tableau
 			return $this->executeSQL($aQuery, $aBind);
 		} catch (Exception $e) {
-			throw new ApplicationException(Constantes::ERROR_BADQUERY, $e);
+			throw new ApplicationException(Constantes::ERROR_SQL_BADQUERY, $e);
 		}
 	}
 
@@ -276,7 +276,7 @@ class AdministrationManager extends MySQLManager {
 			// Exécution de la requête et renvoi du résultat sous forme de tableau
 			return $this->executeSQL($sQuery, $aBind);
 		} catch (Exception $e) {
-			throw new ApplicationException(Constantes::ERROR_BADQUERY, DataHelper::queryToString($sQuery, $aBind));
+			throw new ApplicationException(Constantes::ERROR_SQL_BADQUERY, DataHelper::queryToString($sQuery, $aBind));
 		}
 	}
 
@@ -318,14 +318,14 @@ class AdministrationManager extends MySQLManager {
 		// Requête SELECT
 		$aQuery = array(
 			"SELECT * FROM groupe",
-			"ORDER BY borne_gauche ASC, borne_droite ASC"
+			"ORDER BY borne_gauche ASC"
 		);
 
 		try {
 			// Exécution de la requête et renvoi du résultat sous forme de tableau
 			return $this->selectSQL($aQuery);
 		} catch (Exception $e) {
-			throw new ApplicationException(Constantes::ERROR_BADQUERY, DataHelper::queryToString($sQuery));
+			throw new ApplicationException(Constantes::ERROR_SQL_BADQUERY, DataHelper::queryToString($sQuery));
 		}
 	}
 
@@ -340,11 +340,9 @@ class AdministrationManager extends MySQLManager {
 	public function findGroupesByUtilisateur($nId) {
 		// Requête SELECT
 		$aQuery = array(
-			"SELECT	groupe.*",
-			"FROM utilisateur, groupe",
-			"WHERE id_utilisateur = :id_utilisateur",
-			"AND id_groupe IN(utilisateur.liste_groupes)",
-			"ORDER BY borne_gauche ASC, borne_droite ASC"
+			"SELECT	* FROM groupe",
+			"JOIN utilisateur USING(id_groupe)",
+			"ORDER BY borne_gauche ASC"
 		);
 
 		// Construction du tableau associatif des étiquettes et leurs valeurs
@@ -356,7 +354,7 @@ class AdministrationManager extends MySQLManager {
 			// Exécution de la requête et renvoi du résultat sous forme de tableau
 			return $this->executeSQL($aQuery, $aBind);
 		} catch (Exception $e) {
-			throw new ApplicationException(Constantes::ERROR_BADQUERY, $e);
+			throw new ApplicationException(Constantes::ERROR_SQL_BADQUERY, $e);
 		}
 	}
 
@@ -391,7 +389,7 @@ class AdministrationManager extends MySQLManager {
 			// Exécution de la requête avec récupération de la première occurrence [0]
 			return $this->executeSQL($aQuery, $aBind, 0);
 		} catch (Exception $e) {
-			throw new ApplicationException(Constantes::ERROR_BADQUERY, $aQuery);
+			throw new ApplicationException(Constantes::ERROR_SQL_BADQUERY, DataHelper::queryToString($aQuery, $aBind));
 		}
 	}
 
@@ -424,7 +422,7 @@ class AdministrationManager extends MySQLManager {
 			// Exécution de la requête et renvoi du résultat sous forme de tableau
 			return $this->selectSQL($sQuery);
 		} catch (Exception $e) {
-			throw new ApplicationException(Constantes::ERROR_BADQUERY, DataHelper::queryToString($sQuery));
+			throw new ApplicationException(Constantes::ERROR_SQL_BADQUERY, DataHelper::queryToString($sQuery));
 		}
 	}
 
@@ -465,7 +463,7 @@ class AdministrationManager extends MySQLManager {
 			// Exécution de la requête et renvoi du résultat sous forme de tableau
 			return $this->executeSQL($aQuery, $aBind);
 		} catch (Exception $e) {
-			throw new ApplicationException(Constantes::ERROR_BADQUERY, $e);
+			throw new ApplicationException(Constantes::ERROR_SQL_BADQUERY, DataHelper::queryToString($aQuery, $aBind));
 		}
 	}
 
@@ -558,7 +556,7 @@ class AdministrationManager extends MySQLManager {
 			// Exécution de la requête et renvoi du résultat sous forme de tableau
 			return $this->executeSQL($aQuery, $aBind);
 		} catch (Exception $e) {
-			throw new ApplicationException(Constantes::ERROR_BADQUERY, $e);
+			throw new ApplicationException(Constantes::ERROR_SQL_BADQUERY, DataHelper::queryToString($aQuery, $aBind));
 		}
 	}
 
@@ -742,6 +740,52 @@ class AdministrationManager extends MySQLManager {
 		return $this->_aFormulaire;
 	}
 
+	/**
+	 * @brief	Chargement d'un groupe enregistré en base de données.
+	 *
+	 * @param	integer		$nId			: identifiant du groupe à charger.
+	 * @return	array, tableau au format attendu par le formulaire HTML
+	 * @code
+	 * 	$aGroupe = array(
+	 * 		// GROUPE *****************************************************************************
+	 * 		'groupe_id'				=> "Identifiant du groupe",
+	 * 		'groupe_libelle'		=> "Libellé du groupe",
+	 * 		'borne_gauche'			=> "Valeur de la BORNE GAUCHE de l'intervalle",
+	 * 		'borne_droite'			=> "Valeur de la BORNE DROITE de l'intervalle"
+	 * );
+	 * @endcode
+	 */
+	public function chargerGroupe($nId) {
+		// Initialisation du référentiel
+		$this->_aFormulaire = array();
+
+		try {
+			// Initialisation du formulaire
+			$this->_aFormulaire['groupe_id']		= $nId;
+
+			// Récupération des données du formulaire
+			$aResultat	= $this->getGroupeById($nId);
+			// Fonctionnalité réalisée si le groupe n'est pas valide
+			if (!DataHelper::isValidArray($aResultat)) {
+				// Initialisation de l'identifiant
+				$this->_aFormulaire['groupe_id']	= null;
+			}
+
+			// Chargement des données du formulaire
+			$this->_aFormulaire['groupe_id']		= DataHelper::get($aResultat, 'id_groupe',					DataHelper::DATA_TYPE_INT);
+			$this->_aFormulaire['groupe_libelle']	= DataHelper::get($aResultat, 'libelle_groupe',				DataHelper::DATA_TYPE_STR);
+			$this->_aFormulaire['borne_gauche']		= DataHelper::get($aResultat, 'borne_gauche',					DataHelper::DATA_TYPE_STR);
+			$this->_aFormulaire['borne_droite']		= DataHelper::get($aResultat, 'borne_droite',					DataHelper::DATA_TYPE_STR);
+			$this->_aFormulaire['groupe_datetime']	= DataHelper::get($aResultat, 'date_modification_groupe',		DataHelper::DATA_TYPE_DATETIME);
+
+		} catch (ApplicationException $e) {
+			throw new ApplicationException($e->getMessage(), $e->getExtra());
+		}
+
+		// Renvoi du formulaire
+		return $this->_aFormulaire;
+	}
+
 	/**********************************************************************************************
 	 * @todo	ENREGISTRER
 	 **********************************************************************************************/
@@ -776,7 +820,7 @@ class AdministrationManager extends MySQLManager {
 		$aBind	= array(
 			':id_candidat'				=> DataHelper::get($aCandidat, "candidat_id",		DataHelper::DATA_TYPE_STR),
 			':id_grade'					=> DataHelper::get($aCandidat, "candidat_grade",	DataHelper::DATA_TYPE_INT),
-			':nom_candidat'				=> DataHelper::get($aCandidat, "candidat_nom",		DataHelper::DATA_TYPE_STR),
+			':nom_candidat'				=> DataHelper::get($aCandidat, "candidat_nom",	DataHelper::DATA_TYPE_STR),
 			':prenom_candidat'			=> DataHelper::get($aCandidat, "candidat_prenom",	DataHelper::DATA_TYPE_STR),
 			':unite_candidat'			=> DataHelper::get($aCandidat, "candidat_unite",	DataHelper::DATA_TYPE_STR)
 		);
@@ -999,6 +1043,30 @@ class AdministrationManager extends MySQLManager {
 		return $aUtilisateur;
 	}
 
+	/**
+	 * @brief	Enregistrement d'un groupe en base de données.
+	 *
+	 * @param	array		$aGroupe			: tableau des paramètres du groupe à enregistrer.
+	 * @code
+	 * 	$aGroupe = array(
+	 * 		// GROUPE *****************************************************************************
+	 * 		'groupe_id'				=> "Identifiant du groupe",
+	 * 		'groupe_libelle'		=> "Libellé du groupe",
+	 * 		'borne_gauche'			=> "Valeur de la BORNE GAUCHE de l'intervalle",
+	 * 		'borne_droite'			=> "Valeur de la BORNE DROITE de l'intervalle"
+	 * );
+	 * @endcode
+	 * @return	array
+	 * @throws	ApplicationException si la requête ne fonctionne pas.
+	 */
+	public function enregistrerGroupe($aGroupe) {
+
+		/** @TODO Enregistrer un groupe avec gestion des intervalles */
+
+		// Renvoi des données du groupe
+		return $aGroupe;
+	}
+
 	/**********************************************************************************************
 	 * @todo	AJOUTER
 	 **********************************************************************************************/
@@ -1074,6 +1142,7 @@ class AdministrationManager extends MySQLManager {
 			// Affichage d'un message d'avertissement
 			ViewRender::setMessageAlert("Aucun enregistrement n'a été réalisé...");
 		}
+
 		// Renvoi du résultat
 		return $aValide;
 	}
@@ -1201,7 +1270,7 @@ class AdministrationManager extends MySQLManager {
 	}
 
 	/**********************************************************************************************
-	 * @todo	SUPPRIMER
+	 * @todo	SUPPRIMER CANDIDAT
 	 **********************************************************************************************/
 
 	/**
@@ -1251,6 +1320,10 @@ class AdministrationManager extends MySQLManager {
 		return $this->_delete($aQuery, $aBind);
 	}
 
+	/**********************************************************************************************
+	 * @todo	SUPPRIMER STAGE
+	 **********************************************************************************************/
+
 	/**
 	 * @brief	Suppression d'un stage.
 	 *
@@ -1293,6 +1366,23 @@ class AdministrationManager extends MySQLManager {
 
 		// Exécution de la requête et renvoi résultat
 		return $this->_delete($aQuery, $aBind);
+	}
+
+	/**********************************************************************************************
+	 * @todo	SUPPRIMER GROUPE
+	 **********************************************************************************************/
+
+	/**
+	 * @brief	Suppression d'un groupe.
+	 *
+	 * @param	integer		$nId			: identifiant du groupe
+	 * @return	boolean
+	 */
+	public function deleteGroupeById($nId) {
+
+		/** @TODO Supprimer un groupe avec gestion des intervalles */
+
+		return false;
 	}
 
 }

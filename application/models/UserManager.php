@@ -12,8 +12,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (Mon, 27 Feb 2017) $
+ * @version		$LastChangedRevision: 35 $
+ * @since		$LastChangedDate: 2017-06-13 06:38:00 +0200 (Tue, 13 Jun 2017) $
  * @see			{ROOT_PATH}/libraries/models/AbstractDataManager.php
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
@@ -61,7 +61,7 @@ class UserManager extends AbstractDataManager {
 		try {
 			return $this->selectSQL($sQuery);
 		} catch (Exception $e) {
-			throw new ApplicationException(Constantes::ERROR_BADQUERY, $e);
+			throw new ApplicationException(Constantes::ERROR_SQL_BADQUERY, $e);
 		}
 	}
 
@@ -95,6 +95,8 @@ class UserManager extends AbstractDataManager {
 		$aQuery[]	= "SELECT * FROM utilisateur";
 		// Jointure avec la table des profils
 		$aQuery[]	= "JOIN profil USING(id_profil)";
+		// Jointure avec la table des groupes
+		$aQuery[]	= "JOIN groupe USING(id_groupe)";
 		// Jointure avec la table des grades
 		$aQuery[]	= "JOIN grade USING(id_grade)";
 		// Clause WHERE
@@ -110,7 +112,7 @@ class UserManager extends AbstractDataManager {
 			// Exécution de la requête avec récupération de la première occurrence [0]
 			return $this->executeSQL($aQuery, $aEtiquettes, 0);
 		} catch (Exception $e) {
-			throw new ApplicationException(Constantes::ERROR_BADQUERY, $aQuery);
+			throw new ApplicationException(Constantes::ERROR_SQL_BADQUERY, DataHelper::queryToString($aQuery, $aEtiquettes));
 		}
 	}
 
@@ -141,6 +143,8 @@ class UserManager extends AbstractDataManager {
 		$aQuery[]	= "SELECT * FROM utilisateur";
 		// Jointure avec la table des profils
 		$aQuery[]	= "JOIN profil USING(id_profil)";
+		// Jointure avec la table des groupes
+		$aQuery[]	= "JOIN groupe USING(id_groupe)";
 		// Jointure avec la table des grades
 		$aQuery[]	= "JOIN grade USING(id_grade)";
 		// Clause WHERE
@@ -155,7 +159,7 @@ class UserManager extends AbstractDataManager {
 			// Exécution de la requête avec récupération de la première occurrence [0]
 			return $this->executeSQL($aQuery, $aEtiquettes, 0);
 		} catch (Exception $e) {
-			throw new ApplicationException(Constantes::ERROR_BADQUERY, $aQuery);
+			throw new ApplicationException(Constantes::ERROR_SQL_BADQUERY, DataHelper::queryToString($aQuery, $aEtiquettes));
 		}
 	}
 
