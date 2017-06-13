@@ -12,8 +12,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 35 $
- * @since		$LastChangedDate: 2017-06-13 06:38:00 +0200 (Tue, 13 Jun 2017) $
+ * @version		$LastChangedRevision: 36 $
+ * @since		$LastChangedDate: 2017-06-13 06:54:46 +0200 (Tue, 13 Jun 2017) $
  * @see			{ROOT_PATH}/libraries/models/AbstractDataManager.php
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
@@ -80,6 +80,10 @@ class UserManager extends AbstractDataManager {
 	 * 			'id_profil'				=> "INTEGER	: identifiant du profil",
 	 * 			'libelle_profil'		=> "STRING	: libellé du profil",
 	 * 			'role_profil'			=> "STRING	: rôle de l'utilisateur",
+	 * 			'id_groupe'				=> "INTEGER : identifiant du groupe",
+	 * 			'libelle_groupe'		=> "STRING	: libellé du groupe",
+	 * 			'borne_gauche'			=> "INTEGER : borne GAUCHE de l'intervalle du groupe",
+	 * 			'borne_droite'			=> "INTEGER	: borne DROITE de l'intervalle  du groupe",
 	 * 			'id_grade'				=> "INTEGER : identifiant du grade",
 	 * 			'libelle_grade'			=> "STRING	: libellé du grade",
 	 * 			'libelle_court_grade']	=> "STRING	: libellé court du grade",
@@ -128,6 +132,10 @@ class UserManager extends AbstractDataManager {
 	 * 			'id_profil'				=> "INTEGER	: identifiant du profil",
 	 * 			'libelle_profil'		=> "STRING	: libellé du profil",
 	 * 			'role_profil'			=> "STRING	: rôle de l'utilisateur",
+	 * 			'id_groupe'				=> "INTEGER : identifiant du groupe",
+	 * 			'libelle_groupe'		=> "STRING	: libellé du groupe",
+	 * 			'borne_gauche'			=> "INTEGER : borne GAUCHE de l'intervalle du groupe",
+	 * 			'borne_droite'			=> "INTEGER	: borne DROITE de l'intervalle  du groupe",
 	 * 			'id_grade'				=> "INTEGER : identifiant du grade",
 	 * 			'libelle_grade'			=> "STRING	: libellé du grade",
 	 * 			'libelle_court_grade']	=> "STRING	: libellé court du grade",
