@@ -7,8 +7,8 @@
  *
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 27 $
- * @since		$LastChangedDate: 2017-05-13 10:10:30 +0200 (Sat, 13 May 2017) $
+ * @version		$LastChangedRevision: 37 $
+ * @since		$LastChangedDate: 2017-06-13 21:12:42 +0200 (Tue, 13 Jun 2017) $
  */
 
 .absolute					{ position:			absolute; }
@@ -44,6 +44,58 @@
 .margin-H-0					{ margin-left:		0 !important;	margin-right:		0 !important; }
 .margin-V-0					{ margin-top:		0 !important;	margin-bottom:		0 !important; }
 
+/* margin 1px */
+.margin-1					{ margin:			1px; }
+.margin-top-1				{ margin-top:		1px; }
+.margin-top-1-important		{ margin:			1px 0 0 0 !important; }
+.margin-left-1				{ margin-left:		1px; }
+.margin-left-1-important	{ margin:			0 0 0 1px !important; }
+.margin-right-1				{ margin-right:		1px; }
+.margin-right-1-important	{ margin:			0 1px 0 0 !important; }
+.margin-bottom-1			{ margin-bottom:	1px; }
+.margin-bottom-1-important	{ margin:			0 0 1px 0 !important; }
+.margin-H-1					{ margin-left:		1px;			margin-right:		1px; }
+.margin-V-1					{ margin-top:		1px;			margin-bottom:		1px; }
+
+/* margin 2px */
+.margin-2					{ margin:			2px; }
+.margin-top-2				{ margin-top:		2px; }
+.margin-top-2-important		{ margin:			2px 0 0 0 !important; }
+.margin-left-2				{ margin-left:		2px; }
+.margin-left-2-important	{ margin:			0 0 0 2px !important; }
+.margin-right-2				{ margin-right:		2px; }
+.margin-right-2-important	{ margin:			0 2px 0 0 !important; }
+.margin-bottom-2			{ margin-bottom:	2px; }
+.margin-bottom-2-important	{ margin:			0 0 2px 0 !important; }
+.margin-H-2					{ margin-left:		2px;			margin-right:		2px; }
+.margin-V-2					{ margin-top:		2px;			margin-bottom:		2px; }
+
+/* margin 3px */
+.margin-3					{ margin:			3px; }
+.margin-top-3				{ margin-top:		3px; }
+.margin-top-3-important		{ margin:			3px 0 0 0 !important; }
+.margin-left-3				{ margin-left:		3px; }
+.margin-left-3-important	{ margin:			0 0 0 3px !important; }
+.margin-right-3				{ margin-right:		3px; }
+.margin-right-3-important	{ margin:			0 3px 0 0 !important; }
+.margin-bottom-3			{ margin-bottom:	3px; }
+.margin-bottom-3-important	{ margin:			0 0 3px 0 !important; }
+.margin-H-3					{ margin-left:		3px;			margin-right:		3px; }
+.margin-V-3					{ margin-top:		3px;			margin-bottom:		3px; }
+
+/* margin 4px */
+.margin-4					{ margin:			4px; }
+.margin-top-4				{ margin-top:		4px; }
+.margin-top-4-important		{ margin:			4px 0 0 0 !important; }
+.margin-left-4				{ margin-left:		4px; }
+.margin-left-4-important	{ margin:			0 0 0 4px !important; }
+.margin-right-4				{ margin-right:		4px; }
+.margin-right-4-important	{ margin:			0 4px 0 0 !important; }
+.margin-bottom-4			{ margin-bottom:	4px; }
+.margin-bottom-4-important	{ margin:			0 0 4px 0 !important; }
+.margin-H-4					{ margin-left:		4px;			margin-right:		4px; }
+.margin-V-4					{ margin-top:		4px;			margin-bottom:		4px; }
+
 /* margin 5px */
 .margin-5					{ margin:			5px; }
 .margin-top-5				{ margin-top:		5px; }
@@ -56,6 +108,58 @@
 .margin-bottom-5-important	{ margin:			0 0 5px 0 !important; }
 .margin-H-5					{ margin-left:		5px;			margin-right:		5px; }
 .margin-V-5					{ margin-top:		5px;			margin-bottom:		5px; }
+
+/* margin 6px */
+.margin-6					{ margin:			6px; }
+.margin-top-6				{ margin-top:		6px; }
+.margin-top-6-important		{ margin:			6px 0 0 0 !important; }
+.margin-left-6				{ margin-left:		6px; }
+.margin-left-6-important	{ margin:			0 0 0 6px !important; }
+.margin-right-6				{ margin-right:		6px; }
+.margin-right-6-important	{ margin:			0 6px 0 0 !important; }
+.margin-bottom-6			{ margin-bottom:	6px; }
+.margin-bottom-6-important	{ margin:			0 0 6px 0 !important; }
+.margin-H-6					{ margin-left:		6px;			margin-right:		6px; }
+.margin-V-6					{ margin-top:		6px;			margin-bottom:		6px; }
+
+/* margin 7px */
+.margin-7					{ margin:			7px; }
+.margin-top-7				{ margin-top:		7px; }
+.margin-top-7-important		{ margin:			7px 0 0 0 !important; }
+.margin-left-7				{ margin-left:		7px; }
+.margin-left-7-important	{ margin:			0 0 0 7px !important; }
+.margin-right-7				{ margin-right:		7px; }
+.margin-right-7-important	{ margin:			0 7px 0 0 !important; }
+.margin-bottom-7			{ margin-bottom:	7px; }
+.margin-bottom-7-important	{ margin:			0 0 7px 0 !important; }
+.margin-H-7					{ margin-left:		7px;			margin-right:		7px; }
+.margin-V-7					{ margin-top:		7px;			margin-bottom:		7px; }
+
+/* margin 8px */
+.margin-8					{ margin:			8px; }
+.margin-top-8				{ margin-top:		8px; }
+.margin-top-8-important		{ margin:			8px 0 0 0 !important; }
+.margin-left-8				{ margin-left:		8px; }
+.margin-left-8-important	{ margin:			0 0 0 8px !important; }
+.margin-right-8				{ margin-right:		8px; }
+.margin-right-8-important	{ margin:			0 8px 0 0 !important; }
+.margin-bottom-8			{ margin-bottom:	8px; }
+.margin-bottom-8-important	{ margin:			0 0 8px 0 !important; }
+.margin-H-8					{ margin-left:		8px;			margin-right:		8px; }
+.margin-V-8					{ margin-top:		8px;			margin-bottom:		8px; }
+
+/* margin 9px */
+.margin-9					{ margin:			9px; }
+.margin-top-9				{ margin-top:		9px; }
+.margin-top-9-important		{ margin:			9px 0 0 0 !important; }
+.margin-left-9				{ margin-left:		9px; }
+.margin-left-9-important	{ margin:			0 0 0 9px !important; }
+.margin-right-9				{ margin-right:		9px; }
+.margin-right-9-important	{ margin:			0 9px 0 0 !important; }
+.margin-bottom-9			{ margin-bottom:	9px; }
+.margin-bottom-9-important	{ margin:			0 0 9px 0 !important; }
+.margin-H-9					{ margin-left:		9px;			margin-right:		9px; }
+.margin-V-9					{ margin-top:		9px;			margin-bottom:		9px; }
 
 /* margin 10px */
 .margin-10					{ margin:			10px; }
@@ -255,6 +359,15 @@
 .padding-auto				{ padding:			auto; }
 .padding-auto-H				{ padding:			0 auto; }
 .padding-auto-V				{ padding:			auto 0; }
+
+/* padding 2% */
+.padding-2p					{ padding:			2%; }
+.padding-top-2p				{ padding-top:		2%; }
+.padding-left-2p			{ padding-left:		2%; }
+.padding-right-2p			{ padding-right:	2%; }
+.padding-bottom-2p			{ padding-bottom:	2%; }
+.padding-H-2p				{ padding-left:		2%;				padding-right:		2%; }
+.padding-V-2p				{ padding-top:		2%;				padding-bottom:		2%; }
 
 /* padding 3% */
 .padding-3p					{ padding:			3%; }

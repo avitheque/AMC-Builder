@@ -8,8 +8,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 32 $
- * @since		$LastChangedDate: 2017-06-11 01:31:10 +0200 (Sun, 11 Jun 2017) $
+ * @version		$LastChangedRevision: 37 $
+ * @since		$LastChangedDate: 2017-06-13 21:12:42 +0200 (Tue, 13 Jun 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -137,22 +137,22 @@ class ArborescenceHelper {
 	 *			0	=> array('id' => 0,					'label'	=> 'public',	'items' => array()),
 	 *			1	=> array('id' => 1,					'label'	=> '1',			'items' => array(
 	 *				0	=> array('id' => 2,				'label'	=> '1.1',		'items' => array()),
-	 *				1	=> array('id' => 3,				'label'	=> '1.2',		'items' => array()),
-	 *			),
+	 *				1	=> array('id' => 3,				'label'	=> '1.2',		'items' => array())
+	 *			)),
 	 *			2	=> array('id' => 4,					'label'	=> '2',			'items' => array(
 	 *				0	=> array('id' => 5,				'label'	=> '2.1',		'items' => array(
 	 *					0	=> array('id' => 6,			'label'	=> '2.1.1',		'items' => array()),
 	 *					1	=> array('id' => 7,			'label'	=> '2.1.1',		'items' => array())
-	 * 				),
+	 * 				)),
 	 *				1	=> array('id' => 8,				'label'	=> '2.2',		'items' => array(
 	 *					0	=> array('id' => 9,			'label'	=> '2.2.1',		'items' => array(
 	 *						0	=> array('id' => 10,	'label'	=> '2.2.1.1',	'items' => array()),
 	 *						1	=> array('id' => 11,	'label'	=> '2.2.1.2',	'items' => array()),
 	 *						2	=> array('id' => 12,	'label'	=> '2.2.1.3',	'items' => array())
-	 * 					),
+	 * 					)),
 	 *					1	=> array('id' => 13,		'label'	=> '2.2.2',		'items' => array())
-	 * 				)
-	 * 			)
+	 * 				))
+	 * 			))
 	 *		);
 	 * @endcode
 	 * @param	array	$aListeItems		: Tableau BIDIMENSIONNEL exploitant des INTERVALLES.
@@ -235,22 +235,22 @@ class ArborescenceHelper {
 	 *			0	=> array('id' => 0,					'label'	=> 'public',	'items' => array()),
 	 *			1	=> array('id' => 1,					'label'	=> '1',			'items' => array(
 	 *				0	=> array('id' => 2,				'label'	=> '1.1',		'items' => array()),
-	 *				1	=> array('id' => 3,				'label'	=> '1.2',		'items' => array()),
-	 *			),
+	 *				1	=> array('id' => 3,				'label'	=> '1.2',		'items' => array())
+	 *			)),
 	 *			2	=> array('id' => 4,					'label'	=> '2',			'items' => array(
 	 *				0	=> array('id' => 5,				'label'	=> '2.1',		'items' => array(
 	 *					0	=> array('id' => 6,			'label'	=> '2.1.1',		'items' => array()),
 	 *					1	=> array('id' => 7,			'label'	=> '2.1.1',		'items' => array())
-	 * 				),
+	 * 				)),
 	 *				1	=> array('id' => 8,				'label'	=> '2.2',		'items' => array(
 	 *					0	=> array('id' => 9,			'label'	=> '2.2.1',		'items' => array(
 	 *						0	=> array('id' => 10,	'label'	=> '2.2.1.1',	'items' => array()),
 	 *						1	=> array('id' => 11,	'label'	=> '2.2.1.2',	'items' => array()),
 	 *						2	=> array('id' => 12,	'label'	=> '2.2.1.3',	'items' => array())
-	 * 					),
+	 * 					)),
 	 *					1	=> array('id' => 13,		'label'	=> '2.2.2',		'items' => array())
-	 * 				)
-	 * 			)
+	 * 				))
+	 * 			))
 	 *		);
 	 * @endcode
 	 *
@@ -298,7 +298,7 @@ class ArborescenceHelper {
 	 *			0	=> array('public'				=> null),
 	 *			1	=> array('1'					=> array(
 	 *				2	=> array('1.1'				=> null),
-	 *				3	=> array('1.2'				=> null),
+	 *				3	=> array('1.2'				=> null)
 	 *			)),
 	 *			4	=> array('2'					=> array(
 	 *				5	=> array('2.1'				=> array(
@@ -321,22 +321,22 @@ class ArborescenceHelper {
 	 *			0	=> array('id' => 0,					'label'	=> 'public',	'items' => array()),
 	 *			1	=> array('id' => 1,					'label'	=> '1',			'items' => array(
 	 *				0	=> array('id' => 2,				'label'	=> '1.1',		'items' => array()),
-	 *				1	=> array('id' => 3,				'label'	=> '1.2',		'items' => array()),
-	 *			),
+	 *				1	=> array('id' => 3,				'label'	=> '1.2',		'items' => array())
+	 *			)),
 	 *			2	=> array('id' => 4,					'label'	=> '2',			'items' => array(
 	 *				0	=> array('id' => 5,				'label'	=> '2.1',		'items' => array(
 	 *					0	=> array('id' => 6,			'label'	=> '2.1.1',		'items' => array()),
 	 *					1	=> array('id' => 7,			'label'	=> '2.1.1',		'items' => array())
-	 * 				),
+	 * 				)),
 	 *				1	=> array('id' => 8,				'label'	=> '2.2',		'items' => array(
 	 *					0	=> array('id' => 9,			'label'	=> '2.2.1',		'items' => array(
 	 *						0	=> array('id' => 10,	'label'	=> '2.2.1.1',	'items' => array()),
 	 *						1	=> array('id' => 11,	'label'	=> '2.2.1.2',	'items' => array()),
 	 *						2	=> array('id' => 12,	'label'	=> '2.2.1.3',	'items' => array())
-	 * 					),
+	 * 					)),
 	 *					1	=> array('id' => 13,		'label'	=> '2.2.2',		'items' => array())
-	 * 				)
-	 * 			)
+	 * 				))
+	 * 			))
 	 *		);
 	 * @endcode
 	 *
@@ -441,7 +441,7 @@ class ArborescenceHelper {
 	 *			0	=> array('public'				=> null),
 	 *			1	=> array('1'					=> array(
 	 *				2	=> array('1.1'				=> null),
-	 *				3	=> array('1.2'				=> null),
+	 *				3	=> array('1.2'				=> null)
 	 *			)),
 	 *			4	=> array('2'					=> array(
 	 *				5	=> array('2.1'				=> array(
@@ -497,7 +497,7 @@ class ArborescenceHelper {
 		ViewRender::addToStylesheet(FW_VIEW_STYLES . "/ArborescenceHelper.css");
 
 		// Compression du script avec JavaScriptPacker
-		ViewRender::addToJQuery(FW_VIEW_SCRIPTS . "/ArborescenceHelper.js");
+		//ViewRender::addToJQuery(FW_VIEW_SCRIPTS . "/ArborescenceHelper.js");
 
 		// Initialisation du contenu HTML
 		$sHTML		= $this->_buildArborescence($this->_aItems, $bCheckbox);
