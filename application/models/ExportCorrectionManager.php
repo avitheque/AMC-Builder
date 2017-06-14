@@ -15,8 +15,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 5 $
- * @since		$LastChangedDate: 2017-03-02 22:16:57 +0100 (jeu., 02 mars 2017) $
+ * @version		$LastChangedRevision: 40 $
+ * @since		$LastChangedDate: 2017-06-14 21:26:07 +0200 (Wed, 14 Jun 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -37,6 +37,8 @@ class ExportCorrectionManager extends DocumentManager {
 	const REPONSE_LIBRE_CORRECTION			= "RÉPONSE ATTENDUE :";							// Titre de la correction de la réponse libre
 	const REPONSE_BOX_WIDTH					= 5;											// Largeur de la case à cocher
 	const REPONSE_CHECKED_PADDING			= 1;											// Espacement du bord interne de la case à cocher
+	const NUMBER_FORMAT_DECIMALS			= 2;											// Nombre de chiffres après la virgule du BAREME, BONUS et MALUS
+	const NUMBER_FORMAT_DEC_POINT			= ",";											// Caractère de séparation des nombres décimaux
 
 	/**
 	 * @brief	Constantes de messages d'avertissements.
@@ -337,9 +339,11 @@ class ExportCorrectionManager extends DocumentManager {
 	 *
 	 * @param	boolean	$bChecked			: case cochée ou non.
 	 * @param	string	$sTexte				: texte de la réponse.
+	 * @param	float	$fBonus				: (optionnel) point(s) crédité(s) si la réponse est sélectionnée par le candidat.
+	 * @param	float	$fMalus				: (optionnel) point(s) débité(s) si la réponse est sélectionnée par le candidat.
 	 * @return	void
 	 */
-	private function _buildReponse($bChecked = false, $sTexte = '') {
+	private function _buildReponse($bChecked = false, $sTexte = '', $fBonus = 0, $fMalus = 0) {
 		// Fonctionnalité réalisé si le texte est renseigné correctement
 		if (! empty($sTexte)) {
 			// Le texte de la réponse est renseigné
@@ -367,6 +371,27 @@ class ExportCorrectionManager extends DocumentManager {
 			// Ajout du texte de la réponse
 			$this->_document->setX(20 + self::REPONSE_BOX_WIDTH);
 			$this->_document->addCell($this->nLineWidth - $this->_document->getRightMargin(), ($this->nFontSizePt / 2), $sTexte, 0, PDFManager::ALIGN_JUSTIFY);
+
+			// Fonctionnalité réalisée si la sélection de la question entraine des points en plus ou en moins
+			if ($fBonus > 0) {
+				// Affichage du BONUS
+				$this->_document->setTextColor(0, 255, 0);
+				// Décalage du signe [+] vers la GAUCHE
+				$this->_document->text($this->_document->getLeftMargin() - 2, $this->_document->getY() - 1.5, "+");
+				// Ajout de la valeur du BONUS
+				$this->_document->text($this->_document->getLeftMargin(), $this->_document->getY() - 1.5, str_replace(".", self::NUMBER_FORMAT_DEC_POINT, $fBonus));
+				// Retour à la couleur du texte par défaut
+				$this->_document->setTextColor(0, 0, 0);
+			} elseif ($fMalus > 0) {
+				// Affichage du MALUS
+				$this->_document->setTextColor(255, 0, 0);
+				// Décalage du signe [-] vers la GAUCHE
+				$this->_document->text($this->_document->getLeftMargin() - 1.7, $this->_document->getY() - 1.5, "-");
+				// Ajout de la valeur du MALUS
+				$this->_document->text($this->_document->getLeftMargin(), $this->_document->getY() - 1.5, str_replace(".", self::NUMBER_FORMAT_DEC_POINT, $fMalus));
+				// Retour à la couleur du texte par défaut
+				$this->_document->setTextColor(0, 0, 0);
+			}
 		}
 	}
 
@@ -399,7 +424,7 @@ class ExportCorrectionManager extends DocumentManager {
 		$fBareme		= DataHelper::get($this->_aQCM['question_bareme'],		$nQuestion,	DataHelper::DATA_TYPE_PDF);
 
 		// Ajout du barème à la question
-		$idQuestion		.= sprintf('%10s (%s pt)', " ", $fBareme);
+		$idQuestion		.= sprintf('%10s (%s pt)', " ", str_replace(".", self::NUMBER_FORMAT_DEC_POINT, number_format($fBareme, self::NUMBER_FORMAT_DECIMALS)));
 
 		// Fonctionnalité réalisée si la saisie est libre
 		if ($bLibre) {
@@ -470,10 +495,55 @@ class ExportCorrectionManager extends DocumentManager {
 				// Texte de la réponse
 				$sTexte					= DataHelper::get($this->_aQCM['reponse_texte'][$nQuestion],		$nReponse,	DataHelper::DATA_TYPE_PDF,	null);
 
+				// Récupération du barème de la question
+				$dBareme		= DataHelper::get($this->_aQCM['question_bareme'],							$nQuestion,	DataHelper::DATA_TYPE_MYFLT_ABS);
+
+				// Recherche d'une pénalité
+				$fBonus					= 0;
+				$fMalus					= 0;
+				if (!$bChecked) {
+					// Récupération de la sanction de la réponse (en nombre de points)
+					$bSanction			= DataHelper::get($this->_aQCM['reponse_sanction'][$nQuestion],		$nReponse,	DataHelper::DATA_TYPE_BOOL,	null);
+					$bPenaliteQuestion	= DataHelper::get($this->_aQCM['question_penalite'],				$nQuestion,	DataHelper::DATA_TYPE_BOOL,	null);
+					if ($bSanction) {
+						// Récupération de la pénalité
+						$fMalus			= DataHelper::get($this->_aQCM['reponse_penalite'][$nQuestion],		$nReponse,	DataHelper::DATA_TYPE_MYFLT_ABS,	null);
+					} else {
+						// Récupération du facteur de pénalité de la question (en %)
+						$pPenalite		= DataHelper::get($this->_aQCM['question_penalite'],				$nQuestion,	DataHelper::DATA_TYPE_MYFLT_ABS);
+						// Calcul de la pénalité
+						$fMalus			= $dBareme * $pPenalite / 100;
+					}
+				} else {
+					// Récupération de la valeur de la réponse (en %)
+					$pValeur			= DataHelper::get($this->_aQCM['reponse_valeur'][$nQuestion], 		$nReponse,	DataHelper::DATA_TYPE_MYFLT_ABS);
+					// Calcul de la récompense
+					$fBonus				= $dBareme * $pValeur / 100;
+
+					// Fonctionnalité réalisée si tous les points sont attribués
+					if (empty($fBonus)) {
+						// Initialisation du résultat
+						$nNombreBonnes	= 0;
+
+						// Boucle de parcours des réponses
+						for ($nCompteur = 0 ; $nCompteur < $this->_aQCM['formulaire_nb_max_reponses'] ; $nCompteur++) {
+							// Fonctionnalité réalisée pour chaque réponse
+							if (isset($this->_aQCM['reponse_valide'][$nQuestion][$nCompteur])) {
+								// Le contenu de la réponse n'est pas vide : TRUE
+								$nNombreBonnes += (int) !empty($this->_aQCM['reponse_valide'][$nQuestion][$nCompteur]);
+							}
+						}
+
+						// Calcul de la récompense en fonction du nombre de bonne(s) réponse(s)
+						$fBonus			= $dBareme / $nNombreBonnes;
+					}
+				}
+
+				// Fonctionnalité réalisée si une réponse est inscrite
 				if (!empty($sTexte)) {
 					$nCount++;
 					// Construction de la réponse
-					$this->_buildReponse($bChecked, $sTexte);
+					$this->_buildReponse($bChecked, $sTexte, number_format($fBonus,self::NUMBER_FORMAT_DECIMALS), number_format($fMalus, self::NUMBER_FORMAT_DECIMALS));
 				}
 			}
 
@@ -490,7 +560,7 @@ class ExportCorrectionManager extends DocumentManager {
 
 			// Fonctionnalité réalisée si aucune réponse n'est valide
 			if (empty($nChoice)) {
-				$this->_buildReponse(true, self::REPONSE_EMPTY);
+				$this->_buildReponse(true, self::REPONSE_EMPTY, $dBareme);
 			}
 		}
 	}

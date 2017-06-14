@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 10 $
- * @since		$LastChangedDate: 2017-04-17 16:14:03 +0200 (lun., 17 avr. 2017) $
+ * @version		$LastChangedRevision: 39 $
+ * @since		$LastChangedDate: 2017-06-14 19:15:50 +0200 (Wed, 14 Jun 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -48,6 +48,13 @@ class FormulaireHelper {
 	 * @var		bool
 	 */
 	private		$_bDisable				= false;
+
+	/**
+	 * @brief	Code HTML du bouton [Ajouter une question].
+	 * @li	Exploité lors de la rédaction ou la modification d'un QCM.
+	 * @var		string
+	 */
+	private		$_sBoutonAjouter		= null;
 
 	/**
 	 * @brief	Onglets HTML.
@@ -159,17 +166,18 @@ class FormulaireHelper {
 			// Verrouillage du QCM
 			$this->_bReadonly			= true;
 		} else {
-			// Dans le cas de la création / édition : Ajout d'un bouton
-			$sAjouter					= "";
+			// Dans le cas de la création / édition : Ajout d'un bouton [Ajouter une question]
+			$this->_sBoutonAjouter		= "";
 			if (! $this->_bDisable) {
-				$sAjouter				= "<button type=\"submit\" id=\"bouton-ajouter\" class=\"blue no-margin right\" name=\"button\" value=\"ajouter\" role=\"touche_N\">Ajouter une question</button>";
+				$this->_sBoutonAjouter	= "<button type=\"submit\" id=\"bouton-ajouter\" class=\"blue no-margin right\" name=\"button\" value=\"ajouter\" role=\"touche_N\">Ajouter une question</button>";
 			}
 
+			// Construction de l'entête du questionnaire
 			$this->_html				.= "<section id=\"questionnaire\" class=\"tabs\">
 												<ul>
 													<li><a href=\"#tabs-generalite\">Généralités</a></li>
 													<li><a href=\"#tabs-questionnaire\" class=\"ui-tabs-active\">Questionnaire</a></li>
-													" . $sAjouter . "
+													" . $this->_sBoutonAjouter . "
 												</ul>";
 		}
 
@@ -191,6 +199,12 @@ class FormulaireHelper {
 	private function _buildBibliotheque($aListExcludeId = array()) {
 		// Fonctionnalité réalisée si le formulaire n'est pas en lecture seule
 		if (! $this->_bReadonly) {
+			// Fonctionnalité réalisée si au moins une question est présente
+			if ($this->_nOccurrenceQuestion >= 0) {
+				// Ajout d'un rappel du bouton [Ajouter une question]
+				$this->_html			.= "<button type=\"submit\" id=\"bouton-ajouter-bottom\" class=\"blue margin-0 max-width margin-top-20 padding-V-20\" name=\"button\" value=\"ajouter\" role=\"touche_N\">Ajouter une nouvelle question</button>";
+			}
+
 			// Récupération de la bibliothèque de questions en rapport aux paramètres du formulaire
 			$aListeBibliotheque	= $this->_oInstanceStorage->getData("liste_bibliotheque");
 			// Ajout du conteneur GalleryHelper
