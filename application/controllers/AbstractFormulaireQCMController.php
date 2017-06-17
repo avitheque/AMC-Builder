@@ -15,8 +15,8 @@
  * @subpackage	Libraries
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 44 $
- * @since		$LastChangedDate: 2017-06-17 21:23:52 +0200 (Sat, 17 Jun 2017) $
+ * @version		$LastChangedRevision: 45 $
+ * @since		$LastChangedDate: 2017-06-18 00:05:09 +0200 (Sun, 18 Jun 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -24,6 +24,11 @@
  */
 abstract class AbstractFormulaireQCMController extends AbstractFormulaireController {
 
+	/**
+	 * @brief	Constantes des actions dans le formulaire.
+	 *
+	 * @var		string
+	 */
 	const		ACTION_ACTUALISER					= "actualiser";
 	const		ACTION_AJOUTER						= "ajouter";
 	const		ACTION_EDITER						= "editer";
@@ -36,6 +41,13 @@ abstract class AbstractFormulaireQCMController extends AbstractFormulaireControl
 	const		ACTION_RETIRER						= "retirer";
 	const		ACTION_SUPPRIMER					= "supprimer";
 	const		ACTION_TERMINER						= "terminer";
+
+	/**
+	 * @brief	Constantes du formulaire.
+	 *
+	 * @var		string
+	 */
+	const		ID_FORMULAIRE						= 'ID_FORMULAIRE';
 
 	/**
 	 * @brief	Liste des action invisibles dans l'URL.
@@ -118,7 +130,7 @@ abstract class AbstractFormulaireQCMController extends AbstractFormulaireControl
 		$this->addToData('liste_sous_categories',	$aListeSousCategories);
 
 		// Récupération de l'identifiant du formulaire en session
-		$this->_idFormulaire						= $this->getDataFromSession('ID_FORMULAIRE');
+		$this->_idFormulaire						= $this->getDataFromSession(self::ID_FORMULAIRE);
 
 		// Récupération de l'identifiant du formulaire passé en GET
 		$nIdFormulaire = $this->getParam('id_formulaire');
@@ -269,7 +281,7 @@ abstract class AbstractFormulaireQCMController extends AbstractFormulaireControl
 			);
 
 			// Enregistrement de l'identifiant du formulaire en session
-			$this->sendDataToSession($nId, 'ID_FORMULAIRE');
+			$this->sendDataToSession($nId, self::ID_FORMULAIRE);
 
 			// Redirection afin d'effacer les éléments présents en GET
 			if (in_array($this->_action, self::$HIDDEN_ACTION)) {
@@ -303,8 +315,10 @@ abstract class AbstractFormulaireQCMController extends AbstractFormulaireControl
 		// Réinitialisation des variables par défaut du formulaire
 		$this->resetFormulaire(
 			array(
-				'formulaire_id'					=> 0,
-				'formulaire_nb_total_questions'	=> FormulaireManager::NB_TOTAL_QUESTIONS_DEFAUT
+				'formulaire_id'						=> 0,
+				'formulaire_active_tab'				=> 0,
+				'formulaire_active_question'		=> 0,
+				'formulaire_nb_total_questions'		=> FormulaireManager::NB_TOTAL_QUESTIONS_DEFAUT
 			)
 		);
 
@@ -342,13 +356,39 @@ abstract class AbstractFormulaireQCMController extends AbstractFormulaireControl
 		// Récupération de l'identifiant du formulaire
 		$nIdFormulaire	= DataHelper::get($this->_aForm,				'formulaire_id',		DataHelper::DATA_TYPE_INT,		null);
 
+		// Fonctionnalité réalisée si l'identifiant ne correspond pas à celui de l'instance
+		if ($this->_idFormulaire != $nIdFormulaire) {
+			// STOP !
+			return false;
+		}
+
 		// Récupération de l'identifiant de la question
 		$nIdQuestion	= DataHelper::get($this->_aForm['question_id'],	$nQuestion,				DataHelper::DATA_TYPE_INT,		null);
 
 		// Suppression de la relation entre le formulaire et la question
-		$this->_oFormulaireManager->retirerQuestion($nIdFormulaire, $nIdQuestion);
+		$bValide		= $this->_oFormulaireManager->retirerQuestion($nIdFormulaire, $nIdQuestion);
 
-		// Rechargement du formulaire
-		$this->chargerAction($nIdFormulaire);
+		// Fonctionnalité réalisée si la suppression s'est correctement déroulée
+		if ($bValide) {
+			// Récupération de la liste des champs à purger relatifs aux QUESTION et REPONSES
+			$aReset		= DataHelper::getLinesFromArrayLike(FormulaireQCMInterface::$LIST_CHAMPS_FORM, array("question_", "reponse_"));
+
+			// Fonctionnalité réalisée pour tous les champs à purger
+			foreach ($aReset as $sChamp => $iType) {
+				// Suppression du champ de la question
+				unset($this->_aForm[$sChamp][$nQuestion]);
+				// Réaffectation de occurrence des questions dans l'ordre
+				$this->_aForm[$sChamp] = array_values($this->_aForm[$sChamp]);
+			}
+
+			// Soustraction du nombre total de questions dans le formulaire
+			$this->_aForm['formulaire_nb_total_questions']--;
+
+			// Fonctionnalité réalisée si la question active n'existe plus
+			if ($this->_aForm['formulaire_active_question'] >= $this->_aForm['formulaire_nb_total_questions']) {
+				// Adaptation de l'occurrence de la question active
+				$this->_aForm['formulaire_active_question'] = $this->_aForm['formulaire_nb_total_questions'] - 1;
+			}
+		}
 	}
 }
