@@ -11,8 +11,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 44 $
+ * @since		$LastChangedDate: 2017-06-17 21:23:52 +0200 (Sat, 17 Jun 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -29,8 +29,6 @@ abstract class FormulaireQCMInterface {
 	 * @var		array	: au format array('nom_du_champ'	=> DataHelper::DATA_TYPE_*)
 	 */
 	static $LIST_CHAMPS_FORM	= array(
-		// ONGLET ************************************************************ (ordre alphabétique)
-		'tabs_active'					=> DataHelper::DATA_TYPE_INT,
 
 		// FORMAT ************************************************************ (ordre alphabétique)
 		'generation_cartouche_candidat'	=> DataHelper::DATA_TYPE_TXT,
@@ -58,6 +56,8 @@ abstract class FormulaireQCMInterface {
 		'epreuve_type'					=> DataHelper::DATA_TYPE_STR,
 
 		// GÉNÉRALITÉS ******************************************************* (ordre alphabétique)
+		'formulaire_active_tab'			=> DataHelper::DATA_TYPE_INT,
+		'formulaire_active_question'	=> DataHelper::DATA_TYPE_INT,
 		'formulaire_categorie'			=> DataHelper::DATA_TYPE_INT,
 		'formulaire_domaine'			=> DataHelper::DATA_TYPE_INT,
 		'formulaire_id'					=> DataHelper::DATA_TYPE_INT,

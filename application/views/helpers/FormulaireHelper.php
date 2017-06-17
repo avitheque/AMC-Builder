@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 39 $
- * @since		$LastChangedDate: 2017-06-14 19:15:50 +0200 (Wed, 14 Jun 2017) $
+ * @version		$LastChangedRevision: 44 $
+ * @since		$LastChangedDate: 2017-06-17 21:23:52 +0200 (Sat, 17 Jun 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -98,13 +98,22 @@ class FormulaireHelper {
 	protected	$_html					= "";
 
 	/**
-	 * @brief	Identifiant de l'onglet sélectionné par défaut.
+	 * @brief	Identifiant du TABS sélectionné par défaut.
 	 *
 	 * @li	Par défaut, le premier identifiant est 0.
 	 *
 	 * @var		integer
 	 */
-	protected	$_defaultTabs			= 0;
+	protected	$_activeTab				= 0;
+
+	/**
+	 * @brief	Identifiant de l'ACCORDION sélectionné par défaut.
+	 *
+	 * @li	Par défaut, le premier identifiant est 0.
+	 *
+	 * @var		integer
+	 */
+	protected	$_activeQuestion		= 0;
 
 	/**
 	 * @brief	Nombre de questions dans le formulaire.
@@ -149,7 +158,7 @@ class FormulaireHelper {
 		// RÉCUPÉRATION DE L'ONGLET SÉLECTIONNÉ PAR DÉFAUT
 		//#########################################################################################
 		$this->_action					= DataHelper::get($this->_aQCM, 'action_button',					DataHelper::DATA_TYPE_STR,		null);
-		$this->_defaultTabs				= DataHelper::get($this->_aQCM, 'tabs_active',						DataHelper::DATA_TYPE_INT,		FormulaireManager::TAB_DEFAULT);
+		$this->_activeTab				= DataHelper::get($this->_aQCM, 'formulaire_active_tab',			DataHelper::DATA_TYPE_INT,		FormulaireManager::TAB_DEFAULT);
 
 		// Construction des onglets
 		if ($bGeneration) {
@@ -525,14 +534,14 @@ class FormulaireHelper {
 		}
 
 		// Note finale du questionnaire
-		$nNoteFinale					= DataHelper::get($this->_aQCM, 'formulaire_note_finale',			DataHelper::DATA_TYPE_INT_ABS,  FormulaireManager::NOTE_FINALE_DEFAUT);
+		$nNoteFinale					= DataHelper::get($this->_aQCM, 'formulaire_note_finale',			DataHelper::DATA_TYPE_INT_ABS,	FormulaireManager::NOTE_FINALE_DEFAUT);
 		// Nombre maximum de réponses par question
 		$nNbMaxReponses					= DataHelper::get($this->_aQCM, 'formulaire_nb_max_reponses',		DataHelper::DATA_TYPE_INT_ABS,	FormulaireManager::NB_MAX_REPONSES_DEFAUT);
 		// Pénalité des questions du formulaire
-		$pPenaliteFormulaire			= DataHelper::get($this->_aQCM, 'formulaire_penalite',				DataHelper::DATA_TYPE_INT_ABS,  FormulaireManager::PENALITE_DEFAUT);
+		$pPenaliteFormulaire			= DataHelper::get($this->_aQCM, 'formulaire_penalite',				DataHelper::DATA_TYPE_INT_ABS,	FormulaireManager::PENALITE_DEFAUT);
 
 		// Nombre de question du formulaire
-		$nNbTotalQuestions				= DataHelper::get($this->_aQCM, 'formulaire_nb_total_questions',	DataHelper::DATA_TYPE_INT_ABS,	FormulaireManager::NB_TOTAL_QUESTIONS_DEFAUT);
+		$nNbTotalQuestions				= DataHelper::get($this->_aQCM, 'formulaire_nb_total_questions',DataHelper::DATA_TYPE_INT_ABS,		FormulaireManager::NB_TOTAL_QUESTIONS_DEFAUT);
 
 		// Présentation du questionnaire
 		$sPresentation					= DataHelper::get($this->_aQCM, 'formulaire_presentation',			DataHelper::DATA_TYPE_TXT,		FormulaireManager::PRESENTATION_DEFAUT);
@@ -559,6 +568,7 @@ class FormulaireHelper {
 
 		// Questionnaire
 		$this->_html					.= "	<div id=\"tabs-generalite\">
+													<input type=\"hidden\" name=\"formulaire_active_tab\" value=\"" . $this->_activeTab . "\" />
 													<span id=\"tabs-generalite-top\"><a class=\"page-top\" href=\"#tabs-generalite-bottom\" title=\"Bas de page...\">" . self::ICON_DOWN . "</a></span>
 													<fieldset class=\"" . $sClassField . "\" id=\"general\"><legend>Informations du formulaire</legend>
 														<ol>
@@ -662,8 +672,12 @@ class FormulaireHelper {
 		// CONSTRUCTION DE LA LISTE DES QUESTIONS
 		//#########################################################################################
 
+		// Identifiant de la question active
+		$this->_activeQuestion			= DataHelper::get($this->_aQCM, 'formulaire_active_question',		DataHelper::DATA_TYPE_INT,		0);
+
 		// Boucle de création de la liste des questions
 		$this->_html					.= "	<div id=\"tabs-questionnaire\" class=\"active\">
+													<input type=\"hidden\" name=\"formulaire_active_question\" value=\"" . $this->_activeQuestion . "\" />
 													<span id=\"tabs-questionnaire-top\"><a class=\"page-top\" href=\"#tabs-questionnaire-bottom\" title=\"Bas de page...\">" . self::ICON_DOWN . "</a></span>
 													<section id=\"questionnaire\" class=\"accordion ". $sClassField . "\">";
 
@@ -722,13 +736,14 @@ class FormulaireHelper {
 		// Ajout du JavaScript
 		ViewRender::linkFormulaireScript("helpers/FormulaireHelper.js");
 
-		// Activation de l'onglet par défaut
-		ViewRender::addToJQuery("$(\"section.tabs\").tabs({ active: " . $this->_defaultTabs . " });");
+		// Activation de l'onglet sélectionné
+		ViewRender::addToJQuery("$(\"section.tabs\").tabs({ active: " . $this->_activeTab . " });");
 
-		// Activation de la dernière question ajoutée dans la liste
-		if ($this->_action == AbstractFormulaireQCMController::ACTION_AJOUTER && $this->_nOccurrenceQuestion > 0) {
-			ViewRender::addToJQuery("$(\"section.accordion\").accordion({ active: " . ($this->_nOccurrenceQuestion) . " });");
-		}
+		// Activation de la question sélectionnée dans la liste
+		ViewRender::addToJQuery("$(\"section.accordion\").accordion({ active: " . $this->_activeQuestion . " });");
+
+		// Déplacement du SCROLL vers l'occurrence de la question sélectionnée
+		ViewRender::addToJQuery("scrollToQuestionOccurrence(" . $this->_activeQuestion . ");");
 
 		// Activation de la variable de modification du formulaire
 		if ($this->_oInstanceStorage->getData('FORMULAIRE_UPDATED')) {

@@ -15,8 +15,8 @@
  * @subpackage	Libraries
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 44 $
+ * @since		$LastChangedDate: 2017-06-17 21:23:52 +0200 (Sat, 17 Jun 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -216,19 +216,23 @@ abstract class AbstractFormulaireQCMController extends AbstractFormulaireControl
 	 * @brief	Ajout d'une question dans le formulaire.
 	 *
 	 * @li	Initialisation des entrées de chaque réponses à la nouvelle question.
+	 * @li	Stockage de l'occurrence de l'onglet du Questionnaire dans le champ caché `formulaire_active_tab`.
+	 * @li	Stockage de l'occurrence de la question dans le champ caché `formulaire_active_question`.
 	 *
 	 * @return	void
 	 */
 	public function ajouterAction() {
+		// Passage par défaut à l'onglet du Questionnaire
+		$this->_aForm['formulaire_active_tab']				= 1;
+		// Activation de occurrence de la nouvelle question dans le Questionnaire
+		$this->_aForm['formulaire_active_question']			= $this->_aForm['formulaire_nb_total_questions'];
+
 		// Incrémentation du nombre de questions dans le formulaire
 		if (isset($this->_aForm['formulaire_nb_total_questions'])) {
-			$this->_aForm['formulaire_nb_total_questions'] += 1;
+			$this->_aForm['formulaire_nb_total_questions']	+= 1;
 		} else {
-			$this->_aForm['formulaire_nb_total_questions'] = 1;
+			$this->_aForm['formulaire_nb_total_questions']	= 1;
 		}
-
-		// Passage par défaut à l'onglet du Questionnaire
-		$this->_aForm['tabs_active']				= 1;
 	}
 
 	/**

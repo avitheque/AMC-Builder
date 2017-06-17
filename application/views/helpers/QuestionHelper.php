@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 10 $
- * @since		$LastChangedDate: 2017-04-17 16:14:03 +0200 (lun., 17 avr. 2017) $
+ * @version		$LastChangedRevision: 44 $
+ * @since		$LastChangedDate: 2017-06-17 21:23:52 +0200 (Sat, 17 Jun 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -24,6 +24,8 @@ class QuestionHelper {
 
 	const		MINI_TITRE_LENGHT		= 26;
 	const		MINI_ENONCE_LENGHT		= 66;
+	const		QUESTION_FORMAT_ID		= "Q%03d";
+	const		QUESTION_FORMAT_NUMBER	= "%03d";
 
 	/**
 	 * @brief	Identifiant du formulaire.
@@ -481,8 +483,11 @@ class QuestionHelper {
 		//#########################################################################################
 		// Titre de la question
 		$sTitleQuestion					= null;
+		// Identifiant de la question courante
+		$nCurrentQuestionNumber			= sprintf(self::QUESTION_FORMAT_NUMBER,	$nQuestion + 1);
+		$sCurrentQuestionId				= sprintf(self::QUESTION_FORMAT_ID,		$nQuestion + 1);
 		if (is_numeric($nQuestion) && $this->_bShowQuestion) {
-			$sTitleQuestion				= "Question n°" . sprintf("%02d", $nQuestion + 1);
+			$sTitleQuestion				= "Question n°" . $nCurrentQuestionNumber;
 		}
 
 		$sInfoNombreReponses			= null;
@@ -537,8 +542,6 @@ class QuestionHelper {
 
 			// Finalisation des informations
 			$sInfoNombreReponses		.= "</div>";
-		} else {
-
 		}
 
 		// Construction de la question QCM
@@ -551,7 +554,7 @@ class QuestionHelper {
 			$sMiniInformations			= $this->_bLibreQuestion ? "<span class=\"small strong right italic pointer\">(Saisie libre)</span>" : $sInfoNombreReponses;
 
 			// Construction de la miniature
-			$this->_html				.= "<article class=\"miniature padding-0\" title=\"" . $sEnonce . "\">
+			$this->_html				.= "<article class=\"miniature padding-0\" title=\"" . $sEnonce . "\" id=\"mini-Q" . $sCurrentQuestionId . "\">
 												<h3 class=\"strong left\">" . $sMiniTitre . "</h3>
 												<input type=\"hidden\" id=\"idBibliotheque\" name=\"bibliotheque_id[]\" value=\"" . $nIdQuestion . "\" />
 												<p>
@@ -566,7 +569,7 @@ class QuestionHelper {
 			$sIdCorrection				= "idCorrection_"	. $nQuestion;
 
 			// Construction complète
-			$this->_html				.= "<h3 class=\"item-title\" id=\"question_" . $nQuestion . "\" title=\"" . $sEnonce . "\">" . $sTitleQuestion . $sInfoNombreReponses . $sInformations . "</h3>
+			$this->_html				.= "<h3 class=\"item-title\" id=\"" . $sCurrentQuestionId . "\" title=\"" . $sEnonce . "\">" . $sTitleQuestion . $sInfoNombreReponses . $sInformations . "</h3>
 											<div class=\"item-content auto-height\">
 												" . $sRemoveQuestion . "
 												<table class=\"max-width\">
