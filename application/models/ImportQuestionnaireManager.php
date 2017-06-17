@@ -12,8 +12,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 46 $
+ * @since		$LastChangedDate: 2017-06-18 01:19:51 +0200 (Sun, 18 Jun 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -233,11 +233,12 @@ class ImportQuestionnaireManager extends ImportManager {
 		// Initialisation du BONUS
 		$fBonus = 0;
 		// Extraction BONUS dans le texte
-		if (preg_match("@^\~\%([^\-][0-9\.]+)\%.*$@", trim($sString), $aMatches)) {
+		if (preg_match("@^[\=\~]\%([^\-][0-9\.]+)\%.*$@", trim($sString), $aMatches)) {
 			$fBonus = $aMatches[1];
 		} elseif (preg_match("@^\=(.*)$@", trim($sString))) {
 			$fBonus = FormulaireManager::BONUS_MAX;
 		}
+		
 		// Renvoi du résultat
 		return $fBonus;
 	}
@@ -757,7 +758,7 @@ class ImportQuestionnaireManager extends ImportManager {
 
 				// Parcours de la liste des réponses
 				$fBareme			= FormulaireManager::QUESTION_BAREME_DEFAUT;
-				$fPenaliteQuestion	= 0;
+				$fPenaliteQuestion	= $pPenalite;
 				$bLibreQuestion		= true;
 				foreach ($aListeReponses as $nReponse => $aReponse) {
 					// Récupération du contenu de la réponse
