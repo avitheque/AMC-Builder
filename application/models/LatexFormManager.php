@@ -125,8 +125,8 @@ require_once('LatexFormManager/Closure.php');
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 5 $
- * @since		$LastChangedDate: 2017-03-02 22:16:57 +0100 (jeu., 02 mars 2017) $
+ * @version		$LastChangedRevision: 43 $
+ * @since		$LastChangedDate: 2017-06-17 15:53:21 +0200 (Sat, 17 Jun 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -1262,6 +1262,12 @@ class LatexFormManager extends DocumentManager {
 			$fNodeC			= $fNoteA/2;									// ***
 			$fNoteB			= $fNoteA - $fNodeD;							// ****
 			$fNoteE			= 0;											// *
+
+			// Fonctionnalité réalisée si la mauvaise note doit subir un facteur de pénalité
+			if ($fNoteE == 0 && $pPenalite > 0) {
+				// Attibution d'une note négative
+				$fNoteE		= - $fNoteA * $pPenalite / 100;
+			}
 
 			// Récupération du nombre de lignes pour la réponse libre
 			$nLignes		= DataHelper::get($this->_aQCM['question_lignes'],	$nQuestion, DataHelper::DATA_TYPE_INT_ABS,	FormulaireManager::QUESTION_LIBRE_LIGNES_DEFAUT);
