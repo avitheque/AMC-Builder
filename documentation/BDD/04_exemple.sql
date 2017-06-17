@@ -43,7 +43,8 @@ INSERT INTO `question` (`id_question`, `titre_question`, `stricte_question`, `en
 (5, 'Question simple - facteur de pénalité', 0, 'Question à choix unique AVEC pénalité en cas de mauvaise réponse :&#10;&#10;Le(s) point(s) des réponses valides sont accordés pour chaque bonne réponse cochée.&#10;Cependant, des points sont retirés pour chaque mauvaise réponse selon le facteur de pénalité.', '', 1, 50, 0, NULL, '333333', '2017-01-10 10:31:43'),
 (6, 'Question simple - sanction', 0, 'Question à choix simple avec une SANCTION sur une mauvaise réponse :&#10;&#10;Même principe de fonctionnement qu&#39;une question à choix unique, mais cette fois-ci une mauvaise réponse retire des points !', '', 1, 0, 0, NULL, '333333', '2017-01-10 11:29:02'),
 (7, 'Question libre - stricte', 1, 'Question libre à réponse STRICTE :&#10;&#10;Le candidat doit répondre à la question avec ses mots.&#10;C&#39;est le correcteur qui cochera la case correspondante selon son appréciation.', 'La réponse est correcte ou fausse...', 1, 0, 1, NULL, '333333', '2017-01-11 11:14:02'),
-(8, 'Question multiple - aucune', 0, 'Question multiple SANS bonne réponse :&#10;&#10;Aucune des réponses proposées ci-dessous n&#39;est juste !', '', 1, 0, 0, NULL, '333333', '2017-01-11 11:19:51');
+(8, 'Question multiple - aucune', 0, 'Question multiple SANS bonne réponse :&#10;&#10;Aucune des réponses proposées ci-dessous n&#39;est juste !', '', 1, 0, 0, NULL, '333333', '2017-01-11 11:19:51'),
+(9, 'Question multiple - normale', 0, 'Question à choix multiple normale :&#10;&#10;Le candidat doit cocher la totalité des bonnes réponses pour se voir accorder la totalité des points du barème.&#10;Cependant, s&#39;il ne coche qu&#39;une seule bonne réponse, il n&#39;obtiendra que la valeur attribuée à son choix.&#10;Aucune pénalité n&#39;est affectée en cas de mauvaise réponse.', '', 2, 0, 0, NULL, '333333', '2017-06-17 10:16:40');
 
 -- --------------------------------------------------------
 
@@ -59,7 +60,8 @@ INSERT INTO `formulaire_question` (`id_formulaire_question`, `id_formulaire`, `i
 (5, 1, 5, '2017-01-11 11:19:51'),
 (6, 1, 6, '2017-01-11 11:19:51'),
 (7, 1, 7, '2017-01-11 11:19:51'),
-(8, 1, 8, '2017-01-11 11:19:51');
+(8, 1, 8, '2017-01-11 11:19:51'),
+(9, 1, 9, '2017-01-11 11:19:51');
 
 -- --------------------------------------------------------
 
@@ -114,7 +116,11 @@ INSERT INTO `reponse` (`id_reponse`, `texte_reponse`, `valide_reponse`, `valeur_
 (18, 'Faux 1/4', 0, 0, 0, 0, '333333', '2017-01-11 11:19:24'),
 (19, 'Faux 2/4', 0, 0, 0, 0, '333333', '2017-01-11 11:19:24'),
 (20, 'Faux 3/4', 0, 0, 0, 0, '333333', '2017-01-11 11:19:24'),
-(21, 'Faux 4/4', 0, 0, 0, 0, '333333', '2017-01-11 11:19:24');
+(21, 'Faux 4/4', 0, 0, 0, 0, '333333', '2017-01-11 11:19:24'),
+(22, 'Bonne réponse qui rapporte 30% des points', 1, 30, 0, 0, '333333', '2017-01-11 11:19:24'),
+(23, 'Bonne réponse qui rapporte 70% des points', 1, 70, 0, 0, '333333', '2017-01-11 11:19:24'),
+(24, 'Mauvaise réponse', 0, 0, 0, 0, '333333', '2017-01-11 11:19:24'),
+(25, 'Mauvaise réponse', 0, 0, 0, 0, '333333', '2017-01-11 11:19:24');
 
 -- --------------------------------------------------------
 
@@ -143,7 +149,11 @@ INSERT INTO `question_reponse` (`id_question_reponse`, `id_question`, `id_repons
 (18, 8, 18, '2017-01-11 11:19:24'),
 (19, 8, 19, '2017-01-11 11:19:24'),
 (20, 8, 20, '2017-01-11 11:19:24'),
-(21, 8, 21, '2017-01-11 11:19:24');
+(21, 8, 21, '2017-01-11 11:19:24'),
+(22, 9, 22, '2017-01-11 11:19:24'),
+(23, 9, 23, '2017-01-11 11:19:24'),
+(24, 9, 24, '2017-01-11 11:19:24'),
+(25, 9, 25, '2017-01-11 11:19:24');
 
 -- --------------------------------------------------------
 

@@ -15,8 +15,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 40 $
- * @since		$LastChangedDate: 2017-06-14 21:26:07 +0200 (Wed, 14 Jun 2017) $
+ * @version		$LastChangedRevision: 42 $
+ * @since		$LastChangedDate: 2017-06-17 15:39:33 +0200 (Sat, 17 Jun 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -29,24 +29,58 @@ class ExportCorrectionManager extends DocumentManager {
 	 *
 	 * @var		string
 	 */
-	const PAGE_HEADER_TITRE					= "CORRECTION QCM";								// Titre de l'entête de la page
-	const PAGE_FORMULAIRE_TITRE_DEFAUT		= "Formulaire sans nom";						// Titre du formulaire par défaut
-	const PAGE_LIMIT_PERCENT				= 82;											// Pourcentage d'occupation de la page avant passage à la page suivante
-	const REPONSE_EMPTY						= "Aucune de ces réponses n'est correcte";		// Aucune réponse n'est valide parmi celles proposées
-	const REPONSE_LIBRE						= "Saisie libre";								// Indicateur de réponse libre
-	const REPONSE_LIBRE_CORRECTION			= "RÉPONSE ATTENDUE :";							// Titre de la correction de la réponse libre
-	const REPONSE_BOX_WIDTH					= 5;											// Largeur de la case à cocher
-	const REPONSE_CHECKED_PADDING			= 1;											// Espacement du bord interne de la case à cocher
-	const NUMBER_FORMAT_DECIMALS			= 2;											// Nombre de chiffres après la virgule du BAREME, BONUS et MALUS
-	const NUMBER_FORMAT_DEC_POINT			= ",";											// Caractère de séparation des nombres décimaux
+	const	PAGE_HEADER_TITRE					= "CORRECTION QCM";													// Titre de l'entête de la page
+	const	PAGE_FORMULAIRE_TITRE_DEFAUT		= "Formulaire sans nom";											// Titre du formulaire par défaut
+	const	PAGE_LIMIT_PERCENT					= 82;																// Pourcentage d'occupation de la page avant passage à la page suivante
+	const	REPONSE_BOX_WIDTH					= 5;																// Largeur de la case à cocher
+	const	REPONSE_CHECKED_PADDING				= 1;																// Espacement du bord interne de la case à cocher
+	const	NUMBER_FORMAT_DECIMALS				= 2;																// Nombre de chiffres après la virgule du BAREME, BONUS et MALUS
+	const	NUMBER_FORMAT_DEC_POINT				= ",";																// Caractère de séparation des nombres décimaux
+
+	const	REPONSE_EMPTY						= "Aucune de ces réponses n'est correcte";							// Aucune réponse n'est valide parmi celles proposées
+	const	REPONSE_LIBRE						= "Saisie libre";													// Indicateur de réponse libre
+	const	REPONSE_LIBRE_CORRECTION_TITRE		= "RÉPONSE ATTENDUE :";												// Titre de la correction de la réponse libre
+	const	REPONSE_LIBRE_CORRECTION_COMPLEMENT	= "SERONT PROPOSÉES AU CORRECTEUR LES CASES A COCHER SUIVANTES :";	// Présentation des différentes possibilités de correction
+
+	// Choix possibles pour corriger une question STRICTE
+	static public $_aLibreCorrectionStricte		= array(
+		"Correct"		=> 100,
+		"Faux"			=> 0
+	);
+
+	// Choix possibles pour corriger une question SOUPLE
+	static public $_aLibreCorrectionSouple		= array(
+		"Excellent"		=> 100,
+		"Très bien"		=> 75,
+		"Moyen"			=> 50,
+		"Insuffisant"	=> 25,
+		"Mauvais"		=> 0
+	);
+
+	/**
+	 * @brief	Constantes du format des BONUS / MALUS.
+	 *
+	 * @var		string
+	 */
+	const	BONUS_CHAR_SIGN					= "+";
+	const	BONUS_MARGIN_TOP				= 1.3;
+	const	BONUS_MARGIN_LEFT				= 2;
+
+	const	MALUS_CHAR_SIGN					= "-";
+	const	MALUS_MARGIN_TOP				= 1.3;
+	const	MALUS_MARGIN_LEFT				= 1.6;
+
+	const	STRICT_CHAR_SIGN				= "*";
+	const	STRICT_MARGIN_TOP				= 0.4;
+	const	STRICT_MARGIN_LEFT				= 2;
 
 	/**
 	 * @brief	Constantes de messages d'avertissements.
 	 *
 	 * @var		string
 	 */
-	const ERROR_ENONCE						= "ATTENTION !\nVeuillez renseigner l'énoncé, sinon cette question ne sera pas prise en compte dans le questionnaire !";
-	const ERROR_REPONSE						= "ATTENTION !\nVeuillez renseigner les réponses, sinon cette question ne sera pas prise en compte dans le questionnaire !";
+	const	ERROR_ENONCE					= "ATTENTION !\nVeuillez renseigner l'énoncé, sinon cette question ne sera pas prise en compte dans le questionnaire !";
+	const	ERROR_REPONSE					= "ATTENTION !\nVeuillez renseigner les réponses, sinon cette question ne sera pas prise en compte dans le questionnaire !";
 
 	/**
 	 * @brief	Variables de construction du formulaire.
@@ -220,7 +254,7 @@ class ExportCorrectionManager extends DocumentManager {
 	 */
 	public function __construct(array $aQCM = array()) {
 		// Initialisation de la variable d'instance
-		$this->_aQCM = $aQCM;
+		$this->_aQCM		= $aQCM;
 
 		// Récupération du titre du formulaire
 		$this->sTitre		= DataHelper::get($this->_aQCM, "formulaire_titre", DataHelper::DATA_TYPE_PDF, self::PAGE_FORMULAIRE_TITRE_DEFAUT, true);
@@ -343,7 +377,7 @@ class ExportCorrectionManager extends DocumentManager {
 	 * @param	float	$fMalus				: (optionnel) point(s) débité(s) si la réponse est sélectionnée par le candidat.
 	 * @return	void
 	 */
-	private function _buildReponse($bChecked = false, $sTexte = '', $fBonus = 0, $fMalus = 0) {
+	private function _buildReponse($bChecked = false, $sTexte = '', $fBonus = null, $fMalus = null, $bStrict = false) {
 		// Fonctionnalité réalisé si le texte est renseigné correctement
 		if (! empty($sTexte)) {
 			// Le texte de la réponse est renseigné
@@ -373,22 +407,27 @@ class ExportCorrectionManager extends DocumentManager {
 			$this->_document->addCell($this->nLineWidth - $this->_document->getRightMargin(), ($this->nFontSizePt / 2), $sTexte, 0, PDFManager::ALIGN_JUSTIFY);
 
 			// Fonctionnalité réalisée si la sélection de la question entraine des points en plus ou en moins
-			if ($fBonus > 0) {
+			if ($fBonus > 0 || $fBonus == 0 && is_null($fMalus)) {
+				// Fonctionnalité réalisée si la réponse attendue est STRICT
+				$sSign	= $bStrict ? self::STRICT_CHAR_SIGN		: self::BONUS_CHAR_SIGN;
+				$fTop	= $bStrict ? self::STRICT_MARGIN_TOP	: self::BONUS_MARGIN_TOP;
+				$fLeft	= $bStrict ? self::STRICT_MARGIN_LEFT	: self::BONUS_MARGIN_LEFT;
+
 				// Affichage du BONUS
 				$this->_document->setTextColor(0, 255, 0);
 				// Décalage du signe [+] vers la GAUCHE
-				$this->_document->text($this->_document->getLeftMargin() - 2, $this->_document->getY() - 1.5, "+");
+				$this->_document->text($this->_document->getLeftMargin() - $fLeft, $this->_document->getY() - $fTop, $sSign);
 				// Ajout de la valeur du BONUS
-				$this->_document->text($this->_document->getLeftMargin(), $this->_document->getY() - 1.5, str_replace(".", self::NUMBER_FORMAT_DEC_POINT, $fBonus));
+				$this->_document->text($this->_document->getLeftMargin(), $this->_document->getY() - self::BONUS_MARGIN_TOP, str_replace(".", self::NUMBER_FORMAT_DEC_POINT, $fBonus));
 				// Retour à la couleur du texte par défaut
 				$this->_document->setTextColor(0, 0, 0);
 			} elseif ($fMalus > 0) {
 				// Affichage du MALUS
 				$this->_document->setTextColor(255, 0, 0);
 				// Décalage du signe [-] vers la GAUCHE
-				$this->_document->text($this->_document->getLeftMargin() - 1.7, $this->_document->getY() - 1.5, "-");
+				$this->_document->text($this->_document->getLeftMargin() - self::MALUS_MARGIN_LEFT, $this->_document->getY() - self::MALUS_MARGIN_TOP, self::MALUS_CHAR_SIGN);
 				// Ajout de la valeur du MALUS
-				$this->_document->text($this->_document->getLeftMargin(), $this->_document->getY() - 1.5, str_replace(".", self::NUMBER_FORMAT_DEC_POINT, $fMalus));
+				$this->_document->text($this->_document->getLeftMargin(), $this->_document->getY() - self::MALUS_MARGIN_TOP, str_replace(".", self::NUMBER_FORMAT_DEC_POINT, $fMalus));
 				// Retour à la couleur du texte par défaut
 				$this->_document->setTextColor(0, 0, 0);
 			}
@@ -408,28 +447,30 @@ class ExportCorrectionManager extends DocumentManager {
 		$this->_document->setX($this->_document->getLeftMargin());
 
 		// Identifiant de la question
-		$idQuestion		= sprintf(LatexFormManager::DOCUMENT_QUESTIONS_ID, intval($nQuestion + 1));
+		$idQuestion						= sprintf(LatexFormManager::DOCUMENT_QUESTIONS_ID, intval($nQuestion + 1));
 
 		// Titre de la question
-		$sTitre			= DataHelper::get($this->_aQCM['question_titre'],		$nQuestion, DataHelper::DATA_TYPE_PDF);
+		$sTitre							= DataHelper::get($this->_aQCM['question_titre'],		$nQuestion, DataHelper::DATA_TYPE_PDF);
 		// Énoncé de la question
-		$sEnonce		= DataHelper::get($this->_aQCM['question_enonce'],		$nQuestion, DataHelper::DATA_TYPE_PDF);
+		$sEnonce						= DataHelper::get($this->_aQCM['question_enonce'],		$nQuestion, DataHelper::DATA_TYPE_PDF);
 		// Texte de la réponse
-		$sCorrection	= DataHelper::get($this->_aQCM['question_correction'],	$nQuestion,	DataHelper::DATA_TYPE_PDF);
+		$sCorrection					= DataHelper::get($this->_aQCM['question_correction'],	$nQuestion,	DataHelper::DATA_TYPE_PDF);
 		// Attente d'une réponse stricte à la question
-		$bStricte		= DataHelper::get($this->_aQCM['question_stricte'],		$nQuestion, DataHelper::DATA_TYPE_BOOL);
+		$bStricte						= DataHelper::get($this->_aQCM['question_stricte'],		$nQuestion, DataHelper::DATA_TYPE_BOOL);
 		// Attente d'une réponse libre à la question
-		$bLibre			= DataHelper::get($this->_aQCM['question_libre'],		$nQuestion, DataHelper::DATA_TYPE_BOOL);
+		$bLibre							= DataHelper::get($this->_aQCM['question_libre'],		$nQuestion, DataHelper::DATA_TYPE_BOOL);
 		// Barème de la question
-		$fBareme		= DataHelper::get($this->_aQCM['question_bareme'],		$nQuestion,	DataHelper::DATA_TYPE_PDF);
+		$fBareme						= DataHelper::get($this->_aQCM['question_bareme'],		$nQuestion,	DataHelper::DATA_TYPE_PDF);
+		// Récupération du facteur de pénalité de la question (en %)
+		$pPenalite						= DataHelper::get($this->_aQCM['question_penalite'],	$nQuestion,	DataHelper::DATA_TYPE_MYFLT_ABS);
 
 		// Ajout du barème à la question
-		$idQuestion		.= sprintf('%10s (%s pt)', " ", str_replace(".", self::NUMBER_FORMAT_DEC_POINT, number_format($fBareme, self::NUMBER_FORMAT_DECIMALS)));
+		$idQuestion						.= sprintf('%10s (%s point%s)', " ", str_replace(".", self::NUMBER_FORMAT_DEC_POINT, number_format($fBareme, self::NUMBER_FORMAT_DECIMALS)), $fBareme > 1 ? "s" : "");
 
 		// Fonctionnalité réalisée si la saisie est libre
 		if ($bLibre) {
 			// Ajout d'un indicateur de saisie libre
-			$idQuestion	.= " - " . self::REPONSE_LIBRE;
+			$idQuestion					.= " - " . self::REPONSE_LIBRE;
 		}
 
 		// Fonctionnalité réalisée si l'énoncé est VIDE
@@ -449,7 +490,7 @@ class ExportCorrectionManager extends DocumentManager {
 		$this->_document->setFontStyle(PDFManager::STYLE_DEFAULT);
 
 		// Extraction des lignes de l'énoncé
-		$aEnonce		= explode("\n", $sEnonce);
+		$aEnonce						= explode("\n", $sEnonce);
 		// Parcours de chaque ligne de l'énoncé
 		foreach ($aEnonce as $sLigneEnonce) {
 			// Ajout de la ligne à l'énoncé
@@ -463,7 +504,7 @@ class ExportCorrectionManager extends DocumentManager {
 			$this->_document->addCell($this->nLineWidth, ($this->nFontSizePt / 2));
 			$this->_document->setX($this->_document->getLeftMargin() * 2);
 			$this->_document->setFontStyle(PDFManager::STYLE_BOLD_UNDERLINE);
-			$this->_document->addCell($this->nLineWidth, ($this->nFontSizePt / 2), self::REPONSE_LIBRE_CORRECTION);
+			$this->_document->addCell($this->nLineWidth, ($this->nFontSizePt / 2), self::REPONSE_LIBRE_CORRECTION_TITRE);
 			$this->_document->setFontStyle(PDFManager::STYLE_ITALIC);
 			$this->_document->setX($this->_document->getLeftMargin() * 2);
 
@@ -471,20 +512,52 @@ class ExportCorrectionManager extends DocumentManager {
 			$aCorrection = explode("\n", $sCorrection);
 			foreach ($aCorrection as $sCorrection) {
 				// Suppression des caractères [espace] superflus
-				$sCorrection = trim($sCorrection);
+				$sCorrection			= trim($sCorrection);
 				if (!empty($sCorrection)) {
 					$this->_document->setX($this->_document->getLeftMargin() * 2);
 					$this->_document->addCell($this->nLineWidth, ($this->nFontSizePt / 2), sprintf("%10s %s", " ", $sCorrection));
 				}
 			}
 
+			// Ajout d'une information complémentaire pour la correction LIBRE
+			$this->_document->addCell($this->nLineWidth, ($this->nFontSizePt / 2));
+			$this->_document->setX($this->_document->getLeftMargin() * 2);
+			$this->_document->setFontStyle(PDFManager::STYLE_BOLD_UNDERLINE);
+			$this->_document->addCell($this->nLineWidth, ($this->nFontSizePt / 2), self::REPONSE_LIBRE_CORRECTION_COMPLEMENT);
+			$this->_document->setFontStyle(PDFManager::STYLE_ITALIC);
+
+			// Présentation des choix disponibles pour le correcteur
+			$fOriginalMargin			= $this->_document->getLeftMargin();
+			$aListeChoix				= $bStricte ? self::$_aLibreCorrectionStricte : self::$_aLibreCorrectionSouple;
+
+			// Parcours la liste des choix possibles
+			foreach ($aListeChoix as $sLibelle => $pFacteur) {
+				$this->_document->setLeftMargin(50);
+				$this->_document->setTextColor(255, 0, 0);
+				// Calcul du bonus en fonction du FACTEUR du choix
+				$fBonus					= $fBareme * $pFacteur / 100;
+
+				// Fonctionnalité réalisée si le FACTEUR est 0
+				$fMalus					= 0;
+				if ($pFacteur == 0 && $pPenalite > 0) {
+				    $fMalus				= $fBareme * $pPenalite / 100;
+				}
+
+				// Ajout du choix disponible
+				$this->_document->setDrawColor(255, 0, 0);
+				$this->_buildReponse(false, $sLibelle, number_format($fBonus,self::NUMBER_FORMAT_DECIMALS), number_format($fMalus,self::NUMBER_FORMAT_DECIMALS));
+			}
+
+			// Restituction des paramètres originaux du DOCUMENT
+			$this->_document->setDrawColor(0, 0, 0);
 			$this->_document->setTextColor(0, 0, 0);
 			$this->_document->setFontStyle(PDFManager::STYLE_DEFAULT);
+			$this->_document->setLeftMargin($fOriginalMargin);
 		} else {
 			// Boucle de parcours des réponses
-			$nCount = 0;
-			$nChoice = 0;
-			for ($nReponse	= 0 ; $nReponse < $this->_aQCM['formulaire_nb_max_reponses'] ; $nReponse++) {
+			$nCount						= 0;
+			$nChoice					= 0;
+			for ($nReponse = 0 ; $nReponse < $this->_aQCM['formulaire_nb_max_reponses'] ; $nReponse++) {
 				// Ajout de la réponse attendue
 				$this->_document->setX($this->_document->getLeftMargin() * 2);
 
@@ -496,7 +569,7 @@ class ExportCorrectionManager extends DocumentManager {
 				$sTexte					= DataHelper::get($this->_aQCM['reponse_texte'][$nQuestion],		$nReponse,	DataHelper::DATA_TYPE_PDF,	null);
 
 				// Récupération du barème de la question
-				$dBareme		= DataHelper::get($this->_aQCM['question_bareme'],							$nQuestion,	DataHelper::DATA_TYPE_MYFLT_ABS);
+				$dBareme				= DataHelper::get($this->_aQCM['question_bareme'],					$nQuestion,	DataHelper::DATA_TYPE_MYFLT_ABS);
 
 				// Recherche d'une pénalité
 				$fBonus					= 0;
@@ -504,13 +577,10 @@ class ExportCorrectionManager extends DocumentManager {
 				if (!$bChecked) {
 					// Récupération de la sanction de la réponse (en nombre de points)
 					$bSanction			= DataHelper::get($this->_aQCM['reponse_sanction'][$nQuestion],		$nReponse,	DataHelper::DATA_TYPE_BOOL,	null);
-					$bPenaliteQuestion	= DataHelper::get($this->_aQCM['question_penalite'],				$nQuestion,	DataHelper::DATA_TYPE_BOOL,	null);
 					if ($bSanction) {
 						// Récupération de la pénalité
 						$fMalus			= DataHelper::get($this->_aQCM['reponse_penalite'][$nQuestion],		$nReponse,	DataHelper::DATA_TYPE_MYFLT_ABS,	null);
 					} else {
-						// Récupération du facteur de pénalité de la question (en %)
-						$pPenalite		= DataHelper::get($this->_aQCM['question_penalite'],				$nQuestion,	DataHelper::DATA_TYPE_MYFLT_ABS);
 						// Calcul de la pénalité
 						$fMalus			= $dBareme * $pPenalite / 100;
 					}
@@ -543,7 +613,7 @@ class ExportCorrectionManager extends DocumentManager {
 				if (!empty($sTexte)) {
 					$nCount++;
 					// Construction de la réponse
-					$this->_buildReponse($bChecked, $sTexte, number_format($fBonus,self::NUMBER_FORMAT_DECIMALS), number_format($fMalus, self::NUMBER_FORMAT_DECIMALS));
+					$this->_buildReponse($bChecked, $sTexte, number_format($fBonus,self::NUMBER_FORMAT_DECIMALS), number_format($fMalus, self::NUMBER_FORMAT_DECIMALS), $bStricte);
 				}
 			}
 
@@ -560,7 +630,7 @@ class ExportCorrectionManager extends DocumentManager {
 
 			// Fonctionnalité réalisée si aucune réponse n'est valide
 			if (empty($nChoice)) {
-				$this->_buildReponse(true, self::REPONSE_EMPTY, $dBareme);
+				$this->_buildReponse(true, self::REPONSE_EMPTY, $dBareme, 0, true);
 			}
 		}
 	}
