@@ -8,8 +8,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 19 $
- * @since		$LastChangedDate: 2017-04-30 15:27:06 +0200 (dim., 30 avr. 2017) $
+ * @version		$LastChangedRevision: 47 $
+ * @since		$LastChangedDate: 2017-06-24 18:26:35 +0200 (Sat, 24 Jun 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -26,6 +26,8 @@ if (defined('MODE_DEBUG') && (bool) MODE_DEBUG) {
 	$sExtensionJQueryCSS	= ".min.css";
 }
 ?>
+<xml version="1.0" encoding="UTF-8" >
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr">
 <head>
 		<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
