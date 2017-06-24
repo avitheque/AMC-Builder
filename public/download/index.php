@@ -14,8 +14,8 @@
 	 * @subpackage	Application
 	 * @author		durandcedric@avitheque.net
 	 * @update		$LastChangedBy: durandcedric $
-	 * @version		$LastChangedRevision: 48 $
-	 * @since		$LastChangedDate: 2017-06-24 19:27:34 +0200 (Sat, 24 Jun 2017) $
+	 * @version		$LastChangedRevision: 49 $
+	 * @since		$LastChangedDate: 2017-06-24 19:52:15 +0200 (Sat, 24 Jun 2017) $
 	 */
 
 	// Répertoire du fichier actuel
@@ -28,8 +28,8 @@
 		'.php'
 	);
 
-	// Fonctionnalité réalisée si le répertoire est celui du parent
-	$_PATH			= $_ROOT . (!empty($_POST['dir_name']) ? stripslashes(htmlspecialchars_decode($_POST['dir_name'])) : "");
+	// Fonctionnalité réalisée si le répertoire est celui du parent avec protection contre la remontée de l'arborescence
+	$_PATH			= $_ROOT . (!empty($_POST['dir_name']) && !preg_match('@/\.\.@', $_POST['dir_name']) ? stripslashes(htmlspecialchars_decode($_POST['dir_name'])) : "");
 
 	// Dossier listé pour afficher la sous-arborecence
 	$dir_name		= str_replace($_ROOT, '', $_PATH);
@@ -40,7 +40,7 @@
 	$fichier		= array();							// Tableau contenant le nom de chaque fichier de $_PATH
 
 	// Extraction de la construction du chemin
-	$aChemin		= explode("/", $dir_name);
+	$aChemin		= explode("/", $dir_name == '/..' ? '' : $dir_name);
 	$nCount			= count($aChemin);
 
 	// Début de la mise en tampon du fichier avec compression automatique
@@ -380,9 +380,9 @@
 		// Initialisation du ContenType du HEADER
 		header("Content-Type: text/html");
 		// Affichage d'un message d'erreur
-		print '<h1>ERREUR !</h1>';
+		print '<h1>ERREUR</h1>';
 		// Le fichier n'est pas correctement reconnu
-		print '<h3>Le fichier <em style="color: red;">' . $aChemin[$nCount - 1] . '</em> n\'est pas au bon format...</h3>';
+		print '<h3>Le fichier <em style="color: red;">`' . $aChemin[$nCount - 1] . '`</em> n\'est pas accessible !</h3>';
 	}
 
 	// Ajout de la taille du contenu
