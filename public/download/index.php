@@ -17,8 +17,8 @@
 	 * @subpackage	Application
 	 * @author		durandcedric@avitheque.net
 	 * @update		$LastChangedBy: durandcedric $
-	 * @version		$LastChangedRevision: 50 $
-	 * @since		$LastChangedDate: 2017-06-26 19:08:38 +0200 (Mon, 26 Jun 2017) $
+	 * @version		$LastChangedRevision: 51 $
+	 * @since		$LastChangedDate: 2017-06-26 23:22:30 +0200 (Mon, 26 Jun 2017) $
 	 */
 
 	// Répertoire du fichier actuel
@@ -204,7 +204,7 @@
 						// Ajour d'un titre pour le répertoire
 						$sRacineTitle						= empty($dir_name)				? "Répertoire courant"					: "Remonter à la racine";
 						// Construction de la ligne relative répertoire de $_PWD
-						print '<li class="' . $sRacineClass . '"><button type="submit" name="dir_name" title="' . $RacinesTitle . '" value="" class="directory"><span class="flag">' . $sRacinePrefixe . '&nbsp;</span>/</button></li>';
+						print '<li class="' . $sRacineClass . '"><button type="submit" name="dir_name" title="' . $sRacineTitle . '" value="" class="directory"><span class="flag">' . $sRacinePrefixe . '&nbsp;</span>/</button></li>';
 
 						// Fonctionnalité réalisée si des répertoires sont présents dans $_ROOT
 						if (!empty($aRacine)) {
