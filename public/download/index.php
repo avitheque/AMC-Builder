@@ -5,8 +5,11 @@
 	 * Permet de lister le contenu du répertoire alors que l'option PHP `autoindex` est désactivée
 	 * et de protéger ainsi l'arborescence de l'architecture de la vue de l'utilisateur.
 	 *
-	 * @li	Affichage de l'arborescence du répertoire courant.
-	 * @li	Impossibilité de remonter l'arborescence au delà du répertoire d'entrée.
+	 * @li	La RACINE de l'arborescence correspont au répertoire du présent fichier, qui correspond à `dirname(__FILE__)`.
+	 * @li	Affichage de l'arborescence en deux partie :
+	 * 			- partie gauche : navigation dans les répertoires à partir de la RACINE (répertoire d'origine) ;
+	 * 			- partie droite : navigation au sein du répertoire courant.
+	 * @li	Impossibilité de remonter l'arborescence au delà du répertoire RACINE.
 	 * @li	Lorsqu'un fichier est sélectionné, son contenu est directement téléchargé.
 	 *
 	 * @name		index.php
@@ -14,8 +17,8 @@
 	 * @subpackage	Application
 	 * @author		durandcedric@avitheque.net
 	 * @update		$LastChangedBy: durandcedric $
-	 * @version		$LastChangedRevision: 49 $
-	 * @since		$LastChangedDate: 2017-06-24 19:52:15 +0200 (Sat, 24 Jun 2017) $
+	 * @version		$LastChangedRevision: 50 $
+	 * @since		$LastChangedDate: 2017-06-26 19:08:38 +0200 (Mon, 26 Jun 2017) $
 	 */
 
 	// Répertoire du fichier actuel
@@ -35,9 +38,9 @@
 	$dir_name		= str_replace($_ROOT, '', $_PATH);
 
 	// Initialisation des variables de l'arborescence
-	$racine			= array();							// Tableau contenant le nom de chaque dossier de $_ROOT
-	$dossier		= array();							// Tableau contenant le nom de chaque dossier de $_PATH
-	$fichier		= array();							// Tableau contenant le nom de chaque fichier de $_PATH
+	$aRacine		= array();							// Tableau contenant le nom de chaque dossier de $_ROOT
+	$aDossier		= array();							// Tableau contenant le nom de chaque dossier de $_PATH
+	$aFichier		= array();							// Tableau contenant le nom de chaque fichier de $_PATH
 
 	// Extraction de la construction du chemin
 	$aChemin		= explode("/", $dir_name == '/..' ? '' : $dir_name);
@@ -62,12 +65,12 @@
 	// Ouverture du répertoire courant
 	if (is_dir($_PATH)) {
 		// Récupération de l'arborescence $_ROOT
-		$root		= opendir($_ROOT) or die("Erreur : le répertoire principal n'existe pas !");
+		$oRoot									= opendir($_ROOT) or die("Erreur : le répertoire principal n'existe pas !");
 		// Parcours de l'ensemble de l'arborescence $_ROOT
-		while ($element = readdir($root)) {
+		while ($element = readdir($oRoot)) {
 			if ($element != '.' && $element != '..') {
 				// Récupération du chemin
-				$sDirectoryName				= $_ROOT . '/' . $element;
+				$sDirectoryName					= $_ROOT . '/' . $element;
 
 				// Fonctionnalité réalisée si le chemin est relatif à un fichier
 				if (preg_match("@^\.[a-zA-Z0-9]*@", $element)) {
@@ -75,30 +78,30 @@
 					continue;
 				} elseif (is_dir($sDirectoryName)) {
 					// L'élément est un dossier
-					$racine['/' . $element]	= $element;
+					$aRacine['/' . $element]	= $element;
 				}
 			}
 		}
 		// Fermeture du répertoire $_ROOT
-		closedir($root);
+		closedir($oRoot);
 
 		// Récupération de l'arborescence $_PATH
-		$directory							= opendir($_PATH) or die("Erreur : le répertoire sélectionné n'existe pas !");
+		$oDirectory							= opendir($_PATH) or die("Erreur : le répertoire sélectionné n'existe pas !");
 		// Fonctionnalité réalisée si le répertoire courant n'est pas $_ROOT
 		if ($_ROOT . "/" != $_PATH && strlen($_PATH) > strlen($_ROOT)) {
 			// Suppression de la dernière entrée
 			unset($aChemin[$nCount - 1]);
 
 			// Construction du chemin PARENT
-			$sParent						= implode('/', $aChemin);
+			$sParent							= implode('/', $aChemin);
 			// Ajout du répertoire parent
-			$dossier[$sParent]				= '..';
+			$aDossier[$sParent]					= '..';
 		}
 		// Parcours de l'ensemble de l'arborescence $_PATH
-		while ($element = readdir($directory)) {
+		while ($element = readdir($oDirectory)) {
 			if ($element != '.' && $element != '..' && !in_array(strrchr($element, '.'), $_aDISABLED_EXT)) {
 				// Récupération du chemin
-				$sFileName					= $dir_name . '/' . $element;
+				$sFileName						= $dir_name . '/' . $element;
 
 				// Fonctionnalité réalisée si le chemin est relatif à un fichier
 				if (preg_match("@^\.[a-zA-Z0-9]*@", $element)) {
@@ -106,15 +109,15 @@
 					continue;
 				} elseif (!is_dir($_ROOT . $sFileName)) {
 					// L'élément est un fichier
-					$fichier[$sFileName]	= $element;
+					$aFichier[$sFileName]		= $element;
 				} else {
 					// L'élément est un dossier
-					$dossier[$sFileName]	= $element;
+					$aDossier[$sFileName]		= $element;
 				}
 			}
 		}
 		// Fermeture du répertoire $_PATH
-		closedir($directory);
+		closedir($oDirectory);
 
 		// Initialisation du ContenType du HEADER
 		header("Content-Type: text/html");
@@ -165,14 +168,18 @@
 			.opened .sub-directory		{ color: orange; }
 			.selected .directory,
 			.selected .sub-directory,
-			.directory:hover			{ border: solid 1px #333; background: orange; color: #EEE; }
+			.directory:hover,
+			.sub-directory:hover		{ border: solid 1px #333; background: orange; color: #eef7ed; }
+			.selected .directory,
+			.selected .sub-directory	{ color: #FFF; }
 
 			/* Indicateur au survol d'un répertoire */
-			.directory .link,
-			.sub-directory .link		{ display: none; float: left; application color: #000; }
-			.selected .directory .link,
-			.selected .sub-directory .link,
-			.directory:hover .link		{ display: block; color: #000; }
+			.directory .flag,
+			.sub-directory .flag		{ display: none; float: left; application color: #000; }
+			.selected .directory .flag,
+			.selected .sub-directory .flag,
+			.directory:hover .flag,
+			.sub-directory:hover .flag	{ display: block; color: #000; }
 
 			/* Fichiers */
 			.file						{ background: transparent; border: none; margin-left: 20px; text-decoration: none; color: #000; text-align: left; cursor: pointer; }
@@ -191,28 +198,31 @@
 					<ul class="panel">
 					<?php
 						// Initialisation de la classe du répertoire parcouru (sélectionné ou ouvert)
-						$sRacineClass				= empty($dir_name)           	? "selected"							: "";
+						$sRacineClass						= empty($dir_name)				? "selected"							: "";
 						// Ajour d'un indicateur pour le répertoire
-						$sPrefixe					= empty($dir_name)      		? "&#9658;"								: "&#8656;";
+						$sRacinePrefixe						= empty($dir_name)				? "&#9658;"								: "&#8656;";
 						// Ajour d'un titre pour le répertoire
-						$sTitle						= empty($dir_name)      		? "Répertoire courant"					: "Remonter à la racine";
+						$sRacineTitle						= empty($dir_name)				? "Répertoire courant"					: "Remonter à la racine";
 						// Construction de la ligne relative répertoire de $_PWD
-						print '<li class="' . $sRacineClass . '"><button type="submit" name="dir_name" title="' . $sTitle . '" value="" class="directory"><span class="link">' . $sPrefixe . '&nbsp;</span>/</button></li>';
+						print '<li class="' . $sRacineClass . '"><button type="submit" name="dir_name" title="' . $RacinesTitle . '" value="" class="directory"><span class="flag">' . $sRacinePrefixe . '&nbsp;</span>/</button></li>';
+
 						// Fonctionnalité réalisée si des répertoires sont présents dans $_ROOT
-						if (!empty($racine)) {
-						    // Début de construction de la liste
+						if (!empty($aRacine)) {
+							// Début de construction de la liste
 							print '<ul class="sub-panel">';
 
-							// pour le tri croissant, rsort() pour le tri décroissant
-							ksort($racine, SORT_ASC);
-							foreach($racine as $sDirectoryName => $sName) {
+							// Tri des répertoires
+							ksort($aRacine, SORT_NATURAL);
+							foreach($aRacine as $sDirectoryName => $sName) {
 								// Initialisation de la classe du répertoire parcouru (sélectionné ou ouvert)
 								$sMainClass					= $sDirectoryName == $dir_name	? "selected"							: "";
 								$sUnderList					= "";
+
 								// Fonctionnalité réalisée si le répertoire courant est sélectionné
 								if (!empty($dir_name) && in_array($sName, $aChemin)) {
 									// Le répertoire principal est ouvert
 									$sMainClass				= "opened";
+
 									// Récupération de l'ensemble des sous-répertoires
 									$sDirectory				= "";
 									$aDirectory				= explode('/', $dir_name);
@@ -220,19 +230,19 @@
 									// Construction de la sous-arborescence en cours de navigation
 									for ($occurrence		= 1 ; $occurrence < count($aDirectory) ; $occurrence++) {
 										// Initialisation du nom du sous-répertoire courant
-										$sDirectory .= '/' . $aDirectory[$occurrence];
+										$sDirectory 		.= '/' . $aDirectory[$occurrence];
 										if (isset($aDirectory[$occurrence]) && $aDirectory[$occurrence] != $sName) {
 											for ($count = 0 ; $count < $occurrence ; $count++) {
 												$sUnderList	.= '<ul class="sub-panel">';
 											}
 											// Initialisation de la classe du répertoire sélectionné ou ouvert
-											$sClass			= $sDirectory == $dir_name		? "selected"							: $sMainClass;
+											$sUnderClass	= $sDirectory == $dir_name		? "selected"							: $sMainClass;
 											// Ajour d'un indicateur pour le répertoire
-											$sPrefixe		= $sDirectory == $dir_name		? "&#9658;"								: "&#8656;";
+											$sUnderPrefixe	= $sDirectory == $dir_name		? "&#9658;"								: "&#8656;";
 											// Ajour d'un titre pour le répertoire
-											$sTitle			= $sDirectory == $dir_name		? "Répertoire courant"					: "Remonter au répertoire précédent";
+											$sUnderTitle	= $sDirectory == $dir_name		? "Répertoire courant"					: "Remonter au répertoire précédent";
 											// Construction du sous-répertoire courant
-											$sUnderList		.= '<li class="' . $sClass . '"><button type="submit" name="dir_name" title="' . $sTitle . '" value="' . htmlspecialchars(addslashes($sDirectory)) . '" class="sub-directory"><span class="link">' . $sPrefixe . '&nbsp;</span>' . htmlspecialchars($aDirectory[$occurrence]) . '</button></li>';
+											$sUnderList		.= '<li class="' . $sUnderClass . '"><button type="submit" name="dir_name" title="' . $sUnderTitle . '" value="' . htmlspecialchars(addslashes($sDirectory)) . '" class="sub-directory"><span class="flag">' . $sUnderPrefixe . '&nbsp;</span>' . htmlspecialchars($aDirectory[$occurrence]) . '</button></li>';
 											for ($count = 0 ; $count < $occurrence ; $count++) {
 												$sUnderList	.= '</ul>';
 											}
@@ -241,11 +251,11 @@
 								}
 
 								// Ajour d'un indicateur pour le répertoire
-								$sPrefixe					= $sMainClass == "selected"		? "&#9658;"								: "&#8656;";
+								$sMainPrefixe				= $sMainClass == "selected"		? "&#9658;"								: "&#8656;";
 								// Ajour d'un titre pour le répertoire
-								$sTitle						= $sMainClass == "selected"		? "Répertoire courant"					: "Remonter au répertoire précédent";
+								$sMainTitle					= $sMainClass == "selected"		? "Répertoire courant"					: "Remonter au répertoire précédent";
 								// Construction de la ligne du répertoire de $_ROOT
-								print '<li class="' . $sMainClass . '"><button type="submit" name="dir_name" title="' . $sTitle . '" value="' . htmlspecialchars(addslashes($sDirectoryName)) . '" class="directory"><span class="link">' . $sPrefixe . '&nbsp;</span>' . htmlspecialchars($sName) . '</button>' . $sUnderList . '</li>';
+								print '<li class="' . $sMainClass . '"><button type="submit" name="dir_name" title="' . $sMainTitle . '" value="' . htmlspecialchars(addslashes($sDirectoryName)) . '" class="directory"><span class="flag">' . $sMainPrefixe . '&nbsp;</span>' . htmlspecialchars($sName) . '</button>' . $sUnderList . '</li>';
 							}
 
 							// Finalitation de la liste
@@ -258,24 +268,24 @@
 					<ul id="arborescence">
 						<?php
 							// Fonctionnalité réalisée si des répertoires sont présents dans $_PATH
-							if (!empty($dossier)) {
+							if (!empty($aDossier)) {
 								// Tri des répertoires
-								ksort($dossier, SORT_ASC);
-								foreach($dossier as $sFileName => $sName) {
+								ksort($aDossier, SORT_NATURAL);
+								foreach($aDossier as $sFileName => $sName) {
 									// Ajour d'un indicateur pour le répertoire
 									$sPrefixe				= $sName == '..'				? "&#8656;"								: "&#9658;";
 									// Ajour d'un titre pour le répertoire
 									$sTitle					= $sName == '..'				? "Remonter au répertoire précédent"	: "Ouvrir le répertoire";
 									// Construction de la ligne du répertoire de $_PATH
-									print '<li><button type="submit" name="dir_name" title="' . $sTitle . '" value="' . htmlspecialchars(addslashes($sFileName)) . '" class="directory"><span class="link">' . $sPrefixe . '&nbsp;</span>' . htmlspecialchars($sName) . '</button></li>';
+									print '<li><button type="submit" name="dir_name" title="' . $sTitle . '" value="' . htmlspecialchars(addslashes($sFileName)) . '" class="directory"><span class="flag">' . $sPrefixe . '&nbsp;</span>' . htmlspecialchars($sName) . '</button></li>';
 								}
 							}
 
 							// Fonctionnalité réalisée si des fichiers sont présents dans $_PATH
-							if (!empty($fichier)){
+							if (!empty($aFichier)){
 								// Tri des fichiers
-								ksort($fichier, SORT_ASC);
-								foreach($fichier as $sFileName => $sName) {
+								ksort($aFichier, SORT_NATURAL);
+								foreach($aFichier as $sFileName => $sName) {
 									// Construction de la ligne du fichier de $_PATH
 									print '<li><button type="submit" name="dir_name" title="Ouvrir le fichier" value="' . htmlspecialchars(addslashes($sFileName)) . '" class="file">' . htmlspecialchars($sName) . '</button></li>';
 								}
