@@ -14,9 +14,9 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 24 $
- * @since		$LastChangedDate: 2017-04-30 20:38:39 +0200 (dim., 30 avr. 2017) $
- * 
+ * @version		$LastChangedRevision: 52 $
+ * @since		$LastChangedDate: 2017-06-28 18:47:22 +0200 (Wed, 28 Jun 2017) $
+ *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
@@ -50,11 +50,14 @@ abstract class AbstractDataManager {
 			// Récupération de l'instance de connexion
 			$oFactory = Connectors_ConnectorFactory::getInstance();
 
+			// Initialisation du paramètre de connexion à la base
+			$sConnection		= 'mysql:dbname=' . PDO_DBNAME . ';host=' . PDO_HOST . ';port=' . PDO_PORT;
+
 			// Construction du tableau de paramètres
 			$aPDOConf = array(
 				'user'			=> PDO_USER,
 				'pass'			=> PDO_PASSWD,
-				'connection'	=> PDO_CONNECTION,
+				'connection'	=> $sConnection,
 				'final-commit'	=> PDO_FINAL_COMMIT,
 				'auto-commit'	=> $bAutoCommit,
 				'charset'		=> PDO_CHARSET

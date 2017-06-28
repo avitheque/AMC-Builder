@@ -13,8 +13,8 @@
 	 * @subpackage	Application
 	 * @author		durandcedric@avitheque.net
 	 * @update		$LastChangedBy: durandcedric $
-	 * @version		$LastChangedRevision: 22 $
-	 * @since		$LastChangedDate: 2017-04-30 20:01:14 +0200 (dim., 30 avr. 2017) $
+	 * @version		$LastChangedRevision: 52 $
+	 * @since		$LastChangedDate: 2017-06-28 18:47:22 +0200 (Wed, 28 Jun 2017) $
 	 *
 	 * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
 	 * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -33,14 +33,14 @@
 	 *
 	 * Charge la configuration de l'application selon l'environnement passé en paramètre.
 	 * @li    Le nom de l'environnement correspond au [nom_de_la_section] présent dans le fichier `application.ini`.
-	 * 
+	 *
 	 * @param	string	$sEnv		: nom de l'environnement à charger.
 	 * @return	void
 	 */
 	public function __construct($sEnv = 'default') {
 		// Récupération du singleton
 		$this->_oInstanceStorage  = InstanceStorage::getInstance();
-	    
+
 		// Lecture de la configuration
 		$aConfig		=						ParseIniFile::parse($sEnv);
 
@@ -112,7 +112,6 @@
 		defined('PDO_DBNAME')					||	define('PDO_DBNAME',						DataHelper::get($aPDO,			'dbname'));
 		defined('PDO_HOST')						||	define('PDO_HOST',							DataHelper::get($aPDO,			'host'));
 		defined('PDO_PORT')						||	define('PDO_PORT',							DataHelper::get($aPDO,			'port',						DataHelper::DATA_TYPE_INT));
-		defined('PDO_CONNECTION')				||	define('PDO_CONNECTION',					'mysql:dbname=' . PDO_DBNAME . ';host=' . PDO_HOST . ':' . PDO_PORT);
 		defined('PDO_USER')						||	define('PDO_USER',							DataHelper::get($aPDO,			'user'));
 		defined('PDO_PASSWD')					||	define('PDO_PASSWD',						DataHelper::get($aPDO,			'passwd'));
 		defined('PDO_FINAL_COMMIT')				||	define('PDO_FINAL_COMMIT',					DataHelper::get($aPDO,			'final_commit',				DataHelper::DATA_TYPE_BOOL));
@@ -172,7 +171,7 @@
 	 * @brief	Vérification de la validité de la classe CONTROLLER.
 	 *
 	 * @li Le nom du fichier est de la forme `NomController.php`
-	 * 
+	 *
 	 * @param	string	$sClass		: nom de la classe à vérifier.
 	 * @return	bool
 	 */
