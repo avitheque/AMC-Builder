@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 32 $
- * @since		$LastChangedDate: 2017-06-11 01:31:10 +0200 (Sun, 11 Jun 2017) $
+ * @version		$LastChangedRevision: 53 $
+ * @since		$LastChangedDate: 2017-07-02 02:29:58 +0200 (Sun, 02 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -183,7 +183,7 @@ class GroupeHelper {
 
 		$this->_html				.= "<section id=\"tableauGroupes\">
 											<fieldset $sClassField id=\"liste\"><legend>Selection du groupe parent</legend>
-												" . $this->_oArborescence->renderHtml(true) . "
+												<div class=\"margin-H-10p\">" . $this->_oArborescence->renderHtml() . "</div>
 											</fieldset>
 										</section>";
 	}

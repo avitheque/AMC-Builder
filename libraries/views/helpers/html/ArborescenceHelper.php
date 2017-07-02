@@ -8,8 +8,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 37 $
- * @since		$LastChangedDate: 2017-06-13 21:12:42 +0200 (Tue, 13 Jun 2017) $
+ * @version		$LastChangedRevision: 53 $
+ * @since		$LastChangedDate: 2017-07-02 02:29:58 +0200 (Sun, 02 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -18,7 +18,7 @@
 class ArborescenceHelper {
 
 	/**
-	 * @brief	Position des champs dans la construction de $aListeItem.
+	 * @brief	Constantes de position des champs dans la structure de $aListeItem.
 	 * @var		string
 	 */
 	const		POSITION_ID				= 0;
@@ -29,13 +29,32 @@ class ArborescenceHelper {
 	const		POSITION_LABEL_INTERVAL	= 1;	// Position du champ 'label' dans la liste exploitant un PARENT
 	const		POSITION_LABEL_PARENT	= 2;	// Position du champ 'label' dans la liste exploitant un INTERVAL
 
+	/**
+	 * @brief	Variables d'instance de la structure de la liste.
+	 * @var		string
+	 */
 	private		$_idPosition			= self::POSITION_ID;
 	private		$_idParentPosition		= self::POSITION_PARENT;
 	private		$_leftPosition			= self::POSITION_LEFT;
 	private		$_rightPosition			= self::POSITION_RIGHT;
 
+	/**
+	 * @brief	Paramètres de construction de l'arborescence.
+	 * @var		string
+	 */
+	private		$_nNiveau				= 0;
+	private		$_nCompteur				= 0;
+	private		$_nBorneGauche			= 0;
+	private		$_nBorneDroite			= 0;
+
 	private		$_labelIntervalPosition	= self::POSITION_LABEL_INTERVAL;
 	private		$_labelParentPosition	= self::POSITION_LABEL_PARENT;
+
+	/**
+	 * @brief	Options de construction de l'arborescence.
+	 * @var		string
+	 */
+	private		$_readonly				= false;
 
 	/**
 	 * @brief	Liste des éléments sous forme de collection.
@@ -48,9 +67,11 @@ class ArborescenceHelper {
 	 * @brief	Constructeur de la classe ArborescenceHelper.
 	 *
 	 * @param	string	$sName				: nom du champ dans le formulaire.
+	 * @param	boolean	$bReadOnly			: nom du champ dans le formulaire.
 	 */
-	public function __construct($sName = "") {
+	public function __construct($sName = "", $bReadOnly = true) {
 		$this->_name					= $sName;
+		$this->_readonly				= $bReadOnly;
 	}
 
 	/**
@@ -470,37 +491,84 @@ class ArborescenceHelper {
 	/**
 	 * @brief	Construction de l'arborescence au format HTML.
 	 *
-	 * @param	array	$aListeItems
-	 * @param	boolean	$bCheckbox
+	 * @li	Calcul des bornes GAUCHE / DROITE de l'interval.
+	 *
+	 * @param	array	$aListeItems		: liste des champs.
+	 * @param	array	$aButtons			: affichage d'un bouton d'ajout, d'édition ou de suppression.
 	 * @return	string
 	 */
-	private function _buildArborescence($aListeItems, $bCheckbox = false) {
-		$sHtml		= "<ul>";
+	private function _buildArborescence($aListeItems = array(), $aButtons = array()) {
+		// Construction de l'arborescence
+		$sHtml			= "<ul class=\"arborescence\" id=\"niveau-" . $this->_nNiveau . "\">";
+
+		// Parcours de l'arborescence
 		foreach ($aListeItems as $aEntity) {
-			$sHtml		.= "<li>";
-			$sHtml		.= $aEntity['label'];
-			if (DataHelper::isValidArray($aEntity['items'])) {
-				$sHtml	.= $this->_buildArborescence($aEntity['items'], $bCheckbox);
+			// Compteur suivant
+			$this->_nCompteur++;
+
+			// Initialisation de la borne GAUCHE
+			$nCurrentBorneGauche		= ++$this->_nBorneGauche;
+			$sHtml		.= "	<li class=\"branche\" id=\"item-" . $this->_nCompteur . "\">";
+
+			// Ajout du libellé
+			$sLabel		= $aEntity['label'];
+			if (!$this->_readonly && isset($aButtons['edit'])) {
+				$sLabel	= "<a href=\"" . sprintf($aButtons['edit'], $aEntity['id']) . "\" class=\"link strong blue\">" . $sLabel . "</a>";
 			}
-			$sHtml		.= "</li>";
+
+			// Construction du libellé
+			$sHtml		.= "		<span class=\"titre strong\">" . $sLabel . "</span>";
+
+			// Passage au niveau suivant
+			$this->_nNiveau++;
+			$sUnderHtml	= "";
+			// Fonctionnalité réalisée si une sous-arborescence est présente
+			if (DataHelper::isValidArray($aEntity['items'])) {
+				// Construction récursive de la sous-arborescence
+				$sUnderHtml	.= $this->_buildArborescence($aEntity['items'], $aButtons);
+			} else {
+				// Construction d'une sous-arborescence vide
+				$sUnderHtml	.= "<ul class=\"arborescence\" id=\"niveau-" . $this->_nNiveau . "\">
+								<li class=\"branche empty\" id=\"item-" . $this->_nCompteur . "\">
+									<span>&nbsp;</span>
+								</li>
+							</ul>";
+			}
+			// Retour au niveau précédent
+			$this->_nNiveau--;
+
+			// Calcul des bornes suivantes
+			$nCurrentBorneDroite	= ++$this->_nBorneGauche;
+			$sHtml		.= "		<input type=\"hidden\" name=\"borne_gauche[]\" value=\"" . $nCurrentBorneGauche . "\" />
+									<input type=\"hidden\" name=\"borne_droite[]\" value=\"" . $nCurrentBorneDroite . "\" />
+									" . $sUnderHtml . "
+								</li>";
 		}
-		return $sHtml . "</ul>";
+		// Fin de l'arborescence
+		return $sHtml	. "</ul>";
 	}
 
 	/**
 	 * @brief	Rendu de l'élément.
 	 *
-	 * @param	boolean	$bCheckbox			: Affichage d'une case à cocher.
+	 * @param	array	$aButtons			: affichage d'un bouton d'ajout, d'édition ou de suppression.
+	 * @code
+	 * 		$aButtons = array('edit' => "url?id=%s", 'add' => "url?id=%s", 'delete' => "url?id=%s");
+	 * @endcode
 	 */
-	public function renderHTML($bCheckbox = false) {
-		// Ajout de la feuille de style
-		ViewRender::addToStylesheet(FW_VIEW_STYLES . "/ArborescenceHelper.css");
+	public function renderHTML($aButtons = array()) {
+		// Fonctionnalité réalisée si la modification du contenu est autorisée
+		if (!$this->_readonly) {
+			// Ajout de la feuille de style
+			ViewRender::addToStylesheet(FW_VIEW_STYLES . "/ArborescenceHelper.css");
 
-		// Compression du script avec JavaScriptPacker
-		//ViewRender::addToJQuery(FW_VIEW_SCRIPTS . "/ArborescenceHelper.js");
+			// Compression du script avec JavaScriptPacker
+			ViewRender::addToScripts(FW_VIEW_SCRIPTS . "/ArborescenceHelper.js");
+		}
 
 		// Initialisation du contenu HTML
-		$sHTML		= $this->_buildArborescence($this->_aItems, $bCheckbox);
+		$sHTML		= "<span class=\"span titre left blue\">\</span><br />";
+		$sHTML		.= $this->_buildArborescence($this->_aItems, $aButtons);
 
 		// Renvoi du code HTML
 		return $sHTML;

@@ -73,7 +73,7 @@ $aListeImbriquee = array(
 );
 
 // Initialisation de l'objet ArborescenceHelper
-$oArborescence = new ArborescenceHelper('ListeAvecIntervalles');
+$oArborescence = new ArborescenceHelper('ListeAvecIntervalles', false);
 
 // Initialisation de la déclaration des champs nécessaires à la manipulation de la variable `$aListeAvecIntervalles`
 $oArborescence->setIdPosition('id');					// Identifiant de champ
@@ -114,7 +114,7 @@ $sArticle .= "<fieldset class='padding-H-2p'>
 						<button onClick='$(\"#hidden-ArborescenceHelper\").addClass(\"hidden\");$(\"#visible-ArborescenceHelper\").removeClass(\"hidden\");''>Masquer le code</button><br />
 						<br/>
 						<span class=\"commentaire\">// Initialisation de l'objet ArborescenceHelper</span><br/>
-						<span class=\"variable\">\$oArborescence</span> = <span class=\"native\">new</span> ArborescenceHelper(<span class=\"texte\">\"ListeAvecIntervalles\"</span>);<br/>
+						<span class=\"variable\">\$oArborescence</span> = <span class=\"native\">new</span> ArborescenceHelper(<span class=\"texte\">\"ListeAvecIntervalles\"</span>, <span class=\"native\">true</span>);<br/>
 						<br />
 						<span class=\"commentaire\">// Initialisation de la déclaration des champs nécessaires à la manipulation de la variable `\$aListeAvecIntervalles`</span><br/>
 						<span class=\"variable\">\$oArborescence</span>->setIdPosition(<span class=\"texte\">\"id\"</span>);<span class=\"indentation margin-left-9\">&rarr;&nbsp;|&nbsp;&rarr;&nbsp;|&nbsp;&rarr;&nbsp;</span><span class=\"commentaire\">// Identifiant du champ</span><br />
