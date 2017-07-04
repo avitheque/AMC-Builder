@@ -80,8 +80,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 54 $
- * @since		$LastChangedDate: 2017-07-04 21:26:29 +0200 (Tue, 04 Jul 2017) $
+ * @version		$LastChangedRevision: 55 $
+ * @since		$LastChangedDate: 2017-07-04 21:38:27 +0200 (Tue, 04 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -135,6 +135,12 @@ class ArborescenceHelper {
 	 * @var		array
 	 */
 	private		$_aItems				= array();
+
+	/**
+	 * @brief	Identifiant de l'élément actif.
+	 * @var		integer
+	 */
+	private		$_idActive				= null;
 
 	/**
 	 * @brief	Libellé de la RACINE.
@@ -241,6 +247,16 @@ class ArborescenceHelper {
 	 */
 	public function setLabelPositionParent($xIndex) {
 		$this->_labelParentPosition		= $xIndex;
+	}
+
+	/**
+	 * @brief	Affichage de l'élément actif.
+	 *
+	 * Méthode permettant de mettre en évidence un élément de l'arborescence.
+	 * @param	mixed	$nInteger			: Identifiant du groupe actif.
+	 */
+	public function setActiveById($nInteger) {
+		$this->_idActive				= $nInteger;
 	}
 
 	/**
