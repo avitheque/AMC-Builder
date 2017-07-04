@@ -11,17 +11,14 @@
 @CHARSET "UTF-8";
 
 ul.arborescence.hover:before		{ position:relative; display: block; color: red; content: "(+)"; }
-ul.arborescence.hover > li.branche	{ color: orange; }
+ul.arborescence.hover > li.branche	{ color: orange; white-space: no-wrap; }
 
+li.branche							{ height: auto !important; }
 li.branche.hover,
 li.branche.hover > span,
 li.branche.hover > span a			{ color: orange; }
 li.branche.hover:before				{ position: relative; left: -15px; float: left; content: "=>"; }
 
-/*
-li.branche.ui-sortable-placeholder	{ visibility: visible !important; display: block; background: orange; width: 100%; height: 2px !important; }
-*/
-
-span.empty							{ position: relative; min-height: 5px; height: auto; margin: 0; padding: 0; }
+li.empty							{ position: relative; min-height: 5px; height: auto; margin: 0; padding: 0; }
 
 a.link								{ text-decoration: none; color: #220979; }

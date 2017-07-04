@@ -2,14 +2,86 @@
 /**
  * Classe de création d'une arborescence dans l'application.
  *
+ * @li	Les listes exploitées pour la construction peuvent être sous trois formes :
+ * 		 - LISTE EXPLOITANT UN PARENT :
+ * 	 	Liste hiérarchisée dont chaque élément subalterne fait référence à un identifiant parent.
+ * @code
+ *		// occurence	| id	| parent	| libellé
+ *		$aListeItems = array(
+ *			0	=> array(0,		NULL,		'public'),
+ *			1	=> array(1,		NULL,		'1'),
+ *			2	=> array(4,		NULL,		'2'),
+ *			3	=> array(2,		1,			'1.1'),
+ *			4	=> array(3,		1,			'1.2'),
+ *			5	=> array(5,		4,			'2.1'),
+ *			6	=> array(8,		4,			'2.2'),
+ *			7	=> array(6,		5,			'2.1.1'),
+ *			8	=> array(7,		5,			'2.1.2'),
+ *			9	=> array(9,		8,			'2.2.1'),
+ *			10	=> array(13,	8,			'2.2.2'),
+ *			11	=> array(10,	9,			'2.2.1.1'),
+ *			12	=> array(11,	9,			'2.2.1.2'),
+ *			13	=> array(12,	9,			'2.2.1.3')
+ *		);
+ * @endcode
+ *
+ * 		 - LISTE EXPLOITANT UNE INTERVALLE :
+ * 	 	Liste hiérarchisée dont chaque élément fait référence à une intervalle.
+ * @code
+ *		// occurence	| id	| libellé	| left	| right
+ *		$aListeItems = array(
+ *			0	=> array(0,		'public',	1,		2),
+ *			1	=> array(1,		'1',		3,		8),
+ *			2	=> array(2,		'1.1',		4,		5),
+ *			3	=> array(3,		'1.2',		6,		7),
+ *			4	=> array(4,		'2',		9,		28),
+ *			5	=> array(5,		'2.1',		10,		15),
+ *			6	=> array(8,		'2.2',		16,		27),
+ *			7	=> array(6,		'2.1.1',	11,		12),
+ *			8	=> array(7,		'2.1.2',	13,		14),
+ *			9	=> array(9,		'2.2.1',	17,		24),
+ *			10	=> array(13,	'2.2.2',	25,		26),
+ *			11	=> array(10,	'2.2.1.1',	18,		19),
+ *			12	=> array(11,	'2.2.1.2',	20,		21),
+ *			13	=> array(12,	'2.2.1.3',	22,		23)
+ *		);
+ * @endcode
+ *
+ * 		 - LISTE IMBRIQUÉE :
+ * 	 	Tableau MULTIDIMENTIONNEL structuré de sous éléments de façon hiérarchique.
+ * @code
+ *		// id	=> libellé
+ *		$aListeItems = array(
+ *			0	=> array('public'				=> null),
+ *			1	=> array('1'					=> array(
+ *				2	=> array('1.1'				=> null),
+ *				3	=> array('1.2'				=> null)
+ *			)),
+ *			4	=> array('2'					=> array(
+ *				5	=> array('2.1'				=> array(
+ *					6	=> array('2.1.1'		=> null),
+ *					7	=> array('2.1.1'		=> null)
+ * 				)),
+ *				8	=> array('2.2'				=> array(
+ *					9	=> array('2.2.1'		=> array(
+ *						10	=> array('2.2.1.1'	=> null),
+ *						11	=> array('2.2.1.2'	=> null),
+ *						12	=> array('2.2.1.3'	=> null)
+ * 					)),
+ *					13	=> array('2.2.2'		=> null)
+ * 				))
+ * 			))
+ *		);
+ * @endcode
+ *
  * @name		ArborescenceHelper
  * @category	Helper
  * @package		View
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 53 $
- * @since		$LastChangedDate: 2017-07-02 02:29:58 +0200 (Sun, 02 Jul 2017) $
+ * @version		$LastChangedRevision: 54 $
+ * @since		$LastChangedDate: 2017-07-04 21:26:29 +0200 (Tue, 04 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -58,23 +130,53 @@ class ArborescenceHelper {
 
 	/**
 	 * @brief	Liste des éléments sous forme de collection.
+	 *
+	 * @li	Peut être une liste exploitant des identifiants parents ou intervallaires.
 	 * @var		array
 	 */
 	private		$_aItems				= array();
-	private		$_idActive				= null;
+
+	/**
+	 * @brief	Libellé de la RACINE.
+	 * @var		string|HTML
+	 */
+	const		RACINE_LABEL_DEFAULT	= "<span class=\"titre strong\">/</span>";
+	private		$_racine				= self::RACINE_LABEL_DEFAULT;
+
+	/**
+	 * @brief	Nom de la classe CSS relatif au curseur de la souris au survol de l'élément.
+	 * @var		string
+	 */
+	private		$_cursor				= null;
 
 	/**
 	 * @brief	Constructeur de la classe ArborescenceHelper.
 	 *
-	 * @param	string	$sName				: nom du champ dans le formulaire.
-	 * @param	boolean	$bReadOnly			: nom du champ dans le formulaire.
+	 * @param	string	$sName				: nom de l'arborescence dans le formulaire.
+	 * @param	boolean	$bReadOnly			: (optionnel) permet de modifier l'arborescence.
+	 * @param	string	$sRacine			: (optionnel) libellé de la RACINE.
 	 */
-	public function __construct($sName = "", $bReadOnly = true) {
+	public function __construct($sName = "", $bReadOnly = true, $sRacine = self::RACINE_LABEL_DEFAULT) {
 		$this->_name					= $sName;
 		$this->_readonly				= $bReadOnly;
+		$this->_racine					= $sRacine;
+		$this->_cursor					= $bReadOnly ? null : "pointer";
 	}
 
 	/**
+	 * @brief	Personnalisation de l'affichage de l'élément RACINE.
+	 *
+	 * Méthode permettant de définir le libellé de la RACINE qui sera affiché en première position dans l'arborescence.
+	 * @param	string	$sRacine			: Libellé de la RACINE.
+	 */
+	public function setRacineLabel($sRacine = self::RACINE_LABEL_DEFAULT) {
+		$this->_racine					= $sRacine;
+	}
+
+	/**
+	 * @brief	Identification de la position du champ POSITION_ID.
+	 *
+	 * Méthode permettant de définir l'index du champ relatif à l'identifiant d'une entrée dans la liste.
 	 * @param	mixed	$xIndex				: Nom du champ ou occurrence dans la liste.
 	 */
 	public function setIdPosition($xIndex) {
@@ -82,6 +184,11 @@ class ArborescenceHelper {
 	}
 
 	/**
+	 * @brief	Identification de la position du champ POSITION_PARENT.
+	 *
+	 * @li	Employé pour une LISTE EXPLOITANT DES PARENTS.
+	 *
+	 * Méthode permettant de définir l'index du champ relatif à l'identifiant d'une entrée parent dans la liste.
 	 * @param	mixed	$xIndex				: Nom du champ ou occurrence dans la liste.
 	 */
 	public function setIdParentPosition($xIndex) {
@@ -89,20 +196,11 @@ class ArborescenceHelper {
 	}
 
 	/**
-	 * @param	mixed	$xIndex				: Nom du champ ou occurrence dans la liste.
-	 */
-	public function setLeftPosition($xIndex) {
-		$this->_leftPosition			= $xIndex;
-	}
-
-	/**
-	 * @param	mixed	$xIndex				: Nom du champ ou occurrence dans la liste.
-	 */
-	public function setRightPosition($xIndex) {
-		$this->_rightPosition			= $xIndex;
-	}
-
-	/**
+	 * @brief	Identification de la position du champ POSITION_LABEL_PARENT.
+	 *
+	 * @li	Employé pour une LISTE EXPLOITANT DES IDENTIFIANTS PARENTS.
+	 *
+	 * Méthode permettant de définir l'index du champ relatif au libellé de l'entrée dans une liste exploitant un parent.
 	 * @param	mixed	$xIndex				: Nom du champ ou occurrence dans la liste.
 	 */
 	public function setLabelPositionInterval($xIndex) {
@@ -110,6 +208,35 @@ class ArborescenceHelper {
 	}
 
 	/**
+	 * @brief	Identification de la position du champ POSITION_LEFT.
+	 *
+	 * @li	Employé pour une LISTE EXPLOITANT DES INTERVALLES.
+	 *
+	 * Méthode permettant de définir l'index du champ relatif à la BORNE GAUCHE intervallaire dans la liste.
+	 * @param	mixed	$xIndex				: Nom du champ ou occurrence dans la liste.
+	 */
+	public function setLeftPosition($xIndex) {
+		$this->_leftPosition			= $xIndex;
+	}
+
+	/**
+	 * @brief	Identification de la position du champ POSITION_RIGHT.
+	 *
+	 * @li	Employé pour une LISTE EXPLOITANT DES INTERVALLES.
+	 *
+	 * Méthode permettant de définir l'index du champ relatif à la BORNE DROITE intervallaire dans la liste.
+	 * @param	mixed	$xIndex				: Nom du champ ou occurrence dans la liste.
+	 */
+	public function setRightPosition($xIndex) {
+		$this->_rightPosition			= $xIndex;
+	}
+
+	/**
+	 * @brief	Identification de la position du champ POSITION_LABEL_INTERVAL.
+	 *
+	 * @li	Employé pour une LISTE EXPLOITANT DES INTERVALLES.
+	 *
+	 * Méthode permettant de définir l'index du champ relatif au libellé de l'entrée dans une liste intervallaire.
 	 * @param	mixed	$xIndex				: Nom du champ ou occurrence dans la liste.
 	 */
 	public function setLabelPositionParent($xIndex) {
@@ -117,13 +244,8 @@ class ArborescenceHelper {
 	}
 
 	/**
-	 * @param	mixed	$nInteger			: Identifiant du groupe actif.
-	 */
-	public function setActiveById($nInteger) {
-		$this->_idActive				= $nInteger;
-	}
-
-	/**
+	 * @brief	Initialisation de la liste représentant l'arborescence.
+	 *
 	 * @param	array	$aListeItems		: Liste sous forme d'arborescence.
 	 */
 	public function setListeItems($aListeItems = array()) {
@@ -494,12 +616,21 @@ class ArborescenceHelper {
 	 * @li	Calcul des bornes GAUCHE / DROITE de l'interval.
 	 *
 	 * @param	array	$aListeItems		: liste des champs.
-	 * @param	array	$aButtons			: affichage d'un bouton d'ajout, d'édition ou de suppression.
+	 * @param	array	$aButtons			: (optionnel) affichage d'un bouton d'ajout, d'édition ou de suppression.
+	 * @param	boolean	$bShowRacine		: (optionnel) affichage de la RACINE au niveau 0.
 	 * @return	string
 	 */
-	private function _buildArborescence($aListeItems = array(), $aButtons = array()) {
+	private function _buildArborescence($aListeItems = array(), $aButtons = array(), $bShowRacine = true) {
+		$sHtml			= "";
+
+		// Fonctionnalité réalisée au niveau 0
+		if ($this->_nNiveau == 0 && $bShowRacine) {
+			// Ajout de l'indicateur de RACINE
+			$sHtml		.= $this->_racine;
+		}
+
 		// Construction de l'arborescence
-		$sHtml			= "<ul class=\"arborescence\" id=\"niveau-" . $this->_nNiveau . "\">";
+		$sHtml			.= "<ul class=\"arborescence\" id=\"niveau-" . $this->_nNiveau . "\">";
 
 		// Parcours de l'arborescence
 		foreach ($aListeItems as $aEntity) {
@@ -517,7 +648,7 @@ class ArborescenceHelper {
 			}
 
 			// Construction du libellé
-			$sHtml		.= "		<span class=\"titre strong\">" . $sLabel . "</span>";
+			$sHtml		.= "		<span class=\"titre strong " . $this->_cursor . "\">" . $sLabel . "</span>";
 
 			// Passage au niveau suivant
 			$this->_nNiveau++;
@@ -551,13 +682,14 @@ class ArborescenceHelper {
 	/**
 	 * @brief	Rendu de l'élément.
 	 *
-	 * @param	array	$aButtons			: affichage d'un bouton d'ajout, d'édition ou de suppression.
+	 * @param	array	$aButtons			: (optionnel) affichage d'un bouton d'ajout, d'édition ou de suppression.
 	 * @code
 	 * 		$aButtons = array('edit' => "url?id=%s", 'add' => "url?id=%s", 'delete' => "url?id=%s");
 	 * @endcode
+	 * @param	boolean	$bShowRacine		: (optionnel) affichage de la RACINE au niveau 0.
 	 */
-	public function renderHTML($aButtons = array()) {
-		// Fonctionnalité réalisée si la modification du contenu est autorisée
+	public function renderHTML($aButtons = array(), $bShowRacine = true) {
+		// Fonctionnalité réalisée si la modification de l'arborescence est autorisée
 		if (!$this->_readonly) {
 			// Ajout de la feuille de style
 			ViewRender::addToStylesheet(FW_VIEW_STYLES . "/ArborescenceHelper.css");
@@ -567,8 +699,9 @@ class ArborescenceHelper {
 		}
 
 		// Initialisation du contenu HTML
-		$sHTML		= "<span class=\"span titre left blue\">\</span><br />";
-		$sHTML		.= $this->_buildArborescence($this->_aItems, $aButtons);
+		$sHTML		= "<section class=\"racine padding-left-20\">";
+		$sHTML		.= $this->_buildArborescence($this->_aItems, $aButtons, $bShowRacine);
+		$sHTML		.= "</section>";
 
 		// Renvoi du code HTML
 		return $sHTML;
