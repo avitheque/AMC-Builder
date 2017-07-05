@@ -216,6 +216,7 @@ CREATE TABLE IF NOT EXISTS `generation` (
   `id_formulaire` int(11) NOT NULL,
   `langue_generation` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
   `format_generation` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
+  `separate_generation` tinyint(1) NOT NULL DEFAULT '0',
   `seed_generation` int(7) NOT NULL,
   `nom_epreuve_generation` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `date_epreuve_generation` date NOT NULL,

@@ -14,8 +14,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 56 $
+ * @since		$LastChangedDate: 2017-07-05 02:05:10 +0200 (Wed, 05 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -24,7 +24,7 @@
 class LatexFormManager_Presentation extends LatexElement {
 
 	/**
-	 * @brief	Constante de construction du début du document.
+	 * @brief	Constante de construction du document.
 	 *
 	 * @var		file
 	 */
@@ -56,7 +56,7 @@ class LatexFormManager_Presentation extends LatexElement {
 	 * 			Veuillez répondre aux questions du mieux que vous pouvez.
 	 * 		\end{center}
 	 *
-	 * 		\vspace*{.5cm}
+	 * 		\vspace*{5mm}
 	 * @endcode
 	 *
 	 * @return	string LaTeX
@@ -66,7 +66,7 @@ class LatexFormManager_Presentation extends LatexElement {
 		$sFileContents = file_get_contents(FW_HELPERS . self::DOCUMENT_SOURCE);
 
 		// Initialisation du document
-		$this->_latex = sprintf($sFileContents, $this->sText);
+		$this->_latex .= sprintf($sFileContents, $this->sText);
 
 		// Renvoi du code LaTeX
 		return $this->_latex;

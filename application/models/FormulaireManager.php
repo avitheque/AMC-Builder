@@ -18,8 +18,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 5 $
- * @since		$LastChangedDate: 2017-03-02 22:16:57 +0100 (jeu., 02 mars 2017) $
+ * @version		$LastChangedRevision: 56 $
+ * @since		$LastChangedDate: 2017-07-05 02:05:10 +0200 (Wed, 05 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -47,6 +47,7 @@ class FormulaireManager extends MySQLManager {
 	const GENERATION_NOM_DEFAUT				= "Nom du stage";
 	const GENERATION_LANGUE_DEFAUT			= "francais";
 	const GENERATION_FORMAT_DEFAUT			= "a4paper";
+	const GENERATION_SEPARATE_DEFAUT		= false;
 	const GENERATION_CONSIGNES_DEFAUT		= "Veuillez remplir complètement chaque case au stylo à encre noir ou bleu-noir afin de reporter vos choix de réponse. Les encres de couleur claires, fluorescentes ou effaçables sont interdites.<br />Pour toute correction, veuillez utiliser du blanc correcteur exclusivement.<br />DANS CE DERNIER CAS, NE REDESSINEZ PAS LA CASE !";
 	const GENERATION_EXEMPLAIRES_DEFAUT		= 20;
 	const CANDIDATS_CODE_DEFAUT				= 4;				// Nombre de caractères formant le code candidat par défaut
@@ -99,11 +100,12 @@ class FormulaireManager extends MySQLManager {
 		'generation_consignes'				=> "generation.consignes_generation",
 		'generation_date_epreuve'			=> "generation.date_epreuve_generation",
 		'generation_exemplaires'			=> "generation.exemplaires_generation",
+		'generation_format'					=> "generation.format_generation",
 		'generation_id'						=> "generation.id_generation",
 		'generation_langue'					=> "generation.langue_generation",
 		'generation_nom_epreuve'			=> "generation.nom_epreuve_generation",
 		'generation_seed'					=> "generation.seed_generation",
-		'generation_format'					=> "generation.format_generation",
+		'generation_separate'				=> "generation.separate_generation",
 
 		// ÉPREUVE *********************************************************** (ordre alphabétique)
 		'epreuve_date'						=> "epreuve.date_epreuve",
@@ -1252,6 +1254,7 @@ class FormulaireManager extends MySQLManager {
 			"consignes_generation = :consignes_generation,",
 			"exemplaires_generation = :exemplaires_generation,",
 			"format_generation = :format_generation,",
+			"separate_generation = :separate_generation,",
 			"langue_generation = :langue_generation,",
 			"nom_epreuve_generation = :libelle_epreuve,",
 			"date_epreuve_generation = :date_epreuve,",
@@ -1275,6 +1278,7 @@ class FormulaireManager extends MySQLManager {
 			':consignes_generation'			=> DataHelper::get($this->_aQCM, 'generation_consignes',			DataHelper::DATA_TYPE_MYTXT),
 			':exemplaires_generation'		=> DataHelper::get($this->_aQCM, 'generation_exemplaires',			DataHelper::DATA_TYPE_INT_ABS),
 			':format_generation'			=> DataHelper::get($this->_aQCM, 'generation_format',				DataHelper::DATA_TYPE_MYTXT),
+			':separate_generation'			=> DataHelper::get($this->_aQCM, 'generation_separate',				DataHelper::DATA_TYPE_MYBOOL),
 			':langue_generation'			=> DataHelper::get($this->_aQCM, 'generation_langue',				DataHelper::DATA_TYPE_MYTXT),
 			':libelle_epreuve'				=> DataHelper::get($this->_aQCM, 'epreuve_libelle',					DataHelper::DATA_TYPE_MYTXT),
 			':date_epreuve'					=> DataHelper::get($this->_aQCM, 'epreuve_date',					DataHelper::DATA_TYPE_MYDATE),
@@ -2427,6 +2431,7 @@ class FormulaireManager extends MySQLManager {
 			$this->_aQCM['generation_id']										= DataHelper::get($aFormulaire, 'id_generation', 					DataHelper::DATA_TYPE_INT,		null);
 			$this->_aQCM['generation_langue']									= DataHelper::get($aFormulaire, 'langue_generation', 				DataHelper::DATA_TYPE_STR,		FormulaireManager::GENERATION_LANGUE_DEFAUT);
 			$this->_aQCM['generation_format']									= DataHelper::get($aFormulaire, 'format_generation', 				DataHelper::DATA_TYPE_STR,		FormulaireManager::GENERATION_FORMAT_DEFAUT);
+			$this->_aQCM['generation_separate']									= DataHelper::get($aFormulaire, 'separate_generation', 				DataHelper::DATA_TYPE_BOOL,		FormulaireManager::GENERATION_SEPARATE_DEFAUT);
 			$this->_aQCM['generation_seed']										= DataHelper::get($aFormulaire, 'seed_generation', 					DataHelper::DATA_TYPE_ANY,		LatexFormManager::DOCUMENT_RANDOMISEED_DEFAUT);
 			$this->_aQCM['generation_consignes']								= DataHelper::get($aFormulaire, 'consignes_generation', 			DataHelper::DATA_TYPE_TXT,		FormulaireManager::GENERATION_CONSIGNES_DEFAUT);
 			$this->_aQCM['generation_exemplaires']								= DataHelper::get($aFormulaire, 'exemplaires_generation', 			DataHelper::DATA_TYPE_INT_ABS,	FormulaireManager::GENERATION_EXEMPLAIRES_DEFAUT);

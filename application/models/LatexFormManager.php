@@ -76,7 +76,7 @@ require_once('LatexFormManager/Closure.php');
  * 						\begin{minipage}{.9\linewidth}
  * 							Code candidat :
  *
- * 							\vspace*{.5cm}\dotfill
+ * 							\vspace*{5mm}\dotfill
  * 							\vspace*{1mm}
  * 						\end{minipage}
  * 					}
@@ -94,19 +94,19 @@ require_once('LatexFormManager/Closure.php');
  * 				\noindent\AMCcode{code}{%d}\hspace*{\fill}
  * 			\end{minipage}
  *
- * 			\vspace{.5cm}
+ * 			\vspace{5mm}
  * 			\noindent\hrulefill
  * 			\begin{center}
  * 				Les questions faisant apparaître le symbole \multiSymbole{} peuvent présenter zéro, une ou plusieurs bonnes réponses. Les autres ont une unique bonne réponse.
  * 			\end{center}
  * 			\noindent\hrulefill
- * 			\vspace{.5cm}
+ * 			\vspace{5mm}
  *
  * 			\begin{center}
  * 				Veuillez répondre aux questions ci-dessous du mieux que vous le pouvez.
  * 			\end{center}
  *
- * 			\vspace{.5cm}
+ * 			\vspace{5mm}
  *			%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  * 			\melangegroupe{amc}
  * 			\restituegroupe{amc}
@@ -125,8 +125,8 @@ require_once('LatexFormManager/Closure.php');
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 43 $
- * @since		$LastChangedDate: 2017-06-17 15:53:21 +0200 (Sat, 17 Jun 2017) $
+ * @version		$LastChangedRevision: 56 $
+ * @since		$LastChangedDate: 2017-07-05 02:05:10 +0200 (Wed, 05 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -323,6 +323,7 @@ class LatexFormManager extends DocumentManager {
 	 * @code
 	 *	\begin{choicescustom}[o]
 	 *		\color{red}
+	 * 		\AMCboxColor{red}
 	 *		\bf{Réservé à la correction}\hfill{}
 	 *		\correctchoice[A]{excellent}\scoring{1}~~
 	 *		\wrongchoice[B]{très bien}\scoring{1}~~
@@ -336,6 +337,7 @@ class LatexFormManager extends DocumentManager {
 	 * @code
 	 *	\begin{choicescustom}[o]
 	 *		\color{red}
+	 * 		\AMCboxColor{red}
 	 *		\bf{Réservé à la correction}\hfill{}
 	 *		\correctchoice[A]{exact}\scoring{1}~~
 	 *		\wrongchoice[E]{faux}\scoring{0}
@@ -386,6 +388,7 @@ class LatexFormManager extends DocumentManager {
 	private $_current							= 0;		// Nombre d'élément dans le groupe AMC
 	private $_libre								= false;	// Présence d'une réponse libre
 	private	$_questionBareme					= true;		// Affiche le barème de la question
+	private $_separate							= false;	// Réponses sur feuilles séparées
 
 	/**
 	 * @brief	Parcours du formulaire HTML du type :
@@ -543,7 +546,7 @@ class LatexFormManager extends DocumentManager {
 	 */
 	public function __construct(array $aQCM = array()) {
 		// Initialisation de la variable d'instance
-		$this->_aQCM = $aQCM;
+		$this->_aQCM	= $aQCM;
 
 		/**
 		 * @li Mélange aléatoire des questions / réponses.
@@ -552,10 +555,10 @@ class LatexFormManager extends DocumentManager {
 		 */
 		if ((bool) self::DOCUMENT_STATICSEED) {
 			// Graine déterminée
-			$nIdSeed = self::DOCUMENT_RANDOMISEED_DEFAUT;
+			$nIdSeed	= self::DOCUMENT_RANDOMISEED_DEFAUT;
 		} else {
 			// Graine aléatoire à chaque génération du document
-			$nIdSeed = rand(self::DOCUMENT_RANDOMISEED_MIN, self::DOCUMENT_RANDOMISEED_MAX);
+			$nIdSeed	= rand(self::DOCUMENT_RANDOMISEED_MIN, self::DOCUMENT_RANDOMISEED_MAX);
 		}
 
 		// Récupération des variables du document
@@ -569,6 +572,7 @@ class LatexFormManager extends DocumentManager {
 		// Récupération du format de sortie
 		$sPaperSize 	= DataHelper::get($this->_aQCM, 'generation_format',			DataHelper::DATA_TYPE_LATEX,	FormulaireManager::GENERATION_FORMAT_DEFAUT);
 		$sLangue	 	= DataHelper::get($this->_aQCM, 'generation_langue',			DataHelper::DATA_TYPE_LATEX,	FormulaireManager::GENERATION_LANGUE_DEFAUT);
+		$this->_separate= DataHelper::get($this->_aQCM, 'generation_separate',			DataHelper::DATA_TYPE_BOOL,		FormulaireManager::GENERATION_SEPARATE_DEFAUT);
 		$nIdCustomSeed 	= DataHelper::get($this->_aQCM, 'generation_seed',				DataHelper::DATA_TYPE_ANY,		$nIdSeed);
 
 		// Informations sur l'épreuve
@@ -598,6 +602,7 @@ class LatexFormManager extends DocumentManager {
 		/**
 		 * @li Initialisation du document
 		 *
+		 * @li	Réponses intégrées au questionnaire
 		 * @code
 		 * 		\documentclass[%generation_format]{article}
 		 *
@@ -609,12 +614,25 @@ class LatexFormManager extends DocumentManager {
 		 *
 		 *		\AMCrandomseed{1237893}
 		 * @endcode
+		 *
+		 * @li	Réponses des candidats sur feuilles séparées
+		 * @code
+		 * 		\documentclass[%generation_format]{article}
+		 *
+		 * 		\usepackage[utf8x]{inputenc}
+		 * 		\usepackage[T1]{fonctenc}
+		 * 		\usepackage[francais,bloc,completemulti,ensemble]{automultiplechoice}
+		 *
+		 * 		\begin{document}
+		 *
+		 *		\AMCrandomseed{1237893}
+		 * @endcode
 		 */
 		$oHeader = new LatexFormManager_Header();
 		$oHeader->setPaperSize($sPaperSize);
 		$oHeader->setLanguage($sLangue);
 		$oHeader->setRandomSeed($nIdCustomSeed);
-		$this->_document = $oHeader->render();
+		$this->_document = $oHeader->render($this->_separate);
 
 		/**
 		 * @li Construction des questions
@@ -724,6 +742,101 @@ class LatexFormManager extends DocumentManager {
 		$oExemplaire->setTime($sDureeEpreuve);
 		$this->_document .= $oExemplaire->render();
 
+		if ($this->_separate) {
+			// Construction de la présentation de la feuille des énoncés
+			$oEnonce = new LatexFormManager_Enonce();
+			$this->_document .= $oEnonce->render();
+		}
+
+		/**
+		 * @li Construction des instructions pour l'aide à la rédaction
+		 *
+		 * @code
+		 *
+		 *			\begin{center}
+		 * 				Veuillez répondre aux questions du mieux que vous pouvez.
+		 * 			\end{center}
+		 *
+		 * 			\vspace*{5mm}
+		 * @endcode
+		 */
+		$oPresentation = new LatexFormManager_Presentation();
+		$oPresentation->setText($sPresentation);
+		$this->_document .= $oPresentation->render();
+
+		/**
+		 * @li Construction des instructions pour l'aide à la rédaction
+		 *
+		 * @code
+		 *		\begin{center}
+		 *			Les questions faisant apparaître le symbole \multiSymbole{} peuvent présenter zéro, une ou plusieurs bonnes réponses. Les autres ont une unique bonne réponse.
+		 *		\end{center}
+		 *
+		 *		\noindent\hrulefill
+		 * @endcode
+		 */
+		$oInstructions = new LatexFormManager_Instructions();
+		// Récupération du contenu du fichier
+		$oInstructions->setText(self::DOCUMENT_INSTRUCTIONS_TXT);
+		$this->_document .= $oInstructions->render();
+
+		/**
+		 * @li Mélange du questionnaire
+		 *
+		 * @code
+		 *			%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		 * 			\melangegroupe{amc}
+		 * 			\restituegroupe{amc}
+		 *			%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		 * @endcode
+		 */
+		$oRestitue = new LatexFormManager_Restituegroupe();
+
+		// Récupération du contenu du fichier
+		$sRestitueGroupe			= file_get_contents(FW_HELPERS . self::DOCUMENT_RESTITUEGROUPE);
+
+		// Fonctionnalité réalisée si au moins un questionnaire est présent
+		if ($this->_current && !empty($this->_labelGroupe)) {
+			// Parcours l'ensembre des groupes
+			for ($nGroupe = 1 ; $nGroupe <= $this->_idGroupe ; $nGroupe++) {
+				// Label du groupe
+				$sLabelGroupe		= self::QUESTIONS_GROUPE_PARAM . $nGroupe;
+
+				// Récupération du contenu du fichier
+				$sMelangeGroupe		= file_get_contents(FW_HELPERS . self::DOCUMENT_MELANGEGROUPE);
+				$oRestitue->addMixedGroup(sprintf($sMelangeGroupe, $sLabelGroupe));
+				$oRestitue->addMixedGroup(sprintf($sRestitueGroupe, $sLabelGroupe));
+			}
+		}
+
+		if ($this->_separate) {
+			// Rendu des questions avant la génération de l'entête de la feuille des réponses séparées
+			$this->_document .= $oRestitue->render();
+
+			/**
+			 * @li Construction du format pour la page de garde des réponses séparées
+			 *
+			 * @code
+			 *        \AMCcleardoublepage
+			 *        \AMCdebutFormulaire
+			 *        \noindent{\bf %s \hfill %s \\ %s \hfill Durée : %d minutes}
+			 *
+			 *        \noindent\hrulefill
+			 *        \vspace*{5mm}
+			 *
+			 *        \begin{center}
+			 *            {\large\bf Feuille des réponses :}
+			 *        \end{center}
+			 * @endcode
+			 */
+			$oSeparate = new LatexFormManager_Separate();
+			$oSeparate->setTitle($this->_name);
+			$oSeparate->setLabel($sLibelleEpreuve);
+			$oSeparate->setDate("$sTypeEpreuve du $sDateEpreuve");
+			$oSeparate->setTime($sDureeEpreuve);
+			$this->_document .= $oSeparate->render();
+		}
+
 		/**
 		 * @li Construction de l'identification des candidats
 		 *
@@ -749,7 +862,7 @@ class LatexFormManager extends DocumentManager {
 		 * 						\begin{minipage}{.9\linewidth}
 		 * 							Code candidat :
 		 *
-		 * 							\vspace*{.5cm}\dotfill
+		 * 							\vspace*{5mm}\dotfill
 		 * 							\vspace*{1mm}
 		 * 						\end{minipage}
 		 * 					}
@@ -772,77 +885,26 @@ class LatexFormManager extends DocumentManager {
 		$oCandidat->setCountCode($nCodeCandidat);
 		$this->_document .= $oCandidat->render();
 
-		/**
-		 * @li Construction des instructions pour l'aide à la rédaction
-		 *
-		 * @code
-		 *		\begin{center}
-		 *			Les questions faisant apparaître le symbole \multiSymbole{} peuvent présenter zéro, une ou plusieurs bonnes réponses. Les autres ont une unique bonne réponse.
-		 *		\end{center}
-		 *
-		 *		\noindent\hrulefill
-		 * @endcode
-		 */
-		$oInstructions = new LatexFormManager_Instructions();
-		// Récupération du contenu du fichier
-		$oInstructions->setText(self::DOCUMENT_INSTRUCTIONS_TXT);
-		$this->_document .= $oInstructions->render();
+		if ($this->_separate) {
+			$oRestitue = new LatexFormManager_Restituegroupe();
 
-		/**
-		 * @li Construction des instructions pour l'aide à la rédaction
-		 *
-		 * @code
-		 *
-		 *			\begin{center}
-		 * 				Veuillez répondre aux questions du mieux que vous pouvez.
-		 * 			\end{center}
-		 *
-		 * 			\vspace*{.5cm}
-		 * @endcode
-		 */
-		$oPresentation = new LatexFormManager_Presentation();
-		$oPresentation->setText($sPresentation);
-		$this->_document .= $oPresentation->render();
-
-		/**
-		 * @li Finalisation du document
-		 *
-		 * @code
-		 *			%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-		 * 			\melangegroupe{amc}
-		 * 			\restituegroupe{amc}
-		 *			%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-		 * 			\clearpage
-		 * 		}
-		 * 		\end{document}
-		 * @endcode
-		 */
-		$oClosure = new LatexFormManager_Closure();
-
-		// Récupération du contenu du fichier
-		$sRestitueGroupe			= file_get_contents(FW_HELPERS . self::DOCUMENT_RESTITUEGROUPE);
-
-		// Fonctionnalité réalisée si au moins un questionnaire est présent
-		if ($this->_current && !empty($this->_labelGroupe)) {
-			// Parcours l'ensembre des groupes
-			for ($nGroupe = 1 ; $nGroupe <= $this->_idGroupe ; $nGroupe++) {
-				// Label du groupe
-				$sLabelGroupe		= self::QUESTIONS_GROUPE_PARAM . $nGroupe;
-
-				// Récupération du contenu du fichier
-				$sMelangeGroupe		= file_get_contents(FW_HELPERS . self::DOCUMENT_MELANGEGROUPE);
-				$oClosure->addMixedGroup(sprintf($sMelangeGroupe, $sLabelGroupe));
-				$oClosure->addMixedGroup(sprintf($sRestitueGroupe, $sLabelGroupe));
-			}
+			// Ajout d'une ligne pleine sur la largeur de la page
+			$oLigne	= new LatexFormManager_Hrulefill();
+			$oLigne->addContent("\t\\formulaire\n");
+			//$this->_document .= $oLigne->render(1, "cm");
+			$this->_document .= $oLigne->render();
 		}
 
 		// Fonctionnalité réalisée si au moins un questionnaire LIBRE est présent
 		if ($this->_libre) {
-			$oClosure->addMixedGroup(sprintf($sRestitueGroupe, self::REPONSE_OUVERTE));
+			$oRestitue->addMixedGroup(sprintf($sRestitueGroupe, self::REPONSE_OUVERTE));
+			// Fermeture du document
+			$this->_document .= $oRestitue->render();
 		}
 
 		// Fermeture du document
-		$this->_document .= $oClosure->render();
+		$oEnder = new LatexFormManager_Closure();
+		$this->_document .= $oEnder->render();
 	}
 
 	/**
@@ -1197,6 +1259,7 @@ class LatexFormManager extends DocumentManager {
 	 *				}
 	 *				\begin{choicescustom}[o]
 	 *					\color{red}
+	 * 					\AMCboxColor{red}
 	 *					\bf{Réservé à la correction}\hfill{}
 	 *					\correctchoice[A]{exact}\scoring{1}~~
 	 *					\wrongchoice[E]{faux}\scoring{0}
@@ -1213,7 +1276,7 @@ class LatexFormManager extends DocumentManager {
 		$idQuestion		= sprintf(self::DOCUMENT_QUESTIONS_ID, intval($nQuestion + 1));
 
 		// Nombre de réponses valides proposées à la question
-		$nNombreValides= $this->_getValideResponses($nQuestion);
+		$nNombreValides	= $this->_getValideResponses($nQuestion);
 
 		// Nombre total de réponses proposées à la question
 		$nNombreReponses= $this->_getNombreResponses($nQuestion);
@@ -1235,7 +1298,7 @@ class LatexFormManager extends DocumentManager {
 		$sEnonce		= "";
 		if ($bVisibleBareme) {
 			$sPluriel	= $fBareme > 1 ? "s" : "";
-			$sEnonce	= sprintf("(%s pt" . $sPluriel . ")", str_replace(".", ",", $fBareme));
+			$sEnonce	= sprintf("(%s point" . $sPluriel . ")", str_replace(".", ",", $fBareme));
 		}
 
 		// Forçage du retour à la ligne pour l'énoncé

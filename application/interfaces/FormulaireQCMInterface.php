@@ -11,8 +11,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 44 $
- * @since		$LastChangedDate: 2017-06-17 21:23:52 +0200 (Sat, 17 Jun 2017) $
+ * @version		$LastChangedRevision: 56 $
+ * @since		$LastChangedDate: 2017-07-05 02:05:10 +0200 (Wed, 05 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -42,6 +42,7 @@ abstract class FormulaireQCMInterface {
 		'generation_langue'				=> DataHelper::DATA_TYPE_STR,
 		'generation_nom_epreuve'		=> DataHelper::DATA_TYPE_STR,
 		'generation_seed'				=> DataHelper::DATA_TYPE_INT,
+		'generation_separate'			=> DataHelper::DATA_TYPE_BOOL,
 
 		// EPREUVE *********************************************************** (ordre alphabétique)
 		'epreuve_id'					=> DataHelper::DATA_TYPE_INT,

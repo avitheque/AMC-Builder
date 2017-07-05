@@ -2,13 +2,13 @@
 	/**
 	 * @brief	Classe de transcription du formulaire en fichier LaTeX.
 	 *
-	 * Finalisation du document de l'épreuve.
+	 * Présentation de la feuille des énoncés de l'épreuve.
 	 * @li	La méthode render() permet de générer le document au format LaTeX.
 	 *
 	 * Étend la classe abstraite LatexElement.
 	 * @see			{ROOT_PATH}/libraries/models/LatexElement.php
 	 *
-	 * @name		LatexFormManager_Closure
+	 * @name		LatexFormManager_Enonce
 	 * @category	Model
 	 * @package		Main
 	 * @subpackage	Application
@@ -21,22 +21,24 @@
 	 * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
 	 * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
 	 */
-	class LatexFormManager_Closure extends LatexElement {
+	class LatexFormManager_Enonce extends LatexElement {
 
 		/**
 		 * @brief	Constante de construction du document.
 		 *
 		 * @var		file
 		 */
-		const DOCUMENT_SOURCE						= '/latex/closure.tex';
+		const DOCUMENT_SOURCE						= '/latex/enonce.tex';
 
 		/**
 		 * @brief	Renvoi le contenu du document
 		 *
 		 * @code
-		 * 			\clearpage
-		 * 		}
-		 * 		\end{document}
+		 *		\noindent\hrulefill
+		 *		\vspace*{5mm}
+		 *		\begin{center}
+		 * 			{\large\bf Feuille des énoncés :}
+		 * 		\end{center}
 		 * @endcode
 		 *
 		 * @return	string LaTeX

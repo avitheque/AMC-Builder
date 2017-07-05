@@ -14,8 +14,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 56 $
+ * @since		$LastChangedDate: 2017-07-05 02:05:10 +0200 (Wed, 05 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -24,7 +24,7 @@
 class LatexFormManager_Candidat extends LatexElement {
 
 	/**
-	 * @brief	Constante de construction du début du document.
+	 * @brief	Constante de construction du document.
 	 *
 	 * @var		file
 	 */
@@ -79,7 +79,7 @@ class LatexFormManager_Candidat extends LatexElement {
 	 * 						\begin{minipage}{.9\linewidth}
 	 * 							Code candidat :
 	 *
-	 * 							\vspace*{.5cm}\dotfill
+	 * 							\vspace*{5mm}\dotfill
 	 * 							\vspace*{1mm}
 	 * 						\end{minipage}
 	 * 					}
@@ -97,7 +97,7 @@ class LatexFormManager_Candidat extends LatexElement {
 	 * 				\noindent\AMCcode{code}{%d}\hspace*{\fill}
 	 * 			\end{minipage}
 	 *
-	 * 			\vspace{.5cm}
+	 * 			\vspace{5mm}
 	 * 			\noindent\hrulefill
 	 * @endcode
 	 *
@@ -108,7 +108,7 @@ class LatexFormManager_Candidat extends LatexElement {
 		$sFileContents = file_get_contents(FW_HELPERS . self::DOCUMENT_SOURCE);
 
 		// Initialisation du document
-		$this->_latex = sprintf($sFileContents, $this->sLabel, $this->sText, $this->nCountCode);
+		$this->_latex .= sprintf($sFileContents, $this->sLabel, $this->sText, $this->nCountCode);
 
 		// Renvoi du code LaTeX
 		return $this->_latex;

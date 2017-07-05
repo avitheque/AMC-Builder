@@ -2,13 +2,13 @@
 /**
  * @brief	Classe de transcription du formulaire en fichier LaTeX.
  *
- * Renseignement sur la façon de remplire le QCM par les candidats
+ * Instruction de mélange des copies.
  * @li	La méthode render() permet de générer le document au format LaTeX.
  *
  * Étend la classe abstraite LatexElement.
  * @see			{ROOT_PATH}/libraries/models/LatexElement.php
  *
- * @name		LatexFormManager_Consignes
+ * @name		LatexFormManager_Restituegroupe
  * @category	Model
  * @package		Main
  * @subpackage	Application
@@ -21,41 +21,40 @@
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
  */
-class LatexFormManager_Consignes extends LatexElement {
+class LatexFormManager_Restituegroupe extends LatexElement {
 
 	/**
 	 * @brief	Constante de construction du document.
 	 *
 	 * @var		file
 	 */
-	const DOCUMENT_SOURCE						= '/latex/consignes.tex';
+	const DOCUMENT_SOURCE						= '/latex/restituegroupe.tex';
 
 	/**
 	 * @brief	Variables de construction du document.
 	 *
-	 * @var		string|integer|array
+	 * @var		string
 	 */
-	private $sText								= FormulaireManager::GENERATION_CONSIGNES_DEFAUT;
+	private $sMixedGroup						= "";
 
 	/**
-	 * @brief	Initialisation de la taille du papier.
+	 * @brief	Initialisation du mélange des groupes de question.
 	 *
-	 * @param	string	$sSize				: taille du papier.
+	 * @param	string	$sGroup				: ensemble des groupes à mélanger.
 	 * @return	void
 	 */
-	public function setText($sText) {
-		$this->sText = $sText;
+	public function addMixedGroup($sGroup) {
+		$this->sMixedGroup .= $sGroup;
 	}
 
 	/**
 	 * @brief	Renvoi le contenu du document
 	 *
 	 * @code
-	 * 		\begin{center}
-	 * 			Veuillez remplir complètement chaque case au stylo à encre noir ou bleu-noir afin de reporter vos choix de réponse. Les encres de couleur claires, fluorescentes ou effaçables sont interdites.
-	 * 			Pour toute correction, veuillez utiliser du blanc correcteur exclusivement.
-	 * 			DANS CE DERNIER CAS, NE REDESSINEZ PAS LA CASE !
-	 * 		\end{center}
+	 *			%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	 * 			\melangegroupe{amc}
+	 * 			\restituegroupe{amc}
+	 *			%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	 * @endcode
 	 *
 	 * @return	string LaTeX
@@ -65,7 +64,7 @@ class LatexFormManager_Consignes extends LatexElement {
 		$sFileContents = file_get_contents(FW_HELPERS . self::DOCUMENT_SOURCE);
 
 		// Initialisation du document
-		$this->_latex .= sprintf($sFileContents, $this->sText);
+		$this->_latex .= sprintf($sFileContents, $this->sMixedGroup);
 
 		// Renvoi du code LaTeX
 		return $this->_latex;

@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 44 $
- * @since		$LastChangedDate: 2017-06-17 21:23:52 +0200 (Sat, 17 Jun 2017) $
+ * @version		$LastChangedRevision: 56 $
+ * @since		$LastChangedDate: 2017-07-05 02:05:10 +0200 (Wed, 05 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -323,6 +323,16 @@ class FormulaireHelper {
 		$oAutocomplete->setHiddenInputName("epreuve_stage");
 		$oAutocomplete->setRequired(true);
 
+		// Disposition des réponses des candidats sur les feuilles séparées
+		$bSeparate						= DataHelper::get($this->_aQCM, 'generation_separate',				DataHelper::DATA_TYPE_BOOL,		FormulaireManager::GENERATION_SEPARATE_DEFAUT);
+		
+		// Création d'une case à cocher afin de permettre la génération des réponses sur feuilles séparées
+		$oSeparateCheckbox				= new CheckboxHelper("generation_separate", "Imprimer les réponses sur des pages séparées");
+		// Fonctionnalité réalisée si les questions doivent être séparées
+		if ($bSeparate) {
+			$oSeparateCheckbox->setAttribute('checked', "checked");
+		}
+		
 		// Récupération de la liste des salles disponibles pour l'épreuve
 		$aListeSalles					= $this->_oInstanceStorage->getData('liste_salles');
 		$aChoixSalles					= DataHelper::get($this->_aQCM,	'epreuve_liste_salles',				DataHelper::DATA_TYPE_ARRAY,	null);
@@ -344,8 +354,12 @@ class FormulaireHelper {
 													<span id=\"tabs-epreuve-top\"><a class=\"page-top\" href=\"#tabs-epreuve-bottom\" title=\"Bas de page...\">" . self::ICON_DOWN . "</a></span>
 													<fieldset id=\"epreuve\"><legend>Paramètres de l'épreuve</legend>
 														<ol>
-															<li class=\"margin-bottom-20\">
+															<li class=\"center margin-bottom-20\">
 																<h3 class=\"strong center\">&#151;&nbsp;" . $sNomFormulaire . "&nbsp;&#151;</h3>
+																<br />
+																" . $oSeparateCheckbox->renderHTML() . "
+															</li>
+															<hr class=\"blue\" />
 															</li>
 															<li>
 																<label for=\"idFormat\">Format de sortie</label>
@@ -401,7 +415,7 @@ class FormulaireHelper {
 
 				// Fonctionnalité réalisée si la salle est sélectionnée
 				if (DataHelper::isValidArray($aChoixSalles) && in_array($nId, $aChoixSalles)) {
-					$oCheckbox->setAttribute("checked", "checked");
+					$oCheckbox->setAttribute('checked', "checked");
 					$sTableClasse		= "";
 				}
 
