@@ -11,8 +11,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 33 $
- * @since		$LastChangedDate: 2017-06-11 21:24:20 +0200 (Sun, 11 Jun 2017) $
+ * @version		$LastChangedRevision: 58 $
+ * @since		$LastChangedDate: 2017-07-06 19:25:04 +0200 (Thu, 06 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -20,15 +20,18 @@
  */
 class AuthenticateManager {
 
-	const		DEFAULT_ID_UTILISATEUR			= 0;
-	const		DEFAULT_ID_GROUPE				= 0;
+	const		DEFAULT_BORNE_DROITE			= 2;
+	const		DEFAULT_BORNE_GAUCHE			= 1;
+	const		DEFAULT_DISPLAY_NAME			= "Utilisateur non authentifié";
 	const		DEFAULT_ID_GRADE				= 0;
-	const		DEFAULT_MODIFIABLE_UTILISATEUR	= false;
+	const		DEFAULT_ID_GROUPE				= 0;
 	const		DEFAULT_ID_PROFIL				= AclManager::ID_PROFIL_UNDEFINED;
+	const		DEFAULT_ID_UTILISATEUR			= 0;
+	const		DEFAULT_LIBELLE_GROUPE			= "public";
 	const		DEFAULT_LIBELLE_PROFIL			= Constantes::PROFIL_GUEST;
 	const		DEFAULT_LOGIN					= Constantes::LOGIN_GUEST;
+	const		DEFAULT_MODIFIABLE_UTILISATEUR	= false;
 	const		DEFAULT_ROLE					= AclManager::ROLE_GUEST;
-	const		DEFAULT_DISPLAY_NAME			= "Utilisateur non authentifié";
 
 	/**
 	 * @brief	Paramètres d'authentification par défaut.
@@ -36,11 +39,14 @@ class AuthenticateManager {
 	 * @var		array
 	 */
 	static public $DEFAULT_PARAMS 				= array(
-		'display_name'				=> self::DEFAULT_DISPLAY_NAME,								// STRING	Libellé de l'utilisateur
-		'id_groupe'					=> self::DEFAULT_ID_GROUPE,									// INTEGER	Identifiant du groupe de l'utilisateur
+		'borne_droite'				=> self::DEFAULT_BORNE_DROITE,								// INTEGER	Borne DROITE du groupe de l'utilisateur
+		'borne_gauche'				=> self::DEFAULT_BORNE_GAUCHE,								// INTEGER	Borne GAUCHE du groupe de l'utilisateur
+		'display_name'				=> self::DEFAULT_DISPLAY_NAME,								// STRING	Libellé de présentation de l'utilisateur
 		'id_grade'					=> self::DEFAULT_ID_GRADE,									// INTEGER	Identifiant du grade de l'utilisateur
+		'id_groupe'					=> self::DEFAULT_ID_GROUPE,									// INTEGER	Identifiant du groupe de l'utilisateur
 		'id_profil'					=> self::DEFAULT_ID_PROFIL,									// INTEGER	Identifiant du profil de l'utilisateur
 		'id_utilisateur'			=> self::DEFAULT_ID_UTILISATEUR,							// STRING	Identifiant de l'utilisateur
+		'libelle_groupe'			=> self::DEFAULT_LIBELLE_GROUPE,							// STRING	Libellé du groupe de l'utilisateur
 		'libelle_profil'			=> self::DEFAULT_LIBELLE_PROFIL,							// STRING	Libelle du profil de l'utilisateur
 		'login_utilisateur'			=> self::DEFAULT_LOGIN,										// STRING	Login de l'utilisateur
 		'modifiable_utilisateur'	=> self::DEFAULT_MODIFIABLE_UTILISATEUR,					// BOOLEAN	Droit de modification pour l'utilisateur
@@ -79,18 +85,25 @@ class AuthenticateManager {
 	 *
 	 * @li Exploite le tableau des informations de l'utilisateur en base de données.
 	 * @code
-	 * 		integer	$aUtilisateur['id_utilisateur']			: identifiant de l'utilisateur
-	 * 		string	$aUtilisateur['login_utilisateur']		: libellé du compte utilisateur
+	 * 		// TABLE `profil`
 	 * 		integer	$aUtilisateur['id_profil']				: identifiant du profil
 	 * 		string	$aUtilisateur['libelle_profil']			: libellé du profil
 	 * 		string	$aUtilisateur['role_profil']			: rôle de l'utilisateur
+	 * 		// TABLE `groupe`
 	 * 		integer	$aUtilisateur['id_groupe']				: identifiant du groupe
+	 * 		integer	$aUtilisateur['libelle_groupe']			: libellé du groupe
+	 * 		integer	$aUtilisateur['borne_droite']			: borne droite du groupe
+	 * 		integer	$aUtilisateur['borne_gauche']			: borne gauche du groupe
+	 * 		// TABLE `grade`
 	 * 		integer	$aUtilisateur['id_grade']				: identifiant du grade
-	 * 		string	$aUtilisateur['libelle_grade']			: libellé du grade
 	 * 		string	$aUtilisateur['libelle_court_grade']	: libellé court du grade
+	 * 		string	$aUtilisateur['libelle_grade']			: libellé du grade
+	 * 		// TABLE `utilisateur`
+	 * 		string	$aUtilisateur['display_name']			: libellé de présentation de l'utilisateur [GRD NOM Prénom]
+	 * 		integer	$aUtilisateur['id_utilisateur']			: identifiant de l'utilisateur
+	 * 		string	$aUtilisateur['login_utilisateur']		: libellé du compte utilisateur
 	 * 		string	$aUtilisateur['nom_utilisateur']		: nom de l'utilisateur
 	 * 		string	$aUtilisateur['prenom_utilisateur']		: prénom de l'utilisateur
-	 * 		string	$aUtilisateur['display_name']			: texte complet d'identification de l'utilisateur [GRD NOM Prénom]
 	 * @endcode
 	 *
 	 * @li	Possibilité de s'authentifier par défaut à un autre compte en MODE_DEBUG et MODE_SUBSTITUTE_USER actif.
@@ -234,18 +247,25 @@ class AuthenticateManager {
 	 *
 	 * @param	array	$aUtilisateur		: tableau des informations d'authentification
 	 * @code
-	 * 		integer	$aUtilisateur['id_utilisateur']			: identifiant de l'utilisateur
-	 * 		string	$aUtilisateur['login_utilisateur']		: libellé du compte utilisateur
+	 * 		// TABLE `profil`
 	 * 		integer	$aUtilisateur['id_profil']				: identifiant du profil
 	 * 		string	$aUtilisateur['libelle_profil']			: libellé du profil
 	 * 		string	$aUtilisateur['role_profil']			: rôle de l'utilisateur
+	 * 		// TABLE `groupe`
 	 * 		integer	$aUtilisateur['id_groupe']				: identifiant du groupe
+	 * 		integer	$aUtilisateur['libelle_groupe']			: libellé du groupe
+	 * 		integer	$aUtilisateur['borne_droite']			: borne droite du groupe
+	 * 		integer	$aUtilisateur['borne_gauche']			: borne gauche du groupe
+	 * 		// TABLE `grade`
 	 * 		integer	$aUtilisateur['id_grade']				: identifiant du grade
-	 * 		string	$aUtilisateur['libelle_grade']			: libellé du grade
 	 * 		string	$aUtilisateur['libelle_court_grade']	: libellé court du grade
+	 * 		string	$aUtilisateur['libelle_grade']			: libellé du grade
+	 * 		// TABLE `utilisateur`
+	 * 		string	$aUtilisateur['display_name']			: libellé de présentation de l'utilisateur [GRD NOM Prénom]
+	 * 		integer	$aUtilisateur['id_utilisateur']			: identifiant de l'utilisateur
+	 * 		string	$aUtilisateur['login_utilisateur']		: libellé du compte utilisateur
 	 * 		string	$aUtilisateur['nom_utilisateur']		: nom de l'utilisateur
 	 * 		string	$aUtilisateur['prenom_utilisateur']		: prénom de l'utilisateur
-	 * 		string	$aUtilisateur['display_name']			: (facultatif) texte complet sur l'identification de l'utilisateur [GRD NOM Prénom]
 	 * @endcode
 	 */
 	public function authenticate($aUtilisateur = array()) {
@@ -312,6 +332,33 @@ class AuthenticateManager {
 	 */
 	public function getIdGroupe() {
 		return $this->_params['id_groupe'];
+	}
+
+	/**
+	 * @brief	Récupère le libellé du groupe de l'utilisateur.
+	 *
+	 * @return	string
+	 */
+	public function getLibelleGroupe() {
+		return $this->_params['libelle_groupe'];
+	}
+
+	/**
+	 * @brief	Récupère la borne gauche du groupe de l'utilisateur.
+	 *
+	 * @return	string
+	 */
+	public function getBorneGauche() {
+		return $this->_params['borne_gauche'];
+	}
+
+	/**
+	 * @brief	Récupère la borne droite du groupe de l'utilisateur.
+	 *
+	 * @return	string
+	 */
+	public function getBorneDroite() {
+		return $this->_params['borne_droite'];
 	}
 
 	/**

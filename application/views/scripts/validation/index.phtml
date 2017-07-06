@@ -30,6 +30,7 @@ $aListeQCMValidation	= $oInstanceStorage->getData('liste_validation');
 // Construction du tableau récapitulatif des formulaires
 $oValidation = new DatatableHelper("table-validation", $aListeQCMValidation);
 $oValidation->setClassColumn("align-left strong", "titre_formulaire");
+$oValidation->setClassColumn("strong", "libelle_groupe");
 
 // Formatage du champ DATETIME
 $oValidation->setFormatOnColumn('date_modification_formulaire',	DataHelper::DATA_TYPE_DATETIME);
@@ -40,6 +41,7 @@ $aColonnes = array(
 	'libelle_domaine'				=> "DOMAINE",
 	'COUNT(id_question)'			=> "QUESTIONS",
 	'date_modification_formulaire'	=> "MODIFICATION",
+	'libelle_groupe'				=> "GROUPE",
 	'libelle_redacteur'				=> "REDACTEUR",
 	'libelle_valideur'				=> "VALIDEUR"
 );

@@ -18,14 +18,23 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 56 $
- * @since		$LastChangedDate: 2017-07-05 02:05:10 +0200 (Wed, 05 Jul 2017) $
+ * @version		$LastChangedRevision: 58 $
+ * @since		$LastChangedDate: 2017-07-06 19:25:04 +0200 (Thu, 06 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
  */
 class FormulaireManager extends MySQLManager {
+
+	/**
+	 * @brief	Constantes d'accès aux formulaires QCM.
+	 *
+	 * @li	Seuls les membres du groupe supérieurs au rédacteur peuvent avoir accès aux formulaires par héritage.
+	 *
+	 * @var		boolean
+	 */
+	const ACCESS_GROUP_BY_DEFAULT			= true;			// TRUE : restriction hiérarchique ; FALSE : accès libre
 
 	/**
 	 * @brief	Constantes des formulaires QCM.
@@ -37,7 +46,7 @@ class FormulaireManager extends MySQLManager {
 	const FORMULAIRE_NOM_MAXLENGTH			= 255;
 	const QUESTION_TITRE_MAXLENGTH			= 255;
 
-	const EPREUVE_TYPE_DEFAUT					= "Contrôle";
+	const EPREUVE_TYPE_DEFAUT				= "Contrôle";
 	const EPREUVE_DATE_FORMAT				= "d/m/Y";
 	const EPREUVE_DUREE_DEFAUT				= 50;
 	const EPREUVE_HEURE_DEFAUT				= "09:00";
@@ -163,32 +172,47 @@ class FormulaireManager extends MySQLManager {
 	/**
 	 * @brief	Recherche de toutes les épreuves générées.
 	 *
+	 * @li	Possibilité de limiter les formulaires selon le groupe d'appartenance de l'utilisateur connecté.
+	 *
+	 * @param	boolean	$bGroupAccess		: (optionnel) Filtre sur les groupes du rédacteur.
 	 * @return	array, tableau contenant l'ensemble des résultats de la requête.
 	 * @throws	ApplicationException si la requête ne fonctionne pas.
 	 */
-	public function findAllEpreuves() {
+	public function findAllEpreuves($bGroupAccess = self::ACCESS_GROUP_BY_DEFAULT) {
 		// Ajout d'un suivit pour le debuggage
 		$this->debug(__METHOD__);
 
 		// Requête SELECT
 		$aQuery	= array(
-			"SELECT *,",
-			self::LIBELLE_REDACTEUR  . " AS libelle_redacteur,",
-			self::LIBELLE_VALIDEUR . " AS libelle_valideur,",
-			"COUNT(id_stage_candidat)",
-			"FROM formulaire",
-			"INNER JOIN utilisateur AS redacteur  ON(redacteur.id_utilisateur  = id_redacteur)",
-			"INNER JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
-			"INNER JOIN generation USING(id_formulaire)",
-			"INNER JOIN epreuve USING(id_generation)",
-			"INNER JOIN stage USING(id_stage)",
-			"LEFT JOIN stage_candidat USING(id_stage)",
-			"LEFT JOIN candidat USING(id_candidat)",
-			"GROUP BY id_formulaire"
+			0	=> "SELECT *,",
+			1	=> self::LIBELLE_REDACTEUR  . " AS libelle_redacteur,",
+			2	=> self::LIBELLE_VALIDEUR . " AS libelle_valideur,",
+			3	=> "COUNT(id_stage_candidat)",
+			4	=> "FROM formulaire",
+			5	=> "INNER JOIN utilisateur AS redacteur  ON(redacteur.id_utilisateur  = id_redacteur)",
+			6	=> "INNER JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
+			7	=> "INNER JOIN groupe ON(redacteur.id_groupe = groupe.id_groupe)",
+			8	=> "INNER JOIN generation USING(id_formulaire)",
+			9	=> "INNER JOIN epreuve USING(id_generation)",
+			10	=> "INNER JOIN stage USING(id_stage)",
+			11	=> "LEFT JOIN stage_candidat USING(id_stage)",
+			12	=> "LEFT JOIN candidat USING(id_candidat)",
+			13	=> null,
+			14	=> "GROUP BY id_formulaire"
 		);
 
 		// Construction du tableau associatif des étiquettes et leurs valeurs
 		$aBind = array();
+
+		// Fonctionnalité réalisée si l'accès aux formulaires est limité au groupe d'utilisateurs du rédacteur
+		if ($bGroupAccess) {
+			// Ajout d'une clause WHERE selon les bornes GAUCHE / DROITE
+			$aQuery[13]				= "WHERE borne_gauche BETWEEN :borne_gauche AND :borne_droite AND borne_droite BETWEEN :borne_gauche AND :borne_droite";
+
+			// Ajout des étiquette de la clause WHERE
+			$aBind[':borne_gauche']	= $this->_borneGauche;
+			$aBind[':borne_droite']	= $this->_borneDroite;
+		}
 
 		try {
 			// Récupération de la liste des formulaires
@@ -257,6 +281,7 @@ class FormulaireManager extends MySQLManager {
 			"FROM formulaire",
 			"INNER JOIN utilisateur AS redacteur  ON(redacteur.id_utilisateur  = id_redacteur)",
 			"INNER JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
+			"INNER JOIN groupe ON(redacteur.id_groupe = groupe.id_groupe)",
 			"INNER JOIN generation USING(id_formulaire)",
 			"INNER JOIN epreuve USING(id_generation)",
 			"INNER JOIN stage USING(id_stage)",
@@ -363,30 +388,48 @@ class FormulaireManager extends MySQLManager {
 	/**
 	 * @brief	Recherche de tous les formulaires enregistrés.
 	 *
+	 * @li	Possibilité de limiter les formulaires selon le groupe d'appartenance de l'utilisateur connecté.
+	 *
+	 * @param	boolean	$bGroupAccess		: (optionnel) Filtre sur les groupes du rédacteur.
 	 * @return	array, tableau contenant l'ensemble des résultats de la requête.
 	 * @throws	ApplicationException si la requête ne fonctionne pas.
 	 */
-	public function findAllFormulaires() {
+	public function findAllFormulaires($bGroupAccess = self::ACCESS_GROUP_BY_DEFAULT) {
 		// Ajout d'un suivit pour le debuggage
 		$this->debug(__METHOD__);
 
 		// Requête SELECT
 		$aQuery	= array(
-			"SELECT *,",
-			self::LIBELLE_REDACTEUR  . " AS libelle_redacteur,",
-			self::LIBELLE_VALIDEUR . " AS libelle_valideur,",
-			"COUNT(id_question)",
-			"FROM formulaire",
-			"LEFT  JOIN domaine USING(id_domaine)",
-			"INNER JOIN utilisateur AS redacteur  ON(redacteur.id_utilisateur  = id_redacteur)",
-			"LEFT  JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
-			"LEFT  JOIN formulaire_question USING(id_formulaire)",
-			"GROUP BY id_formulaire"
+			0	=> "SELECT *,",
+			1	=> self::LIBELLE_REDACTEUR  . " AS libelle_redacteur,",
+			2	=> self::LIBELLE_VALIDEUR . " AS libelle_valideur,",
+			3	=> "COUNT(id_question)",
+			4	=> "FROM formulaire",
+			5	=> "LEFT  JOIN domaine USING(id_domaine)",
+			6	=> "INNER JOIN utilisateur AS redacteur  ON(redacteur.id_utilisateur  = id_redacteur)",
+			7	=> "LEFT  JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
+			8	=> "INNER JOIN groupe ON(redacteur.id_groupe = groupe.id_groupe)",
+			9	=> "LEFT  JOIN formulaire_question USING(id_formulaire)",
+			10	=> null,
+			11	=> "GROUP BY id_formulaire"
 		);
+
+		// Construction du tableau associatif des étiquettes et leurs valeurs
+		$aBind = array();
+
+		// Fonctionnalité réalisée si l'accès aux formulaires est limité au groupe d'utilisateurs du rédacteur
+		if ($bGroupAccess) {
+			// Ajout d'une clause WHERE selon les bornes GAUCHE / DROITE
+			$aQuery[10]				= "WHERE borne_gauche BETWEEN :borne_gauche AND :borne_droite AND borne_droite BETWEEN :borne_gauche AND :borne_droite";
+
+			// Ajout des étiquette de la clause WHERE
+			$aBind[':borne_gauche']	= $this->_borneGauche;
+			$aBind[':borne_droite']	= $this->_borneDroite;
+		}
 
 		try {
 			// Récupération de la liste des formulaires
-			$aResultat = $this->selectSQL($aQuery);
+			$aResultat = $this->executeSQL($aQuery, $aBind);
 		} catch (ApplicationException $e) {
 			throw new ApplicationException($e->getMessage(), $e->getExtra());
 		}
@@ -398,32 +441,47 @@ class FormulaireManager extends MySQLManager {
 	/**
 	 * @brief	Recherche de tous les formulaires en attente de validation.
 	 *
+	 * @li	Possibilité de limiter les formulaires selon le groupe d'appartenance de l'utilisateur connecté.
+	 *
+	 * @param	boolean	$bGroupAccess		: (optionnel) Filtre sur les groupes du rédacteur.
 	 * @return	array, tableau contenant l'ensemble des résultats de la requête.
 	 * @throws	ApplicationException si la requête ne fonctionne pas.
 	 */
-	public function findAllFormulairesForValidation() {
+	public function findAllFormulairesForValidation($bGroupAccess = self::ACCESS_GROUP_BY_DEFAULT) {
 		// Ajout d'un suivit pour le debuggage
 		$this->debug(__METHOD__);
 
 		// Requête SELECT
 		$aQuery	= array(
-			"SELECT *,",
-			self::LIBELLE_REDACTEUR  . " AS libelle_redacteur,",
-			self::LIBELLE_VALIDEUR . " AS libelle_valideur,",
-			"COUNT(id_question)",
-			"FROM formulaire",
-			"LEFT  JOIN domaine USING(id_domaine)",
-			"INNER JOIN utilisateur AS redacteur  ON(redacteur.id_utilisateur  = id_redacteur)",
-			"LEFT  JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
-			"LEFT  JOIN formulaire_question USING(id_formulaire)",
-			"WHERE validation_formulaire > :validation_formulaire",
-			"GROUP BY id_formulaire"
+			0	=> "SELECT *,",
+			1	=> self::LIBELLE_REDACTEUR  . " AS libelle_redacteur,",
+			2	=> self::LIBELLE_VALIDEUR . " AS libelle_valideur,",
+			3	=> "COUNT(id_question)",
+			4	=> "FROM formulaire",
+			5	=> "LEFT  JOIN domaine USING(id_domaine)",
+			6	=> "INNER JOIN utilisateur AS redacteur  ON(redacteur.id_utilisateur  = id_redacteur)",
+			7	=> "LEFT  JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
+			8	=> "INNER JOIN groupe ON(redacteur.id_groupe = groupe.id_groupe)",
+			9	=> "LEFT  JOIN formulaire_question USING(id_formulaire)",
+			10	=> "WHERE validation_formulaire > :validation_formulaire",
+			11	=> null,
+			12	=> "GROUP BY id_formulaire"
 		);
 
 		// Construction du tableau associatif des étiquettes et leurs valeurs
 		$aBind = array(
 			':validation_formulaire'		=> FormulaireManager::VALIDATION_DEFAUT
 		);
+
+		// Fonctionnalité réalisée si l'accès aux formulaires est limité au groupe d'utilisateurs du rédacteur
+		if ($bGroupAccess) {
+			// Ajout d'une clause WHERE selon les bornes GAUCHE / DROITE
+			$aQuery[11]				= "AND borne_gauche BETWEEN :borne_gauche AND :borne_droite AND borne_droite BETWEEN :borne_gauche AND :borne_droite";
+
+			// Ajout des étiquette de la clause WHERE
+			$aBind[':borne_gauche']	= $this->_borneGauche;
+			$aBind[':borne_droite']	= $this->_borneDroite;
+		}
 
 		try {
 			// Récupération de la liste des formulaires
@@ -439,32 +497,47 @@ class FormulaireManager extends MySQLManager {
 	/**
 	 * @brief	Recherche de tous les formulaires en attente de génération.
 	 *
+	 * @li	Possibilité de limiter les formulaires selon le groupe d'appartenance de l'utilisateur connecté.
+	 *
+	 * @param	boolean	$bGroupAccess		: (optionnel) Filtre sur les groupes du rédacteur.
 	 * @return	array, tableau contenant l'ensemble des résultats de la requête.
 	 * @throws	ApplicationException si la requête ne fonctionne pas.
 	 */
-	public function findAllFormulairesForGeneration() {
+	public function findAllFormulairesForGeneration($bGroupAccess = self::ACCESS_GROUP_BY_DEFAULT) {
 		// Ajout d'un suivit pour le debuggage
 		$this->debug(__METHOD__);
 
 		// Requête SELECT
 		$aQuery	= array(
-			"SELECT *,",
-			self::LIBELLE_REDACTEUR  . " AS libelle_redacteur,",
-			self::LIBELLE_VALIDEUR . " AS libelle_valideur,",
-			"COUNT(id_question)",
-			"FROM formulaire",
-			"LEFT  JOIN domaine USING(id_domaine)",
-			"INNER JOIN utilisateur AS redacteur  ON(redacteur.id_utilisateur  = id_redacteur)",
-			"INNER JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
-			"LEFT  JOIN formulaire_question USING(id_formulaire)",
-			"WHERE validation_formulaire > :validation_formulaire",
-			"GROUP BY id_formulaire"
+			0	=> "SELECT *,",
+			1	=> self::LIBELLE_REDACTEUR  . " AS libelle_redacteur,",
+			2	=> self::LIBELLE_VALIDEUR . " AS libelle_valideur,",
+			3	=> "COUNT(id_question)",
+			4	=> "FROM formulaire",
+			5	=> "LEFT  JOIN domaine USING(id_domaine)",
+			6	=> "INNER JOIN utilisateur AS redacteur  ON(redacteur.id_utilisateur  = id_redacteur)",
+			7	=> "INNER JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
+			8	=> "INNER JOIN groupe ON(redacteur.id_groupe = groupe.id_groupe)",
+			9	=> "LEFT  JOIN formulaire_question USING(id_formulaire)",
+			10	=> "WHERE validation_formulaire > :validation_formulaire",
+			11	=> null,
+			12	=> "GROUP BY id_formulaire"
 		);
 
 		// Construction du tableau associatif des étiquettes et leurs valeurs
 		$aBind = array(
 			':validation_formulaire'		=> FormulaireManager::VALIDATION_DEFAUT
 		);
+
+		// Fonctionnalité réalisée si l'accès aux formulaires est limité au groupe d'utilisateurs du rédacteur
+		if ($bGroupAccess) {
+			// Ajout d'une clause WHERE selon les bornes GAUCHE / DROITE
+			$aQuery[11]				= "AND borne_gauche BETWEEN :borne_gauche AND :borne_droite AND borne_droite BETWEEN :borne_gauche AND :borne_droite";
+
+			// Ajout des étiquette de la clause WHERE
+			$aBind[':borne_gauche']	= $this->_borneGauche;
+			$aBind[':borne_droite']	= $this->_borneDroite;
+		}
 
 		try {
 			// Récupération de la liste des formulaires

@@ -34,6 +34,7 @@ $aListeQCMGeneration	= $oInstanceStorage->getData('liste_generation');
 // Construction du tableau récapitulatif des formulaires
 $oGeneration = new DatatableHelper("table-generation", $aListeQCMGeneration);
 $oGeneration->setClassColumn("align-left strong", "titre_formulaire");
+$oGeneration->setClassColumn("strong", "libelle_groupe");
 
 // Formatage du champ DATETIME
 $oGeneration->setFormatOnColumn('date_modification_formulaire',	DataHelper::DATA_TYPE_DATETIME);
@@ -44,6 +45,7 @@ $aColonnes = array(
 	'libelle_domaine'				=> "DOMAINE",
 	'COUNT(id_question)'			=> "QUESTIONS",
 	'date_modification_formulaire'	=> "MODIFICATION",
+	'libelle_groupe'				=> "GROUPE",
 	'libelle_redacteur'				=> "REDACTEUR",
 	'libelle_valideur'				=> "VALIDEUR"
 );

@@ -11,8 +11,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 33 $
- * @since		$LastChangedDate: 2017-06-11 21:24:20 +0200 (Sun, 11 Jun 2017) $
+ * @version		$LastChangedRevision: 58 $
+ * @since		$LastChangedDate: 2017-07-06 19:25:04 +0200 (Thu, 06 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -25,9 +25,10 @@ class CompteController extends AbstractFormulaireController {
 	 * @var		integer|string
 	 */
 	private		$_idGrade					= null;
-	private		$_idUtilisateur				= null;
+	private		$_idGroupe					= null;
 	private		$_idProfil					= null;
-	private		$_login						= null;
+	private		$_idUtilisateur				= null;
+	private		$_loginUtilisateur			= null;
 
 	/**
 	 * @brief	Instance du modèle de gestion du référentiel de l'application.
@@ -64,8 +65,10 @@ class CompteController extends AbstractFormulaireController {
 		$this->_idUtilisateur				= $this->_oAuth->getIdUtilisateur();
 		// Récupération de l'identifiant du profil de l'utilisateur connecté
 		$this->_idProfil					= $this->_oAuth->getIdProfil();
+		// Récupération de l'identifiant du groupe de l'utilisateur connecté
+		$this->_idGroupe					= $this->_oAuth->getIdProfil();
 		// Récupération de l'identifiant du login de l'utilisateur connecté
-		$this->_login						= $this->_oAuth->getLogin();
+		$this->_loginUtilisateur			= $this->_oAuth->getLogin();
 
 		// Fonctionnalité réalisée selon l'action du bouton
 		switch (strtolower($this->getParam('button'))) {
@@ -95,6 +98,9 @@ class CompteController extends AbstractFormulaireController {
 		// Construction de la liste des grades
 		$this->addToData('liste_grades',	$this->_oReferentielManager->findListeGrades());
 
+		// Construction de la liste des groupes
+		$this->addToData('liste_groupes',	$this->_oAdministrationManager->findAllGroupes());
+
 		// Construction de la liste des profiles
 		$this->addToData('liste_profils',	$this->_oReferentielManager->findListeProfiles());
 
@@ -115,16 +121,16 @@ class CompteController extends AbstractFormulaireController {
 		// Récupération des paramètres du formulaire
 		$aParams						= $this->getParamsLike('utilisateur_');
 
-		// Protection contre le changement de groupe
-		$aParams['utilisateur_groupe']	= $this->_oAuth->getIdGroupe();
 		// Protection contre le changement de grade
-		$aParams['utilisateur_grade']	= $this->_oAuth->getIdGrade();
+		$aParams['utilisateur_grade']	= $this->_idGrade;
+		// Protection contre le changement de groupe
+		$aParams['utilisateur_groupe']	= $this->_idGroupe;
 		// Protection contre le changement d'identifiant
 		$aParams['utilisateur_id']		= $this->_idUtilisateur;
 		// Protection contre le changement de profil
-		$aParams['utilisateur_profil']	= $this->_oAuth->getIdProfil();
+		$aParams['utilisateur_profil']	= $this->_idProfil;
 		// Protection contre le changement de login
-		$aParams['utilisateur_login']	= $this->_oAuth->getLogin();
+		$aParams['utilisateur_login']	= $this->_loginUtilisateur;
 
 		// Actualisation des données du formulaire au cours de l'enregistrement
 		$this->resetFormulaire(

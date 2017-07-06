@@ -27,6 +27,7 @@ $aListeQCMEdition = $oInstanceStorage->getData('liste_edition');
 // Construction du tableau récapitulatif des formulaires
 $oEdition = new DatatableHelper("table-edition", $aListeQCMEdition);
 $oEdition->setClassColumn("align-left strong", "titre_formulaire");
+$oEdition->setClassColumn("strong", "libelle_groupe");
 
 // Formatage du champ DATETIME
 $oEdition->setFormatOnColumn('date_modification_formulaire',	DataHelper::DATA_TYPE_DATETIME);
@@ -37,6 +38,7 @@ $aColonnes = array(
 	'libelle_domaine'				=> "DOMAINE",
 	'COUNT(id_question)'			=> "QUESTIONS",
 	'date_modification_formulaire'	=> "MODIFICATION",
+	'libelle_groupe'				=> "GROUPE",
 	'libelle_redacteur'				=> "REDACTEUR",
 	'libelle_valideur'				=> "VALIDEUR"
 );
