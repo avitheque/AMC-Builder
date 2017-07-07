@@ -267,7 +267,7 @@ $(document).ready(function() {
 
 				default:
 					// Champ TEXT
-					$(this).val("");
+					$(this).not("[name=exclude]").val("");
 					break;
 			}
 		});

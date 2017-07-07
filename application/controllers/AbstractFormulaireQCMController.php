@@ -15,8 +15,8 @@
  * @subpackage	Libraries
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 45 $
- * @since		$LastChangedDate: 2017-06-18 00:05:09 +0200 (Sun, 18 Jun 2017) $
+ * @version		$LastChangedRevision: 60 $
+ * @since		$LastChangedDate: 2017-07-07 21:35:51 +0200 (Fri, 07 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -254,7 +254,7 @@ abstract class AbstractFormulaireQCMController extends AbstractFormulaireControl
 	 */
 	public function forcerAction() {
 		// Récupération de la pénalité par défaut via la méthode POST
-		$pPenalite = DataHelper::get($this->getParams(),				'formulaire_penalite',	DataHelper::DATA_TYPE_INT_ABS,	   FormulaireManager::PENALITE_DEFAUT);
+		$pPenalite = DataHelper::get($this->getParams(),				'formulaire_penalite',	DataHelper::DATA_TYPE_INT_ABS,		FormulaireManager::PENALITE_DEFAUT);
 
 		// Fonctionnalité réalisée si au moins une question est présente
 		if (count($this->_aForm['question_penalite'])) {
@@ -303,8 +303,19 @@ abstract class AbstractFormulaireQCMController extends AbstractFormulaireControl
 	 * @return	void
 	 */
 	public function enregistrerAction() {
-		// Enregistrement du formulaire
-		$this->_aForm = $this->_oFormulaireManager->enregistrer($this->_aForm, false);
+		// Récupération du titre du formulaire
+		$sFormulaireTitre	= trim($this->_aForm['formulaire_titre']);
+
+		// Fonctionnalité réalisé si le titre du formulaire est vide
+		if (empty($sFormulaireTitre)) {
+			// Avertissement sur le champ manquant
+			ViewRender::setMessageAlert("ERREUR RENCONTRÉ AU COURS DE L'ENREGISTREMENT !", "Veuillez renseigner le nom du formulaire...");
+			// Retour sur le premier onglet
+			$this->_aForm['formulaire_active_tab']	= 0;
+		} else {
+			// Enregistrement du formulaire
+			$this->_aForm = $this->_oFormulaireManager->enregistrer($this->_aForm, false);
+		}
 	}
 
 	/**
@@ -334,14 +345,25 @@ abstract class AbstractFormulaireQCMController extends AbstractFormulaireControl
 	 * @return	void
 	 */
 	public function terminerAction() {
-		// Enregistrement du formulaire
-		$this->enregistrerAction();
+		// Récupération du titre du formulaire
+		$sFormulaireTitre	= trim($this->_aForm['formulaire_titre']);
 
-		// Finalisation du formulaire
-		$this->_oFormulaireManager->terminer($this->_aForm['formulaire_id']);
+		// Fonctionnalité réalisé si le titre du formulaire est vide
+		if (empty($sFormulaireTitre)) {
+			// Avertissement sur le champ manquant
+			ViewRender::setMessageAlert("ERREUR RENCONTRÉ AU COURS DE L'ENREGISTREMENT !", "Veuillez renseigner le nom du formulaire...");
+			// Retour sur le premier onglet
+			$this->_aForm['formulaire_active_tab']	= 0;
+		} else {
+			// Enregistrement du formulaire
+			$this->enregistrerAction();
 
-		// Effacement du formulaire
-		$this->resetAction(null);
+			// Finalisation du formulaire
+			$this->_oFormulaireManager->terminer($this->_aForm['formulaire_id']);
+
+			// Effacement du formulaire
+			$this->resetAction(null);
+		}
 	}
 
 	/**
