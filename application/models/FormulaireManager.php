@@ -18,8 +18,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 58 $
- * @since		$LastChangedDate: 2017-07-06 19:25:04 +0200 (Thu, 06 Jul 2017) $
+ * @version		$LastChangedRevision: 59 $
+ * @since		$LastChangedDate: 2017-07-07 21:01:53 +0200 (Fri, 07 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -93,8 +93,8 @@ class FormulaireManager extends MySQLManager {
 	 * Format des libellés pour la requête SQL
 	 * @var		string
 	 */
-	const LIBELLE_CANDIDAT					= "CONCAT(grade.libelle_court_grade, \" \", candidat.nom_candidat,  \" \", candidat.prenom_candidat)";
-	const LIBELLE_REDACTEUR					= "CONCAT(redacteur.nom_utilisateur,  \" \", redacteur.prenom_utilisateur)";
+	const LIBELLE_CANDIDAT					= "CONCAT(grade.libelle_court_grade, \" \", candidat.nom_candidat, \" \", candidat.prenom_candidat)";
+	const LIBELLE_REDACTEUR					= "CONCAT(redacteur.nom_utilisateur, \" \", redacteur.prenom_utilisateur)";
 	const LIBELLE_VALIDEUR					= "CONCAT(valideur.nom_utilisateur, \" \", valideur.prenom_utilisateur)";
 
 	/**
@@ -185,11 +185,11 @@ class FormulaireManager extends MySQLManager {
 		// Requête SELECT
 		$aQuery	= array(
 			0	=> "SELECT *,",
-			1	=> self::LIBELLE_REDACTEUR  . " AS libelle_redacteur,",
+			1	=> self::LIBELLE_REDACTEUR . " AS libelle_redacteur,",
 			2	=> self::LIBELLE_VALIDEUR . " AS libelle_valideur,",
 			3	=> "COUNT(id_stage_candidat)",
 			4	=> "FROM formulaire",
-			5	=> "INNER JOIN utilisateur AS redacteur  ON(redacteur.id_utilisateur  = id_redacteur)",
+			5	=> "INNER JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = id_redacteur)",
 			6	=> "INNER JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
 			7	=> "INNER JOIN groupe ON(redacteur.id_groupe = groupe.id_groupe)",
 			8	=> "INNER JOIN generation USING(id_formulaire)",
@@ -275,11 +275,11 @@ class FormulaireManager extends MySQLManager {
 		// Requête SELECT
 		$aQuery	= array(
 			"SELECT *,",
-			self::LIBELLE_REDACTEUR  . " AS libelle_redacteur,",
+			self::LIBELLE_REDACTEUR . " AS libelle_redacteur,",
 			self::LIBELLE_VALIDEUR . " AS libelle_valideur,",
 			"COUNT(id_stage_candidat)",
 			"FROM formulaire",
-			"INNER JOIN utilisateur AS redacteur  ON(redacteur.id_utilisateur  = id_redacteur)",
+			"INNER JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = id_redacteur)",
 			"INNER JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
 			"INNER JOIN groupe ON(redacteur.id_groupe = groupe.id_groupe)",
 			"INNER JOIN generation USING(id_formulaire)",
@@ -356,7 +356,7 @@ class FormulaireManager extends MySQLManager {
 		// Requête SELECT
 		$aQuery	= array(
 			"SELECT *,",
-			self::LIBELLE_CANDIDAT  . " AS libelle_candidat",
+			self::LIBELLE_CANDIDAT . " AS libelle_candidat",
 			"FROM epreuve",
 			"INNER JOIN stage USING(id_stage)",
 			"INNER JOIN stage_candidat USING(id_stage)",
@@ -401,12 +401,12 @@ class FormulaireManager extends MySQLManager {
 		// Requête SELECT
 		$aQuery	= array(
 			0	=> "SELECT *,",
-			1	=> self::LIBELLE_REDACTEUR  . " AS libelle_redacteur,",
+			1	=> self::LIBELLE_REDACTEUR . " AS libelle_redacteur,",
 			2	=> self::LIBELLE_VALIDEUR . " AS libelle_valideur,",
 			3	=> "COUNT(id_question)",
 			4	=> "FROM formulaire",
 			5	=> "LEFT  JOIN domaine USING(id_domaine)",
-			6	=> "INNER JOIN utilisateur AS redacteur  ON(redacteur.id_utilisateur  = id_redacteur)",
+			6	=> "INNER JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = id_redacteur)",
 			7	=> "LEFT  JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
 			8	=> "INNER JOIN groupe ON(redacteur.id_groupe = groupe.id_groupe)",
 			9	=> "LEFT  JOIN formulaire_question USING(id_formulaire)",
@@ -454,12 +454,12 @@ class FormulaireManager extends MySQLManager {
 		// Requête SELECT
 		$aQuery	= array(
 			0	=> "SELECT *,",
-			1	=> self::LIBELLE_REDACTEUR  . " AS libelle_redacteur,",
+			1	=> self::LIBELLE_REDACTEUR . " AS libelle_redacteur,",
 			2	=> self::LIBELLE_VALIDEUR . " AS libelle_valideur,",
 			3	=> "COUNT(id_question)",
 			4	=> "FROM formulaire",
 			5	=> "LEFT  JOIN domaine USING(id_domaine)",
-			6	=> "INNER JOIN utilisateur AS redacteur  ON(redacteur.id_utilisateur  = id_redacteur)",
+			6	=> "INNER JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = id_redacteur)",
 			7	=> "LEFT  JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
 			8	=> "INNER JOIN groupe ON(redacteur.id_groupe = groupe.id_groupe)",
 			9	=> "LEFT  JOIN formulaire_question USING(id_formulaire)",
@@ -510,12 +510,12 @@ class FormulaireManager extends MySQLManager {
 		// Requête SELECT
 		$aQuery	= array(
 			0	=> "SELECT *,",
-			1	=> self::LIBELLE_REDACTEUR  . " AS libelle_redacteur,",
+			1	=> self::LIBELLE_REDACTEUR . " AS libelle_redacteur,",
 			2	=> self::LIBELLE_VALIDEUR . " AS libelle_valideur,",
 			3	=> "COUNT(id_question)",
 			4	=> "FROM formulaire",
 			5	=> "LEFT  JOIN domaine USING(id_domaine)",
-			6	=> "INNER JOIN utilisateur AS redacteur  ON(redacteur.id_utilisateur  = id_redacteur)",
+			6	=> "INNER JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = id_redacteur)",
 			7	=> "INNER JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
 			8	=> "INNER JOIN groupe ON(redacteur.id_groupe = groupe.id_groupe)",
 			9	=> "LEFT  JOIN formulaire_question USING(id_formulaire)",
@@ -558,9 +558,19 @@ class FormulaireManager extends MySQLManager {
 	 *
 	 * @li	Si aucun critère n'est demandé, les jointures LEFT seront appliquées, sinon INNER.
 	 *
+	 * @li	Possibilité de limiter les questions selon le groupe d'appartenance de l'utilisateur connecté.
+	 * 		- Cas A :	La recherche porte sur des critères de recherche,
+	 * 					=> si le filtre $bGroupAccess est actif
+	 * 						alors la jointure sera faite entre le groupe et le rédacteur du formulaire
+	 * 		- Cas B :	La recherche porte sur les questions orphelines,
+	 * 					=> si le filtre $bGroupAccess est actif
+	 * 						alors la jointure sera faite entre le groupe et le rédacteur de la question.
+	 *
 	 * @param	array	$aCriteres			: tableau de critères à rechercher.
 	 * @param	string	$aListeExcludeId	: tableau des identifiants à exclure.
-	 * @param	boolean	$bOrphelin			: (option) recherche des questions non référencées.
+	 * @param	boolean	$bOrphelin			: (optionnel) recherche des questions non associées à un formulaire.
+	 * @param	boolean	$bGroupAccess		: (optionnel) filtre sur les groupes du rédacteur.
+	 *
 	 * @return	array, tableau au format attendu par le formulaire HTML
 	 * @code
 	 * 	$aQCM = array(
@@ -697,82 +707,109 @@ class FormulaireManager extends MySQLManager {
 	 * @endcode
 	 * @throws	ApplicationException si la requête ne fonctionne pas.
 	 */
-	public function findAllQuestionsByCriteres($aCriteres = array(), $aListeExcludeId = array(), $bOrphelin = false) {
+	public function findAllQuestionsByCriteres($aCriteres = array(), $aListeExcludeId = array(), $bOrphelin = false, $bGroupAccess = self::ACCESS_GROUP_BY_DEFAULT) {
 		// Ajout d'un suivit pour le debuggage
 		$this->debug(__METHOD__, $aCriteres, $aListeExcludeId, $bOrphelin);
 
 		// Initialisation de la liste
-		$aResultat = array();
+		$aResultat						= array();
+
+		// Initialisation des paramètres la requête
+		$sSelectFrom					= "SELECT question.id_question FROM question";
+		$sFormatJoinQuestion			= "%s JOIN formulaire_question USING(id_question)";
+		$sFormatJoinFormulaire			= "%s JOIN formulaire USING(id_formulaire)";
+		$sJoinRedacteurFormulaire		= null;
+		$sJoinRedacteurQuestion			= null;
+		$sJoinGroupe					= null;
+
+		// Initialisation de la clause WHERE
+		$aWhere							= array();
+
+		// Initialisation du tableau associatif des étiquettes et leurs valeurs
+		$aBind							= array();
+		foreach ($aCriteres as $sChamp => $sValue) {
+			// Fonctionnalité réalisée si la valeur n'est pas NULL
+			if (!empty($sValue) || $bOrphelin) {
+				// Initialisation du format
+				$sEtiquette				= ":" . $sChamp;
+
+				// Ajout du critère à la collection de la clause WHERE
+				$aWhere[]				= sprintf("formulaire.%s = %s", $sChamp, $sEtiquette);
+
+				// Ajout à la collection des étiquettes
+				$aBind[$sEtiquette]		= $sValue;
+			}
+		}
+
+		// Construction de la recherche des questions selon les critères
+		if ($bOrphelin) {
+			// Initialisation de la requête LEFT
+			$aQuery = array(
+				$sSelectFrom,
+				sprintf($sFormatJoinQuestion,	"LEFT")
+			);
+
+			// ATTENTION : Réinitialisation de la clause WHERE : les critères ne sont plus pris en compte
+			$aBind						= array();
+			$aWhere						= array(
+				"formulaire_question.id_formulaire IS NULL",
+			);
+		} elseif (DataHelper::isValidArray($aWhere)) {
+			// Initialisation de la requête INNER
+			$aQuery = array(
+				$sSelectFrom,
+				sprintf($sFormatJoinQuestion,	"INNER"),
+				sprintf($sFormatJoinFormulaire,	"INNER")
+			);
+		} else {
+			// Initialisation de la requête LEFT
+			$aQuery = array(
+				$sSelectFrom,
+				sprintf($sFormatJoinQuestion,	"LEFT"),
+				sprintf($sFormatJoinFormulaire,	"LEFT")
+			);
+		}
+
+		// Ajout de la liste des identifiant à exclure du résultat
+		if (DataHelper::isValidArray($aListeExcludeId)) {
+			$aWhere[]					= sprintf("question.id_question NOT IN(%s)", implode(",", $aListeExcludeId));
+		}
+
+		// Fonctionnalité réalisée si l'accès aux formulaires est limité au groupe d'utilisateurs du rédacteur
+		if ($bGroupAccess) {
+			// Jointure sur la table `formulaire` ou la table `question`
+			$sJoinTableName				= $bOrphelin ? "question" : "formulaire";
+
+			// Jointure avec la table `utilisateur`
+			$aQuery[]					= "INNER JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = $sJoinTableName.id_redacteur)";
+
+			// Jointure avec la table `groupe`
+			$aQuery[]					= "INNER JOIN groupe ON(redacteur.id_groupe = groupe.id_groupe)";
+
+			// Ajout d'une clause WHERE selon les bornes GAUCHE / DROITE
+			$aWhere[]					= "borne_gauche BETWEEN :borne_gauche AND :borne_droite AND borne_droite BETWEEN :borne_gauche AND :borne_droite";
+
+			// Ajout des étiquette de la clause WHERE
+			$aBind[':borne_gauche']		= $this->_borneGauche;
+			$aBind[':borne_droite']		= $this->_borneDroite;
+		}
+
+		// Ajout de la clause WHERE
+		$aQuery[]						= "WHERE " . implode(" AND ", $aWhere);
+
+		// Ajout de la clause GROUP BY
+		$aQuery[]						= "GROUP BY question.id_question";
+
+		// Ajout du tri sur le titre
+		$aQuery[]						= "ORDER BY question.titre_question ASC";
 
 		// Recherche des questions
 		try {
-			// Initialisation des paramètres la requête
-			$sSelectFrom = "SELECT question.id_question FROM question";
-			$sFormatJoinQuestion = "%s JOIN formulaire_question USING(id_question)";
-			$sFormatJoinFormulaire = "%s JOIN formulaire USING(id_formulaire)";
-
-			// Initialisation du tableau associatif des étiquettes et leurs valeurs
-			$aBind = array();
-
-			// Construction de la clause WHERE
-			$aWhere = array();
-			foreach ($aCriteres as $sChamp => $sValue) {
-				// Fonctionnalité réalisée si la valeur n'est pas NULL
-				if (!empty($sValue) || $bOrphelin) {
-					// Initialisation du format
-					$sEtiquette				= ":" . $sChamp;
-
-					// Ajout à la collection
-					$aWhere[] = sprintf("formulaire.%s = %s", $sChamp, $sEtiquette);
-					$aBind[$sEtiquette]		= $sValue;
-				}
-			}
-
-			// Ajout de la liste des identifiant à exclure du résultat
-			if (DataHelper::isValidArray($aListeExcludeId)) {
-				$aWhere[] = sprintf("question.id_question NOT IN(%s)", implode(",", $aListeExcludeId));
-			}
-
-			// Construction de la recherche des questions selon les critères
-			if ($bOrphelin) {
-				// Initialisation de la requête LEFT
-				$aQuery = array(
-					$sSelectFrom,
-					sprintf($sFormatJoinQuestion, "LEFT")
-				);
-
-				// Ajout de la clause WHERE
-				$aQuery[] = "WHERE formulaire_question.id_formulaire IS NULL";
-			} elseif (DataHelper::isValidArray($aWhere)) {
-				// Initialisation de la requête INNER
-				$aQuery = array(
-					$sSelectFrom,
-					sprintf($sFormatJoinQuestion, "INNER"),
-					sprintf($sFormatJoinFormulaire, "INNER")
-				);
-
-				// Ajout de la clause WHERE
-				$aQuery[] = "WHERE " . implode(" AND ", $aWhere);
-			} else {
-				// Initialisation de la requête LEFT
-				$aQuery = array(
-					$sSelectFrom,
-					sprintf($sFormatJoinQuestion, "LEFT"),
-					sprintf($sFormatJoinFormulaire, "LEFT")
-				);
-			}
-
-			// Ajout de la clause GROUP BY
-			$aQuery[]						= "GROUP BY question.id_question";
-
-			// Ajout du tri sur le titre
-			$aQuery[]						= "ORDER BY question.titre_question ASC";
-
 			// Exécution de la requête
-			$aRequest						= $this->executeSQL($aQuery, $aBind);
+			$aRequest					= $this->executeSQL($aQuery, $aBind);
 
 			// Récupération de la liste des identifiants de questions
-			$aListeIdQuestions				= DataHelper::requestToList($aRequest, "id_question");
+			$aListeIdQuestions			= DataHelper::requestToList($aRequest, "id_question");
 
 			// Parcours de la liste des questions
 			foreach ($aListeIdQuestions as $nIdQuestion) {
@@ -1659,7 +1696,7 @@ class FormulaireManager extends MySQLManager {
 			$sTexteReponse					= DataHelper::get($this->_aQCM['reponse_texte'][$nQuestion],		$nReponse,	DataHelper::DATA_TYPE_MYTXT);
 		}
 
-		// Fonctionnalité réalisée si le texte de la réponse  est vide
+		// Fonctionnalité réalisée si le texte de la réponse est vide
 		if (strlen($sTexteReponse) == 0) {
 			// Suppression de la réponse si elle existe
 			$this->supprimerReponseById($nIdQuestion, $nIdReponse, false);
@@ -1985,7 +2022,7 @@ class FormulaireManager extends MySQLManager {
 
 			':strict_formulaire'			=> DataHelper::get($this->_aQCM, 'formulaire_strict',			DataHelper::DATA_TYPE_MYBOOL),
 			':note_finale_formulaire'		=> DataHelper::get($this->_aQCM, 'formulaire_note_finale',		DataHelper::DATA_TYPE_INT_ABS,		self::NOTE_FINALE_DEFAUT),
-			':penalite_formulaire'			=> DataHelper::get($this->_aQCM, 'formulaire_penalite',			DataHelper::DATA_TYPE_INT_ABS,  	self::PENALITE_DEFAUT),
+			':penalite_formulaire'			=> DataHelper::get($this->_aQCM, 'formulaire_penalite',			DataHelper::DATA_TYPE_INT_ABS,		self::PENALITE_DEFAUT),
 			':presentation_formulaire'		=> DataHelper::get($this->_aQCM, 'formulaire_presentation',		DataHelper::DATA_TYPE_MYTXT,		self::PRESENTATION_DEFAUT),
 
 			':validation_formulaire'		=> $nValidationFormulaire,
@@ -2497,8 +2534,8 @@ class FormulaireManager extends MySQLManager {
 			$this->_aQCM['formulaire_categorie']								= DataHelper::get($aFormulaire, 'id_categorie', 					DataHelper::DATA_TYPE_INT);
 			$this->_aQCM['formulaire_sous_categorie']							= DataHelper::get($aFormulaire, 'id_sous_categorie', 				DataHelper::DATA_TYPE_INT);
 			$this->_aQCM['formulaire_strict']									= DataHelper::get($aFormulaire, 'strict_formulaire', 				DataHelper::DATA_TYPE_BOOL,		FormulaireManager::QUESTION_STRICTE_DEFAUT);
-			$this->_aQCM['formulaire_note_finale']								= DataHelper::get($aFormulaire, 'note_finale_formulaire', 			DataHelper::DATA_TYPE_INT_ABS,  FormulaireManager::NOTE_FINALE_DEFAUT);
-			$this->_aQCM['formulaire_penalite']									= DataHelper::get($aFormulaire, 'penalite_formulaire', 				DataHelper::DATA_TYPE_INT_ABS,  FormulaireManager::PENALITE_DEFAUT);
+			$this->_aQCM['formulaire_note_finale']								= DataHelper::get($aFormulaire, 'note_finale_formulaire', 			DataHelper::DATA_TYPE_INT_ABS,	FormulaireManager::NOTE_FINALE_DEFAUT);
+			$this->_aQCM['formulaire_penalite']									= DataHelper::get($aFormulaire, 'penalite_formulaire', 				DataHelper::DATA_TYPE_INT_ABS,	FormulaireManager::PENALITE_DEFAUT);
 
 			// Chargement des données de génération (optionnelles)
 			$this->_aQCM['generation_id']										= DataHelper::get($aFormulaire, 'id_generation', 					DataHelper::DATA_TYPE_INT,		null);

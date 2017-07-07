@@ -12,8 +12,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 59 $
+ * @since		$LastChangedDate: 2017-07-07 21:01:53 +0200 (Fri, 07 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -138,7 +138,7 @@ class GalleryHelper {
 	 * @return	void
 	 */
 	public function setExcludeByListId($aListExcludeId = array()) {
-		$this->_exclude = $aListExcludeId;
+		$this->_exclude = array_merge($this->_exclude, (array) $aListExcludeId);
 	}
 
 	/**
@@ -168,15 +168,21 @@ class GalleryHelper {
 		if (! in_array($xId, $this->_exclude)) {
 			// Initialisation du bouton [zoom]
 			$sZoomIn = "";
+
 			// Fonctionnalité réalisée si le bouton [zoom] peut être affiché
 			if (!is_null($xId) && !empty($sHrefZoomIn)) {
+				// Ajout de l'icône [zoom]
 				$sZoomIn = "<a href=\"" . sprintf($sHrefZoomIn, $xId) . "\" title=\"Voir le contenu\" class=\"ui-icon ui-icon-zoomin\">Détails</a>";
 			}
+
 			// Ajout d'un élément
 			$this->_aItems[] = "<li class=\"ui-widget-content ui-corner-tr\">" . $sHtml . "
 								" . $sZoomIn . "
 								<a href=\"#\" title=\"Ajouter cet élément\" class=\"ui-icon ui-icon-plus\">Ajouter une question</a>
 							</li>";
+
+			// Ajout de l'identifiant à la collection
+			$this->setExcludeByListId($xId);
 		}
 	}
 
@@ -260,6 +266,7 @@ class GalleryHelper {
 		}
 
 		// Ajout de la liste des identifiants exclus dans une entrée cachée qui sera exploitée par AJAX
+		sort($this->_exclude);
 		$sSearch	.= "<input type=\"hidden\" name=\"exclude\" value=\"" . implode(self::EXCLUDE_SEPARATOR, $this->_exclude) . "\" />";
 
 		// Ajout de l'entrée cachée aux options AJAX
