@@ -12,14 +12,18 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 59 $
- * @since		$LastChangedDate: 2017-07-07 21:01:53 +0200 (Fri, 07 Jul 2017) $
+ * @version		$LastChangedRevision: 61 $
+ * @since		$LastChangedDate: 2017-07-08 15:25:46 +0200 (Sat, 08 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
  */
 class GalleryHelper {
+
+	const		MINI_TITRE_LENGHT	= 26;
+	const		MINI_ENONCE_LENGHT	= 66;
+	const		MINI_FORMAT_ID		= "mini-Q%03d";
 
 	/**
 	 * Constante de construction de la liste des identifiants à exclure du résultat.
@@ -82,6 +86,12 @@ class GalleryHelper {
 	private		$_aItems			= array();
 
 	/**
+	 * @brief	Liste des éléments de la zone d'importation.
+	 * @var		array
+	 */
+	private		$_aPanelItems		= array();
+
+	/**
 	 * @brief	Liste des identifiants à exclure de la gallerie.
 	 * @var		array
 	 */
@@ -142,11 +152,94 @@ class GalleryHelper {
 	}
 
 	/**
-	 * @brief	Ajout d'un élément.
+	 * @brief	Construction HTML d'un élément de la bibliothèque.
+	 *
+	 * @example	Exemple d'utilisation
+	 * @code
+	 * 		// Création d'une nouvelle bibliothèque
+	 * 		$oGallery = new GalleryHelper();
+	 *
+	 * 		// Construction d'un élément HTML de la bibliothèque
+	 * 		$sItemHTML = GalleryHelper::buildMiniItem(0, "Titre de l'élément", "Contenu de l'élément");
+	 *
+	 * 		// Ajout du contenu HTML dans le VIEW_MAIN
+	 * 		ViewRender::addToMain($sItemHTML);
+	 * @endcode
+	 *
+	 * @param	string	$sHtml			: Contenu HTML à ajouter.
+	 * @param	mixed	$xId			: Identifiant de l'élément.
+	 * @param	string	$sHrefZoomIn	: Format du chemin à réaliser lors du clic sur le Zoom.
+	 * @return	string
+	 */
+	public function buildMiniItem($nOccurrence = 0, $sTitre = "", $sHoverTitle = "", $sContent = "", $sFooter = "") {
+		// Construction de la miniature
+		$sHtml = "<article class=\"miniature padding-0\" title=\"" . $sHoverTitle . "\" id=\"" . sprintf(self::MINI_FORMAT_ID, $nOccurrence) . "\">
+						<h3 class=\"strong left\">" . $sTitre . "</h3>
+						<p>
+							" . $sContent . "
+						</p>
+						" . $sFooter . "
+					</article>";
+
+		// Renvoi du code HTML
+		return $sHtml;
+	}
+
+	/**
+	 * @brief	Ajout de l'élément aux éléments du PANNEAU d'importation de la bibliothèque.
 	 *
 	 * @li	Contrôle que l'identifiant de l'élément n'est pas à exclure.
 	 *
-	 * @example	Exemple d'utilisation avec l'ajout d'un texte et d'une image
+	 * @example	Exemple d'utilisation
+	 * @code
+	 * 		// Création d'une nouvelle bibliothèque
+	 * 		$oGallery = new GalleryHelper();
+	 *
+	 * 		// Construction d'un élément HTML de la bibliothèque
+	 * 		$sItemHTML = GalleryHelper::buildMiniItem(0, "Titre de l'élément", "Contenu de l'élément");
+	 *
+	 * 		// Lors du clic sur le [ZOOM] le contenu du modal sera chargé avec l'adresse "/search/question?id=15"
+	 * 		$oGallery->addItemToPanel($sItemHTML, 15, "/search/question?id=%d");
+	 *
+	 * 		// Récupération du panneau dans le VIEW_MAIN
+	 * 		ViewRender::addToMain($oGallery->renderHTML());
+	 * @endcode
+	 *
+	 * @param	string	$sHtml			: Contenu HTML à ajouter.
+	 * @param	mixed	$xId			: Identifiant de l'élément.
+	 * @param	string	$sHrefZoomIn	: Format du chemin à réaliser lors du clic sur le Zoom.
+	 * @return	void
+	 */
+	public function addItemToPanel($sHtml, $xId = null, $sHrefZoomIn = "/index?id=%") {
+		// Fonctionnalité réalisée si l'identifiant n'est pas déjà présent dans le questionnaire
+		if (! in_array($xId, $this->_exclude)) {
+			// Initialisation du bouton [zoom]
+			$sZoomIn = "";
+
+			// Fonctionnalité réalisée si le bouton [zoom] peut être affiché
+			if (!is_null($xId) && !empty($sHrefZoomIn)) {
+				// Ajout de l'icône [zoom]
+				$sZoomIn = "<a href=\"" . sprintf($sHrefZoomIn, $xId) . "\" title=\"Voir le contenu\" class=\"ui-icon ui-icon-zoomin\">Détails</a>";
+			}
+
+			// Ajout d'un élément à la collection à importer
+			$this->_aPanelItems[] = "<li class=\"ui-widget-content ui-corner-tr\">" . $sHtml . "
+										<input type=\"hidden\" id=\"idBibliotheque\" name=\"bibliotheque_id[]\" value=\"" . $xId . "\" />
+										" . $sZoomIn . "
+										<a href=\"#\" title=\"Supprimer cet élément\" class=\"ui-icon ui-icon-trash\">Supprimer une question</a>
+									</li>";
+
+			// Ajout de l'identifiant à la collection
+			$this->setExcludeByListId($xId);
+		}
+	}
+
+	/**
+	 * @brief	Ajout d'un élément à la gallerie.
+	 *
+	 * @li	Contrôle que l'identifiant de l'élément n'est pas à exclure.
+	 *
+	 * @example	Exemple d'utilisation
 	 * @code
 	 * 		// Création d'une nouvelle bibliothèque
 	 * 		$oGallery = new GalleryHelper();
@@ -190,7 +283,7 @@ class GalleryHelper {
 	 * @brief	Construction du formulaire de recherche
 	 *
 	 * @li	La(Les) liste(s) des champs SELECT transite(nt) dans les paramètres de l'instance InstanceStorage.
-	 * @li	Un champ caché [exclude] permet de lister les identifiants à ne pas récupérer.
+	 * @li	Un champ caché [bibliotheque_exclude] permet de lister les identifiants à ne pas récupérer.
 	 *
 	 * @param	string	$sAction		: URL du moteur de recherche.
 	 * @param	array	$aSearchItems	: tableau BIDIMENTIONNEL contenant les éléments du moteur de recherche.
@@ -267,10 +360,9 @@ class GalleryHelper {
 
 		// Ajout de la liste des identifiants exclus dans une entrée cachée qui sera exploitée par AJAX
 		sort($this->_exclude);
-		$sSearch	.= "<input type=\"hidden\" name=\"exclude\" value=\"" . implode(self::EXCLUDE_SEPARATOR, $this->_exclude) . "\" />";
 
 		// Ajout de l'entrée cachée aux options AJAX
-		$aDataAJAX[]= 'exclude: $("input[name=exclude]").val()';
+		$aDataAJAX[]= 'exclude: $("input[name=bibliotheque_exclude]").val()';
 
 		// Finalisation du formulaire
 		$sSearch			.= "</ul>
@@ -341,12 +433,16 @@ class GalleryHelper {
 			// Ajout de la feuille de style
 			ViewRender::addToStylesheet(FW_VIEW_STYLES . "/GalleryHelper.css");
 
-			// Finalisation du panneau
-			$this->panel = '<div id="panel" class="panel ui-widget-content ui-state-default">
-								<h4 class="ui-widget-header"><span class="ui-icon ui-icon-plus">' . $this->_title . '</span>' . $this->_title . '</h4>
+			// Finalisation du panneau de la zone d'importation
+			$this->panel = "<div id=\"panel\" class=\"panel ui-widget-content ui-state-default\">
+								<h4 class=\"ui-widget-header\"><span class=\"ui-icon ui-icon-plus\">" . $this->_title . "</span>" . $this->_title . "</h4>
+								<ul class=\"gallery ui-helper-reset\">
+									" . implode("", $this->_aPanelItems) . "
+								</ul>
 							</div>
-							<button id="show-gallery" type="button" class="green no-margin right">Afficher la bibliothèque</button>
-							<br />';
+							<input type=\"hidden\" name=\"bibliotheque_exclude\" value=\"" . implode(self::EXCLUDE_SEPARATOR, $this->_exclude) . "\" />
+							<button id=\"show-gallery\" type=\"button\" class=\"green no-margin right\">Afficher la bibliothèque</button>
+							<br />";
 		}
 	}
 

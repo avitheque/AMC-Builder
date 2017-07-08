@@ -58,7 +58,7 @@ function pushToExclude($element) {
 	var $id		= $("input#idBibliotheque", $element).val();
 
 	// Récupération de la liste des identifiants exclus
-	var $exlude	= $("input[name=exclude]").val();
+	var $exlude	= $("input[name=bibliotheque_exclude]").val();
 
 	// Fonctionnalité réalisée si des éléments sont déjà présents
 	if ($exlude.length > 0) {
@@ -70,12 +70,12 @@ function pushToExclude($element) {
 	}
 
 	// Fonctionnalité réalisée si l'identifiant n'est pas dans la collection
-	if ($exlude.indexOf($id) < 0 ) {
+	if ($exlude.indexOf($id) < 0) {
 		// Ajout de l'identifiant de l'élément à la collection
 		$exlude.push($id);
 
 		// Mise à jour du champ caché de la collection des identifiants exclus
-		$("input[name=exclude]").val($exlude.join(","));
+		$("input[name=bibliotheque_exclude]").val($exlude.join(","));
 	}
 }
 
@@ -85,18 +85,18 @@ function deleteFromExclude($element) {
 	var $id		= $("input#idBibliotheque", $element).val();
 
 	// Récupération de la liste des identifiants exclus
-	var $exlude	= $("input[name=exclude]").val();
+	var $exlude	= $("input[name=bibliotheque_exclude]").val();
 
 	// Transformation du contenu en tableau
 	$exlude	= $exlude.split(",");
 
 	// Fonctionnalité réalisée si l'identifiant est dans la collection
-	if ($exlude.indexOf($id) >=0 ) {
+	if ($exlude.indexOf($id) >=0) {
 		// Suppression de l'identifiant de la collection
 		$exlude.splice($exlude.indexOf($id), 1);
 
 		// Mise à jour du champ des collection
-		$("input[name=exclude]").val($exlude.join(","));
+		$("input[name=bibliotheque_exclude]").val($exlude.join(","));
 	}
 }
 
@@ -267,7 +267,7 @@ $(document).ready(function() {
 
 				default:
 					// Champ TEXT
-					$(this).not("[name=exclude]").val("");
+					$(this).not("[name=bibliotheque_exclude]").val("");
 					break;
 			}
 		});

@@ -11,8 +11,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 56 $
- * @since		$LastChangedDate: 2017-07-05 02:05:10 +0200 (Wed, 05 Jul 2017) $
+ * @version		$LastChangedRevision: 61 $
+ * @since		$LastChangedDate: 2017-07-08 15:25:46 +0200 (Sat, 08 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -78,12 +78,12 @@ abstract class FormulaireQCMInterface {
 		'question_correction'			=> DataHelper::DATA_TYPE_TXT,
 		'question_enonce'				=> DataHelper::DATA_TYPE_TXT,
 		'question_id'					=> DataHelper::DATA_TYPE_INT,
-		'question_penalite'				=> DataHelper::DATA_TYPE_INT_ABS,
-		'question_stricte'				=> DataHelper::DATA_TYPE_BOOL,
-		'question_stricte_checkbox'		=> DataHelper::DATA_TYPE_BOOL,
 		'question_libre'				=> DataHelper::DATA_TYPE_BOOL,
 		'question_libre_checkbox'		=> DataHelper::DATA_TYPE_BOOL,
 		'question_lignes'				=> DataHelper::DATA_TYPE_INT,
+		'question_penalite'				=> DataHelper::DATA_TYPE_INT_ABS,
+		'question_stricte'				=> DataHelper::DATA_TYPE_BOOL,
+		'question_stricte_checkbox'		=> DataHelper::DATA_TYPE_BOOL,
 		'question_titre'				=> DataHelper::DATA_TYPE_STR,
 
 		// RÉPONSES ********************************************************** (ordre alphabétique)
@@ -95,7 +95,12 @@ abstract class FormulaireQCMInterface {
 		'reponse_valide'				=> DataHelper::DATA_TYPE_BOOL,
 
 		// BIBLIOTHÈQUE ****************************************************** (ordre alphabétique)
-		'bibliotheque_id'				=> DataHelper::DATA_TYPE_INT
+		'bibliotheque_enonce'			=> DataHelper::DATA_TYPE_TXT,
+		'bibliotheque_exclude'			=> DataHelper::DATA_TYPE_TXT,
+		'bibliotheque_id'				=> DataHelper::DATA_TYPE_INT,
+		'bibliotheque_libre'			=> DataHelper::DATA_TYPE_BOOL,
+		'bibliotheque_nombre_reponses'	=> DataHelper::DATA_TYPE_INT,
+		'bibliotheque_titre'			=> DataHelper::DATA_TYPE_STR,
 	);
 
 }

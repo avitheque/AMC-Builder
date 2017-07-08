@@ -18,8 +18,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 59 $
- * @since		$LastChangedDate: 2017-07-07 21:01:53 +0200 (Fri, 07 Jul 2017) $
+ * @version		$LastChangedRevision: 61 $
+ * @since		$LastChangedDate: 2017-07-08 15:25:46 +0200 (Sat, 08 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -2340,6 +2340,12 @@ class FormulaireManager extends MySQLManager {
 			ViewRender::setMessageAlert("Erreur rencontrée lors de l'enregistrement...");
 
 			throw new ApplicationException($e->getMessage(), $e->getExtra());
+		}
+
+		// Réinitialisation des éléments de la bibliothèque
+		$aBibliothequeFields		= DataHelper::getLinesFromArrayLike($this->_aQCM, "bibliotheque_");
+		foreach ($aBibliothequeFields as $sField) {
+			$this->_aQCM[$sField]	= array();
 		}
 
 		// Renvoi du formulaire

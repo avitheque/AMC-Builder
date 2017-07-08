@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 56 $
- * @since		$LastChangedDate: 2017-07-05 02:05:10 +0200 (Wed, 05 Jul 2017) $
+ * @version		$LastChangedRevision: 61 $
+ * @since		$LastChangedDate: 2017-07-08 15:25:46 +0200 (Sat, 08 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -219,6 +219,9 @@ class FormulaireHelper {
 			// Ajout du conteneur GalleryHelper
 			$oGallery					= new GalleryHelper();
 			$oGallery->setExcludeByListId($aListExcludeId);
+
+			// Parcours des éléments à ajouter dans la bibliothèque
+			$aListeEnable				= array();
 			if (isset($aListeBibliotheque['question_id'])) {
 				// Initialisation du Helper
 				$oBibliotheque			= new QuestionHelper($aListeBibliotheque, true);
@@ -234,6 +237,46 @@ class FormulaireHelper {
 
 					// Ajout de la liste des questions
 					$oGallery->addItem($oBibliotheque->renderHTML(true), $nId, "/search/question?id=%d");
+				}
+
+				// Ajout de l'identifiant à la collection
+				$aListeEnable[]			= $aListeBibliotheque['question_id'];
+			}
+
+			// Ajout des éléments de la bibliothèque non enregistrés
+			$nCount						= 0;
+			foreach ($this->_aQCM['bibliotheque_id'] as $nOccurrence => $nId) {
+				if (!in_array($nId, $aListeEnable) && !in_array($nId, $this->_aQCM["question_id"])) {
+					// Récupération du titre de la question
+					$sTitre				= DataHelper::get($this->_aQCM['bibliotheque_titre'],			$nOccurrence, DataHelper::DATA_TYPE_TXT);
+					// Traitement du titre adapté en miniature
+					$sMiniTitre 		= DataHelper::subString($sTitre, 0, GalleryHelper::MINI_TITRE_LENGHT);
+
+					// Récupération de l'énoncé de la question
+					$sEnonce			= DataHelper::get($this->_aQCM['bibliotheque_enonce'],			$nOccurrence, DataHelper::DATA_TYPE_TXT);
+					// Traitement de l'énoncé en miniature
+					$sMiniEnonce		= DataHelper::subString($sEnonce, 0, GalleryHelper::MINI_ENONCE_LENGHT);
+
+					// Récupération de l'aspect LIBRE de la question
+					$bLibre				= DataHelper::get($this->_aQCM['bibliotheque_libre'],			$nOccurrence, DataHelper::DATA_TYPE_BOOL);
+
+					// Récupération de nombre de réponses à la question
+					$nbReponses			= DataHelper::get($this->_aQCM['bibliotheque_nombre_reponses'],	$nOccurrence, DataHelper::DATA_TYPE_INT);
+					$sPluriel			= ($nbReponses > 1) ? "s" : "";
+
+					// Inidicateur du nombre de réponses
+					$sInfoReponses		= $bLibre ? "<span class=\"small strong right italic\">(Saisie libre)</span>" : "<span class=\"strong orange right italic \">" . $nbReponses . " réponse" . $sPluriel . "</span>";
+
+					// Construction de l'interface de la question
+					$sItemHTML			= $oGallery->buildMiniItem($nCount, $sMiniTitre, $sEnonce, $sMiniEnonce, $sInfoReponses);
+
+					// Ajout de la question aux éléments du PANNEAU d'importation de la bibliothèque
+					$oGallery->addItemToPanel($sItemHTML, $nId, "/search/question?id=%d");
+					$nCount++;
+				} else {
+					unset($this->_aQCM['biliotheque_id'][$nOccurrence]);
+					unset($this->_aQCM['bibliotheque_titre'][$nOccurrence]);
+					unset($this->_aQCM['bibliotheque_enonce'][$nOccurrence]);
 				}
 			}
 
@@ -325,14 +368,14 @@ class FormulaireHelper {
 
 		// Disposition des réponses des candidats sur les feuilles séparées
 		$bSeparate						= DataHelper::get($this->_aQCM, 'generation_separate',				DataHelper::DATA_TYPE_BOOL,		FormulaireManager::GENERATION_SEPARATE_DEFAUT);
-		
+
 		// Création d'une case à cocher afin de permettre la génération des réponses sur feuilles séparées
 		$oSeparateCheckbox				= new CheckboxHelper("generation_separate", "Imprimer les réponses sur des pages séparées");
 		// Fonctionnalité réalisée si les questions doivent être séparées
 		if ($bSeparate) {
 			$oSeparateCheckbox->setAttribute('checked', "checked");
 		}
-		
+
 		// Récupération de la liste des salles disponibles pour l'épreuve
 		$aListeSalles					= $this->_oInstanceStorage->getData('liste_salles');
 		$aChoixSalles					= DataHelper::get($this->_aQCM,	'epreuve_liste_salles',				DataHelper::DATA_TYPE_ARRAY,	null);

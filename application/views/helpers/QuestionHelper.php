@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 44 $
- * @since		$LastChangedDate: 2017-06-17 21:23:52 +0200 (Sat, 17 Jun 2017) $
+ * @version		$LastChangedRevision: 61 $
+ * @since		$LastChangedDate: 2017-07-08 15:25:46 +0200 (Sat, 08 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -22,8 +22,6 @@
  */
 class QuestionHelper {
 
-	const		MINI_TITRE_LENGHT		= 26;
-	const		MINI_ENONCE_LENGHT		= 66;
 	const		QUESTION_FORMAT_ID		= "Q%03d";
 	const		QUESTION_FORMAT_NUMBER	= "%03d";
 
@@ -547,9 +545,9 @@ class QuestionHelper {
 		// Construction de la question QCM
 		if ($this->_bMiniRender) {
 			// Traitement du titre en miniature
-			$sMiniTitre 				= DataHelper::subString($sTitre, 0, self::MINI_TITRE_LENGHT);
+			$sMiniTitre 				= DataHelper::subString($sTitre,	0, GalleryHelper::MINI_TITRE_LENGHT);
 			// Traitement de l'énoncé en miniature
-			$sMiniEnonce				= DataHelper::subString($sEnonce, 0, self::MINI_ENONCE_LENGHT);
+			$sMiniEnonce				= DataHelper::subString($sEnonce,	0, GalleryHelper::MINI_ENONCE_LENGHT);
 			// Traitement des informations en miniature
 			$sMiniInformations			= $this->_bLibreQuestion ? "<span class=\"small strong right italic pointer\">(Saisie libre)</span>" : $sInfoNombreReponses;
 

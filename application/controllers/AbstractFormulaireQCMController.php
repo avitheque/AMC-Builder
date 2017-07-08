@@ -15,8 +15,8 @@
  * @subpackage	Libraries
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 60 $
- * @since		$LastChangedDate: 2017-07-07 21:35:51 +0200 (Fri, 07 Jul 2017) $
+ * @version		$LastChangedRevision: 61 $
+ * @since		$LastChangedDate: 2017-07-08 15:25:46 +0200 (Sat, 08 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -298,6 +298,60 @@ abstract class AbstractFormulaireQCMController extends AbstractFormulaireControl
 	}
 
 	/**
+	 * @brief	Rapatriement des éléments importés de la bibliothèque.
+	 *
+	 * Méthode exploité lors d'une erreur d'enregistrement afin de rapatrier dans la bibliothèque les élément sélectionnés par l'utilisateur.
+	 *
+	 * @li	Ne récupère que les éléments nons associés au formulaire (associaton en base dans la table `formulaire_question`).
+	 * @li	Réinitialisation de l'onglet actif par défaut.
+	 *
+	 * @return	void
+	 */
+	protected function _getUndoBibliothequeItems() {
+		// Récupération des entrées de la bibliothèque non enregisrées dans le formulaire
+		$aListePanelItems											= explode(GalleryHelper::EXCLUDE_SEPARATOR, $this->_aForm["bibliotheque_exclude"]);
+
+		// Réinitialisation des éléments de la bibliothèque
+		$aBibliothequeFields										= DataHelper::getLinesFromArrayLike($this->_aForm, "bibliotheque_");
+		foreach ($aBibliothequeFields as $sField) {
+			$this->_aQCM[$sField]									= array();
+		}
+
+		// Parcours l'ensemble des éléments trouvés
+		if (DataHelper::isValidArray($aListePanelItems)) {
+			$nCount			= 0;
+			foreach ($aListePanelItems as $nOccurrence => $nIdQuestion) {
+				// Fonctionnalité réalisée si l'élément n'existe pas déjà dans la liste des questions
+				if (!in_array($nIdQuestion, $this->_aForm['question_id'])) {
+					// Recherche de la question en base de données
+					$aQuestion										= $this->_oFormulaireManager->getQuestionById($nIdQuestion);
+
+					// Chargement des informations de la bibliothèque sélectionnée dans le formulaire
+					$this->_aForm['bibliotheque_id'][$nCount]		= $nIdQuestion;
+					$this->_aForm['bibliotheque_titre'][$nCount]	= DataHelper::get($aQuestion, "titre_question",	DataHelper::DATA_TYPE_TXT);
+					$this->_aForm['bibliotheque_enonce'][$nCount]	= DataHelper::get($aQuestion, "enonce_question",	DataHelper::DATA_TYPE_TXT);
+					$this->_aForm['bibliotheque_libre'][$nCount]	= DataHelper::get($aQuestion, "libre_question",	DataHelper::DATA_TYPE_BOOL);
+					$this->_aForm['bibliotheque_stricte'][$nCount]	= DataHelper::get($aQuestion, "stricte_question",	DataHelper::DATA_TYPE_BOOL);
+
+					// Fonctionnalité réalisée si la réponse n'est pas LIBRE
+					if (!$this->_aForm['bibliotheque_libre'][$nCount]) {
+						// Recherche des réponses associées à la question en base de données
+						$aReponses									= $this->_oFormulaireManager->findReponsesByIdQuestion($nIdQuestion);
+
+						// Récupération des réponses associées à la question
+						$this->_aForm['bibliotheque_nombre_reponses'][$nCount] = count($aReponses);
+					}
+
+					$nCount++;
+				}
+			}
+		}
+
+		// Retour sur le premier onglet
+		$this->_aForm['formulaire_active_tab']	= 0;
+	}
+
+	/**
 	 * @brief	Enregistrement du formulaire.
 	 *
 	 * @return	void
@@ -310,8 +364,9 @@ abstract class AbstractFormulaireQCMController extends AbstractFormulaireControl
 		if (empty($sFormulaireTitre)) {
 			// Avertissement sur le champ manquant
 			ViewRender::setMessageAlert("ERREUR RENCONTRÉ AU COURS DE L'ENREGISTREMENT !", "Veuillez renseigner le nom du formulaire...");
-			// Retour sur le premier onglet
-			$this->_aForm['formulaire_active_tab']	= 0;
+
+			// Récupération des entrées de la bibliothèque non enregistrées dans le formulaire
+			$this->_getUndoBibliothequeItems();
 		} else {
 			// Enregistrement du formulaire
 			$this->_aForm = $this->_oFormulaireManager->enregistrer($this->_aForm, false);
@@ -352,8 +407,9 @@ abstract class AbstractFormulaireQCMController extends AbstractFormulaireControl
 		if (empty($sFormulaireTitre)) {
 			// Avertissement sur le champ manquant
 			ViewRender::setMessageAlert("ERREUR RENCONTRÉ AU COURS DE L'ENREGISTREMENT !", "Veuillez renseigner le nom du formulaire...");
-			// Retour sur le premier onglet
-			$this->_aForm['formulaire_active_tab']	= 0;
+
+			// Récupération des entrées de la bibliothèque non enregistrées dans le formulaire
+			$this->_getUndoBibliothequeItems();
 		} else {
 			// Enregistrement du formulaire
 			$this->enregistrerAction();
