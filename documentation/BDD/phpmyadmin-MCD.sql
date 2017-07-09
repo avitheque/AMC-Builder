@@ -73,6 +73,7 @@ INSERT INTO `pma__relation` (`master_db`, `master_table`, `master_field`, `forei
 ('amc-builder', 'log_formulaire', 'id_utilisateur', 'amc-builder', 'utilisateur', 'id_utilisateur'),
 ('amc-builder', 'log_generation', 'id_generation', 'amc-builder', 'generation', 'id_generation'),
 ('amc-builder', 'log_generation', 'id_utilisateur', 'amc-builder', 'utilisateur', 'id_utilisateur'),
+('amc-builder', 'log_groupe', 'id_groupe', 'amc-builder', 'groupe', 'id_groupe'),
 ('amc-builder', 'log_groupe', 'id_utilisateur', 'amc-builder', 'utilisateur', 'id_utilisateur'),
 ('amc-builder', 'log_question', 'id_question', 'amc-builder', 'question', 'id_question'),
 ('amc-builder', 'log_question', 'id_utilisateur', 'amc-builder', 'utilisateur', 'id_utilisateur'),
