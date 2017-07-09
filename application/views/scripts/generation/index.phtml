@@ -94,8 +94,8 @@ $aColonnes = array(
 $oEpreuves->renameColumns($aColonnes, true);
 
 // Ajout d'une colonne [ACTION] avec un lien HREF
-$oEpreuves->addAnchorOnColumn("ACTION",		"id_epreuve",		"Imprimer",	"/generation/epreuve?id_epreuve=",		"blue tooltip-track",	"_blanck",	"Éditer l'épreuve");
-$oEpreuves->addAnchorOnColumn("ACTION",		"id_epreuve",		"Annuler",	"/generation/supprimer?id_epreuve=",	"red tooltip-track",	null,		"Annuler l'épreuve");
+$oEpreuves->addAnchorOnColumn("ACTION",		"id_epreuve",		"Imprimer",	"/generation/epreuve?id_epreuve=",		"blue tooltip-track",           	   "_blanck",	"Éditer l'épreuve");
+$oEpreuves->addAnchorOnColumn("ACTION",		"id_epreuve",		"Annuler",	"/generation/supprimer?id_epreuve=",	"red confirm-delete tooltip-track", 	null,		"Annuler l'épreuve");
 
 // Coloration de l'épreuve en ROUGE si il y a une erreur
 $oEpreuves->setConditionalClassOnColumn('SUM(capacite_statut_salle)', '<', 'COUNT(id_stage_candidat)', "error", array("ÉPREUVE", "CAPACITÉ D'ACCUEIL", "NOMBRE DE CANDIDATS"));

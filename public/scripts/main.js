@@ -332,12 +332,12 @@ $(document).ready(function() {
 	});
 
 	// Affichage d'un message de confirmation avant le changement de page
-	$("button[type=submit].confirm").click(function(event) {
+	$("button[type=submit].confirm, button[type=submit].force-confirm").click(function(event) {
 		// Protection contre le syndrome du cliqueur intempestif
 		event.stopPropagation();
 
 		// Fonctionnalité réalisée si une modification a été réalisée sur le formulaire
-		if (MODIFICATION) {
+		if (MODIFICATION || $(this).hasClass("force-confirm")) {
 			// Initialisation de l'action du formulaire
 			var url = "/" + CONTROLLER + "/reset";
 
@@ -360,9 +360,8 @@ $(document).ready(function() {
 		// Protection contre le syndrome du cliqueur intempestif
 		event.stopPropagation();
 
-		// Demande une confirmation
+		// Demande une confirmation avant la perte des données
 		setDialogConfirm("#dialog-delete", this);
-
 		$("#dialog-delete").dialog("open");
 		$("#dialog-delete").removeClass("hidden");
 
@@ -374,17 +373,25 @@ $(document).ready(function() {
 	$(document).on("click", "a[class*=confirm]", function(event) {
 		// Protection contre le syndrome du cliqueur intempestif
 		event.stopPropagation();
+		
+		// Récupération de l'URL
+		var url = $(this).attr("href");
 
-		// Fonctionnalité réalisée si une modification a été réalisée sur le formulaire
-		if (MODIFICATION) {
-			// Récupération de l'URL
-			var url = $(this).attr("href");
-
+		// Fonctionnalité réalisée si une modification a été réalisée sur le formulaire ou si la CLASS comporte `force-confirm`
+		if (MODIFICATION || $(this).hasClass("force-confirm")) {
 			// Demande une confirmation avant le changement de la page
 			setDialogConfirm("#dialog-confirm", url);
 
 			$("#dialog-confirm").dialog("open");
 			$("#dialog-confirm").removeClass("hidden");
+
+			// Annulation de l'événement
+			event.preventDefault();
+		} else if ($(this).hasClass("confirm-delete")) {
+			// Demande une confirmation avant la perte des données
+			setDialogConfirm("#dialog-delete", url);
+			$("#dialog-delete").dialog("open");
+			$("#dialog-delete").removeClass("hidden");
 
 			// Annulation de l'événement
 			event.preventDefault();
@@ -550,8 +557,8 @@ $(document).ready(function() {
 	// PROTECTION CONTRE LE SYNDROME DU CLIQUEUR INTEMPESTIF !
 	//#############################################################################################
 
-	// Empêche le clic multiple sur les liens de redirection et sur les boutons de type [submit]
-	$(document).on("click", 'a:not("[href^=\'#\'], .paginate_button"), button[type=submit]:not("[class*=confirm]")', function(event) {
+	// Empêche les clics multiples sur les liens de redirection et les boutons de type [submit]
+	$(document).on("click", 'a:not("[class*=confirm], [href^=\'#\'], .paginate_button"), button[type=submit]:not("[class*=confirm]")', function(event) {
 		// Activation de l'arrière-plan de protection durant le chargement
 		waitingStatement(event);
 	});

@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 61 $
- * @since		$LastChangedDate: 2017-07-08 15:25:46 +0200 (Sat, 08 Jul 2017) $
+ * @version		$LastChangedRevision: 62 $
+ * @since		$LastChangedDate: 2017-07-09 11:09:53 +0200 (Sun, 09 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -365,6 +365,12 @@ class FormulaireHelper {
 		$oAutocomplete->setClass("half-width");
 		$oAutocomplete->setHiddenInputName("epreuve_stage");
 		$oAutocomplete->setRequired(true);
+		
+		// Fonctionnalité réalisée si le stage a été identifié parmis les libellés du champ AutocompleteHelper
+		if (empty($nIdStage)) {
+			// Récupère l'identifiant du stage
+			$nIdStage = $oAutocomplete->getHiddenKey();
+		}
 
 		// Disposition des réponses des candidats sur les feuilles séparées
 		$bSeparate						= DataHelper::get($this->_aQCM, 'generation_separate',				DataHelper::DATA_TYPE_BOOL,		FormulaireManager::GENERATION_SEPARATE_DEFAUT);

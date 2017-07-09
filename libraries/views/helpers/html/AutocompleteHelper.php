@@ -8,8 +8,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (Mon, 27 Feb 2017) $
+ * @version		$LastChangedRevision: 62 $
+ * @since		$LastChangedDate: 2017-07-09 11:09:53 +0200 (Sun, 09 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -76,6 +76,23 @@ class AutocompleteHelper extends InputHelper {
 	}
 
 	/**
+	 * @brief	Récupère la valeur du champ caché
+	 * 
+	 * @return	mixed
+	 */
+	public function getHiddenKey() {
+		$sHiddenKey = null;
+		if (DataHelper::isValidArray($this->_list)) {
+			// Récupération de la liste des clés correspondantes à la saisie
+			$aExists	= array_keys($this->_list, $this->getAttribute('value'));
+			// Récupération de la clé
+			$sHiddenKey = isset($aExists[0]) ? $aExists[0] : null;
+		}
+		
+		return $sHiddenKey;
+	}
+
+	/**
 	 * @brief	Rendu de l'élément.
 	 *
 	 * @see InputHelper::renderHTML()
@@ -124,13 +141,7 @@ class AutocompleteHelper extends InputHelper {
 		$sHTML = "<span class=\"no-wrap\">" . parent::renderHTML() . "</span>";
 
 		// Récupération de la valeur sélectionnée
-		$sHiddenKey = null;
-		if (DataHelper::isValidArray($this->_list)) {
-			// Récupération de la liste des clés correspondantes à la saisie
-			$aExists	= array_keys($this->_list, $this->getAttribute('value'));
-			// Récupération de la clé
-			$sHiddenKey = isset($aExists[0]) ? $aExists[0] : null;
-		}
+		$sHiddenKey = $this->getHiddenKey();
 
 		// Ajout du champ caché pour la sélection
 		$oHidden = new InputHelper($this->_hidden, $sHiddenKey, "hidden");
