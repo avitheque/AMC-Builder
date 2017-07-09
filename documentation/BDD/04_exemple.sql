@@ -155,6 +155,48 @@ INSERT INTO `question_reponse` (`id_question_reponse`, `id_question`, `id_repons
 (24, 9, 24, '2017-01-11 11:19:24'),
 (25, 9, 25, '2017-01-11 11:19:24');
 
+--
+-- Contenu de la table `stage`
+--
+
+INSERT INTO `stage` (`id_stage`, `libelle_stage`, `id_domaine`, `id_sous_domaine`, `id_categorie`, `id_sous_categorie`, `description_stage`, `date_debut_stage`, `date_fin_stage`, `date_modification_stage`) VALUES
+(1, 'Exemple de stage', 6, 0, 0, 0, NULL, '2017-02-20', '2017-02-20', '2017-02-20 13:29:24');
+
+
+--
+-- Contenu de la table `candidat`
+--
+
+INSERT INTO `candidat` (`id_candidat`, `id_grade`, `nom_candidat`, `prenom_candidat`, `unite_candidat`, `date_modification_candidat`) VALUES
+('111111', 19, 'MARTIN', 'Martin', '-', '2017-02-05 13:17:13'),
+('123456', 19, 'DOE', 'John', '-', '2017-02-05 10:36:44'),
+('222222', 20, 'MARTINE', 'Martine', '-', '2017-02-05 13:17:55'),
+('234567', 20, 'DUPONT', 'Martine', '-', '2017-02-05 13:13:59');
+
+--
+-- Contenu de la table `stage_candidat`
+--
+
+INSERT INTO `stage_candidat` (`id_stage_candidat`, `id_stage`, `id_candidat`, `code_candidat`, `date_modification_stage_candidat`) VALUES
+(1, 1, '222222', '4067', '2017-02-20 13:29:44'),
+(2, 1, '234567', '5736', '2017-02-20 13:29:44'),
+(3, 1, '111111', '6873', '2017-02-20 13:29:44'),
+(4, 1, '123456', '0974', '2017-02-20 13:29:44');
+
+--
+-- Contenu de la table `generation`
+--
+
+INSERT INTO `generation` (`id_generation`, `id_formulaire`, `langue_generation`, `format_generation`, `separate_generation`, `seed_generation`, `nom_epreuve_generation`, `date_epreuve_generation`, `consignes_generation`, `exemplaires_generation`, `code_candidat_generation`, `cartouche_candidat_generation`, `id_valideur`, `date_modification_generation`) VALUES
+(1, 1, 'francais', 'a4paper', 0, 1237893, 'Exemple de stage (20/02/2017 - 20/02/2017)', '2017-02-20', 'Veuillez utiliser un stylo à encre noir ou bleu-noir afin de reporter vos choix. Les encres claires, fluorescentes ou effaçables sont interdites.&#10;Pour toute correction, veuillez utiliser du blanc correcteur exclusivement.&#10;DANS CE DERNIER CAS, NE REDESSINEZ PAS LA CASE !', 20, 6, 'Codez votre code candidat à l&#39;aide des cases ci-contre en reportant chaque numéro de gauche à droite', '444444', '2017-07-05 00:14:10');
+
+--
+-- Contenu de la table `epreuve`
+--
+
+INSERT INTO `epreuve` (`id_epreuve`, `type_epreuve`, `libelle_epreuve`, `date_epreuve`, `heure_epreuve`, `duree_epreuve`, `id_stage`, `id_generation`, `liste_salles_epreuve`, `table_affectation_epreuve`, `table_aleatoire_epreuve`, `id_valideur`, `date_modification_epreuve`) VALUES
+(1, 'Contrôle', 'Exemple de stage (20/02/2017 - 20/02/2017)', '2017-02-20', '09:00:00', 50, 1, 1, '3', 1, 1, '444444', '2017-07-05 00:14:16');
+
 -- --------------------------------------------------------
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

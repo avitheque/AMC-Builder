@@ -893,7 +893,7 @@ CREATE TABLE IF NOT EXISTS `utilisateur` (
 --
 
 INSERT INTO `utilisateur` (`id_utilisateur`, `id_profil`, `id_grade`, `login_utilisateur`, `password_utilisateur`, `nom_utilisateur`, `prenom_utilisateur`, `editable_utilisateur`, `modifiable_utilisateur`, `date_modification_utilisateur`) VALUES
-('1', 6, 11, 'webmaster', 'fe01ce2a7fbac8fafaed7c982a04e229', 'AMC-BUILDER', 'Webmaster', '0', '1', '2016-04-21 10:34:59');
+('1', 6, 0, 'webmaster', 'fe01ce2a7fbac8fafaed7c982a04e229', 'AMC-BUILDER', 'Webmaster', '0', '1', '2016-04-21 10:34:59');
 
 --
 -- Contraintes pour les tables exportées
