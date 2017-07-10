@@ -18,8 +18,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 61 $
- * @since		$LastChangedDate: 2017-07-08 15:25:46 +0200 (Sat, 08 Jul 2017) $
+ * @version		$LastChangedRevision: 65 $
+ * @since		$LastChangedDate: 2017-07-10 18:33:44 +0200 (Mon, 10 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -2342,12 +2342,14 @@ class FormulaireManager extends MySQLManager {
 			throw new ApplicationException($e->getMessage(), $e->getExtra());
 		}
 
-		// Réinitialisation des éléments de la bibliothèque
+		// Récupération de l'ensemble des champs de la bibliothèque
 		$aBibliothequeFields		= DataHelper::getLinesFromArrayLike($this->_aQCM, "bibliotheque_");
+		// Parcours des éléments de la bibliothèque
 		foreach ($aBibliothequeFields as $sField) {
+			// Réinitialisation du champ du formulaire
 			$this->_aQCM[$sField]	= array();
 		}
-
+		
 		// Renvoi du formulaire
 		return $this->_aQCM;
 	}

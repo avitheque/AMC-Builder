@@ -10,15 +10,23 @@
  */
 @CHARSET "UTF-8";
 
-ul.arborescence.hover:before		{ position:relative; display: block; color: red; content: "(+)"; }
-ul.arborescence.hover > li.branche	{ color: orange; white-space: no-wrap; }
+ul.arborescence								{ margin: 0 33px; }
+ul.arborescence.hover:before				{ position: relative; display: block; margin-left: -5px; content: "└─ [+]"; color: red; text-decoration: none; font-family: Arial; font-size: 20px; font-weight: bold; }
+ul.arborescence.hover > li.branche			{ color: orange; white-space: nowrap; margin: 0; }
 
-li.branche							{ height: auto !important; }
-li.branche.hover,
-li.branche.hover > span,
-li.branche.hover > span a			{ color: orange; }
-li.branche.hover:before				{ position: relative; left: -15px; float: left; content: "=>"; }
+li.branche									{ height: auto !important; border-left: black solid 2px; }
+li.branche:last-child						{ border-color: transparent; }
 
-li.empty							{ position: relative; min-height: 5px; height: auto; margin: 0; padding: 0; }
+li.branche span.titre						{ margin: 0; line-height: 20px; }
+li.branche.hover > span.titre,
+li.branche.hover > span.titre a				{ background-color: white; color: orange; border-top: solid 3px white; border-right: solid 3px white; border-bottom: solid 3px white; }
+li.branche.hover:before						{ position: absolute; margin: 4px 0 0 -27px; content: "➤"; color: red; text-decoration: none; font-family: Arial; font-size: 30px; font-weight: bold; }
 
-a.link								{ text-decoration: none; color: #220979; }
+li.branche > span:before					{ margin: -5px 5px 0 -10px; content: "├─■"; color: black; text-decoration: none; font-family: Arial; font-size: 25px; font-weight: bold; z-index: 10; }
+li.branche:last-child > span:before			{ content: "└─■"; }
+li.branche.empty > span:before				{ content: "└─ "; color: transparent; }
+li.branche.hover > span:before				{ color: orange; }
+
+li.empty									{ position: relative; min-height: 5px; height: auto; margin: 0; padding: 0; border-color: transparent; }
+
+a.link										{ text-decoration: none; color: #220979; }

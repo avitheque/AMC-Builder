@@ -15,8 +15,8 @@
  * @subpackage	Libraries
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 61 $
- * @since		$LastChangedDate: 2017-07-08 15:25:46 +0200 (Sat, 08 Jul 2017) $
+ * @version		$LastChangedRevision: 65 $
+ * @since		$LastChangedDate: 2017-07-10 18:33:44 +0200 (Mon, 10 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -311,10 +311,12 @@ abstract class AbstractFormulaireQCMController extends AbstractFormulaireControl
 		// Récupération des entrées de la bibliothèque non enregisrées dans le formulaire
 		$aListePanelItems											= explode(GalleryHelper::EXCLUDE_SEPARATOR, $this->_aForm["bibliotheque_exclude"]);
 
-		// Réinitialisation des éléments de la bibliothèque
+		// Récupération de l'ensemble des champs de la bibliothèque
 		$aBibliothequeFields										= DataHelper::getLinesFromArrayLike($this->_aForm, "bibliotheque_");
-		foreach ($aBibliothequeFields as $sField) {
-			$this->_aQCM[$sField]									= array();
+		// Parcours des éléments de la bibliothèque
+		foreach ($aBibliothequeFields as $sField => $aItems) {
+			// Réinitialisation du champ du formulaire
+			$this->_aForm[$sField]									= array();
 		}
 
 		// Parcours l'ensemble des éléments trouvés

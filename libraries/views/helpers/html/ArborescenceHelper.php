@@ -80,8 +80,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 55 $
- * @since		$LastChangedDate: 2017-07-04 21:38:27 +0200 (Tue, 04 Jul 2017) $
+ * @version		$LastChangedRevision: 65 $
+ * @since		$LastChangedDate: 2017-07-10 18:33:44 +0200 (Mon, 10 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -705,11 +705,11 @@ class ArborescenceHelper {
 	 * @param	boolean	$bShowRacine		: (optionnel) affichage de la RACINE au niveau 0.
 	 */
 	public function renderHTML($aButtons = array(), $bShowRacine = true) {
+		// Ajout de la feuille de style
+		ViewRender::addToStylesheet(FW_VIEW_STYLES . "/ArborescenceHelper.css");
+			
 		// Fonctionnalité réalisée si la modification de l'arborescence est autorisée
 		if (!$this->_readonly) {
-			// Ajout de la feuille de style
-			ViewRender::addToStylesheet(FW_VIEW_STYLES . "/ArborescenceHelper.css");
-
 			// Compression du script avec JavaScriptPacker
 			ViewRender::addToScripts(FW_VIEW_SCRIPTS . "/ArborescenceHelper.js");
 		}
