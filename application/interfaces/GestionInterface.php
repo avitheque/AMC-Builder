@@ -11,8 +11,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 33 $
- * @since		$LastChangedDate: 2017-06-11 21:24:20 +0200 (Sun, 11 Jun 2017) $
+ * @version		$LastChangedRevision: 66 $
+ * @since		$LastChangedDate: 2017-07-12 19:33:31 +0200 (Wed, 12 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -29,6 +29,9 @@ abstract class GestionInterface {
 	 * @var		array	: au format array('nom_du_champ'	=> DataHelper::DATA_TYPE_*)
 	 */
 	static $LIST_CHAMPS_FORM	= array(
+		// GESTION DES ONGLETS *********************************************** (ordre alphabétique)
+		'gestion_active_tab'		=> DataHelper::DATA_TYPE_INT,
+
 		// CANDIDAT ********************************************************** (ordre alphabétique)
 		'candidat_code'				=> DataHelper::DATA_TYPE_STR,
 		'candidat_id'				=> DataHelper::DATA_TYPE_STR,

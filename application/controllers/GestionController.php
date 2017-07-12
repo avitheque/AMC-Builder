@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 32 $
- * @since		$LastChangedDate: 2017-06-11 01:31:10 +0200 (Sun, 11 Jun 2017) $
+ * @version		$LastChangedRevision: 66 $
+ * @since		$LastChangedDate: 2017-07-12 19:33:31 +0200 (Wed, 12 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -23,25 +23,42 @@
 class GestionController extends AbstractFormulaireController {
 
 	/**
+	 * @brief	Constantes d'identifiant des onglets.
+	 * @var		integer
+	 */
+	const		TAB_STAGES						= 0;
+	const		TAB_CANDIDATS					= 1;
+	const		TAB_UTILISATEURS				= 2;
+	const		TAB_GROUPES						= 3;
+	const		TAB_REFERENTIELS				= 4;
+
+	/**
+	 * @brief	Constantes d'identifiant pour l'onglet sélectionné par défaut.
+	 * @var		integer
+	 */
+	const		TAB_DEFAULT						= self::TAB_STAGES;
+
+	/**
 	 * @brief	Variable d'instance de l'identifiant de l'élément sélectionné.
 	 * @var		integer
 	 */
-	private		$_idCandidat				= null;
-	private		$_idGroupe					= null;
-	private		$_idStage					= null;
-	private		$_idUtilisateur				= null;
+	private		$_idActive						= self::TAB_DEFAULT;
+	private		$_idCandidat					= null;
+	private		$_idGroupe						= null;
+	private		$_idStage						= null;
+	private		$_idUtilisateur					= null;
 
 	/**
 	 * @brief	Instance du modèle de gestion du référentiel de l'application.
 	 * @var		ReferentielManager
 	 */
-	protected	$_oReferentielManager		= null;
+	protected	$_oReferentielManager			= null;
 
 	/**
 	 * @brief	Instance du modèle de gestion des stages et des candidats.
 	 * @var		AdministrationManager
 	 */
-	protected	$_oAdministrationManager	= null;
+	protected	$_oAdministrationManager		= null;
 
 	/**
 	 * @brief	Constructeur de la classe.
@@ -53,32 +70,33 @@ class GestionController extends AbstractFormulaireController {
 		parent::__construct(__CLASS__, 'GESTION', GestionInterface::$LIST_CHAMPS_FORM);
 
 		// Initialisation de l'instance du référentiel
-		$this->_oReferentielManager			= new ReferentielManager();
+		$this->_oReferentielManager				= new ReferentielManager();
 
 		// Initialisation de l'instance de l'administration
-		$this->_oAdministrationManager		= new AdministrationManager();
+		$this->_oAdministrationManager			= new AdministrationManager();
 
 		// Initialisation des variables de traitement
-		$sAction							= null;
-		$sType								= null;
-		$sComplement						= null;
+		$sAction								= null;
+		$sType									= null;
+		$sComplement							= null;
 
 		// Récupération du bouton sélectionné du type [ACTION_TYPE_COMPLEMENT]
 		if ($sButton = $this->getParam('button')) {
 			// Extraction des variables de traitement à partir du nom de bouton
-			$aElement						= explode("_", $sButton);
+			$aElement							= explode("_", $sButton);
 
 			// Renseignement des variables de traitement
-			$sAction						= DataHelper::get($aElement, 0, DataHelper::DATA_TYPE_STR);
-			$sType							= DataHelper::get($aElement, 1, DataHelper::DATA_TYPE_STR);
-			$sComplement					= DataHelper::get($aElement, 2, DataHelper::DATA_TYPE_STR);
+			$sAction							= DataHelper::get($aElement, 0, DataHelper::DATA_TYPE_STR);
+			$sType								= DataHelper::get($aElement, 1, DataHelper::DATA_TYPE_STR);
+			$sComplement						= DataHelper::get($aElement, 2, DataHelper::DATA_TYPE_STR);
 		}
 
 		// Récupération des éléments en session
-		$this->_idCandidat					= $this->getDataFromSession(AdministrationManager::ID_CANDIDAT);
-		$this->_idStage						= $this->getDataFromSession(AdministrationManager::ID_STAGE);
-		$this->_idUtilisateur				= $this->getDataFromSession(AdministrationManager::ID_UTILISATEUR);
-		$this->_idGroupe					= $this->getDataFromSession(AdministrationManager::ID_GROUPE);
+		$this->_idActive						= $this->issetSessionData('gestion_active_tab') ? $this->getDataFromSession('gestion_active_tab') : self::TAB_DEFAULT;
+		$this->_idCandidat						= $this->getDataFromSession(AdministrationManager::ID_CANDIDAT);
+		$this->_idStage							= $this->getDataFromSession(AdministrationManager::ID_STAGE);
+		$this->_idUtilisateur					= $this->getDataFromSession(AdministrationManager::ID_UTILISATEUR);
+		$this->_idGroupe						= $this->getDataFromSession(AdministrationManager::ID_GROUPE);
 
 		// Fonctionnalité réalisée selon l'action du bouton
 		switch ($sAction) {
@@ -87,7 +105,7 @@ class GestionController extends AbstractFormulaireController {
 				// Message de débuggage
 				$this->debug("FERMER");
 				// Exécution de l'action
-				$this->resetAction(null);
+				$this->resetAction(null, array('gestion_active_tab' => $this->_idActive));
 				break;
 
 			case "enregistrer":
@@ -152,6 +170,9 @@ class GestionController extends AbstractFormulaireController {
 				break;
 
 		}
+
+		// Transfert de l'identifiant de l'onglet actif à la vue
+		$this->aData['gestion_active_tab'] = $this->_idActive;
 	}
 
 	/******************************************************************************************************
@@ -225,6 +246,9 @@ class GestionController extends AbstractFormulaireController {
 					// Rendu de la vue de modification
 					$this->render($this->_controller);
 				}
+
+				// Initialisation de l'identifiant de l'onglet actif
+				$this->sendDataToSession(self::TAB_CANDIDATS, 'gestion_active_tab');
 				break;
 
 			// Chargement d'un GROUPE
@@ -245,6 +269,9 @@ class GestionController extends AbstractFormulaireController {
 					// Rendu de la vue de modification
 					$this->render($this->_controller);
 				}
+
+				// Initialisation de l'identifiant de l'onglet actif
+				$this->sendDataToSession(self::TAB_GROUPES, 'gestion_active_tab');
 				break;
 
 			// Chargement d'un STAGE
@@ -265,6 +292,9 @@ class GestionController extends AbstractFormulaireController {
 					// Rendu de la vue de modification
 					$this->render($this->_controller);
 				}
+
+				// Initialisation de l'identifiant de l'onglet actif
+				$this->sendDataToSession(self::TAB_STAGES, 'gestion_active_tab');
 				break;
 
 			// Chargement d'un UTILISATEUR
@@ -285,11 +315,17 @@ class GestionController extends AbstractFormulaireController {
 					// Rendu de la vue de modification
 					$this->render($this->_controller);
 				}
+
+				// Initialisation de l'identifiant de l'onglet actif
+				$this->sendDataToSession(self::TAB_UTILISATEURS, 'gestion_active_tab');
 				break;
 
 			default:
 				// Message de débuggage
 				$this->debug("Type inconnu");
+
+				// Initialisation de l'identifiant de l'onglet actif
+				$this->sendDataToSession(self::TAB_DEFAULT, 'gestion_active_tab');
 				break;
 		}
 
@@ -328,6 +364,9 @@ class GestionController extends AbstractFormulaireController {
 			$this->addToData('liste_stages_candidat',	$this->_oAdministrationManager->findStagesByCandidat($this->_idCandidat));
 		}
 
+		// Initialisation de l'identifiant de l'onglet actif
+		$this->sendDataToSession(self::TAB_CANDIDATS, 'gestion_active_tab');
+
 		// Changement de vue
 		$this->render('editer');
 	}
@@ -359,6 +398,9 @@ class GestionController extends AbstractFormulaireController {
 			// Message de débuggage
 			$this->debug(AdministrationManager::ID_GROUPE . " = $this->_idGroupe");
 		}
+
+		// Initialisation de l'identifiant de l'onglet actif
+		$this->sendDataToSession(self::TAB_GROUPES, 'gestion_active_tab');
 
 		// Changement de vue
 		$this->render('editer');
@@ -404,6 +446,9 @@ class GestionController extends AbstractFormulaireController {
 			$this->addToData('liste_candidats_stage',	$this->_oAdministrationManager->findCandidatsByStage($this->_idStage));
 		}
 
+		// Initialisation de l'identifiant de l'onglet actif
+		$this->sendDataToSession(self::TAB_STAGES, 'gestion_active_tab');
+
 		// Changement de vue
 		$this->render('editer');
 	}
@@ -441,6 +486,9 @@ class GestionController extends AbstractFormulaireController {
 			// Message de débuggage
 			$this->debug(AdministrationManager::ID_UTILISATEUR . " = $this->_idUtilisateur");
 		}
+
+		// Initialisation de l'identifiant de l'onglet actif
+		$this->sendDataToSession(self::TAB_UTILISATEURS, 'gestion_active_tab');
 
 		// Changement de vue
 		$this->render('editer');
@@ -623,7 +671,8 @@ class GestionController extends AbstractFormulaireController {
 
 		switch ($sType) {
 			case AdministrationManager::TYPE_CANDIDAT:
-				/** @todo	RAS */
+				// Initialisation de l'identifiant de l'onglet actif
+				$this->sendDataToSession(self::TAB_CANDIDATS, 'gestion_active_tab');
 				break;
 
 			case AdministrationManager::TYPE_STAGE:
@@ -635,19 +684,26 @@ class GestionController extends AbstractFormulaireController {
 					// Ajout de la liste de candidats au stage
 					$this->_oAdministrationManager->addStageCandidats($aListeCandidats, $this->_idStage);
 				}
+
+				// Initialisation de l'identifiant de l'onglet actif
+				$this->sendDataToSession(self::TAB_STAGES, 'gestion_active_tab');
 				break;
 
 			case AdministrationManager::TYPE_UTILISATEUR:
-				/** @todo	RAS */
+				// Initialisation de l'identifiant de l'onglet actif
+				$this->sendDataToSession(self::TAB_UTILISATEURS, 'gestion_active_tab');
 				break;
 
 			case AdministrationManager::TYPE_GROUPE:
-				/** @todo	RAS */
+				// Initialisation de l'identifiant de l'onglet actif
+				$this->sendDataToSession(self::TAB_GROUPES, 'gestion_active_tab');
 				break;
 
 			default:
 				// Message de débuggage
 				$this->debug("Type inconnu");
+				// Initialisation de l'identifiant de l'onglet actif
+				$this->sendDataToSession(self::TAB_DEFAULT, 'gestion_active_tab');
 				break;
 		}
 

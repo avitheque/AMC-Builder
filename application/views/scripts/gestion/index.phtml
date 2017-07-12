@@ -15,6 +15,9 @@
 // Récupération de l'instance du singleton InstanceStorage permettant de gérer les échanges avec le contrôleur
 $oInstanceStorage = InstanceStorage::getInstance();
 
+// Identifiant de l'onglet actif par défaut
+$_activeTab						= $oInstanceStorage->getData('gestion_active_tab');
+
 // Initialisation de l'article
 $sArticle = "<section class=\"tabs\">
 				<ul>
@@ -23,7 +26,8 @@ $sArticle = "<section class=\"tabs\">
 					<li><a href=\"#tabs-utilisateurs\">Utilisateurs</a></li>
 					<li><a href=\"#tabs-groupes\">Groupes</a></li>
 					<li><a href=\"#tabs-referentiels\">Référentiels</a></li>
-				</ul>";
+				</ul>
+				<input type=\"hidden\" name=\"gestion_active_tab\" value=\"" . $_activeTab . "\" />";
 
 //=================================================================================================
 // GESTION DES STAGES
@@ -218,6 +222,9 @@ $sArticle .= "<span id=\"tabs-referentiels-bottom\"><a class=\"page-bottom\" hre
 //=================================================================================================
 // FINALISATION DE LA PAGE
 //=================================================================================================
+
+// Activation de l'onglet sélectionné
+ViewRender::addToJQuery("$(\"section.tabs\").tabs({ active: " . $_activeTab . " });");
 
 // Ajout du contenu au VIEW_MAIN
 ViewRender::addToMain($sArticle);

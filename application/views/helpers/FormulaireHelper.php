@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 62 $
- * @since		$LastChangedDate: 2017-07-09 11:09:53 +0200 (Sun, 09 Jul 2017) $
+ * @version		$LastChangedRevision: 66 $
+ * @since		$LastChangedDate: 2017-07-12 19:33:31 +0200 (Wed, 12 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -168,7 +168,8 @@ class FormulaireHelper {
 													<li><a href=\"#tabs-epreuve\">Épreuve</a></li>
 													<li><a href=\"#tabs-generalite\">Généralités</a></li>
 													<li><a href=\"#tabs-questionnaire\">Questionnaire</a></li>
-												</ul>";
+												</ul>
+												<input type=\"hidden\" name=\"formulaire_active_tab\" value=\"" . $this->_activeTab . "\" />";
 
 			// Zone des paramètres de génération du document
 			$this->_buildFormulaireGeneration();
@@ -365,7 +366,7 @@ class FormulaireHelper {
 		$oAutocomplete->setClass("half-width");
 		$oAutocomplete->setHiddenInputName("epreuve_stage");
 		$oAutocomplete->setRequired(true);
-		
+
 		// Fonctionnalité réalisée si le stage a été identifié parmis les libellés du champ AutocompleteHelper
 		if (empty($nIdStage)) {
 			// Récupère l'identifiant du stage
@@ -631,7 +632,6 @@ class FormulaireHelper {
 
 		// Questionnaire
 		$this->_html					.= "	<div id=\"tabs-generalite\">
-													<input type=\"hidden\" name=\"formulaire_active_tab\" value=\"" . $this->_activeTab . "\" />
 													<span id=\"tabs-generalite-top\"><a class=\"page-top\" href=\"#tabs-generalite-bottom\" title=\"Bas de page...\">" . self::ICON_DOWN . "</a></span>
 													<fieldset class=\"" . $sClassField . "\" id=\"general\"><legend>Informations du formulaire</legend>
 														<ol>

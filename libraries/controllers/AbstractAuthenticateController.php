@@ -23,9 +23,9 @@
  * @subpackage	Libraries
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 24 $
- * @since		$LastChangedDate: 2017-04-30 20:38:39 +0200 (dim., 30 avr. 2017) $
- * 
+ * @version		$LastChangedRevision: 66 $
+ * @since		$LastChangedDate: 2017-07-12 19:33:31 +0200 (Wed, 12 Jul 2017) $
+ *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
@@ -51,19 +51,19 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 	protected	$_oAcl				= null;
 
 	/**
-   	 * @var		MenuHelper
-   	 */
+		 * @var		MenuHelper
+		 */
 	private		$_oMenu				= null;
 
 	/**
-   	 * @var		TaskbarHelper
-   	 */
+		 * @var		TaskbarHelper
+		 */
 	private		$_oBar				= null;
 
 	/**
 	 * Constructeur de la classe de l'application.
 	 *
-   	 * @overload	AbstractApplicationController::construct($sNameSpace = __CLASS__)
+		 * @overload	AbstractApplicationController::construct($sNameSpace = __CLASS__)
 	 *
 	 * @param	string $sNameSpace		: Nom du contrôleur à appeler, par défaut le nom de la classe.
 	 */
@@ -110,10 +110,10 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 	}
 
 	/**
-   	 * Méthode d'exécution de la classe
-   	 *
-   	 * @overload	AbstractApplicationController::execute()
-   	 */
+		 * Méthode d'exécution de la classe
+		 *
+		 * @overload	AbstractApplicationController::execute()
+		 */
 	public function execute() {
 		// Action de déconnexion
 		if (in_array('logout', array($this->_controller, $this->_action))) {
@@ -127,8 +127,8 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 	}
 
 	/**
-   	 * Méthode de redirection vers une ressource de l'application.
-   	 */
+		 * Méthode de redirection vers une ressource de l'application.
+		 */
 	public function redirect($sRessource, $bLocal = true) {
 		// Message de debuggage
 		$this->debug("REDIRECTION");
@@ -146,10 +146,10 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 	}
 
 	/**
-   	 * @brief	Méthode de création d'un tableau de valeurs provenant des données d'un formulaire.
-   	 *
-   	 * @param	array	$aForm			: ensemble des valeurs du formulaire
-   	 */
+		 * @brief	Méthode de création d'un tableau de valeurs provenant des données d'un formulaire.
+		 *
+		 * @param	array	$aForm			: ensemble des valeurs du formulaire
+		 */
 	public function addFormToData(array $aForm) {
 		if (is_array($aForm)) {
 			foreach ($aForm as $sIndex => $xData) {
@@ -159,10 +159,10 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 	}
 
 	/**
-   	 * @brief	Méthode de création d'un message de débuggage.
-   	 *
-   	 * @param	mixed	$sMessage		: message à afficher, peut être un tableau.
-   	 */
+		 * @brief	Méthode de création d'un message de débuggage.
+		 *
+		 * @param	mixed	$sMessage		: message à afficher, peut être un tableau.
+		 */
 	public function debug($sMessage, $sTitle = null) {
 		if (defined('MODE_DEBUG') && (bool) MODE_DEBUG) {
 			// Fonctionnalité réalisée si le contenu est sous forme de tableau
@@ -222,6 +222,20 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 	}
 
 	/**
+	 * @brief	Méthode de contrôle de données en session.
+	 *
+	 * @param	string	$sIndex			: nom de stockage de la variable.
+	 * @return	mixed
+	 */
+	public function issetSessionData($sIndex) {
+		if (isset($_SESSION[$this->_sessionNameSpace])) {
+			return array_key_exists($sIndex, $_SESSION[$this->_sessionNameSpace]);
+		} else {
+			return null;
+		}
+	}
+
+	/**
 	 * @brief	Méthode de récupération de données en session.
 	 *
 	 * @param	string	$sIndex			: nom de stockage de la variable.
@@ -236,10 +250,10 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 	}
 
 	/**
-   	 * @brief	Méthode de stockage de données du formulaire en session.
-   	 *
-   	 * @li	Parcours les paramètres du formulaire dans la variable de classe du contrôleur @a $this->aParams.
-   	 *
+		 * @brief	Méthode de stockage de données du formulaire en session.
+		 *
+		 * @li	Parcours les paramètres du formulaire dans la variable de classe du contrôleur @a $this->aParams.
+		 *
 	 * @param	array	$aForm			: ensemble des noms de champ du formulaire.
 	 * @param	string	$sIndex			: nom de stockage de la variable.
 	 * @return	array
@@ -332,19 +346,23 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 	 *
 	 * Redirection afin d'effacer les éléments présents en GET
 	 * @param	string		$sRessource		: (optionnel) ressource pour la redirection, sinon le contrôleur est appelé par défaut.
+	 * @param	array		$aDataSession	: (optionnel) paramètres à transférer en session.
 	 * @return	void
 	 */
-	public function resetAction($sRessource = null) {
+	public function resetAction($sRessource = null, $aDataSession = array()) {
 		$this->_clearSession($this->_sessionNameSpace);
+		foreach ($aDataSession as $sIndex => $xData) {
+			$this->sendDataToSession($xData, $sIndex);
+		}
 		$this->redirect(!empty($sRessource) ? $sRessource : $this->_controller);
 	}
 
 	/**
-   	 * @brief	Méthode d'affichage de l'exception sous forme de message d'erreur.
-   	 *
+		 * @brief	Méthode d'affichage de l'exception sous forme de message d'erreur.
+		 *
 	 * @param	Exception $oException exception qui est rencontrée.
 	 * @param	string $sMessage message supplémentaire à afficher.
-   	 */
+		 */
 	public function showException($oException, $sMessage = null) {
 		try {
 			// Affichage d'un message
