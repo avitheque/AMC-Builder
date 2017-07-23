@@ -58,7 +58,7 @@ $aColonnes = array(
 $oStages->renameColumns($aColonnes, true);
 
 // Tri du tableau sur la colonne FIN par ordre DESC
-$oStages->setOrderColumn('FIN', 'asc');
+$oStages->setOrderColumn('FIN', DatatableHelper::ORDER_DESC);
 
 // Ajout d'une colonne [ACTION] avec un lien HREF
 $oStages->addAnchorOnColumn("ACTION", 0, "Éditer", "/gestion/stage?id=");
@@ -98,8 +98,8 @@ $aColonnes = array(
 );
 $oCandidats->renameColumns($aColonnes, true);
 
-// Tri du tableau sur la colonne GRADE par ordre DESC
-$oCandidats->setOrderColumn('GRADE', 'desc');
+// Tri du tableau sur la colonne NOM par ordre ASC
+$oCandidats->setOrderColumn('NOM', DatatableHelper::ORDER_ASC);
 
 // Ajout d'une colonne [ACTION] avec un lien HREF
 $oCandidats->addAnchorOnColumn("ACTION", "id_candidat", "Éditer", "/gestion/candidat?id=");
@@ -147,8 +147,8 @@ $aColonnes = array(
 );
 $oUtilisateurs->renameColumns($aColonnes, true);
 
-// Tri du tableau sur la colonne GRADE par ordre DESC
-$oUtilisateurs->setOrderColumn('PROFIL', 'desc');
+// Tri du tableau sur la colonne PROFIL par ordre DESC
+$oUtilisateurs->setOrderColumn('PROFIL', DatatableHelper::ORDER_DESC);
 
 // Ajout d'une colonne [ACTION] avec un lien HREF
 $oUtilisateurs->addAnchorOnColumn("ACTION", "id_utilisateur", "Éditer", "/gestion/utilisateur?id=");

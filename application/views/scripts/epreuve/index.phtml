@@ -1,0 +1,62 @@
+<?php
+/**
+ * @brief	Épreuve
+ *
+ * Vue principale des épreuves QCM accessibles par l'utilisateur connecté.
+ * User: durandcedric
+ * Date: 25/09/16
+ * Time: 11:43
+ *
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+
+// Récupération de l'instance du singleton InstanceStorage permettant de gérer les échanges avec le contrôleur
+$oInstanceStorage = InstanceStorage::getInstance();
+
+// Titre de la page
+$sTitrePage =  "<h2>Liste des épreuves programmées</h2>
+				<p>
+				</p>";
+ViewRender::addToMain($sTitrePage);
+
+// Récupération de la liste des formulaires QCM
+$aListeQCMEpreuve = $oInstanceStorage->getData('liste_epreuve');
+
+// Construction du tableau récapitulatif des formulaires
+$oEpreuve = new DatatableHelper("table-epreuve",	$aListeQCMEpreuve);
+$oEpreuve->setClassColumn("align-left strong",		"titre_formulaire");
+$oEpreuve->setClassColumn("strong",					"libelle_groupe");
+
+// Formatage du champ DATE
+$oEpreuve->setFormatOnColumn('datetime_epreuve',	DataHelper::DATA_TYPE_DATETIME);
+
+// Personnalisation des noms de colonne
+$aColonnes = array(
+	'datetime_epreuve'				=> "DATE DE PROGRAMMATION",
+	'libelle_groupe'				=> "GROUPE",
+	'libelle_stage'					=> "STAGE",
+	'titre_formulaire'				=> "ÉPREUVE",
+	'duree_epreuve'					=> "DURÉE (min)"
+);
+$oEpreuve->renameColumns($aColonnes, true);
+
+/*
+// Indicateur d'épreuve non disponible
+$oEpreuve->setConditionalClassOnColumn('debut_epreuve',	'>', 'maintenant', "strong grey",	$aColonnes);
+$oEpreuve->setConditionalClassOnColumn('fin_epreuve',	'<', 'maintenant', "strong grey",	$aColonnes);
+$oEpreuve->setConditionalClassOnColumn('debut_epreuve',	'>', 'maintenant', "disabled",		"ACTION");
+$oEpreuve->setConditionalClassOnColumn('fin_epreuve',	'<', 'maintenant', "disabled",		"ACTION");
+*/
+
+// Ajout d'une colonne [ACTION] avec un lien HREF permettant au candidat de participer si le fomulaire est valide
+$oEpreuve->setConditionalTextOnColumn("ACTION", "validation_formulaire", 1,"En attente...", "strong");
+$oEpreuve->setConditionalAnchorOnColumn("ACTION", "modifiable_controle", 1,"id_epreuve", "Continuer", "/epreuve?id_epreuve=", "green tooltip-track", "Continuer l'épreuve QCM");
+$oEpreuve->setConditionalAnchorOnColumn("ACTION", "validation_formulaire", 2,"id_epreuve", "Lancer", "/epreuve?id_epreuve=", "green tooltip-track", "Passer l'épreuve QCM");
+
+// Ajout du tableau à VIEW_MAIN
+ViewRender::addToMain($oEpreuve->renderHTML());
+
+// Rendu final de la vue
+ViewRender::render();

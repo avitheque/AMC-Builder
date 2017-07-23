@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client: 127.0.0.1:3306
--- Généré le: Dimanche 21 Août 2016 à 16:51
+-- Généré le: Dimanche 22 Juillet 2017 à 14:00
 -- Version du serveur: 5.5.50-0+deb7u2
 -- Version de PHP: 5.4.45
 
@@ -29,14 +29,17 @@ SET time_zone = "+00:00";
 INSERT INTO `pma__designer_coords` (`db_name`, `table_name`, `x`, `y`, `v`, `h`) VALUES
 ('amc-builder', 'candidat', 470, 810, 1, 1),
 ('amc-builder', 'categorie', 20, 490, 1, 1),
+('amc-builder', 'controle', 1370, 1130, 1, 1),
+('amc-builder', 'controle_reponse_candidat', 1790, 1050, 1, 1),
 ('amc-builder', 'domaine', 20, 50, 1, 1),
-('amc-builder', 'epreuve', 1370, 810, 1, 1),
+('amc-builder', 'epreuve', 1370, 680, 1, 1),
 ('amc-builder', 'formulaire', 470, 60, 1, 1),
 ('amc-builder', 'formulaire_question', 1370, 50, 1, 1),
 ('amc-builder', 'generation', 900, 170, 1, 1),
 ('amc-builder', 'grade', 20, 1190, 1, 1),
 ('amc-builder', 'groupe', 900, 1474, 1, 1),
-('amc-builder', 'log_connexion', 1790, 1474, 1, 1),
+('amc-builder', 'log_connexion', 1657, 1474, 1, 1),
+('amc-builder', 'log_controle', 1966, 1474, 1, 1),
 ('amc-builder', 'log_epreuve', 2260, 1050, 1, 1),
 ('amc-builder', 'log_formulaire', 2260, 50, 1, 1),
 ('amc-builder', 'log_generation', 2260, 850, 1, 1),
@@ -67,6 +70,8 @@ INSERT INTO `pma__designer_coords` (`db_name`, `table_name`, `x`, `y`, `v`, `h`)
 
 INSERT INTO `pma__relation` (`master_db`, `master_table`, `master_field`, `foreign_db`, `foreign_table`, `foreign_field`) VALUES
 ('amc-builder', 'log_connexion', 'id_utilisateur', 'amc-builder', 'utilisateur', 'id_utilisateur'),
+('amc-builder', 'log_controle', 'id_controle', 'amc-builder', 'controle', 'id_controle'),
+('amc-builder', 'log_controle', 'id_candidat', 'amc-builder', 'candidat', 'id_candidat'),
 ('amc-builder', 'log_epreuve', 'id_epreuve', 'amc-builder', 'epreuve', 'id_epreuve'),
 ('amc-builder', 'log_epreuve', 'id_utilisateur', 'amc-builder', 'utilisateur', 'id_utilisateur'),
 ('amc-builder', 'log_formulaire', 'id_formulaire', 'amc-builder', 'formulaire', 'id_formulaire'),

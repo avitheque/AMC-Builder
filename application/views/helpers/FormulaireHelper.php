@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 66 $
- * @since		$LastChangedDate: 2017-07-12 19:33:31 +0200 (Wed, 12 Jul 2017) $
+ * @version		$LastChangedRevision: 69 $
+ * @since		$LastChangedDate: 2017-07-23 03:02:54 +0200 (Sun, 23 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -33,21 +33,21 @@ class FormulaireHelper {
 	 * Singleton de l'instance des échanges entre contrôleurs.
 	 * @var		InstanceStorage
 	 */
-	private		$_oInstanceStorage		= null;
+	protected	$_oInstanceStorage		= null;
 
 	/**
 	 * @brief	Accès au formulaire en lecture seule.
 	 * @li	Exploité lors de la validation et la génération du QCM.
 	 * @var		bool
 	 */
-	private		$_bReadonly				= false;
+	protected	$_bReadonly				= false;
 
 	/**
 	 * @brief	Désactive certains boutons du formulaire.
 	 * @li	Exploité lors de l'importation.
 	 * @var		bool
 	 */
-	private		$_bDisable				= false;
+	protected	$_bDisable				= false;
 
 	/**
 	 * @brief	Code HTML du bouton [Ajouter une question].
@@ -60,7 +60,7 @@ class FormulaireHelper {
 	 * @brief	Onglets HTML.
 	 * @var		array
 	 */
-	private		$_aTabs					= array(
+	protected	$_aTabs					= array(
 		// Onglet "Épreuve" uniquement visible à partir du profil [Validator]
 		0 => array(
 				'href'					=> "#tabs-epreuve",
@@ -82,7 +82,7 @@ class FormulaireHelper {
 	 * @brief	Formulaire PHP.
 	 * @var		array
 	 */
-	private		$_aQCM					= array();
+	protected	$_aQCM					= array();
 
 	/**
 	 * @brief	Action de l'utilisateur dans le formulaire.
@@ -122,7 +122,7 @@ class FormulaireHelper {
 	 *
 	 * @var		integer
 	 */
-	private		$_nOccurrenceQuestion	= -1;
+	protected	$_nOccurrenceQuestion	= -1;
 
 	/**
 	 * @brief	Constructeur de la classe.
@@ -531,7 +531,7 @@ class FormulaireHelper {
 	 * @param	boolean	$bBibliotheque	: Fait apparaître la bibliothèque.
 	 * @return	void
 	 */
-	private function _buildFormulaireQCM($bBibliotheque = false) {
+	protected function _buildFormulaireQCM($bBibliotheque = false) {
 		// Initialisation du conteneur du questionnaire
 		$this->_html					.= "	<section id=\"qcm\">";
 

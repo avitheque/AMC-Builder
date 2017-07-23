@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client: 127.0.0.1:3306
--- Généré le: Jeu 21 Avril 2016 à 12:39
+-- Généré le: Dimanche 22 Juillet 2017 à 14:00
 -- Version du serveur: 5.5.35-0+wheezy1
 -- Version de PHP: 5.3.28
 
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `categorie` (
   `id_categorie` int(11) NOT NULL AUTO_INCREMENT,
   `id_domaine` int(11) DEFAULT NULL,
   `libelle_categorie` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `description_categorie` text COLLATE utf8_unicode_ci,
+  `description_categorie` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `date_debut_categorie` date DEFAULT NULL,
   `date_fin_categorie` date DEFAULT NULL,
   `date_modification_categorie` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -79,13 +79,71 @@ INSERT INTO `categorie` (`id_categorie`, `id_domaine`, `libelle_categorie`, `des
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `controle`
+--
+
+CREATE TABLE IF NOT EXISTS `controle` (
+  `id_controle` int(11) NOT NULL AUTO_INCREMENT,
+  `id_epreuve` int(11) NOT NULL,
+  `date_debut_controle` datetime DEFAULT NULL,
+  `id_candidat` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+  `modifiable_controle` tinyint(1) NOT NULL DEFAULT '1',
+  `date_modification_controle` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_controle`),
+  KEY `id_epreuve` (`id_epreuve`),
+  KEY `id_candidat` (`id_candidat`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+--
+-- RELATIONS POUR LA TABLE `controle`:
+--   `id_epreuve`
+--       `epreuve` -> `id_epreuve`
+--   `id_candidat`
+--       `utilisateur` -> `id_utilisateur`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `controle_reponse_candidat`
+--
+
+CREATE TABLE IF NOT EXISTS `controle_reponse_candidat` (
+  `id_controle_reponse_candidat` int(11) NOT NULL AUTO_INCREMENT,
+  `id_controle` int(11) NOT NULL,
+  `id_question` int(11) NOT NULL,
+  `ordre_question` int(3) NOT NULL,
+  `libre_reponse_candidat` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `liste_reponses_candidat` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `id_correcteur` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `resultat_reponse_candidat` float DEFAULT NULL,
+  `date_modification_controle_reponse_candidat` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_controle_reponse_candidat`),
+  KEY `id_controle` (`id_controle`),
+  KEY `id_question` (`id_question`),
+  KEY `id_correcteur` (`id_correcteur`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+--
+-- RELATIONS POUR LA TABLE `controle_reponse_candidat`:
+--   `id_controle`
+--       `controle` -> `id_controle`
+--   `id_question`
+--       `question` -> `id_question`
+--   `id_correcteur`
+--       `utilisateur` -> `id_utilisateur`
+--
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `domaine`
 --
 
 CREATE TABLE IF NOT EXISTS `domaine` (
   `id_domaine` int(11) NOT NULL AUTO_INCREMENT,
   `libelle_domaine` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `description_domaine` text COLLATE utf8_unicode_ci,
+  `description_domaine` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `date_debut_domaine` date DEFAULT NULL,
   `date_fin_domaine` date DEFAULT NULL,
   `date_modification_domaine` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -114,7 +172,7 @@ CREATE TABLE IF NOT EXISTS `epreuve` (
   `duree_epreuve` int(3) NOT NULL,
   `id_stage` int(11) NOT NULL,
   `id_generation` int(11) NOT NULL,
-  `liste_salles_epreuve` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `liste_salles_epreuve` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `table_affectation_epreuve` tinyint(1) COLLATE utf8_unicode_ci DEFAULT '0',
   `table_aleatoire_epreuve` tinyint(1) COLLATE utf8_unicode_ci DEFAULT '0',
   `id_valideur` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -249,7 +307,7 @@ CREATE TABLE IF NOT EXISTS `grade` (
   `id_grade` int(11) NOT NULL AUTO_INCREMENT,
   `libelle_grade` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
   `libelle_court_grade` varchar(5) COLLATE utf8_unicode_ci NOT NULL,
-  `description_grade` text COLLATE utf8_unicode_ci,
+  `description_grade` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `ordre_grade` int(2) NOT NULL,
   `date_debut_grade` date DEFAULT NULL,
   `date_fin_grade` date DEFAULT NULL,
@@ -327,6 +385,31 @@ CREATE TABLE IF NOT EXISTS `log_connexion` (
 -- RELATIONS POUR LA TABLE `log_connexion`:
 --   `id_utilisateur`
 --       `utilisateur` -> `id_utilisateur`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `log_controle`
+--
+
+CREATE TABLE IF NOT EXISTS `log_controle` (
+  `id_log_controle` int(11) NOT NULL AUTO_INCREMENT,
+  `type_action` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `id_controle` int(32) NOT NULL,
+  `id_candidat` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+  `date_log_controle` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_log_controle`),
+  KEY `id_candidat` (`id_candidat`),
+  KEY `id_controle` (`id_controle`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+--
+-- RELATIONS POUR LA TABLE `id_controle`:
+--   `id_controle`
+--       `controle` -> `id_controle`
+--   `id_candidat`
+--       `candidat` -> `id_candidat`
 --
 
 -- --------------------------------------------------------
@@ -561,7 +644,7 @@ CREATE TABLE IF NOT EXISTS `log_validation` (
 CREATE TABLE IF NOT EXISTS `profil` (
   `id_profil` int(11) NOT NULL AUTO_INCREMENT,
   `libelle_profil` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
-  `description_profil` text COLLATE utf8_unicode_ci,
+  `description_profil` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `role_profil` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
   `date_debut_profil` date DEFAULT NULL,
   `date_fin_profil` date DEFAULT NULL,
@@ -592,7 +675,7 @@ CREATE TABLE IF NOT EXISTS `question` (
   `titre_question` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `stricte_question` tinyint(1) NOT NULL DEFAULT '0',
   `enonce_question` text COLLATE utf8_unicode_ci NOT NULL,
-  `correction_question` text COLLATE utf8_unicode_ci NOT NULL,
+  `correction_question` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `bareme_question` float NOT NULL,
   `penalite_question` float NOT NULL,
   `libre_question` tinyint(1) NOT NULL DEFAULT '0',
@@ -699,7 +782,7 @@ CREATE TABLE IF NOT EXISTS `reservation` (
 CREATE TABLE IF NOT EXISTS `salle` (
   `id_salle` int(11) NOT NULL AUTO_INCREMENT,
   `libelle_salle` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `description_salle` text COLLATE utf8_unicode_ci,
+  `description_salle` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `date_debut_salle` date NOT NULL,
   `date_fin_salle` date NOT NULL,
   `date_modification_salle` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -716,7 +799,7 @@ CREATE TABLE IF NOT EXISTS `sous_categorie` (
   `id_sous_categorie` int(11) NOT NULL AUTO_INCREMENT,
   `id_categorie` int(11) NOT NULL,
   `libelle_sous_categorie` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `description_sous_categorie` text COLLATE utf8_unicode_ci,
+  `description_sous_categorie` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `date_debut_sous_categorie` date DEFAULT NULL,
   `date_fin_sous_categorie` date DEFAULT NULL,
   `date_modification_sous_categorie` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -747,7 +830,7 @@ CREATE TABLE IF NOT EXISTS `sous_domaine` (
   `id_sous_domaine` int(11) NOT NULL AUTO_INCREMENT,
   `id_domaine` int(11) NOT NULL,
   `libelle_sous_domaine` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `description_sous_domaine` text COLLATE utf8_unicode_ci,
+  `description_sous_domaine` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `date_debut_sous_domaine` date DEFAULT NULL,
   `date_fin_sous_domaine` date DEFAULT NULL,
   `date_modification_sous_domaine` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -781,7 +864,7 @@ CREATE TABLE IF NOT EXISTS `stage` (
   `id_sous_domaine` int(11) DEFAULT NULL,
   `id_categorie` int(11) NOT NULL,
   `id_sous_categorie` int(11) DEFAULT NULL,
-  `description_stage` text COLLATE utf8_unicode_ci,
+  `description_stage` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `date_debut_stage` date NOT NULL,
   `date_fin_stage` date NOT NULL,
   `date_modification_stage` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -815,7 +898,7 @@ CREATE TABLE IF NOT EXISTS `stage_candidat` (
   `id_stage` int(11) NOT NULL,
   `id_candidat` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
   `code_candidat` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-  `date_modification_stage_candidat` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `date_modification_stage_candidat` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_stage_candidat`),
   KEY `id_stage` (`id_stage`),
   KEY `id_candidat` (`id_candidat`)
@@ -870,7 +953,7 @@ CREATE TABLE IF NOT EXISTS `utilisateur` (
   `nom_utilisateur` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `prenom_utilisateur` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `editable_utilisateur` tinyint(1) NOT NULL DEFAULT '1',
-  `modifiable_utilisateur` tinyint(4) NOT NULL DEFAULT '1',
+  `modifiable_utilisateur` tinyint(1) NOT NULL DEFAULT '1',
   `date_modification_utilisateur` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_utilisateur`),
   KEY `id_profil` (`id_profil`),
@@ -910,6 +993,21 @@ ALTER TABLE `candidat`
 --
 ALTER TABLE `categorie`
   ADD CONSTRAINT `domaine_categorie` FOREIGN KEY (`id_domaine`) REFERENCES `domaine` (`id_domaine`);
+
+--
+-- Contraintes pour la table `controle`
+--
+ALTER TABLE `controle`
+  ADD CONSTRAINT `controle_epreuve` FOREIGN KEY (`id_epreuve`) REFERENCES `epreuve` (`id_epreuve`),
+  ADD CONSTRAINT `controle_candidat` FOREIGN KEY (`id_candidat`) REFERENCES `candidat` (`id_candidat`);
+
+--
+-- Contraintes pour la table `controle_reponse_candidat`
+--
+ALTER TABLE `controle_reponse_candidat`
+  ADD CONSTRAINT `controle` FOREIGN KEY (`id_controle`) REFERENCES `controle` (`id_controle`),
+  ADD CONSTRAINT `controle_question` FOREIGN KEY (`id_question`) REFERENCES `question` (`id_question`),
+  ADD CONSTRAINT `controle_correcteur` FOREIGN KEY (`id_correcteur`) REFERENCES `utilisateur` (`id_utilisateur`);
 
 --
 -- Contraintes pour la table `epreuve`

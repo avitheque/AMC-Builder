@@ -62,7 +62,7 @@
 .planning.conflict,
 .planning.error,
 .holiday .planning.set,
-.planning.conflict li,										
+.planning.conflict li,
 .planning.error li										{ background: red !important; border-color: red !important; }
 
 

@@ -7,8 +7,8 @@
  *
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 37 $
- * @since		$LastChangedDate: 2017-06-13 21:12:42 +0200 (Tue, 13 Jun 2017) $
+ * @version		$LastChangedRevision: 67 $
+ * @since		$LastChangedDate: 2017-07-19 00:09:56 +0200 (Wed, 19 Jul 2017) $
  */
 
 .absolute					{ position:			absolute; }
@@ -252,6 +252,15 @@
 .margin-bottom-3p			{ margin-bottom:	3%; }
 .margin-H-3p				{ margin-left:		3%;				margin-right:		3%; }
 .margin-V-3p				{ margin-top:		3%;				margin-bottom:		3%; }
+
+/* margin 4% */
+.margin-4p					{ margin:			4%; }
+.margin-top-4p				{ margin-top:		4%; }
+.margin-left-4p				{ margin-left:		4%; }
+.margin-right-4p			{ margin-right:		4%; }
+.margin-bottom-4p			{ margin-bottom:	4%; }
+.margin-H-4p				{ margin-left:		4%;				margin-right:		4%; }
+.margin-V-4p				{ margin-top:		4%;				margin-bottom:		4%; }
 
 /* margin 5% */
 .margin-5p					{ margin:			5%; }

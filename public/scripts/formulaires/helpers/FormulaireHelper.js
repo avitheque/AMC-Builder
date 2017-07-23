@@ -5,6 +5,8 @@
 /**
  * Initialisation du contenu de la bibliothèque MODALE
  *
+ * @li		Fonctionnalité réalisée en MODE ÉDITION.
+ *
  * @param	bool		bReset				: initialisation des champs du formulaire.
  */
 function initFormulaireHelperModal(bReset) {
@@ -29,6 +31,8 @@ function initFormulaireHelperModal(bReset) {
 
 /**
  * Mise à jour automatique du contenu d'une liste déroulante
+ *
+ * @li		Fonctionnalité réalisée en MODE ÉDITION.
  *
  * @param	string		sSelector			: pointeur jQuery de l'élément SELECT.
  * @param	object		oJSON				: contenu JSON de la liste déroulante.
@@ -57,6 +61,8 @@ function updateListe(sSelector, oJSON) {
 
 /**
  * Mise à jour automatique de la répartition des points à chaque réponse de la question
+ *
+ * @li		Fonctionnalité réalisée en MODE ÉDITION.
  *
  * @param	integer		questionSelected	: occurrence de la question sélectionnée.
  */
@@ -91,6 +97,8 @@ function updateValeurs(questionSelected) {
 
 /**
  * Mise à jour automatique des réponses strictes
+ *
+ * @li		Fonctionnalité réalisée en MODE ÉDITION.
  *
  * @param	integer		questionSelected	: occurrence de la question sélectionnée.
  * @param	boolean		updateValues		: (optionnel) mise à jour des valeurs.
@@ -196,15 +204,15 @@ function updateReponses(questionSelected, updateValues) {
  * @param	string		selector			: sélecteur de la question du type [#Q999].
  */
 function scrollToQuestionById(selector) {
-    // 1er ancrage sur la question sélectionnée
-    setTimeout(function() {
-        // Récupération de la position de la question dans la fenêtre
-        var scroll = $(selector).offset().top - $("#article-main").offset().top + parseInt($("#article-main").css("margin-top"));
-        // Déplacement de la fenêtre sur la question sélectionnée
-        $("main").scrollTop(scroll);
-    }, 500);
-    // 2ème ancrage sur la question sélectionnée
-    window.location.replace(selector);
+	// 1er ancrage sur la question sélectionnée
+	setTimeout(function() {
+		// Récupération de la position de la question dans la fenêtre
+		var scroll = $(selector).offset().top - $("#article-main").offset().top + parseInt($("#article-main").css("margin-top"));
+		// Déplacement de la fenêtre sur la question sélectionnée
+		$("main").scrollTop(scroll);
+	}, 500);
+	// 2ème ancrage sur la question sélectionnée
+	window.location.replace(selector);
 }
 
 /**
@@ -223,7 +231,7 @@ function scrollToQuestionSelected(questionSelected) {
 	}
 	// Récupération de l'identifiant du titre
 	var selector = "#Q" + questionSelected;
-    scrollToQuestionById(selector);
+	scrollToQuestionById(selector);
 }
 
 /**
@@ -236,36 +244,36 @@ function scrollToQuestionSelected(questionSelected) {
  */
 function scrollToQuestionOccurrence(occurrence) {
 	// Déplacement de la fenêtre vers l'occurrence de la question sélectionnée
-    var questionSelected = parseInt(occurrence) + 1;
-    scrollToQuestionSelected(questionSelected);
+	var questionSelected = parseInt(occurrence) + 1;
+	scrollToQuestionSelected(questionSelected);
 }
 
 /**
  * Fonctionnalité réalisée à la fin du chargement de la page chez le client
  */
 $(document).ready(function() {
-    // Navigation dans les TABS
-    $("a", "li[role=tab]").click(function() {
-        // Récupération de l'occurrence de l'onglet actif
-        var tabSelected = parseInt($(this).attr("id").replace("ui-id-", ""));
-        // Stockage de l'occurence de l'onglet actif
-        $("input[name=formulaire_active_tab]").val(tabSelected - 1);
-        // Déplacement du SCROLL vers la question sélectionnée
-        scrollToQuestionOccurrence($("input[name=formulaire_active_question]").val());
-    });
+	// Navigation dans les TABS
+	$("a", "li[role=tab]").click(function() {
+		// Récupération de l'occurrence de l'onglet actif
+		var tabSelected = parseInt($(this).attr("id").replace("ui-id-", ""));
+		// Stockage de l'occurence de l'onglet actif
+		$("input[name=formulaire_active_tab]").val(tabSelected - 1);
+		// Déplacement du SCROLL vers la question sélectionnée
+		scrollToQuestionOccurrence($("input[name=formulaire_active_question]").val());
+	});
 
 	// Navigation dans l'ACCORDEON
 	$("h3.item-title").click(function() {
 		// Récupération du numéro de la question sélectionnée
 		var questionSelected = parseInt($(this).attr("id").replace("Q", ""));
-        // Stockage de l'occurence de la question
-        $("input[name=formulaire_active_question]").val(questionSelected - 1);
+		// Stockage de l'occurence de la question
+		$("input[name=formulaire_active_question]").val(questionSelected - 1);
 		// Déplacement du SCROLL vers la question sélectionnée
 		scrollToQuestionSelected(questionSelected);
 	});
 
 	//#############################################################################################
-	// MODIFICATION DES VALEURS ET SANCTIONS D'UNE RÉPONSE
+	// MODIFICATION DES VALEURS ET SANCTIONS D'UNE RÉPONSE						-	MODE ÉDITION
 	//#############################################################################################
 
 	// Clic sur le champ [Valide] d'une réponse
@@ -353,7 +361,7 @@ $(document).ready(function() {
 	});
 
 	//#############################################################################################
-	// CHOIX DE RÉPONSES STRICTES ATTENDUES
+	// CHOIX DE RÉPONSES STRICTES ATTENDUES										-	MODE ÉDITION
 	//#############################################################################################
 
 	// Clic sur le champ [Réponse stricte attendue aux questions par défaut] du formulaire général
@@ -394,7 +402,7 @@ $(document).ready(function() {
 	});
 
 	//#############################################################################################
-	// CHOIX D'UNE RÉPONSE LIBRE
+	// CHOIX D'UNE RÉPONSE LIBRE												-	MODE ÉDITION
 	//#############################################################################################
 
 	// Clic sur le champ [Libre] d'une question
@@ -420,7 +428,7 @@ $(document).ready(function() {
 	});
 
 	//#############################################################################################
-	// OPTIONS DE L'ÉPREUVE
+	// OPTIONS DE L'ÉPREUVE														-	MODE ÉDITION
 	//#############################################################################################
 
 	// Surcharge de l'autocomplétion lors du changement de destinataire
@@ -483,7 +491,7 @@ $(document).ready(function() {
 	});
 
 	//#############################################################################################
-	// FILTRE DE RECHERCHE DU FORMULAIRE PRINCIPAL
+	// FILTRE DE RECHERCHE DU FORMULAIRE PRINCIPAL								-	MODE ÉDITION
 	//#############################################################################################
 
 	// Modification de la liste des sous-domaines dans le formulaire
@@ -606,7 +614,7 @@ $(document).ready(function() {
 	});
 
 	//#############################################################################################
-	// FILTRE DE RECHERCHE DE LA BIBLIOTHÈQUE
+	// FILTRE DE RECHERCHE DE LA BIBLIOTHÈQUE									-	MODE ÉDITION
 	//#############################################################################################
 
 	// Modification de la liste des sous-domaines lors du changement du domaine dans la bibliothèque
@@ -698,4 +706,42 @@ $(document).ready(function() {
 		// Purge du résultat de la bibliothèque
 		initFormulaireHelperModal($(this).is(":checked"));
 	});
+
+    //#############################################################################################
+    // CHOIX D'AUCUNE RÉPONSE PAR LE CANDIDAT									-	MODE CONTRÔLE
+    //#############################################################################################
+
+    // Clic sur le champ [Aucune réponse n'est correcte] d'une question lors d'un contrôle
+    $("input[id^=idAucuneCheckbox_]").click(function() {
+        // Récupération de la valeur de l'identifiant sélectionné
+        var aTableauID = $(this).attr("id").split("_");
+
+        // Récupération des variables dans l'identifiant du type [{name}_{question}]
+        var name		= aTableauID[0];
+        var question	= aTableauID[1];
+
+        // Fonctionnalité réalisée si le checkbox est coché
+        if ($(this).is(":checked")) {
+            // Désactive les réponses
+            $("input[id^=idReponseCandidat_" + question + "]:checked").each(function() {
+                $(this).removeAttr("checked");
+            });
+        }
+    });
+
+    // Clic sur le champ [Checkbox] d'une question lors d'un contrôle
+    $("input[id^=idReponseCandidat_]").click(function() {
+        // Récupération de la valeur de l'identifiant sélectionné
+        var aTableauID = $(this).attr("id").split("_");
+
+        // Récupération des variables dans l'identifiant du type [{name}_{question}]
+        var name		= aTableauID[0];
+        var question	= aTableauID[1];
+
+        // Fonctionnalité réalisée si le checkbox est coché
+        if ($(this).is(":checked")) {
+            // Désactive le champ [Aucune réponse n'est correcte]
+            $("input#idAucuneCheckbox_" + question + ":checked").removeAttr("checked");
+        }
+    });
 });

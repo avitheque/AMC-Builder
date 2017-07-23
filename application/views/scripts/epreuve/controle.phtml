@@ -1,8 +1,8 @@
 <?php
 /**
- * @brief	Édition
+ * @brief	Épreuve QCM
  *
- * Vue d'édition du formulaire QCM.
+ * Vue du contrôle d'une épreuve QCM.
  * User: durandcedric
  * Date: 25/09/16
  * Time: 11:43
@@ -13,28 +13,27 @@
  */
 
 //#################################################################################################
-// INTERFACE DE CRÉATION DU QUESTIONNAIRE
+// INTERFACE DE CHARGEMENT DE L'ÉPREUVE QCM
 //#################################################################################################
 
 // Initialisation du formulaire
-ViewRender::addToFormStart("<form action=\"#\" method=\"post\" name=\"edition\">");
+ViewRender::addToFormStart("<form action=\"#\" method=\"post\" name=\"controle\">");
 
 // Construction du formulaire QCM
-$oFormulaire = new FormulaireHelper(false, false, true, false);
+$oEpreuve = new EpreuveHelper(false, false, true, false);
 
 // Création de l'entête du formulaire
 $sArticle = "<h2>
-				Édition d'un QCM
-				" . $oFormulaire->getCorrectionButton() . "
+				Épreuve QCM
 			</h2>
 			<p>
-				Cette interface permet de modifier le questionnaire QCM.
+				Cette interface permet de passer une épreuve QCM.
 			</p>";
 // Ajout du contenu au VIEW_MAIN
 ViewRender::addToMain($sArticle);
 
 // Zone du QCM injecté dans $_SESSION[VIEW_MAIN]
-ViewRender::addToMain($oFormulaire->render());
+ViewRender::addToMain($oEpreuve->render());
 
 
 //#################################################################################################
@@ -42,7 +41,7 @@ ViewRender::addToMain($oFormulaire->render());
 //#################################################################################################
 
 // Création des boutons du formulaire
-$oGroupButton = new GroupButtonFormulaireHelper(false, false);
+$oGroupButton = new GroupButtonEpreuveHelper(true);
 ViewRender::addToFooter($oGroupButton->render());
 
 // Rendu final de la vue

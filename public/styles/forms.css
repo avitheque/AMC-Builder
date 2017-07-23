@@ -7,8 +7,8 @@
  *
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 69 $
+ * @since		$LastChangedDate: 2017-07-23 03:02:54 +0200 (Sun, 23 Jul 2017) $
  */
 
 input:not([readonly]),
@@ -44,6 +44,7 @@ textarea											{
 	outline:										none !important;
 	user-select:									text;
 	-moz-user-select:								text;
+	color:											#333;
 }
 
 input,

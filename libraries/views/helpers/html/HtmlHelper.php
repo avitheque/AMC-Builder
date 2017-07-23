@@ -8,8 +8,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 33 $
- * @since		$LastChangedDate: 2017-06-11 21:24:20 +0200 (Sun, 11 Jun 2017) $
+ * @version		$LastChangedRevision: 67 $
+ * @since		$LastChangedDate: 2017-07-19 00:09:56 +0200 (Wed, 19 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -182,7 +182,14 @@ class HtmlHelper {
 	 * @return	void
 	 */
 	public function setAttribute($sName, $xValue = null) {
-		$this->_attribute[$sName] = $xValue;
+		// Fonctionnalité réalisée si la valeur n'est pas vide
+		if (!empty($xValue)) {
+			// Initialisation de l'attribut
+			$this->_attribute[$sName] = $xValue;
+		} else {
+			// Suppression de l'attribut
+			unset($this->_attribute[$sName]);
+		}
 	}
 
 	/**
@@ -196,6 +203,23 @@ class HtmlHelper {
 			$xValue = $this->_attribute[$sName];
 		}
 		return $xValue;
+	}
+
+	/**
+	 * @brief	Ajout de l'attribut de la balise
+	 * @param	string	$sName				: nom de l'attribut de la balise
+	 * @param	mixed	$xValue				: valeur a ajouter à l'attribut de la balise
+	 * @return	void
+	 */
+	public function addAttribute($sName, $xValue = null) {
+		// Fonctionnalité réalisée si l'attribut n'existe pas
+		if (isset($this->_attribute[$sName]) && !preg_match("@$xValue@", $this->_attribute[$sName]) && !empty($xValue)) {
+			// Ajout de la valeur à l'attribut actuel
+			$this->_attribute[$sName] .= " " . $xValue;
+		} elseif (!empty($xValue)) {
+			// Initialisation de l'attribut actuel
+			$this->setAttribute($sName, $xValue);
+		}
 	}
 
 	/**
@@ -239,6 +263,16 @@ class HtmlHelper {
 	 */
 	public function setClass($sClass) {
 		$this->setAttribute('class', $sClass);
+	}
+
+	/**
+	 * @brief	Ajout d'une nouvelle classe au champ.
+	 *
+	 * @param	string	$sClass
+	 * @return	void
+	 */
+	public function addClass($sClass) {
+		$this->addAttribute('class', $sClass);
 	}
 
 	/**

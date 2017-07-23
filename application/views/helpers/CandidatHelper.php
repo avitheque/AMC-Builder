@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 5 $
- * @since		$LastChangedDate: 2017-03-02 22:16:57 +0100 (jeu., 02 mars 2017) $
+ * @version		$LastChangedRevision: 67 $
+ * @since		$LastChangedDate: 2017-07-19 00:09:56 +0200 (Wed, 19 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -213,7 +213,7 @@ class CandidatHelper {
 		$oStages->renameColumns($aColonnes, true);
 
 		// Tri du tableau sur la colonne FIN par ordre DESC
-		$oStages->setOrderColumn('FIN', 'desc');
+		$oStages->setOrderColumn('FIN', DatatableHelper::ORDER_DESC);
 
 		//#################################################################################################
 		// CODE HTML

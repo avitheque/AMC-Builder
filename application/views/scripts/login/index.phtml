@@ -20,7 +20,7 @@ $oInstanceStorage = InstanceStorage::getInstance();
 //#################################################################################################
 
 // Données du formulaire
-$aData = $oInstanceStorage->getData('LOGIN');
+$aData		= $oInstanceStorage->getData('LOGIN');
 
 //#################################################################################################
 // PARAMÈTRAGE DU QUESTIONNAIRE
@@ -39,11 +39,11 @@ $sPassword	= isset($aData['password'])	? DataHelper::get($aData, 'password')	: n
 ViewRender::addToFormStart("<form action=\"#\" method=\"post\" name=\"login\">");
 
 // Ajout d'un article
-$sArticle = "<article class=\"modal-25 padding-V-20 center\" id=\"article-login\">
+$sArticle	= "<article class=\"modal-25 padding-V-20 center\" id=\"article-login\">
 				<h2>Connexion à un compte</h2>";
 
 // Création du formulaire
-$sArticle .= "	<table id=\"table-login\">
+$sArticle	.= "<table id=\"table-login\">
 					<tr>
 						<td>
 							<label for=\"idLogin\" >Login : </label>
@@ -86,22 +86,57 @@ ViewRender::linkFormulaireScript("login.js");
 
 
 //#################################################################################################
-// DEMO
-
-// Message de DEMO
-ViewRender::setMessageInfo("Démonstration des fonctionnalités de l'application", "Pour tester l'application, vous pouvez utiliser les comptes <span class=\"strong cyan italic pointer\">redacteur</span>, <span class=\"strong cyan italic pointer\">valideur</span> ou <span class=\"strong cyan italic pointer\">administrateur</span> avec le mot-de-passe <span class=\"strong green italic\">demo</span> !");
-
-// Script permettant d'injecter directement les authentifications des comptes de DEMO
-$sJQuery = '$("span.pointer").click(function() {
-				// Injection du login sélectionné
-				$("input#idLogin").val($(this).text());
-				// Injection du mot-de-passe de démo
-				$("input#idPassword").val("demo");
-			});';
-
-// Compression du script avec JavaScriptPacker
-ViewRender::addToJQuery($sJQuery);
-
+//	DEMO	DEMO	DEMO	DEMO	DEMO	DEMO	DEMO	DEMO	DEMO	DEMO	DEMO	DEMO
+if (defined('MODE_DEMO') && (bool) MODE_DEMO) {
+	// Liste des utilisateurs
+	$aUserList	= array(
+		// login			=> libellé
+		'utilisateur'		=> "Utilisateur",
+		'redacteur'			=> "Rédacteur",
+		'valideur'			=> "Valideur",
+		'administrateur'	=> "Administrateur",
+	);
+	// Mot de passe
+	$sPassword				= 'demo';
+	
+	$sDialogue				= "Démonstration des fonctionnalités de l'application";
+	
+	$sMessage				= "Pour tester l'application, vous pouvez utiliser les comptes ";
+	$nCount					= 1;
+	foreach ($aUserList as $sLogin => $sLabel) {
+		$nCount++;
+		$sConcat			= " ";
+		if ($nCount < count($aUserList)) {
+			$sConcat		= ", ";
+		} elseif ($nCount == count($aUserList)) {
+			$sConcat		= " ou ";
+		}
+		
+		// Initialisation du champ `title`
+		$sTitle				= "Cliquez pour vous authentifier en tant que ''" . $sLabel . "''";
+		
+		// Ajout des informations de l'utilisateur
+		$sMessage			.= sprintf('<span class="strong cyan italic pointer" title="%s">%s</span>%s', $sTitle, $sLogin, $sConcat);
+	}
+	
+	// Finalisation du message
+	$sMessage .= "avec le mot-de-passe <span class=\"strong green italic\">" . $sPassword . "</span> !";
+	
+	// Message de DEMO
+	ViewRender::setMessageInfo($sDialogue, $sMessage);
+	
+	// Script permettant d'injecter directement les authentifications des comptes de DEMO
+	$sJQuery = '$("span.pointer").click(function() {
+					// Injection du login sélectionné
+					$("input#idLogin").val($(this).text());
+					// Injection du mot-de-passe de démonstration
+					$("input#idPassword").val("' . $sPassword . '");
+				});';
+	
+	// Compression du script avec JavaScriptPacker
+	ViewRender::addToJQuery($sJQuery);
+}
+//	DEMO	DEMO	DEMO	DEMO	DEMO	DEMO	DEMO	DEMO	DEMO	DEMO	DEMO	DEMO
 //#################################################################################################
 
 

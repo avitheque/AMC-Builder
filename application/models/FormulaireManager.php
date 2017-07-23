@@ -18,8 +18,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 61 $
- * @since		$LastChangedDate: 2017-07-08 15:25:46 +0200 (Sat, 08 Jul 2017) $
+ * @version		$LastChangedRevision: 69 $
+ * @since		$LastChangedDate: 2017-07-23 03:02:54 +0200 (Sun, 23 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -98,9 +98,15 @@ class FormulaireManager extends MySQLManager {
 	const LIBELLE_VALIDEUR					= "CONCAT(valideur.nom_utilisateur, \" \", valideur.prenom_utilisateur)";
 
 	/**
+	 * Format des DATETIME pour la requête SQL
+	 * @var		string
+	 */
+	const DATETIME_EPREUVE					= "DATE_FORMAT(CONCAT(date_epreuve, ' ', heure_epreuve), '%Y-%m-%d %H:%i:%s')";
+
+	/**
 	 * @brief	Liste de correspondance des noms de champ du formulaire et ceux en base de données.
 	 *
-	 * @var		array
+	 * @var		array	: au format array('nom_du_champ' => `table.field`)
 	 */
 	static protected $LIST_CHAMPS_FORM_DB	= array(
 		// FORMAT ************************************************************ (ordre alphabétique)
@@ -156,14 +162,20 @@ class FormulaireManager extends MySQLManager {
 		'reponse_penalite'					=> "reponse.penalite_reponse",
 		'reponse_sanction'					=> "reponse.sanction_reponse",
 		'reponse_valeur'					=> "reponse.valeur_reponse",
-		'reponse_valide'					=> "reponse.valide_reponse"
+		'reponse_valide'					=> "reponse.valide_reponse",
+
+		// CONTROLE ********************************************************** (ordre alphabétique)
+		'controle_id'						=> "controle.id_controle",
+		'controle_date_debut'				=> "controle.date_debut_controle",
+		'controle_candidat_libre_reponse'	=> "controle_reponse_candidat.libre_reponse_candidat",
+		'controle_candidat_liste_reponses'	=> "controle_reponse_candidat.liste_reponses_candidat"
 	);
 
 	/**
 	 * @brief	Tableau de champs du formulaire HTML.
 	 * @var		array
 	 */
-	private $_aQCM							= array();
+	protected $_aQCM						= array();
 
 	/******************************************************************************************************
 	 * @todo RECHERCHES
@@ -180,25 +192,26 @@ class FormulaireManager extends MySQLManager {
 	 */
 	public function findAllEpreuves($bGroupAccess = self::ACCESS_GROUP_BY_DEFAULT) {
 		// Ajout d'un suivit pour le debuggage
-		$this->debug(__METHOD__);
+		$this->debug(__METHOD__, $bGroupAccess);
 
 		// Requête SELECT
 		$aQuery	= array(
 			0	=> "SELECT *,",
 			1	=> self::LIBELLE_REDACTEUR . " AS libelle_redacteur,",
 			2	=> self::LIBELLE_VALIDEUR . " AS libelle_valideur,",
-			3	=> "COUNT(id_stage_candidat)",
-			4	=> "FROM formulaire",
-			5	=> "INNER JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = id_redacteur)",
-			6	=> "INNER JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
-			7	=> "INNER JOIN groupe ON(redacteur.id_groupe = groupe.id_groupe)",
-			8	=> "INNER JOIN generation USING(id_formulaire)",
-			9	=> "INNER JOIN epreuve USING(id_generation)",
-			10	=> "INNER JOIN stage USING(id_stage)",
-			11	=> "LEFT JOIN stage_candidat USING(id_stage)",
-			12	=> "LEFT JOIN candidat USING(id_candidat)",
-			13	=> null,
-			14	=> "GROUP BY id_formulaire"
+			3	=> self::DATETIME_EPREUVE . " AS datetime_epreuve,",
+			4	=> "COUNT(id_stage_candidat)",
+			5	=> "FROM formulaire",
+			6	=> "INNER JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = id_redacteur)",
+			7	=> "INNER JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
+			8	=> "INNER JOIN groupe ON(redacteur.id_groupe = groupe.id_groupe)",
+			9	=> "INNER JOIN generation USING(id_formulaire)",
+			10	=> "INNER JOIN epreuve USING(id_generation)",
+			11	=> "INNER JOIN stage USING(id_stage)",
+			12	=> "LEFT JOIN stage_candidat USING(id_stage)",
+			13	=> "LEFT JOIN candidat USING(id_candidat)",
+			14	=> null,
+			15	=> "GROUP BY id_formulaire"
 		);
 
 		// Construction du tableau associatif des étiquettes et leurs valeurs
@@ -207,7 +220,70 @@ class FormulaireManager extends MySQLManager {
 		// Fonctionnalité réalisée si l'accès aux formulaires est limité au groupe d'utilisateurs du rédacteur
 		if ($bGroupAccess) {
 			// Ajout d'une clause WHERE selon les bornes GAUCHE / DROITE
-			$aQuery[13]				= "WHERE borne_gauche BETWEEN :borne_gauche AND :borne_droite AND borne_droite BETWEEN :borne_gauche AND :borne_droite";
+			$aQuery[14]				= "WHERE borne_gauche BETWEEN :borne_gauche AND :borne_droite AND borne_droite BETWEEN :borne_gauche AND :borne_droite";
+
+			// Ajout des étiquette de la clause WHERE
+			$aBind[':borne_gauche']	= $this->_borneGauche;
+			$aBind[':borne_droite']	= $this->_borneDroite;
+		}
+
+		try {
+			// Récupération de la liste des formulaires
+			$aResultat = $this->executeSQL($aQuery, $aBind);
+		} catch (ApplicationException $e) {
+			throw new ApplicationException($e->getMessage(), $e->getExtra());
+		}
+
+		// Renvoi de la liste
+		return $aResultat;
+	}
+
+	/**
+	 * @brief	Recherche de toutes les épreuves accessibles par un candidat.
+	 *
+	 * @li	Possibilité de limiter les formulaires selon le groupe d'appartenance de l'utilisateur connecté.
+	 *
+	 * @param	integer	$nIdCandidat		: identifiant du candidat.
+	 * @param	boolean	$bGroupAccess		: (optionnel) Filtre sur les groupes du rédacteur.
+	 * @return	array, tableau contenant l'ensemble des résultats de la requête.
+	 * @throws	ApplicationException si la requête ne fonctionne pas.
+	 */
+	public function findAllEpreuvesByIdCandidat($nIdCandidat, $bGroupAccess = self::ACCESS_GROUP_BY_DEFAULT) {
+		// Ajout d'un suivit pour le debuggage
+		$this->debug(__METHOD__, $nIdCandidat, $bGroupAccess);
+
+		// Requête SELECT
+		$aQuery	= array(
+			0	=> "SELECT *,",
+			1	=> self::LIBELLE_REDACTEUR . " AS libelle_redacteur,",
+			2	=> self::LIBELLE_VALIDEUR . " AS libelle_valideur,",
+			3	=> self::DATETIME_EPREUVE . " AS datetime_epreuve,",
+			4	=> "UNIX_TIMESTAMP(" . self::DATETIME_EPREUVE . ") AS debut_epreuve,",
+			5	=> "UNIX_TIMESTAMP(" . self::DATETIME_EPREUVE . ") + 60 * duree_epreuve AS fin_epreuve,",
+			6	=> "UNIX_TIMESTAMP(CURRENT_TIMESTAMP()) AS maintenant",
+			7	=> "FROM formulaire",
+			8	=> "INNER JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = id_redacteur)",
+			9	=> "INNER JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
+			10	=> "INNER JOIN groupe ON(redacteur.id_groupe = groupe.id_groupe)",
+			11	=> "INNER JOIN generation USING(id_formulaire)",
+			12	=> "INNER JOIN epreuve USING(id_generation)",
+			13	=> "INNER JOIN stage USING(id_stage)",
+			14	=> "INNER JOIN stage_candidat USING(id_stage)",
+			15	=> "INNER JOIN candidat USING(id_candidat)",
+			16	=> "WHERE candidat.id_candidat = :id_candidat",
+			17	=> null,
+			18	=> "GROUP BY id_formulaire"
+		);
+
+		// Construction du tableau associatif des étiquettes et leurs valeurs
+		$aBind = array(
+			':id_candidat'	=> $nIdCandidat
+		);
+
+		// Fonctionnalité réalisée si l'accès aux formulaires est limité au groupe d'utilisateurs du rédacteur
+		if ($bGroupAccess) {
+			// Ajout d'une clause WHERE selon les bornes GAUCHE / DROITE
+			$aQuery[17]				= "AND borne_gauche BETWEEN :borne_gauche AND :borne_droite AND borne_droite BETWEEN :borne_gauche AND :borne_droite";
 
 			// Ajout des étiquette de la clause WHERE
 			$aBind[':borne_gauche']	= $this->_borneGauche;
@@ -228,6 +304,7 @@ class FormulaireManager extends MySQLManager {
 	/**
 	 * @brief	Recherche des capacités d'accueil selon l'identifiant d'une épreuve.
 	 *
+	 * @param	integer	$nIdEpreuve			: identifiant de l'épreuve.
 	 * @return	integer, résultat de la requête.
 	 * @throws	ApplicationException si la requête ne fonctionne pas.
 	 */
@@ -305,6 +382,24 @@ class FormulaireManager extends MySQLManager {
 
 		// Renvoi de la liste
 		return $aResultat;
+	}
+
+	/**
+	 * @brief	Récupère d'identifiant du formulaire à partir de l'identifiant d'une épreuve.
+	 *
+	 * @param	integer	$nIdEpreuve			: identifiant de l'épreuve.
+	 * @return	integer, résultat de la requête.
+	 * @throws	ApplicationException si la requête ne fonctionne pas.
+	 */
+	public function getIdFormulaireFromIdEpreuve($nIdEpreuve) {
+		// Ajout d'un suivit pour le debuggage
+		$this->debug(__METHOD__, $nIdEpreuve);
+
+		// Récupération de l'épreuve par son identifiant
+		$aEpreuve = $this->getEpreuveById($nIdEpreuve);
+
+		// Renvoi de l'identifiant du formulaire si l'épreuve est valide
+		return DataHelper::get($aEpreuve, 'id_formulaire', DataHelper::DATA_TYPE_INT, null);
 	}
 
 	/**
@@ -396,7 +491,7 @@ class FormulaireManager extends MySQLManager {
 	 */
 	public function findAllFormulaires($bGroupAccess = self::ACCESS_GROUP_BY_DEFAULT) {
 		// Ajout d'un suivit pour le debuggage
-		$this->debug(__METHOD__);
+		$this->debug(__METHOD__, $bGroupAccess);
 
 		// Requête SELECT
 		$aQuery	= array(
@@ -449,7 +544,7 @@ class FormulaireManager extends MySQLManager {
 	 */
 	public function findAllFormulairesForValidation($bGroupAccess = self::ACCESS_GROUP_BY_DEFAULT) {
 		// Ajout d'un suivit pour le debuggage
-		$this->debug(__METHOD__);
+		$this->debug(__METHOD__, $bGroupAccess);
 
 		// Requête SELECT
 		$aQuery	= array(
@@ -505,7 +600,7 @@ class FormulaireManager extends MySQLManager {
 	 */
 	public function findAllFormulairesForGeneration($bGroupAccess = self::ACCESS_GROUP_BY_DEFAULT) {
 		// Ajout d'un suivit pour le debuggage
-		$this->debug(__METHOD__);
+		$this->debug(__METHOD__, $bGroupAccess);
 
 		// Requête SELECT
 		$aQuery	= array(
@@ -709,7 +804,7 @@ class FormulaireManager extends MySQLManager {
 	 */
 	public function findAllQuestionsByCriteres($aCriteres = array(), $aListeExcludeId = array(), $bOrphelin = false, $bGroupAccess = self::ACCESS_GROUP_BY_DEFAULT) {
 		// Ajout d'un suivit pour le debuggage
-		$this->debug(__METHOD__, $aCriteres, $aListeExcludeId, $bOrphelin);
+		$this->debug(__METHOD__, $aCriteres, $aListeExcludeId, $bOrphelin, $bGroupAccess);
 
 		// Initialisation de la liste
 		$aResultat						= array();
@@ -874,7 +969,7 @@ class FormulaireManager extends MySQLManager {
 	 */
 	public function findQuestionsByIdFormulaire($nIdFormulaire, $aFiltre = array()) {
 		// Ajout d'un suivit pour le debuggage
-		$this->debug(__METHOD__, $nIdFormulaire);
+		$this->debug(__METHOD__, $nIdFormulaire, $aFiltre);
 
 		// Requête SELECT
 		$aQuery	= array(
@@ -915,7 +1010,7 @@ class FormulaireManager extends MySQLManager {
 	 */
 	public function findReponsesByIdQuestion($nIdQuestion, $aFiltre = array()) {
 		// Ajout d'un suivit pour le debuggage
-		$this->debug(__METHOD__, $nIdQuestion);
+		$this->debug(__METHOD__, $nIdQuestion, $aFiltre);
 
 		// Requête SELECT
 		$aQuery	= array(
@@ -1315,6 +1410,9 @@ class FormulaireManager extends MySQLManager {
 	 * @return	boolean
 	 */
 	protected function logGeneration($nIdGeneration, $aQuery, $bFinalCommit = true) {
+		// Ajout d'un suivit pour le debuggage
+		$this->debug(__METHOD__, $nIdGeneration, $aQuery, $bFinalCommit);
+
 		// Récupération du type de l'action de la requête
 		$sTypeAction = DataHelper::getTypeSQL($aQuery, true);
 
@@ -1627,6 +1725,9 @@ class FormulaireManager extends MySQLManager {
 	 * @return	boolean
 	 */
 	protected function logReponse($nIdReponse, $aQuery, $bFinalCommit = false) {
+		// Ajout d'un suivit pour le debuggage
+		$this->debug(__METHOD__, $nIdReponse, $aQuery, $bFinalCommit);
+
 		// Récupération du type de l'action de la requête
 		$sTypeAction = DataHelper::getTypeSQL($aQuery, true);
 
@@ -1784,6 +1885,9 @@ class FormulaireManager extends MySQLManager {
 	 * @return	boolean
 	 */
 	protected function logQuestion($nIdQuestion, $aQuery, $bFinalCommit = true) {
+		// Ajout d'un suivit pour le debuggage
+		$this->debug(__METHOD__, $nIdQuestion, $aQuery, $bFinalCommit);
+
 		// Récupération du type de l'action de la requête
 		$sTypeAction = DataHelper::getTypeSQL($aQuery, true);
 
@@ -1921,6 +2025,9 @@ class FormulaireManager extends MySQLManager {
 	 * @return	boolean
 	 */
 	protected function logFormulaire($nIdFormulaire, $aQuery, $bFinalCommit = true) {
+		// Ajout d'un suivit pour le debuggage
+		$this->debug(__METHOD__, $nIdFormulaire, $aQuery, $bFinalCommit);
+
 		// Récupération du type de l'action de la requête
 		$sTypeAction = DataHelper::getTypeSQL($aQuery, true);
 
@@ -2336,7 +2443,8 @@ class FormulaireManager extends MySQLManager {
 		} catch (ApplicationException $e) {
 			// Annulation des modifications
 			$this->oSQLConnector->rollBack();
-			// Affichage d'un message de confirmation
+
+			// Affichage d'un message d'erreur
 			ViewRender::setMessageAlert("Erreur rencontrée lors de l'enregistrement...");
 
 			throw new ApplicationException($e->getMessage(), $e->getExtra());
@@ -2349,7 +2457,7 @@ class FormulaireManager extends MySQLManager {
 			// Réinitialisation du champ du formulaire
 			$this->_aQCM[$sField]	= array();
 		}
-		
+
 		// Renvoi du formulaire
 		return $this->_aQCM;
 	}
@@ -2717,6 +2825,9 @@ class FormulaireManager extends MySQLManager {
 	 * @return	boolean
 	 */
 	protected function logValidation($nIdFormulaire, $aQuery, $bFinalCommit = true) {
+		// Ajout d'un suivit pour le debuggage
+		$this->debug(__METHOD__, $nIdFormulaire, $aQuery, $bFinalCommit);
+
 		// Récupération du type de l'action de la requête
 		$sTypeAction = DataHelper::getTypeSQL($aQuery, true);
 

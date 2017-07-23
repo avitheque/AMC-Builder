@@ -12,14 +12,17 @@
 
 global $sArticle;
 // Initialisation de l'objet DatatableHelper à partir de la liste
-$oDataTable	= new DatatableHelper("DatatableHelper", $aListeItem);
+$oDataTable	= new DatatableHelper("DatatableHelper",	$aListeItem);
 
 // Attribution d'une classe CSS à la 1ère colonne par son nom
-$oDataTable->setClassColumn("align-left strong",	"column_1");
+$oDataTable->setClassColumn("align-left strong",		"column_1");
 
 // Formatage des colonnes en type DATE
-$oDataTable->setFormatOnColumn('date_debut',	DataHelper::DATA_TYPE_DATE);
-$oDataTable->setFormatOnColumn('date_fin',		DataHelper::DATA_TYPE_DATE);
+$oDataTable->setFormatOnColumn('date_debut',			DataHelper::DATA_TYPE_DATE);
+$oDataTable->setFormatOnColumn('date_fin',				DataHelper::DATA_TYPE_DATE);
+
+// Tri par défaut sur la colonne `date_debut`
+$oDataTable->setOrderColumn('date_debut',				DatatableHelper::ORDER_ASC);
 
 // Renommage des colonnes et mascage de celles qui n'y sont pas présentes
 $oDataTable->renameColumns($aTitreItem, true);
@@ -40,6 +43,9 @@ $sArticle .= "<fieldset class='padding-H-20'>
 						<span class=\"commentaire\">// Formatage des colonnes en type DATE</span><br/>
 						<span class=\"variable\">\$oDataTable</span>->setFormatOnColumn(<span class=\"texte\">'date_debut'</span>, DataHelper::<span class=\"methode italic\">DATA_TYPE_DATE</span>);<br />
 						<span class=\"variable\">\$oDataTable</span>->setFormatOnColumn(<span class=\"texte\">'date_fin'</span>, DataHelper::<span class=\"methode italic\">DATA_TYPE_DATE</span>);<br />
+						<br />
+						<span class=\"commentaire\">// Tri par défaut sur la colonne `date_debut`</span><br/>
+						<span class=\"variable\">\$oDataTable</span>->setOrderColumn(<span class=\"texte\">\"date_debut\"</span>, DatatableHelper::<span class=\"methode italic\">ORDER_ASC</span>);<br />
 						<br />
 						<span class=\"commentaire\">// Renommage des colonnes et mascage de celles qui n'y sont pas présentes</span><br/>
 						<span class=\"variable\">\$oDataTable</span>->renameColumns(<span class=\"variable\">\$aTitreItem</span>, <span class=\"native\">true</span>);<br />

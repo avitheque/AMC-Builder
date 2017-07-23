@@ -1,23 +1,20 @@
 <?php
 /**
- * @brief	Erreur de login
+ * @brief	Erreur dans l'épreuve QCM
  *
- * Vue affichant un message d'erreur lors de la connexion à l'application.
+ * Vue affichant un message d'erreur lors d'une épreuve QCM.
  * User: durandcedric
  * Date: 25/09/16
  * Time: 11:43
- * 
+ *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
  */
 
-$sAlertBox = "<article class=\"alertBox margin-top-4p\">
-				<h2 class=\"center\">Erreur d'authentification</h2>
+$sAlertBox = "<article class=\"alertBox\">
+				<h2 class=\"center\">Erreur rencontrée lors de l'enregistrement de épreuve QCM</h2>
 			</article>";
 
 // Ajout du contenu au VIEW_BODY pour l'exploitation du message d'avertissement
 ViewRender::addToBody($sAlertBox);
-
-// Récupération de la page de connexion
-require_once 'index.phtml';

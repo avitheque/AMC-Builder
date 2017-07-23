@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 5 $
- * @since		$LastChangedDate: 2017-03-02 22:16:57 +0100 (jeu., 02 mars 2017) $
+ * @version		$LastChangedRevision: 67 $
+ * @since		$LastChangedDate: 2017-07-19 00:09:56 +0200 (Wed, 19 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -307,7 +307,7 @@ class ReferentielHelper {
 		$oReferentiel->renameColumns($aColonnes, true);
 
 		// Tri du tableau sur la colonne LIBELLÉ par ordre ASC
-		$oReferentiel->setOrderColumn('LIBELLÉ', 'asc');
+		$oReferentiel->setOrderColumn('LIBELLÉ', DatatableHelper::ORDER_ASC);
 
 		// Ajout d'une colonne [ACTION] avec un lien HREF
 		$oReferentiel->addAnchorOnColumn("ACTION", 0, "Éditer", "/referentiel/editer?table=" . $this->_sTableName . "&id=", "confirm green");

@@ -251,7 +251,7 @@ $(document).ready(function() {
 
 	// Activation du plugin TimePicker sur les champs INPUT de classe TIME
 	setTimePicker("input.time");
-	
+
 	// Activation des TOOLTIPS de pagination
 	$(".page-top, .page-bottom").tooltip({
 		position:	{my: "left+20", at: "center"}
@@ -261,7 +261,7 @@ $(document).ready(function() {
 	$(".delete").tooltip({
 		position:	{my: "left+10", at: "right center"}
 	});
-	
+
 	// Activation des TOOLTIPS statiques
 	$(".tooltip").tooltip({
 		position:	{my: "top+20", at: "center"}
@@ -332,20 +332,32 @@ $(document).ready(function() {
 	});
 
 	// Affichage d'un message de confirmation avant le changement de page
-	$("button[type=submit].confirm, button[type=submit].force-confirm").click(function(event) {
+	$("button[type=submit].confirm, button[type=submit].force-confirm, button[type=submit].final-confirm").click(function(event) {
 		// Protection contre le syndrome du cliqueur intempestif
 		event.stopPropagation();
 
-		// Fonctionnalité réalisée si une modification a été réalisée sur le formulaire
-		if (MODIFICATION || $(this).hasClass("force-confirm")) {
-			// Initialisation de l'action du formulaire
-			var url = "/" + CONTROLLER + "/reset";
+		// Initialisation de l'action du formulaire par défaut
+		var button_or_url	= "/" + CONTROLLER + "/reset";
 
+        // Initialisation du sélecteur de la boîte dialogue par défaut
+		var selector		= "#dialog-confirm";
+
+		// Fonctionnalité réalisée dans le cas d'une boîte de dialogue pour finalisation
+		if (!MODIFICATION && $(this).hasClass("final-confirm")) {
+            // Modification de l'URL de la boîte de dialogue
+            button_or_url	= $(this);
+
+            // Modification du sélecteur de la boîte de dialogue
+            selector		= "#dialog-final";
+		}
+
+        // Fonctionnalité réalisée si une modification a été réalisée sur le formulaire
+		if (MODIFICATION || $(this).hasClass("force-confirm") || $(this).hasClass("final-confirm")) {
 			// Demande une confirmation avant le changement de la page
-			setDialogConfirm("#dialog-confirm", url);
+			setDialogConfirm(selector, button_or_url);
 
-			$("#dialog-confirm").dialog("open");
-			$("#dialog-confirm").removeClass("hidden");
+			$(selector).dialog("open");
+			$(selector).removeClass("hidden");
 
 			// Annulation de l'événement
 			event.preventDefault();
@@ -373,7 +385,7 @@ $(document).ready(function() {
 	$(document).on("click", "a[class*=confirm]", function(event) {
 		// Protection contre le syndrome du cliqueur intempestif
 		event.stopPropagation();
-		
+
 		// Récupération de l'URL
 		var url = $(this).attr("href");
 
@@ -432,7 +444,7 @@ $(document).ready(function() {
 			event.preventDefault();
 		}
 	});
-	
+
 	//#############################################################################################
 	// RACCOURCIS CLAVIERS SUR LES BOUTONS
 	//#############################################################################################
@@ -527,7 +539,7 @@ $(document).ready(function() {
 
 			// Message de debuggage
 			$("#var-debug").text(message + " [" + event.which + "]");
-	
+
 			// Annulation de l'événement
 			event.preventDefault();
 		}

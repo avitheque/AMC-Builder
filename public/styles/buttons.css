@@ -7,8 +7,8 @@
  *
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 67 $
+ * @since		$LastChangedDate: 2017-07-19 00:09:56 +0200 (Wed, 19 Jul 2017) $
  */
 
 /** STANDARD *************************************************************************************/
@@ -116,8 +116,11 @@ a.button.blue:active		{
 
 /** DISABLED *************************************************************************************/
 button[disabled],
+a.button.disabled,
 button[disabled]:hover,
-button[disabled]:active		{
+a.button.disabled:hover,
+button[disabled]:active,
+a.button.disabled:active	{
 	background:				linear-gradient(to bottom, rgb(176, 176, 176) 0%, rgb(104, 104, 104) 50%, rgb(95, 95, 95) 51%, rgb(123, 123, 123) 100%);
 	border-top:				silver 1px solid;
 	border-right:			grey 1px solid;
@@ -129,7 +132,6 @@ button[disabled]:active		{
 	box-shadow:				6px 6px 12px rgba(77, 77, 77, 0.8);
 	cursor:					default;
 }
-
 
 /** GROUPES DE BOUTONS ***************************************************************************/
 div.group-button			{

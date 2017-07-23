@@ -13,8 +13,8 @@
 	 * @subpackage	Application
 	 * @author		durandcedric@avitheque.net
 	 * @update		$LastChangedBy: durandcedric $
-	 * @version		$LastChangedRevision: 52 $
-	 * @since		$LastChangedDate: 2017-06-28 18:47:22 +0200 (Wed, 28 Jun 2017) $
+	 * @version		$LastChangedRevision: 67 $
+	 * @since		$LastChangedDate: 2017-07-19 00:09:56 +0200 (Wed, 19 Jul 2017) $
 	 *
 	 * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
 	 * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -68,6 +68,7 @@
 		defined('APP_NAME')						||	define('APP_NAME',							DataHelper::get($aApplication,	'name'));
 		defined('APP_VERSION')					||	define('APP_VERSION',						DataHelper::get($aApplication,	'version'));
 		defined('MODE_DEBUG')					||	define('MODE_DEBUG',						DataHelper::get($aApplication,	'mode_debug',				DataHelper::DATA_TYPE_BOOL));
+		defined('MODE_DEMO')					||	define('MODE_DEMO',							DataHelper::get($aApplication,	'mode_demo',				DataHelper::DATA_TYPE_BOOL));
 		defined('MODE_SUBSTITUTE_USER')			||	define('MODE_SUBSTITUTE_USER',				DataHelper::get($aApplication,	'mode_substitute_user',		DataHelper::DATA_TYPE_BOOL));
 		defined('FW_DEFAULTCONTROLLER')			||	define('FW_DEFAULTCONTROLLER',				DataHelper::get($aApplication,	'default_controller'));
 		defined('FW_DEFAULTACTION')				||	define('FW_DEFAULTACTION',					DataHelper::get($aApplication,	'default_action'));

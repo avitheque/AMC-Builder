@@ -14,8 +14,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 52 $
- * @since		$LastChangedDate: 2017-06-28 18:47:22 +0200 (Wed, 28 Jun 2017) $
+ * @version		$LastChangedRevision: 69 $
+ * @since		$LastChangedDate: 2017-07-23 03:02:54 +0200 (Sun, 23 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -250,6 +250,8 @@ abstract class AbstractDataManager {
 
 	/**
 	 * @brief	Enregistrement d'un LOG.
+	 * 
+	 * @li	Une erreur sur l'enregistrement d'un LOG ne doit pas interrompre le traitement en amont.
 	 *
 	 * @param	string	$sLogName		: nom de la table de LOG.
 	 * @param	array	$aSet			: tableau des données à enregistrer.
@@ -264,15 +266,17 @@ abstract class AbstractDataManager {
 		// Ajout des données à la requête
 		$aQuery		= array_merge($aInitQuery, $aSet);
 
+		// Fonctionnalité réalisée si la requête rencontre une erreur
 		if (! $this->executeSQL($aQuery, $aBind)) {
 			// Levée d'une exception sur le LOG
-			throw new ApplicationException('ELogAction', $aQuery);
-		} else {
-			if ($bFinalCommit) {
-				$this->oSQLConnector->commit();
-			}
-			return true;
+			throw new ApplicationException('ELogAction', DataHelper::queryToString($aQuery, $aBind));
+		} elseif ($bFinalCommit) {
+			// Commit de la modification en base de données
+			$this->oSQLConnector->commit();
 		}
+		
+		// Renvoi du résultat
+		return true;
 	}
 
 	//#############################################################################################

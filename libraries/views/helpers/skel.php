@@ -8,8 +8,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 47 $
- * @since		$LastChangedDate: 2017-06-24 18:26:35 +0200 (Sat, 24 Jun 2017) $
+ * @version		$LastChangedRevision: 69 $
+ * @since		$LastChangedDate: 2017-07-23 03:02:54 +0200 (Sun, 23 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -111,14 +111,21 @@ if (defined('MODE_DEBUG') && (bool) MODE_DEBUG) {
 
 	<!-- DialogBox jQuery -->
 	<div id="dialog-confirm" class="hidden">
-		<p class="margin-top-25">
+		<p class="margin-top-25 strong red center">
 			Les données du formulaire actuel n'ont pas été enregistrées.
 			<hr />
 			Si vous continuez, toutes les modifications seront perdues...
 		</p>
 	</div>
+	<div id="dialog-final" class="hidden">
+		<p class="margin-top-25 strong center">
+			Le formulaire va être clos.
+			<hr />
+			Si vous continuez, toute modification ultérieure ne sera plus possible...
+		</p>
+	</div>
 	<div id="dialog-delete" class="hidden">
-		<p class="margin-top-25">
+		<p class="margin-top-25 strong center">
 			Vous êtes sur le point de supprimer l'élément actuel.
 			<hr />
 			Si vous continuez, toutes les données seront définitivement perdues...

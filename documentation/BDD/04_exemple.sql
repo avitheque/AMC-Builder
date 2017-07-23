@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client: 127.0.0.1:3306
--- Généré le: Lun 23 Janvier 2017 à 14:44
+-- Généré le: Dimanche 22 Juillet 2017 à 14:00
 -- Version du serveur: 5.5.35-0+wheezy1
 -- Version de PHP: 5.3.28
 
@@ -27,7 +27,7 @@ SET time_zone = "+00:00";
 --
 
 INSERT INTO `formulaire` (`id_formulaire`, `id_domaine`, `id_sous_domaine`, `id_categorie`, `id_sous_categorie`, `titre_formulaire`, `presentation_formulaire`, `strict_formulaire`, `note_finale_formulaire`, `penalite_formulaire`, `id_redacteur`, `validation_formulaire`, `id_valideur`, `date_modification_formulaire`) VALUES
-(1, 0, 0, 0, 0, 'Test', 'Veuillez répondre aux questions ci-dessous du mieux que vous le pouvez.', 0, 20, 0, '333333', 2, '444444', '2017-01-11 11:20:07');
+(1, 6, 0, 0, 0, 'Test', 'Veuillez répondre aux questions ci-dessous du mieux que vous le pouvez.', 0, 20, 0, '333333', 2, '444444', '2017-01-11 11:20:07');
 
 -- --------------------------------------------------------
 
@@ -168,20 +168,20 @@ INSERT INTO `stage` (`id_stage`, `libelle_stage`, `id_domaine`, `id_sous_domaine
 --
 
 INSERT INTO `candidat` (`id_candidat`, `id_grade`, `nom_candidat`, `prenom_candidat`, `unite_candidat`, `date_modification_candidat`) VALUES
-('111111', 19, 'MARTIN', 'Martin', '-', '2017-02-05 13:17:13'),
-('123456', 19, 'DOE', 'John', '-', '2017-02-05 10:36:44'),
-('222222', 20, 'MARTINE', 'Martine', '-', '2017-02-05 13:17:55'),
-('234567', 20, 'DUPONT', 'Martine', '-', '2017-02-05 13:13:59');
+('111111', 20, 'MARTIN', 'Martin', '-', '2017-02-05 13:17:13'),
+('123456', 20, 'DOE', 'John', '-', '2017-02-05 10:36:44'),
+('222222', 21, 'MARTINE', 'Martine', '-', '2017-02-05 13:17:55'),
+('234567', 21, 'DUPONT', 'Martine', '-', '2017-02-05 13:13:59');
 
 --
 -- Contenu de la table `stage_candidat`
 --
 
 INSERT INTO `stage_candidat` (`id_stage_candidat`, `id_stage`, `id_candidat`, `code_candidat`, `date_modification_stage_candidat`) VALUES
-(1, 1, '222222', '4067', '2017-02-20 13:29:44'),
-(2, 1, '234567', '5736', '2017-02-20 13:29:44'),
-(3, 1, '111111', '6873', '2017-02-20 13:29:44'),
-(4, 1, '123456', '0974', '2017-02-20 13:29:44');
+(1, 1, '111111', '6873', '2017-02-20 13:29:44'),
+(2, 1, '123456', '0974', '2017-02-20 13:29:44'),
+(3, 1, '222222', '4067', '2017-02-20 13:29:44'),
+(4, 1, '234567', '5736', '2017-02-20 13:29:44');
 
 --
 -- Contenu de la table `generation`

@@ -15,8 +15,8 @@
  * @subpackage	Libraries
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 61 $
- * @since		$LastChangedDate: 2017-07-08 15:25:46 +0200 (Sat, 08 Jul 2017) $
+ * @version		$LastChangedRevision: 69 $
+ * @since		$LastChangedDate: 2017-07-23 03:02:54 +0200 (Sun, 23 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -140,7 +140,8 @@ abstract class AbstractFormulaireQCMController extends AbstractFormulaireControl
 		}
 
 		/**
-		 * @todo Possibilité d'activer le contenu de la bibliothèque lors du chargement
+		 * @todo Possibilité de précharger le contenu de la bibliothèque lors du chargement
+		 *
 		// ========================================================================================
 		// INITIALISATION DU CONTENU DE LA BIBLIOTHÈQUE - DÉSACTIVÉE AU CHARGEMENT POUR L'INSTANT...
 		// ========================================================================================
@@ -154,7 +155,8 @@ abstract class AbstractFormulaireQCMController extends AbstractFormulaireControl
 		// Récupération du contenu de la bibliothèque selon les critères du formulaire
 		$this->addToData('liste_bibliotheque',		$this->_oFormulaireManager->findAllQuestionsByCriteres($aCriteres));
 		// ========================================================================================
-		*/
+		 *
+		 */
 
 		// Fonctionnalité réalisée selon l'action du bouton
 		$sButton = strtolower($this->getParam('button'));
@@ -206,14 +208,13 @@ abstract class AbstractFormulaireQCMController extends AbstractFormulaireControl
 				break;
 
 			default:
-				// Retrait d'une question au formulaire
-				// $sButton = "retirer_{occurrence}"
+				// Retrait d'une question au formulaire : $sButton = "retirer_{occurrence}"
 				if (preg_match("@^" . self::ACTION_RETIRER . "_([0-9]+)@", $sButton, $aMatched)) {
 					// Récupération de l'occurence de la question
 					$nQuestion = $aMatched[1];
 
 					// Message de débuggage
-					$this->debug("TERMINER");
+					$this->debug("RETIRER");
 					// Exécution de l'action
 					$this->retirerAction($nQuestion);
 				}

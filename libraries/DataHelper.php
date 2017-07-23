@@ -10,8 +10,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 32 $
- * @since		$LastChangedDate: 2017-06-11 01:31:10 +0200 (Sun, 11 Jun 2017) $
+ * @version		$LastChangedRevision: 69 $
+ * @since		$LastChangedDate: 2017-07-23 03:02:54 +0200 (Sun, 23 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -266,6 +266,24 @@ class DataHelper {
 			// Le paramètre est déjà au bon format
 			return	$sDateTime;
 		}
+	}
+
+	/** @brief	Converti un TIMESTAMP au format MySQL
+	 *
+	 * @todo	ATTENTION au passage au 2032-12-31...
+	 *
+	 * La fonction transforme un TIMESTAMP au format [YYYY-MM-DD H:i:s]
+	 * @param	timestamp	$nTimeStamp		: valeur du TIMESTAMP, s'il est vide l'heure du système est pris en charge.
+	 * @param	string		$sFormat		: chaîne de caractères correspondant au format attendu, par défaut [d/m/Y H:i:s].
+	 * @return	chaîne de caractères représentant la date, au format FR.
+	 */
+	public static function timesampToMyDatetime($nTimeStamp = null, $sFormat = "Y-m-d H:i:s") {
+		// Fonctionnalité réalisée si le paramètre est vide
+		if (!DataHelper::isValidNumeric($nTimeStamp, false)) {
+			$nTimeStamp = mktime();
+		}
+
+		return date($sFormat, $nTimeStamp);
 	}
 
 	/**
@@ -1274,7 +1292,7 @@ class DataHelper {
 			// Text SQL
 			case self::DATA_TYPE_MYTXT:
 				if (empty($xValue)) {
-					return "";
+					return $bForceEmpty ? 'NULL' : "";
 				}
 				// Renvoi de la chaîne sans les caractères spéciaux interprétés
 				$sText = trim(stripslashes(strtr(preg_replace("/\s\s+/", null, nl2br($xValue)), self::$HTML_REPLACE)));

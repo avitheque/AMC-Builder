@@ -3,6 +3,58 @@
  * Classe de création d'un tableau dynamique dans l'application.
  *
  * @li	Exploite les fonctionnalités du plugin DataTables de jQuery.
+ * 
+ * @code
+ * 	// Tableau BIDIMENTIONNEL représentant le résultat d'une requête
+ * 	$aListeItem = array(
+ * 		array(
+ * 			// Key		=> VALEUR DE LA COLONNE
+ * 			'column_1'	=> "A1",
+ * 			'column_2'	=> "B1",
+ * 			'column_3'	=> "C1",
+ * 			'column_4'	=> "D1",
+ * 			'column_5'	=> "E1",
+ * 			'date_debut'=> "1970-01-01",
+ * 			'date_fin'	=> "1979-09-22"
+ * 		),
+ * 		array(
+ * 			// Key		=> VALEUR DE LA COLONNE
+ * 			'column_1'	=> "A2",
+ * 			'column_2'	=> "B2",
+ * 			'column_3'	=> "C2",
+ * 			'column_4'	=> "D2",
+ * 			'column_5'	=> "E2",
+ * 			'date_debut'=> "1979-09-22",
+ * 			'date_fin'	=> date("Y-m-d")
+ * 		),
+ * 		array(
+ * 			// Key		=> VALEUR DE LA COLONNE
+ * 			'column_1'	=> "A3",
+ * 			'column_2'	=> "B3",
+ * 			'column_3'	=> "C3",
+ * 			'column_4'	=> "D3",
+ * 			'column_5'	=> "E3",
+ * 			'date_debut'=> date("Y-m-d"),
+ * 			'date_fin'	=> "9999-12-31",
+ * 		)
+ * 	);
+ * 
+ * 	// Initialisation de l'objet DatatableHelper à partir de la liste
+ * 	$oDataTable = new DatatableHelper("DatatableHelper",	$aListeItem);
+ * 	
+ * 	// Attribution d'une classe CSS à la 1ère colonne par son nom
+ * 	$oDataTable->setClassColumn("align-left strong",		"column_1");
+ * 	
+ * 	// Formatage des colonnes en type DATE
+ * 	$oDataTable->setFormatOnColumn('date_debut',			DataHelper::DATA_TYPE_DATE);
+ * 	$oDataTable->setFormatOnColumn('date_fin',				DataHelper::DATA_TYPE_DATE);
+ * 	
+ * 	// Tri par défaut sur la colonne de `date_debut`
+ * 	$oDataTable->setOrderColumn('date_debut',				DatatableHelper::ORDER_ASC);
+ * 	
+ * 	// Rendu final sous forme de code HTML
+ * 	print $oDataTable->renderHTML();
+ * @endcode
  *
  * @name		DatatableHelper
  * @category	Helper
@@ -10,8 +62,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 67 $
+ * @since		$LastChangedDate: 2017-07-19 00:09:56 +0200 (Wed, 19 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -60,7 +112,7 @@ class DatatableHelper extends TableHelper {
 	 * @param	string	$sOrder			: ordre de tri à affecter.
 	 * @return	void
 	 */
-	public function setOrderColumn($xRefData = 0, $sOrder = "both") {
+	public function setOrderColumn($xRefData = 0, $sOrder = self::ORDER_BOTH) {
 		// Récupération de l'occurrence de la colonne de référence
 		$nOccurrence = $this->getColumnOccurrence($xRefData);
 

@@ -10,8 +10,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 67 $
+ * @since		$LastChangedDate: 2017-07-19 00:09:56 +0200 (Wed, 19 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -369,6 +369,14 @@ class TableHelper extends HtmlHelper {
 			if (!empty($sTarget)) {
 				// Ajout de l'attribut TARGET
 				$oAnchor->setAttribute('target', $sTarget);
+			}
+
+			// Fonctionnalité réalisée si une classe est déjà attribuée à la colonne portant le terme `disabled`
+			if (isset($this->_class[$nOccurrence]['td']) && array_key_exists($sTitre, $this->_class[$nOccurrence]['td']) && preg_match("@disabled@", $this->_class[$nOccurrence]['td'][$sTitre])) {
+				// Ajout de l'attribut DISABLED
+				$oAnchor->addAttribute('class', "disabled");
+				// Suppression du HREF
+				$oAnchor->setAttribute('href', "#");
 			}
 
 			// Ajout de l'élément
@@ -788,6 +796,13 @@ class TableHelper extends HtmlHelper {
 				$sRefKey		= $this->getColumnKey($xRefData);
 				$sRootOption	= $aEntity[$sRefKey];
 
+				// Fonctionnalité réalisée si la classe comporte le terme `disabled`
+				if (preg_match("@disabled@", $sClass)) {
+					// Suppression de l'adresse du lien
+					$sRoot		= "#";
+					$sRootOption= null;
+				}
+
 				// Construction de l'élément HTML
 				$oAnchor		= new AnchorHelper($sLabel, $sRoot, $sClass, $sRootOption, $sTitle);
 				$xData			= $oAnchor->renderHTML();
@@ -846,10 +861,18 @@ class TableHelper extends HtmlHelper {
 						// Récupération de la clé de la colonne de référence
 						$sKey = $this->getColumnKey($sColumn);
 
+						// Fonctionnalité réalisée si une classe est déjà attribuée à la colonne portant le terme `disabled`
+						$sColumnClass = "";
+						if (isset($this->_class[$xOccurrence]['td']) && array_key_exists($sKey, $this->_class[$xOccurrence]['td']) && preg_match("@disabled@", $this->_class[$xOccurrence]['td'][$sKey])) {
+							// Ajout de l'attribut DISABLED
+							$sColumnClass = "disabled";
+						}
+
 						foreach ($this->_condition[$xRefData] as $sReference => $aCondition) {
 							foreach ($aCondition as $sTestValue => $aConfig) {
 								// Récupération du nom de la colonne à tester
 								$sColumn = $this->getColumnKey($sReference);
+
 								if (array_key_exists($sReference, $aEntity)) {
 									$sValue = $aEntity[$sReference];
 								} elseif (array_key_exists($sColumn, $aEntity)) {
@@ -860,6 +883,13 @@ class TableHelper extends HtmlHelper {
 
 								// Fonctionnalité réalisée si la condition est réalisée
 								if ($sValue == $sTestValue) {
+									// Ajout de la classe de la colonne à l'élément
+									if (!empty($sColumnClass) && array_key_exists('class', $aConfig)) {
+										$aConfig['class'] .= " " . $sColumnClass;
+									} elseif (!empty($sColumnClass)) {
+										$aConfig['class'] = $sColumnClass;
+									}
+
 									// Récupération du contenu HTML
 									$xData = $this->_getConditionalHTML($aConfig['type'], $aConfig, $aEntity);
 								}

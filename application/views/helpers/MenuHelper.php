@@ -8,8 +8,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 32 $
- * @since		$LastChangedDate: 2017-06-11 01:31:10 +0200 (Sun, 11 Jun 2017) $
+ * @version		$LastChangedRevision: 67 $
+ * @since		$LastChangedDate: 2017-07-19 00:09:56 +0200 (Wed, 19 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -40,6 +40,7 @@ class MenuHelper extends ViewRender {
 		'generation',								// Générer le fichier LaTeX
 		'gestion',									// Gérer l'application
 		'supervision',								// Administrer le serveur
+		'epreuve',									// Participer à une épreuve QCM
 		'compte',									// Accéder aux informations du compte
 
 		// Sous-menus de la forme array('ressource_enfant' => 'ressource_parent')
