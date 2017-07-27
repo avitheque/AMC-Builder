@@ -42,13 +42,11 @@ $aColonnes = array(
 );
 $oEpreuve->renameColumns($aColonnes, true);
 
-/*
 // Indicateur d'épreuve non disponible
 $oEpreuve->setConditionalClassOnColumn('debut_epreuve',	'>', 'maintenant', "strong grey",	$aColonnes);
 $oEpreuve->setConditionalClassOnColumn('fin_epreuve',	'<', 'maintenant', "strong grey",	$aColonnes);
 $oEpreuve->setConditionalClassOnColumn('debut_epreuve',	'>', 'maintenant', "disabled",		"ACTION");
 $oEpreuve->setConditionalClassOnColumn('fin_epreuve',	'<', 'maintenant', "disabled",		"ACTION");
-*/
 
 // Ajout d'une colonne [ACTION] avec un lien HREF permettant au candidat de participer si le fomulaire est valide
 $oEpreuve->setConditionalTextOnColumn("ACTION", "validation_formulaire", 1,"En attente...", "strong");

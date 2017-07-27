@@ -13,8 +13,8 @@
 	 * @subpackage	Application
 	 * @author		durandcedric@avitheque.net
 	 * @update		$LastChangedBy: durandcedric $
-	 * @version		$LastChangedRevision: 67 $
-	 * @since		$LastChangedDate: 2017-07-19 00:09:56 +0200 (Wed, 19 Jul 2017) $
+	 * @version		$LastChangedRevision: 71 $
+	 * @since		$LastChangedDate: 2017-07-27 20:40:14 +0200 (Thu, 27 Jul 2017) $
 	 *
 	 * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
 	 * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -266,7 +266,12 @@
 
 			// Récupération des données envoyées par le formulaire $_GET[] / $_POST[]
 			$aGetPost					= $_REQUEST;
-
+			
+			// Fonctionnalité réalisée en MODE REWRITE sous serveur Nginx
+			if (isset($aGetPost['base_url']) && (!isset($_SERVER['REDIRECT_URL']) || empty($_SERVER['REDIRECT_URL']))) {
+				$_SERVER['REDIRECT_URL']= $aGetPost['base_url'];
+			}
+			
 			// Récupération des paramètres depuis l'URL sous la forme {CONTROLLER}.{SUBCONTROLLER}/{ACTION}.{SUBACTION}/{OPTION}
 			$sSubController				= null;
 			$sSubAction					= null;

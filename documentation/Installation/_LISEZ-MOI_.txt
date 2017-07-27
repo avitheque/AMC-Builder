@@ -14,15 +14,16 @@ L'application doit être installée sur un serveur PHP / Apache2.
 Il est recommandé de mettre en place des hôtes virtuelles afin de cloisonner la
 partie développement de la partie production.
 
-L'application a été développée en PHP 5.
+L'application a été développée à l'origine en PHP 5 sous Apache2.
 Lors des tests d'intégration sous PHP 7, il en ressort que le format de fichier
 de configuration *.conf ont évolués, c'est pourquoi vous trouverez les deux :
-    - fichier *.conf        :   pour la version PHP 5 ;
+    - fichier *-php5.conf   :   pour la version PHP 5 ;
     - fichier *-php7.0.conf :   pour la version PHP 7.
 
-Afin de fonctionner correctement, l'application nécessite une base de donnée de
-type MySQL. L'intégration exploite les scripts présentés dans la documentation
-dédiée suivante : `amc-builder/documentation/BDD/_LISEZ-MOI_.txt`.
+Afin de fonctionner, l'application nécessite une base de données type MySQL.
+L'intégration exploite les scripts présentés dans la documentation dédiée
+que vous retrouverez dans le chemin de la documentation suivant :
+`amc-builder/documentation/BDD/_LISEZ-MOI_.txt`.
 
 
 ###############################################################################
@@ -32,9 +33,11 @@ PROBLÈME CONNU AVEC MySQL
 La configuration `ONLY_FULL_GROUP_BY` sur un serveur MySQL, oblige de déclarer
 les champs dans la partie [SELECT] afin de pouvoir les exploiter dans la partie
 [GROUP BY].
+Cependant, le Framework MVC de l'application exploite des requêtes génériques.
+Il est donc nécessaire de désactiver cette option...
 
-Deux possibilités s'offrent à vous afin de ne plus être confronté à ce problème
-    - désactiver le sql_mode=ONLY_FULL_GROUP_BY dans la console MySQL
+Deux possibilités s'offrent à vous afin de réaliser cette action :
+    - désactiver le `sql_mode=ONLY_FULL_GROUP_BY` dans la console MySQL
       SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
     - activer l'option `pdo_mysql.disable_full_group_by` dans le fichier de
-      configuration `application/configs/application.ini`
+      configuration `application/configs/application.ini` (fait par défaut !)
