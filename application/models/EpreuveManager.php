@@ -18,8 +18,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 69 $
- * @since		$LastChangedDate: 2017-07-23 03:02:54 +0200 (Sun, 23 Jul 2017) $
+ * @version		$LastChangedRevision: 72 $
+ * @since		$LastChangedDate: 2017-07-29 16:54:10 +0200 (Sat, 29 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -32,7 +32,6 @@ class EpreuveManager extends FormulaireManager {
 	/******************************************************************************************************
 	 * @todo RECHERCHES
 	 ******************************************************************************************************/
-
 
 	/**
 	 * @brief	Recherche de toutes les épreuves modifiables par un candidat.
@@ -92,7 +91,7 @@ class EpreuveManager extends FormulaireManager {
 			// Récupération de la liste des formulaires
 			$aResultat = $this->executeSQL($aQuery, $aBind);
 		} catch (ApplicationException $e) {
-			throw new ApplicationException($e->getMessage(), $e->getExtra());
+			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aQuery, $aBind));
 		}
 
 		// Renvoi de la liste
@@ -138,7 +137,7 @@ class EpreuveManager extends FormulaireManager {
 			// Exécution de la requête et récupération du premier résultat
 			$aResultat = $this->executeSQL($aQuery, $aBind, 0);
 		} catch (ApplicationException $e) {
-			throw new ApplicationException($e->getMessage(), $e->getExtra());
+			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aQuery, $aBind));
 		}
 
 		// Renvoi de la liste
@@ -173,7 +172,7 @@ class EpreuveManager extends FormulaireManager {
 			// Exécution de la requête sous forme de tableau
 			$aResultat = $this->executeSQL($aQuery, $aBind);
 		} catch (ApplicationException $e) {
-			throw new ApplicationException($e->getMessage(), $e->getExtra());
+			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aQuery, $aBind));
 		}
 
 		// Renvoi du résultat
@@ -211,7 +210,7 @@ class EpreuveManager extends FormulaireManager {
 			// Exécution de la requête et récupération du premier résultat
 			$aResultat = $this->executeSQL($aQuery, $aBind, 0);
 		} catch (ApplicationException $e) {
-			throw new ApplicationException($e->getMessage(), $e->getExtra());
+			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aQuery, $aBind));
 		}
 
 		// Renvoi de l'identifiant de la réponse au contrôle si l'épreuve est valide

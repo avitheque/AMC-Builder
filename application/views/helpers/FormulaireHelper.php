@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 69 $
- * @since		$LastChangedDate: 2017-07-23 03:02:54 +0200 (Sun, 23 Jul 2017) $
+ * @version		$LastChangedRevision: 72 $
+ * @since		$LastChangedDate: 2017-07-29 16:54:10 +0200 (Sat, 29 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -138,18 +138,21 @@ class FormulaireHelper {
 		// Récupération de l'instance du singleton InstanceStorage permettant de gérer les échanges avec le contrôleur
 		$this->_oInstanceStorage		= InstanceStorage::getInstance();
 
+		// Nom de session du QCM
+		$sSessionNameSpace				= $this->_oInstanceStorage->getData('SESSION_NAMESPACE');
+
+		// Récupération de l'instance du singleton SessionManager
+		$oSessionManager				= SessionManager::getInstance($sSessionNameSpace);
+
 		//#########################################################################################
 		// INITIALISATION DES VALEURS PAR DÉFAUT
 		//#########################################################################################
 
-		// Lecture par défaut
-		$this->_bReadonly				= $bReadonly;
+		// Protection du formulaire contre la modification si une épreuve est en cours
+		$this->_bReadonly				= $oSessionManager->issetIndex('CONTROLE_EPREUVE_EXISTS') ? $oSessionManager->getIndex('CONTROLE_EPREUVE_EXISTS') : $bReadonly;
 
 		// Désactivation de certains boutons du formulaire
 		$this->_bDisable				= $this->_bReadonly ? true : $bDisable;
-
-		// Nom de session du QCM
-		$sSessionNameSpace				= $this->_oInstanceStorage->getData('SESSION_NAMESPACE');
 
 		// Données du QCM
 		$this->_aQCM					= $this->_oInstanceStorage->getData($sSessionNameSpace);
@@ -307,6 +310,14 @@ class FormulaireHelper {
 		// Variables de verrouillage des champs
 		$sReadonly						= "";
 		$sDisabled						= "";
+		$sClassField					= "";
+		// Fonctionnalité réalisée si le formulaire est protégé en écriture
+		if ($this->_bDisable) {
+			$sReadonly					= "readonly=\"readonly\"";
+			$sDisabled					= "disabled=\"disabled\"";
+			$sClassField				= "disabled";
+			$sPencilIcon				= "";
+		}
 
 		//#########################################################################################
 		// CONSTRUCTION DU FORMULAIRE RELATIF AUX PARAMÈTRES DE GÉNÉRATION DU QUESTIONNAIRE QCM
@@ -366,6 +377,9 @@ class FormulaireHelper {
 		$oAutocomplete->setClass("half-width");
 		$oAutocomplete->setHiddenInputName("epreuve_stage");
 		$oAutocomplete->setRequired(true);
+		if ($this->_bDisable) {
+			$oAutocomplete->setAttribute('disabled', true);
+		}
 
 		// Fonctionnalité réalisée si le stage a été identifié parmis les libellés du champ AutocompleteHelper
 		if (empty($nIdStage)) {
@@ -381,6 +395,10 @@ class FormulaireHelper {
 		// Fonctionnalité réalisée si les questions doivent être séparées
 		if ($bSeparate) {
 			$oSeparateCheckbox->setAttribute('checked', "checked");
+		}
+		// Fonctionnalité réalisée si le formulaire est protégé en écriture
+		if ($this->_bDisable) {
+			$oSeparateCheckbox->setAttribute('disabled', true);
 		}
 
 		// Récupération de la liste des salles disponibles pour l'épreuve
@@ -402,7 +420,7 @@ class FormulaireHelper {
 		// Épreuves
 		$this->_html					.= "	<div id=\"tabs-epreuve\">
 													<span id=\"tabs-epreuve-top\"><a class=\"page-top\" href=\"#tabs-epreuve-bottom\" title=\"Bas de page...\">" . self::ICON_DOWN . "</a></span>
-													<fieldset id=\"epreuve\"><legend>Paramètres de l'épreuve</legend>
+													<fieldset class=\"" . $sClassField . "\" id=\"epreuve\"><legend>Paramètres de l'épreuve</legend>
 														<ol>
 															<li class=\"center margin-bottom-20\">
 																<h3 class=\"strong center\">&#151;&nbsp;" . $sNomFormulaire . "&nbsp;&#151;</h3>
@@ -469,6 +487,11 @@ class FormulaireHelper {
 					$sTableClasse		= "";
 				}
 
+				// Fonctionnalité réalisée si le formulaire est protégé en écriture
+				if ($this->_bDisable) {
+					$oCheckbox->setAttribute('disabled', true);
+				}
+
 				// Ajout du choix de la salle
 				$sChoixSalles			.= $oCheckbox->renderHTML();
 
@@ -491,9 +514,15 @@ class FormulaireHelper {
 				$oAleatoireCheckbox->setAttribute('checked', "checked");
 			}
 
+			// Fonctionnalité réalisée si le formulaire est protégé en écriture
+			if ($this->_bDisable) {
+				$oAffectationCheckbox->setAttribute('disabled', true);
+				$oAleatoireCheckbox->setAttribute('disabled', true);
+			}
+
 			// Finalisation du formulaire relatif à la génération du document
 			$this->_html				.= "		<hr class=\"margin-V-25 blue\"/>
-													<fieldset id=\"lieux\"><legend>Lieu de l'épreuve</legend>
+													<fieldset class=\"" . $sClassField . "\" id=\"lieux\"><legend>Lieu de l'épreuve</legend>
 														<div class=\"margin-H-25\">
 															<div>
 																<span>Veuillez sélectionner le(s) lieu(x) où se déroulera l'épreuve</span>
@@ -514,7 +543,7 @@ class FormulaireHelper {
 
 		// Finalisation du formulaire relatif à la génération du document
 		$this->_html					.= "		<hr class=\"margin-V-25 blue\"/>
-													<fieldset id=\"consignes\"><legend>Consignes de l'épreuve</legend>
+													<fieldset class=\"" . $sClassField . "\" id=\"consignes\"><legend>Consignes de l'épreuve</legend>
 														<div class=\"margin-H-25\">
 															<label for=\"idConsignes\">Le texte ci-dessous est destiné à présenter les consignes particulières aux candidats.</label>
 															<textarea rows=5 id=\"idConsignes\" class=\"max-width\" name=\"generation_consignes\" $sReadonly>" . $sConsignes . "</textarea>
@@ -542,6 +571,7 @@ class FormulaireHelper {
 		$sReadonly						= "";
 		$sDisabled						= "";
 		$sClassField					= "";
+		// Fonctionnalité réalisée si le formulaire est protégé en écriture
 		if ($this->_bReadonly) {
 			$sReadonly					= "readonly=\"readonly\"";
 			$sDisabled					= "disabled=\"disabled\"";
@@ -776,6 +806,12 @@ class FormulaireHelper {
 		$this->_html					.= "	</div>
 											</section>
 										</section>";
+
+		// Ajout de la feuille de style
+		ViewRender::linkFormulaireStyle("helpers/FormulaireHelper.css");
+
+		// Ajout du JavaScript
+		ViewRender::linkFormulaireScript("helpers/FormulaireHelper.js");
 	}
 
 	/**
@@ -793,12 +829,6 @@ class FormulaireHelper {
 	 * @return	string
 	 */
 	public function render() {
-		// Ajout de la feuille de style
-		ViewRender::linkFormulaireStyle("helpers/FormulaireHelper.css");
-
-		// Ajout du JavaScript
-		ViewRender::linkFormulaireScript("helpers/FormulaireHelper.js");
-
 		// Activation de l'onglet sélectionné
 		ViewRender::addToJQuery("$(\"section.tabs\").tabs({ active: " . $this->_activeTab . " });");
 

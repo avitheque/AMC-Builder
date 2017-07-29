@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 69 $
- * @since		$LastChangedDate: 2017-07-23 03:02:54 +0200 (dim., 23 juil. 2017) $
+ * @version		$LastChangedRevision: 72 $
+ * @since		$LastChangedDate: 2017-07-29 16:54:10 +0200 (Sat, 29 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -99,7 +99,7 @@ class EpreuveHelper extends FormulaireHelper {
 		//#########################################################################################
 		// CONSTRUCTION DU FORMULAIRE RELATIF À L'ÉPREUVE QCM
 		//#########################################################################################
-		
+
 		// Identifiant du contrôle
 		$nIdControle					= DataHelper::get($this->_aQCM, 'controle_id', 						DataHelper::DATA_TYPE_INT,		null);
 
@@ -193,6 +193,12 @@ class EpreuveHelper extends FormulaireHelper {
 												</div>
 											</section>
 										</section>";
+
+		// Ajout de la feuille de style
+		ViewRender::linkFormulaireStyle("helpers/EpreuveHelper.css");
+
+		// Ajout du JavaScript
+		ViewRender::linkFormulaireScript("helpers/EpreuveHelper.js");
 	}
-	
+
 }

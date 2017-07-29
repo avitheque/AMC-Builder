@@ -7,8 +7,8 @@
  *
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 69 $
- * @since		$LastChangedDate: 2017-07-23 03:02:54 +0200 (Sun, 23 Jul 2017) $
+ * @version		$LastChangedRevision: 72 $
+ * @since		$LastChangedDate: 2017-07-29 16:54:10 +0200 (Sat, 29 Jul 2017) $
  */
 
 input:not([readonly]),
@@ -65,46 +65,13 @@ textarea:focus										{
 
 /* Désactivation du outline de focus sous FireFox */
 select:-moz-focusring {
-    color:											transparent;
-    text-shadow:									0 0 0 #000;
+	color:											transparent;
+	text-shadow:									0 0 0 #000;
 }
 
 input:-moz-focusring {
-    color:											#000;
+	color:											#000;
 }
-
-input[readonly],
-input[readonly]:focus,
-input[disabled],
-input[disabled]:focus,
-select[disabled],
-select[disabled]:focus,
-textarea[readonly],
-textarea[readonly]:focus,
-textarea[disabled],
-textarea[disabled]:focus							{
-	background:										rgba(255, 255, 255, 0.5);
-	color:											transparent;
-	border-color:									#C3C3C3;
-    text-shadow:									0 0 0 #000;
-	cursor:											default;
-	user-select:									none !important;
-	-moz-user-select:								none !important;
-	padding-right:									5px;
-}
-
-.readonly label,
-input[readonly] + label,
-input[disabled] + label,
-select[disabled] + label,
-textarea[readonly] + label,
-textarea[disabled] + label,
-section.disabled label,
-fieldset.disabled label								{
-	cursor:											default !important;
-}
-
-/************************************************/
 
 input[type=checkbox],
 input[type=radio]									{
@@ -192,4 +159,37 @@ select.loading,
 textarea.loading									{
 	background:										#F3F3F3 url('/images/loading.gif') no-repeat;
 	color:											transparent;
+}
+
+/*************************************************/
+
+input[readonly],
+input[readonly]:focus,
+input[disabled],
+input[disabled]:focus,
+select[disabled],
+select[disabled]:focus,
+textarea[readonly],
+textarea[readonly]:focus,
+textarea[disabled],
+textarea[disabled]:focus							{
+	background:										rgba(255, 255, 255, 0.5);
+	color:											transparent;
+	border-color:									#C3C3C3;
+	text-shadow:									0 0 0 #000;
+	cursor:											default !important;
+	user-select:									none !important;
+	-moz-user-select:								none !important;
+	padding-right:									5px;
+}
+
+.readonly label,
+input[readonly] + label,
+input[disabled] + label,
+select[disabled] + label,
+textarea[readonly] + label,
+textarea[disabled] + label,
+section.disabled label,
+fieldset.disabled label								{
+	cursor:											default !important;
 }

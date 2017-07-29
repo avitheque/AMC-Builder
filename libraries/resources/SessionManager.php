@@ -6,8 +6,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 26 $
- * @since		$LastChangedDate: 2017-05-04 19:34:05 +0200 (jeu., 04 mai 2017) $
+ * @version		$LastChangedRevision: 72 $
+ * @since		$LastChangedDate: 2017-07-29 16:54:10 +0200 (Sat, 29 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -19,7 +19,9 @@ class SessionManager {
 	 * @brief	Instance du SINGLETON de la classe.
 	 * @var		SessionManager
 	 */
-	private static $oInstance = null;
+	private static $oInstance	= null;
+
+	private $_nameSpace			= null;
 
 	/**
 	 * SessionManager constructor.
@@ -29,6 +31,7 @@ class SessionManager {
 	protected function __construct($sNameSpace = '') {
 		session_start();
 		session_name($sNameSpace);
+		$this->setNameSpace($sNameSpace);
 	}
 
 	/**
@@ -44,8 +47,33 @@ class SessionManager {
 			// Initialisation du SINGLETON
 			self::$oInstance = new SessionManager($sNameSpace);
 		}
+
 		// Renvoi de l'instance du SINGLETON
 		return self::$oInstance;
+	}
+
+	public function setNameSpace($sNameSpace) {
+		$this->_nameSpace = $sNameSpace;
+	}
+
+	public function getNameSpace() {
+		return $this->_nameSpace;
+	}
+
+	public function destroy() {
+		// Suppression de la SESSION
+		unset($_SESSION[$this->getNameSpace()]);
+	}
+
+	/** @brief	Purge d'une entrée.
+	 *
+	 * La méthode supprime l'entrée correspondant à l'index.
+	 * @param	string	$sIndex		: nom de l'étiquette.
+	 * @return	void
+	 */
+	public function unsetIndex($sIndex) {
+		// Suppression de l'entrée de la SESSION
+		unset($_SESSION[$this->getNameSpace()][$sIndex]);
 	}
 
 	/** @brief	Sauvegarde une variable.
@@ -55,8 +83,25 @@ class SessionManager {
 	 * @param	mixed	$xValue		: valeur à sauvegarder.
 	 * @return	void
 	 */
-	public static function set($sIndex, $xValue) {
-		$_SESSION[$sIndex] = $xValue;
+	public function setIndex($sIndex, $xValue = null) {
+		if (is_null($xValue)) {
+			// Purge de l'entrée en SESSION
+			$this->unsetIndex($sIndex);
+		} else {
+			// Stockage des données en SESSION
+			$_SESSION[$this->getNameSpace()][$sIndex] = $xValue;
+		}
+	}
+
+	/** @brief	Vérifie la présence d'une entrée.
+	 *
+	 * La méthode vérifie si une entrée correspond à l'index.
+	 * @param	string	$sIndex		: nom de l'étiquette.
+	 * @return	mixed	: object|array|string|integer|boolean
+	 */
+	public function issetIndex($sIndex) {
+		// Renvoi du résultat
+		return isset($_SESSION[$this->getNameSpace()][$sIndex]);
 	}
 
 	/** @brief	Récupère une variable.
@@ -66,13 +111,13 @@ class SessionManager {
 	 * @param	string	$sIndex		: nom de l'étiquette.
 	 * @return	mixed	: object|array|string|integer|boolean
 	 */
-	public static function get($sIndex) {
+	public function getIndex($sIndex) {
 		// Initialisation de la valeur par défaut
 		$xValue = null;
 		// Fonctionnalité réalisée si l'étiquette existe
-		if (isset($_SESSION[$sIndex])) {
+		if ($this->issetIndex($sIndex)) {
 			// Récupération de la valeur
-			$xValue = $_SESSION[$sIndex];
+			$xValue = $_SESSION[$this->getNameSpace()][$sIndex];
 		}
 		// Renvoi de la valeur
 		return $xValue;

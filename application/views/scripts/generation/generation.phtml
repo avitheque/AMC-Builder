@@ -45,6 +45,7 @@ ViewRender::addToMain($oFormulaire->render());
 
 // Création des boutons du formulaire
 $oGroupButton = new GroupButtonFormulaireHelper(false, true);
+// Ajout du groupe de boutons au VIEW_FOOTER
 ViewRender::addToFooter($oGroupButton->render());
 
 // Rendu final de la vue

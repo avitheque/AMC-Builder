@@ -15,8 +15,8 @@
  * @subpackage	Libraries
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 69 $
- * @since		$LastChangedDate: 2017-07-23 03:02:54 +0200 (Sun, 23 Jul 2017) $
+ * @version		$LastChangedRevision: 72 $
+ * @since		$LastChangedDate: 2017-07-29 16:54:10 +0200 (Sat, 29 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -280,6 +280,10 @@ abstract class AbstractFormulaireQCMController extends AbstractFormulaireControl
 				// Initialisation du formulaire avec les données en base
 				$this->_oFormulaireManager->charger($nId)
 			);
+
+			// Protection du formulaire contre la modification si un contrôle est en cours
+			$this->sendDataToSession($this->_oFormulaireManager->isControleExistsByIdEpreuve($this->_aForm['epreuve_id']), 'CONTROLE_EPREUVE_EXISTS');
+			$this->addToData('CONTROLE_EPREUVE_EXISTS', $this->_oFormulaireManager->isControleExistsByIdEpreuve($this->_aForm['epreuve_id']));
 
 			// Enregistrement de l'identifiant du formulaire en session
 			$this->sendDataToSession($nId, self::ID_FORMULAIRE);

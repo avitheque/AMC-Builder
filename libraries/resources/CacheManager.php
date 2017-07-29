@@ -2,15 +2,14 @@
 /**
  * @brief	Classe de gestion du cache de l'application.
  *
- *
  * @name		CacheManager
  * @category	Resource
  * @package		Main
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 26 $
- * @since		$LastChangedDate: 2017-05-04 19:34:05 +0200 (jeu., 04 mai 2017) $
+ * @version		$LastChangedRevision: 72 $
+ * @since		$LastChangedDate: 2017-07-29 16:54:10 +0200 (Sat, 29 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -27,12 +26,12 @@ class CacheManager {
 
 	/**
 	 * @brief	Instance du SINGLETON de la classe.
-	 * @var		SessionManager
+	 * @var		CacheManager
 	 */
 	private static $oInstance		= null;
 
 	/**
-	 * SessionManager constructor.
+	 * CacheManager constructor.
 	 * @param	string	$sNameSpace		: espace de nom pour le stockage.
 	 * @return	void
 	 */
@@ -45,7 +44,7 @@ class CacheManager {
 	 *
 	 * La méthode instancie le SINGLETON s'il n'était pas déjà instancié.
 	 * @param	string	$sNameSpace		: espace de nom pour le stockage.
-	 * @return	SessionManager
+	 * @return	CacheManager
 	 */
 	public static function getInstance($sNameSpace) {
 		// Fonctionnalité réalisée si l'instance du SINGLETON n'existe pas encore

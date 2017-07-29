@@ -11,8 +11,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 72 $
+ * @since		$LastChangedDate: 2017-07-29 16:54:10 +0200 (Sat, 29 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -124,7 +124,7 @@ class ExportEpreuveManager extends DocumentManager {
 		$nTotalCapaciteExamen				= 0;
 
 		// Initialisation du contenu
-		$this->_document = new EpreuveManager();
+		$this->_document = new EpreuvePDFManager();
 		$this->_document->setFont('Arial', '', 15);
 		$this->_document->setStage($sStage);
 		$this->_document->setTitre($sTitreFormulaire);

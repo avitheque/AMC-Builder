@@ -10,14 +10,20 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 69 $
- * @since		$LastChangedDate: 2017-07-23 03:02:54 +0200 (dim., 23 juil. 2017) $
+ * @version		$LastChangedRevision: 72 $
+ * @since		$LastChangedDate: 2017-07-29 16:54:10 +0200 (Sat, 29 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
  */
 class GroupButtonEpreuveHelper {
+
+	/**
+	 * Verrouillage des boutons de modification.
+	 * @var		boolean
+	 */
+	private		$_readonly			= false;
 
 	/**
 	 * Singleton de l'instance des échanges entre contrôleurs.
@@ -64,6 +70,16 @@ class GroupButtonEpreuveHelper {
 	}
 
 	/**
+	 * @brief	Verrouillage des boutons du formulaire.
+	 *
+	 * @param	boolean	$bBoolean		: TRUE active la protection contre la modification du formulaire.
+	 * @return	void
+	 */
+	public function setReadonly($bBoolean = true) {
+		$this->_readonly			= $bBoolean;
+	}
+
+	/**
 	 * @brief	Zone de boutons du formulaire QCM.
 	 *
 	 * @param	integer	$nIdFormulaire	: Identifiant du formulaire QCM.
@@ -79,7 +95,16 @@ class GroupButtonEpreuveHelper {
 		// Boutons par défaut d'un QCM non enregistré
 		$sGauche					= "<button type=\"submit\" class=\"red confirm left tooltip\" name=\"button\" value=\"" . EpreuveController::ACTION_EFFACER . "\" title=\"Recommencer un nouveau QCM\" role=\"touche_A\">Annuler</button>";
 		$sMilieu					= "";
-		$sDroite					= "<button type=\"submit\" class=\"green right tooltip\" name=\"button\" value=\"" . EpreuveController::ACTION_TEMPORAIRE . "\" title=\"Enregistrer temporairement le QMC\" role=\"touche_S\">Sauvegarder</button>";
+		if ($this->_readonly) {
+			// Ajout d'un message d'avertissement
+			ViewRender::setMessageWarning("Droits limités !", "Aucune modification du formulaire n'est autorisée !");
+
+			// Formulaire non modifiable
+			$sDroite				= "<button type=\"submit\" class=\"disabled right tooltip\" name=\"button\" value=\"" . AbstractFormulaireQCMController::ACTION_FERMER . "\" title=\"Enregistrer temporairement le QMC\" role=\"touche_S\" disabled>Sauvegarder</button>";
+		} else {
+			// Enregistrement possible
+			$sDroite				= "<button type=\"submit\" class=\"green right tooltip\" name=\"button\" value=\"" . EpreuveController::ACTION_TEMPORAIRE . "\" title=\"Enregistrer temporairement le QMC\" role=\"touche_S\">Sauvegarder</button>";
+		}
 
 		// Fonctionnalité réalisée si le QCM est déjà enregistré
 		if ($nIdFormulaire) {
@@ -87,7 +112,7 @@ class GroupButtonEpreuveHelper {
 		}
 
 		// Fonctionnalité réalisée si le bouton TERMINER est à afficher
-		if ($nIdFormulaire && $bTerminer) {
+		if (!$this->_readonly && ($nIdFormulaire && $bTerminer)) {
 			// Le formulaire est en MODE CONTRÔLE
 			$sMilieu = "<button type=\"submit\" class=\"blue final-confirm tooltip\" name=\"button\" value=\"" . EpreuveController::ACTION_FINALIZE . "\" title=\"Soumettre le QCM à la correction\" role=\"touche_T\">Terminer</button>";
 		}

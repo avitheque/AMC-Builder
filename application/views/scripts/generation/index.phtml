@@ -95,8 +95,16 @@ $oEpreuves->renameColumns($aColonnes, true);
 // Tri du tableau sur la colonne `date_epreuve` par ordre DESC
 $oEpreuves->setOrderColumn('datetime_epreuve', DatatableHelper::ORDER_DESC);
 
-// Ajout d'une colonne [ACTION] avec un lien HREF
+// Ajout d'une colonne [ACTION] avec un lien HREF - (TOUJOURS DISPONIBLE)
 $oEpreuves->addAnchorOnColumn("ACTION",		"id_epreuve",		"Imprimer",	"/generation/epreuve?id_epreuve=",		"blue tooltip-track",           	   "_blanck",	"Imprimer la programmation de l'épreuve");
+
+// Indicateur d'annulation non disponible
+$oEpreuves->setConditionalClassOnColumn('debut_epreuve',	'>', 'maintenant', "strong grey",	$aColonnes);
+$oEpreuves->setConditionalClassOnColumn('fin_epreuve',	'<', 'maintenant', "strong grey",	$aColonnes);
+$oEpreuves->setConditionalClassOnColumn('debut_epreuve',	'>', 'maintenant', "disabled",		"ACTION");
+$oEpreuves->setConditionalClassOnColumn('fin_epreuve',	'<', 'maintenant', "disabled",		"ACTION");
+
+// Ajout d'une colonne [ACTION] avec un lien HREF - DISPONIBLE TANT QUE L'ÉPREUVE N'A PAS DÉBUTÉE
 $oEpreuves->addAnchorOnColumn("ACTION",		"id_epreuve",		"Annuler",	"/generation/supprimer?id_epreuve=",	"red confirm-delete tooltip-track", 	null,		"Annuler l'épreuve");
 
 // Coloration de l'épreuve en ROUGE si il y a une erreur

@@ -10,14 +10,20 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 69 $
- * @since		$LastChangedDate: 2017-07-23 03:02:54 +0200 (dim., 23 juil. 2017) $
+ * @version		$LastChangedRevision: 72 $
+ * @since		$LastChangedDate: 2017-07-29 16:54:10 +0200 (Sat, 29 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
  */
 class GroupButtonFormulaireHelper {
+
+	/**
+	 * Verrouillage des boutons de modification.
+	 * @var		boolean
+	 */
+	private		$_readonly			= false;
 
 	/**
 	 * Singleton de l'instance des échanges entre contrôleurs.
@@ -43,12 +49,15 @@ class GroupButtonFormulaireHelper {
 		// Récupération de l'instance du singleton InstanceStorage permettant de gérer les échanges avec le contrôleur
 		$this->_oInstanceStorage	= InstanceStorage::getInstance();
 
+		// Nom de session du QCM
+		$sSessionNameSpace				= $this->_oInstanceStorage->getData('SESSION_NAMESPACE');
+
+		// Récupération de l'instance du singleton SessionManager
+		$oSessionManager				= SessionManager::getInstance($sSessionNameSpace);
+
 		//#########################################################################################
 		// INITIALISATION DES VALEURS PAR DÉFAUT
 		//#########################################################################################
-
-		// Nom de session du QCM
-		$sSessionNameSpace			= $this->_oInstanceStorage->getData('SESSION_NAMESPACE');
 
 		// Données du QCM
 		$aFormulaireQCM				= $this->_oInstanceStorage->getData($sSessionNameSpace);
@@ -60,8 +69,21 @@ class GroupButtonFormulaireHelper {
 		// CONSTRUCTION DES BOUTONS DU FORMULAIRE QCM
 		//#########################################################################################
 
+		// Protection du formulaire contre la modification si une épreuve est en cours
+		$this->setReadonly($oSessionManager->getIndex('CONTROLE_EPREUVE_EXISTS'));
+
 		// Zone de boutons du formulaire QCM
 		$this->_buildGroupButton($nIdFormulaire, $bTerminer, $bExporter);
+	}
+
+	/**
+	 * @brief	Verrouillage des boutons du formulaire.
+	 *
+	 * @param	boolean	$bBoolean		: TRUE active la protection contre la modification du formulaire.
+	 * @return	void
+	 */
+	public function setReadonly($bBoolean = false) {
+		$this->_readonly			= $bBoolean;
 	}
 
 	/**
@@ -73,15 +95,23 @@ class GroupButtonFormulaireHelper {
 	 * @return	void
 	 */
 	private function _buildGroupButton($nIdFormulaire = null, $bTerminer = false, $bExporter = false) {
-
 		//#########################################################################################
 		// CONSTRUCTION DU GROUPE DE BOUTONS RELATIF AU QUESTIONNAIRE QCM
 		//#########################################################################################
 
 		// Boutons par défaut d'un QCM non enregistré
-		$sGauche					= "<button type=\"submit\" class=\"red confirm left tooltip\" name=\"button\" value=\"" . AbstractFormulaireQCMController::ACTION_EFFACER . "\" title=\"Recommencer un nouveau QCM\" role=\"touche_A\">Annuler</button>";
-		$sMilieu					= "";
-		$sDroite					= "<button type=\"submit\" class=\"green right tooltip\" name=\"button\" value=\"" . AbstractFormulaireQCMController::ACTION_ENREGISTRER . "\" title=\"Enregistrer le QMC\" role=\"touche_S\">Sauvegarder</button>";
+		$sGauche = "<button type=\"submit\" class=\"red confirm left tooltip\" name=\"button\" value=\"" . AbstractFormulaireQCMController::ACTION_EFFACER . "\" title=\"Recommencer un nouveau QCM\" role=\"touche_A\">Annuler</button>";
+		$sMilieu = "";
+		if ($this->_readonly) {
+			// Ajout d'un message d'avertissement
+			ViewRender::setMessageWarning("Droits limités !", "Aucune modification du formulaire n'est autorisée !");
+
+			// Formulaire non modifiable
+			$sDroite				= "<button type=\"submit\" class=\"disabled right tooltip\" name=\"button\" value=\"" . AbstractFormulaireQCMController::ACTION_FERMER . "\" title=\"Enregistrer le QMC\" role=\"touche_S\" disabled>Sauvegarder</button>";
+		} else {
+			// Enregistrement possible
+			$sDroite				= "<button type=\"submit\" class=\"green right tooltip\" name=\"button\" value=\"" . AbstractFormulaireQCMController::ACTION_ENREGISTRER . "\" title=\"Enregistrer le QMC\" role=\"touche_S\">Sauvegarder</button>";
+		}
 
 		// Fonctionnalité réalisée si le QCM est déjà enregistré
 		if ($nIdFormulaire) {
@@ -91,7 +121,7 @@ class GroupButtonFormulaireHelper {
 		// Fonctionnalité réalisée si le bouton [Exporter] est actif
 		if ($bExporter) {
 			$sMilieu				= "<button type=\"submit\" class=\"blue tooltip\" name=\"button\" value=\"" . AbstractFormulaireQCMController::ACTION_EXPORTER . "\" title=\"Générer le code LaTeX du QCM\" role=\"touche_E\">Exporter</button>";
-		} elseif ($nIdFormulaire || $bTerminer) {
+		} elseif (!$this->_readonly && ($nIdFormulaire || $bTerminer)) {
 			// Fonctionnalité réalisée afin de proposer le formulaire à la validation
 			$sMilieu				= "<button type=\"submit\" class=\"blue tooltip\" name=\"button\" value=\"" . AbstractFormulaireQCMController::ACTION_TERMINER . "\" title=\"Soumettre le QCM à validation\" role=\"touche_T\">Terminer</button>";
 		}

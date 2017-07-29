@@ -18,8 +18,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 69 $
- * @since		$LastChangedDate: 2017-07-23 03:02:54 +0200 (Sun, 23 Jul 2017) $
+ * @version		$LastChangedRevision: 72 $
+ * @since		$LastChangedDate: 2017-07-29 16:54:10 +0200 (Sat, 29 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -181,10 +181,50 @@ class FormulaireManager extends MySQLManager {
 	 * @todo RECHERCHES
 	 ******************************************************************************************************/
 
+
+	/**
+	 * @brief	Recherche si un contrôle est en cours selon l'identifiant de l'épreuve.
+	 *
+	 * @li	Un contrôle est enregistré dès qu'un candidat entamme une épreuve.
+	 *
+	 * @param	integer	$nIdEpreuve			: identifiant de l'épreuve.
+	 * @return	boolean
+	 */
+	public function isControleExistsByIdEpreuve($nIdEpreuve) {
+		// Ajout d'un suivit pour le debuggage
+		$this->debug(__METHOD__, $nIdEpreuve);
+
+		// Requête SELECT
+		$aQuery	= array(
+			0	=> "SELECT *",
+			1	=> "FROM controle",
+			2	=> "WHERE id_epreuve = :id_epreuve",
+			4	=> "ORDER BY id_controle DESC"
+		);
+
+		// Construction du tableau associatif des étiquettes et leurs valeurs
+		$aBind = array(
+			':id_epreuve'					=> $nIdEpreuve
+		);
+
+		try {
+			// Exécution de la requête et récupération du premier résultat
+			$aResultat = $this->executeSQL($aQuery, $aBind, 0);
+		} catch (ApplicationException $e) {
+			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aQuery, $aBind));
+		}
+
+		var_dump($aResultat);
+
+		// Renvoi de la liste
+		return DataHelper::isValidArray($aResultat);
+	}
+
 	/**
 	 * @brief	Recherche de toutes les épreuves générées.
 	 *
 	 * @li	Possibilité de limiter les formulaires selon le groupe d'appartenance de l'utilisateur connecté.
+	 * @li	L'entrée $aQuery['X'] correspond à une zone d'injection pour la clause WHERE de recherche intervallaire.
 	 *
 	 * @param	boolean	$bGroupAccess		: (optionnel) Filtre sur les groupes du rédacteur.
 	 * @return	array, tableau contenant l'ensemble des résultats de la requête.
@@ -200,18 +240,22 @@ class FormulaireManager extends MySQLManager {
 			1	=> self::LIBELLE_REDACTEUR . " AS libelle_redacteur,",
 			2	=> self::LIBELLE_VALIDEUR . " AS libelle_valideur,",
 			3	=> self::DATETIME_EPREUVE . " AS datetime_epreuve,",
-			4	=> "COUNT(id_stage_candidat)",
-			5	=> "FROM formulaire",
-			6	=> "INNER JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = id_redacteur)",
-			7	=> "INNER JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
-			8	=> "INNER JOIN groupe ON(redacteur.id_groupe = groupe.id_groupe)",
-			9	=> "INNER JOIN generation USING(id_formulaire)",
-			10	=> "INNER JOIN epreuve USING(id_generation)",
-			11	=> "INNER JOIN stage USING(id_stage)",
-			12	=> "LEFT JOIN stage_candidat USING(id_stage)",
-			13	=> "LEFT JOIN candidat USING(id_candidat)",
-			14	=> null,
-			15	=> "GROUP BY id_formulaire"
+			4	=> self::DATETIME_EPREUVE . " AS datetime_epreuve,",
+			5	=> "UNIX_TIMESTAMP(" . self::DATETIME_EPREUVE . ") AS debut_epreuve,",
+			6	=> "UNIX_TIMESTAMP(" . self::DATETIME_EPREUVE . ") + 60 * duree_epreuve AS fin_epreuve,",
+			7	=> "UNIX_TIMESTAMP(CURRENT_TIMESTAMP()) AS maintenant,",
+			8	=> "COUNT(id_stage_candidat)",
+			9	=> "FROM formulaire",
+			10	=> "INNER JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = id_redacteur)",
+			11	=> "INNER JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
+			12	=> "INNER JOIN groupe ON(redacteur.id_groupe = groupe.id_groupe)",
+			13	=> "INNER JOIN generation USING(id_formulaire)",
+			14	=> "INNER JOIN epreuve USING(id_generation)",
+			15	=> "INNER JOIN stage USING(id_stage)",
+			16	=> "LEFT JOIN stage_candidat USING(id_stage)",
+			17	=> "LEFT JOIN candidat USING(id_candidat)",
+			'X'	=> null,
+			19	=> "GROUP BY id_formulaire"
 		);
 
 		// Construction du tableau associatif des étiquettes et leurs valeurs
@@ -220,7 +264,7 @@ class FormulaireManager extends MySQLManager {
 		// Fonctionnalité réalisée si l'accès aux formulaires est limité au groupe d'utilisateurs du rédacteur
 		if ($bGroupAccess) {
 			// Ajout d'une clause WHERE selon les bornes GAUCHE / DROITE
-			$aQuery[14]				= "WHERE borne_gauche BETWEEN :borne_gauche AND :borne_droite AND borne_droite BETWEEN :borne_gauche AND :borne_droite";
+			$aQuery['X']			= "WHERE borne_gauche BETWEEN :borne_gauche AND :borne_droite AND borne_droite BETWEEN :borne_gauche AND :borne_droite";
 
 			// Ajout des étiquette de la clause WHERE
 			$aBind[':borne_gauche']	= $this->_borneGauche;
@@ -231,7 +275,7 @@ class FormulaireManager extends MySQLManager {
 			// Récupération de la liste des formulaires
 			$aResultat = $this->executeSQL($aQuery, $aBind);
 		} catch (ApplicationException $e) {
-			throw new ApplicationException($e->getMessage(), $e->getExtra());
+			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aQuery, $aBind));
 		}
 
 		// Renvoi de la liste
@@ -242,6 +286,7 @@ class FormulaireManager extends MySQLManager {
 	 * @brief	Recherche de toutes les épreuves accessibles par un candidat.
 	 *
 	 * @li	Possibilité de limiter les formulaires selon le groupe d'appartenance de l'utilisateur connecté.
+	 * @li	L'entrée $aQuery['X'] correspond à une zone d'injection pour la clause WHERE de recherche intervallaire.
 	 *
 	 * @param	integer	$nIdCandidat		: identifiant du candidat.
 	 * @param	boolean	$bGroupAccess		: (optionnel) Filtre sur les groupes du rédacteur.
@@ -271,7 +316,7 @@ class FormulaireManager extends MySQLManager {
 			14	=> "INNER JOIN stage_candidat USING(id_stage)",
 			15	=> "INNER JOIN candidat USING(id_candidat)",
 			16	=> "WHERE candidat.id_candidat = :id_candidat",
-			17	=> null,
+			'X'	=> null,
 			18	=> "GROUP BY id_formulaire"
 		);
 
@@ -283,7 +328,7 @@ class FormulaireManager extends MySQLManager {
 		// Fonctionnalité réalisée si l'accès aux formulaires est limité au groupe d'utilisateurs du rédacteur
 		if ($bGroupAccess) {
 			// Ajout d'une clause WHERE selon les bornes GAUCHE / DROITE
-			$aQuery[17]				= "AND borne_gauche BETWEEN :borne_gauche AND :borne_droite AND borne_droite BETWEEN :borne_gauche AND :borne_droite";
+			$aQuery['X']			= "AND borne_gauche BETWEEN :borne_gauche AND :borne_droite AND borne_droite BETWEEN :borne_gauche AND :borne_droite";
 
 			// Ajout des étiquette de la clause WHERE
 			$aBind[':borne_gauche']	= $this->_borneGauche;
@@ -294,7 +339,7 @@ class FormulaireManager extends MySQLManager {
 			// Récupération de la liste des formulaires
 			$aResultat = $this->executeSQL($aQuery, $aBind);
 		} catch (ApplicationException $e) {
-			throw new ApplicationException($e->getMessage(), $e->getExtra());
+			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aQuery, $aBind));
 		}
 
 		// Renvoi de la liste
@@ -331,7 +376,7 @@ class FormulaireManager extends MySQLManager {
 			// Exécution de la requête et récupération du premier résultat
 			$aResultat = $this->executeSQL($aQuery, $aBind, 0);
 		} catch (ApplicationException $e) {
-			throw new ApplicationException($e->getMessage(), $e->getExtra());
+			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aQuery, $aBind));
 		}
 
 		// Renvoi de la capacité
@@ -377,7 +422,7 @@ class FormulaireManager extends MySQLManager {
 			// Exécution de la requête et récupération du premier résultat
 			$aResultat = $this->executeSQL($aQuery, $aBind, 0);
 		} catch (ApplicationException $e) {
-			throw new ApplicationException($e->getMessage(), $e->getExtra());
+			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aQuery, $aBind));
 		}
 
 		// Renvoi de la liste
@@ -430,7 +475,7 @@ class FormulaireManager extends MySQLManager {
 			// Exécution de la requête et récupération du premier résultat
 			$aResultat = $this->executeSQL($aQuery, $aBind, 0);
 		} catch (ApplicationException $e) {
-			throw new ApplicationException($e->getMessage(), $e->getExtra());
+			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aQuery, $aBind));
 		}
 
 		// Renvoi de la liste
@@ -471,7 +516,7 @@ class FormulaireManager extends MySQLManager {
 			// Récupération de la liste des formulaires
 			$aResultat = $this->executeSQL($aQuery, $aBind);
 		} catch (ApplicationException $e) {
-			throw new ApplicationException($e->getMessage(), $e->getExtra());
+			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aQuery, $aBind));
 		}
 
 		// Renvoi de la liste
@@ -484,6 +529,7 @@ class FormulaireManager extends MySQLManager {
 	 * @brief	Recherche de tous les formulaires enregistrés.
 	 *
 	 * @li	Possibilité de limiter les formulaires selon le groupe d'appartenance de l'utilisateur connecté.
+	 * @li	L'entrée $aQuery['X'] correspond à une zone d'injection pour la clause WHERE de recherche intervallaire.
 	 *
 	 * @param	boolean	$bGroupAccess		: (optionnel) Filtre sur les groupes du rédacteur.
 	 * @return	array, tableau contenant l'ensemble des résultats de la requête.
@@ -505,7 +551,7 @@ class FormulaireManager extends MySQLManager {
 			7	=> "LEFT  JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
 			8	=> "INNER JOIN groupe ON(redacteur.id_groupe = groupe.id_groupe)",
 			9	=> "LEFT  JOIN formulaire_question USING(id_formulaire)",
-			10	=> null,
+			'X'	=> null,
 			11	=> "GROUP BY id_formulaire"
 		);
 
@@ -515,7 +561,7 @@ class FormulaireManager extends MySQLManager {
 		// Fonctionnalité réalisée si l'accès aux formulaires est limité au groupe d'utilisateurs du rédacteur
 		if ($bGroupAccess) {
 			// Ajout d'une clause WHERE selon les bornes GAUCHE / DROITE
-			$aQuery[10]				= "WHERE borne_gauche BETWEEN :borne_gauche AND :borne_droite AND borne_droite BETWEEN :borne_gauche AND :borne_droite";
+			$aQuery['X']			= "WHERE borne_gauche BETWEEN :borne_gauche AND :borne_droite AND borne_droite BETWEEN :borne_gauche AND :borne_droite";
 
 			// Ajout des étiquette de la clause WHERE
 			$aBind[':borne_gauche']	= $this->_borneGauche;
@@ -526,7 +572,7 @@ class FormulaireManager extends MySQLManager {
 			// Récupération de la liste des formulaires
 			$aResultat = $this->executeSQL($aQuery, $aBind);
 		} catch (ApplicationException $e) {
-			throw new ApplicationException($e->getMessage(), $e->getExtra());
+			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aQuery, $aBind));
 		}
 
 		// Renvoi de la liste
@@ -537,6 +583,7 @@ class FormulaireManager extends MySQLManager {
 	 * @brief	Recherche de tous les formulaires en attente de validation.
 	 *
 	 * @li	Possibilité de limiter les formulaires selon le groupe d'appartenance de l'utilisateur connecté.
+	 * @li	L'entrée $aQuery['X'] correspond à une zone d'injection pour la clause WHERE de recherche intervallaire.
 	 *
 	 * @param	boolean	$bGroupAccess		: (optionnel) Filtre sur les groupes du rédacteur.
 	 * @return	array, tableau contenant l'ensemble des résultats de la requête.
@@ -559,7 +606,7 @@ class FormulaireManager extends MySQLManager {
 			8	=> "INNER JOIN groupe ON(redacteur.id_groupe = groupe.id_groupe)",
 			9	=> "LEFT  JOIN formulaire_question USING(id_formulaire)",
 			10	=> "WHERE validation_formulaire > :validation_formulaire",
-			11	=> null,
+			'X'	=> null,
 			12	=> "GROUP BY id_formulaire"
 		);
 
@@ -571,7 +618,7 @@ class FormulaireManager extends MySQLManager {
 		// Fonctionnalité réalisée si l'accès aux formulaires est limité au groupe d'utilisateurs du rédacteur
 		if ($bGroupAccess) {
 			// Ajout d'une clause WHERE selon les bornes GAUCHE / DROITE
-			$aQuery[11]				= "AND borne_gauche BETWEEN :borne_gauche AND :borne_droite AND borne_droite BETWEEN :borne_gauche AND :borne_droite";
+			$aQuery['X']			= "AND borne_gauche BETWEEN :borne_gauche AND :borne_droite AND borne_droite BETWEEN :borne_gauche AND :borne_droite";
 
 			// Ajout des étiquette de la clause WHERE
 			$aBind[':borne_gauche']	= $this->_borneGauche;
@@ -582,7 +629,7 @@ class FormulaireManager extends MySQLManager {
 			// Récupération de la liste des formulaires
 			$aResultat = $this->executeSQL($aQuery, $aBind);
 		} catch (ApplicationException $e) {
-			throw new ApplicationException($e->getMessage(), $e->getExtra());
+			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aQuery, $aBind));
 		}
 
 		// Renvoi de la liste
@@ -593,6 +640,7 @@ class FormulaireManager extends MySQLManager {
 	 * @brief	Recherche de tous les formulaires en attente de génération.
 	 *
 	 * @li	Possibilité de limiter les formulaires selon le groupe d'appartenance de l'utilisateur connecté.
+	 * @li	L'entrée $aQuery['X'] correspond à une zone d'injection pour la clause WHERE de recherche intervallaire.
 	 *
 	 * @param	boolean	$bGroupAccess		: (optionnel) Filtre sur les groupes du rédacteur.
 	 * @return	array, tableau contenant l'ensemble des résultats de la requête.
@@ -607,16 +655,22 @@ class FormulaireManager extends MySQLManager {
 			0	=> "SELECT *,",
 			1	=> self::LIBELLE_REDACTEUR . " AS libelle_redacteur,",
 			2	=> self::LIBELLE_VALIDEUR . " AS libelle_valideur,",
-			3	=> "COUNT(id_question)",
-			4	=> "FROM formulaire",
-			5	=> "LEFT  JOIN domaine USING(id_domaine)",
-			6	=> "INNER JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = id_redacteur)",
-			7	=> "INNER JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
-			8	=> "INNER JOIN groupe ON(redacteur.id_groupe = groupe.id_groupe)",
-			9	=> "LEFT  JOIN formulaire_question USING(id_formulaire)",
-			10	=> "WHERE validation_formulaire > :validation_formulaire",
-			11	=> null,
-			12	=> "GROUP BY id_formulaire"
+			3	=> self::DATETIME_EPREUVE . " AS datetime_epreuve,",
+			4	=> "UNIX_TIMESTAMP(" . self::DATETIME_EPREUVE . ") AS debut_epreuve,",
+			5	=> "UNIX_TIMESTAMP(" . self::DATETIME_EPREUVE . ") + 60 * duree_epreuve AS fin_epreuve,",
+			6	=> "UNIX_TIMESTAMP(CURRENT_TIMESTAMP()) AS maintenant,",
+			7	=> "COUNT(id_question)",
+			8	=> "FROM formulaire",
+			9	=> "LEFT  JOIN domaine USING(id_domaine)",
+			10	=> "INNER JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = id_redacteur)",
+			11	=> "INNER JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
+			12	=> "INNER JOIN groupe ON(redacteur.id_groupe = groupe.id_groupe)",
+			13	=> "LEFT  JOIN formulaire_question USING(id_formulaire)",
+			14	=> "LEFT  JOIN generation USING(id_formulaire)",
+			15	=> "LEFT  JOIN epreuve USING(id_generation)",
+			16	=> "WHERE validation_formulaire > :validation_formulaire",
+			'X'	=> null,
+			17	=> "GROUP BY id_formulaire"
 		);
 
 		// Construction du tableau associatif des étiquettes et leurs valeurs
@@ -627,7 +681,7 @@ class FormulaireManager extends MySQLManager {
 		// Fonctionnalité réalisée si l'accès aux formulaires est limité au groupe d'utilisateurs du rédacteur
 		if ($bGroupAccess) {
 			// Ajout d'une clause WHERE selon les bornes GAUCHE / DROITE
-			$aQuery[11]				= "AND borne_gauche BETWEEN :borne_gauche AND :borne_droite AND borne_droite BETWEEN :borne_gauche AND :borne_droite";
+			$aQuery['X']			= "AND borne_gauche BETWEEN :borne_gauche AND :borne_droite AND borne_droite BETWEEN :borne_gauche AND :borne_droite";
 
 			// Ajout des étiquette de la clause WHERE
 			$aBind[':borne_gauche']	= $this->_borneGauche;
@@ -638,7 +692,7 @@ class FormulaireManager extends MySQLManager {
 			// Récupération de la liste des formulaires
 			$aResultat = $this->executeSQL($aQuery, $aBind);
 		} catch (ApplicationException $e) {
-			throw new ApplicationException($e->getMessage(), $e->getExtra());
+			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aQuery, $aBind));
 		}
 
 		// Renvoi de la liste
@@ -912,7 +966,7 @@ class FormulaireManager extends MySQLManager {
 				$aResultat = array_merge_recursive($aResultat, $this->getQuestionReponsesByIdQuestion($nIdQuestion));
 			}
 		} catch (ApplicationException $e) {
-			throw new ApplicationException($e->getMessage(), $e->getExtra());
+			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aQuery, $aBind));
 		}
 
 		// Renvoi de la liste
@@ -952,7 +1006,7 @@ class FormulaireManager extends MySQLManager {
 			// Exécution de la requête et récupération du premier résultat
 			$aResultat = $this->executeSQL($sQuery, $aBind, 0);
 		} catch (ApplicationException $e) {
-			throw new ApplicationException($e->getMessage(), $e->getExtra());
+			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($sQuery, $aBind));
 		}
 
 		// Renvoi du résultat
@@ -993,7 +1047,7 @@ class FormulaireManager extends MySQLManager {
 				$aResultat = DataHelper::extractArrayFromRequestByLabel($aResultat, (array) $aFiltre);
 			}
 		} catch (ApplicationException $e) {
-			throw new ApplicationException($e->getMessage(), $e->getExtra());
+			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aQuery, $aBind));
 		}
 
 		// Renvoi du résultat
@@ -1034,7 +1088,7 @@ class FormulaireManager extends MySQLManager {
 				$aResultat = DataHelper::extractArrayFromRequestByLabel($aResultat, (array) $aFiltre);
 			}
 		} catch (ApplicationException $e) {
-			throw new ApplicationException($e->getMessage(), $e->getExtra());
+			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aQuery, $aBind));
 		}
 
 		// Renvoi du résultat
@@ -1067,7 +1121,7 @@ class FormulaireManager extends MySQLManager {
 			// Exécution de la requête et récupération du premier résultat
 			$aResultat = $this->executeSQL($aQuery, $aBind, 0);
 		} catch (ApplicationException $e) {
-			throw new ApplicationException($e->getMessage(), $e->getExtra());
+			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aQuery, $aBind));
 		}
 
 		// Renvoi du résultat
@@ -1310,7 +1364,7 @@ class FormulaireManager extends MySQLManager {
 	 * @li	L'enregistrement de la génération du formulaire doit être réalisée en amont.
 	 *
 	 * @return	integer, identifiant de la table `epreuve`.
-	 * @throws ApplicationException gérée par la méthode enregistrer() en amont.
+	 * @throws	ApplicationException gérée par la méthode enregistrer() en amont.
 	 * @see		FormulaireManager.enregistrer()
 	 */
 	protected function enregistrerEpreuve() {
@@ -1381,20 +1435,28 @@ class FormulaireManager extends MySQLManager {
 	/**
 	 * @brief	Suppression des relations GENERATION / EPREUVE.
 	 *
+	 * @li	Vérification qu'une épreuve ne soit pas déjà été réalisée.
+	 *
 	 * @param	integer	$nIdEpreuve			: Identifiant de l'épreuve.
 	 * @return	boolean
-	 * @throws ApplicationException gérée par la méthode enregistrer() en amont.
+	 * @throws	ApplicationException gérée par la méthode enregistrer() en amont.
 	 */
 	protected function supprimerEpreuve($nIdEpreuve) {
 		// Ajout d'un suivit pour le debuggage
 		$this->debug(__METHOD__, $nIdEpreuve);
 
-		// Requête DELETE
-		$sQuery = "DELETE FROM epreuve WHERE id_epreuve = :id_epreuve";
-		// Construction du tableau associatif de l'étiquette du formulaire
-		$aBind	= array(":id_epreuve" => $nIdEpreuve);
-		// Suppression de toutes les précédentes relations avec le formulaire
-		$this->executeSQL($sQuery, $aBind);
+		try {
+			// Requête DELETE
+			$sQuery = "DELETE FROM epreuve WHERE id_epreuve = :id_epreuve";
+
+			// Construction du tableau associatif de l'étiquette du formulaire
+			$aBind = array(":id_epreuve" => $nIdEpreuve);
+
+			// Suppression de toutes les précédentes relations avec le formulaire
+			$this->executeSQL($sQuery, $aBind);
+		} catch (ApplicationException $e) {
+			throw new ApplicationException('EQueryDelete', DataHelper::queryToString($sQuery, $aBind));
+		}
 	}
 
 	/******************************************************************************************************
@@ -1443,7 +1505,7 @@ class FormulaireManager extends MySQLManager {
 	 * @li	Enregistrement du libellé de l'épreuve dans le champ `nom_epreuve_generation` de la table.
 	 *
 	 * @return	integer, identifiant de la table `generation`.
-	 * @throws ApplicationException gérée par la méthode enregistrer() en amont.
+	 * @throws	ApplicationException gérée par la méthode enregistrer() en amont.
 	 */
 	protected function enregistrerGeneration() {
 		// Ajout d'un suivit pour le debuggage
@@ -1662,7 +1724,7 @@ class FormulaireManager extends MySQLManager {
 	 * @param	integer	$nQuestion			: Occurrence de la question dans $_aQCM.
 	 * @param	integer	$nReponse			: Occurrence de la réponse à la question passée en paramètre dans $_aQCM.
 	 * @return	integer, identifiant de la table `question_reponse`.
-	 * @throws ApplicationException gérée par la méthode enregistrer() en amont.
+	 * @throws	ApplicationException gérée par la méthode enregistrer() en amont.
 	 */
 	protected function enregistrerQuestionReponse($nQuestion, $nReponse) {
 		// Ajout d'un suivit pour le debuggage
@@ -1778,7 +1840,7 @@ class FormulaireManager extends MySQLManager {
 	 * @param	integer	$nQuestion			: Occurrence de la question dans $_aQCM.
 	 * @param	integer	$nReponse			: Occurrence de la réponse à la question passée en paramètre dans $_aQCM.
 	 * @return	integer, identifiant de la question.
-	 * @throws ApplicationException gérée par la méthode enregistrer() en amont.
+	 * @throws	ApplicationException gérée par la méthode enregistrer() en amont.
 	 */
 	protected function enregistrerReponse($nQuestion, $nReponse) {
 		// Ajout d'un suivit pour le debuggage
@@ -1945,7 +2007,7 @@ class FormulaireManager extends MySQLManager {
 	 *
 	 * @param	integer	$nQuestion			: Occurrence de la question dans $_aQCM.
 	 * @return	integer, identifiant de la question.
-	 * @throws ApplicationException gérée par la méthode enregistrer() en amont.
+	 * @throws	ApplicationException gérée par la méthode enregistrer() en amont.
 	 */
 	protected function enregistrerQuestion($nQuestion) {
 		// Ajout d'un suivit pour le debuggage
@@ -2086,7 +2148,7 @@ class FormulaireManager extends MySQLManager {
 	 * @endcode
 	 *
 	 * @return	integer, identifiant du formulaire QCM enregistré en base.
-	 * @throws ApplicationException gérée par la méthode enregistrer() en amont.
+	 * @throws	ApplicationException gérée par la méthode enregistrer() en amont.
 	 */
 	protected function enregistrerFormulaire() {
 		// Ajout d'un suivit pour le debuggage
@@ -2976,7 +3038,7 @@ class FormulaireManager extends MySQLManager {
 			// Exécution de la requête et récupération du premier résultat
 			$aResultat = $this->executeSQL($aQuery, $aBind, 0);
 		} catch (ApplicationException $e) {
-			throw new ApplicationException($e->getMessage(), $e->getExtra());
+			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aQuery, $aBind));
 		}
 
 		// Renvoi si la liste est vide
@@ -3112,7 +3174,7 @@ class FormulaireManager extends MySQLManager {
 		} catch (ApplicationException $e) {
 			// Annulation des modifications
 			$this->oSQLConnector->rollBack();
-			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aQuery, $aBind));
+			throw new ApplicationException('EQueryDelete', DataHelper::queryToString($aQuery, $aBind));
 		}
 
 		// Renvoi du résultat

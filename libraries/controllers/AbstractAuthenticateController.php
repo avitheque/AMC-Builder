@@ -23,8 +23,8 @@
  * @subpackage	Libraries
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 66 $
- * @since		$LastChangedDate: 2017-07-12 19:33:31 +0200 (Wed, 12 Jul 2017) $
+ * @version		$LastChangedRevision: 72 $
+ * @since		$LastChangedDate: 2017-07-29 16:54:10 +0200 (Sat, 29 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -43,6 +43,12 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 	 * @var		AuthenticateManager
 	 */
 	protected	$_oAuth				= null;
+
+	/**
+	 *
+	 * @var		SessionManager
+	 */
+	protected	$_oSession			= null;
 
 	/**
 	 *
@@ -73,6 +79,10 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 
 		// Récupération du SINGLETON de l'instance AuthenticateManager
 		$this->_oAuth	= AuthenticateManager::getInstance();
+
+		// Récupération du SINGLETON de l'instance SessionManager
+		$this->_oSession= SessionManager::getInstance();
+		$this->_oSession->setNameSpace($sNameSpace);
 
 		// Récupération du rôle de l'utilisateur
 		$sRole			= $this->_oAuth->getRole();
@@ -197,13 +207,8 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 		// Stockage des données dans la variable du contrôleur
 		$this->addToData($sIndex, $xData);
 
-		if (is_null($xData)) {
-			// Suppression de l'entrée en session
-			unset($_SESSION[$this->_sessionNameSpace][$sIndex]);
-		} else {
-			// Stockage des données en SESSION
-			$_SESSION[$this->_sessionNameSpace][$sIndex]	= $xData;
-		}
+		// Stockage des données en SESSION
+		$this->_oSession->setIndex($sIndex, $xData);
 	}
 
 	/**
@@ -215,10 +220,11 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 	 * @return	void
 	 */
 	public function resetDataIntoSession($sIndex) {
-		// Stockage des données dans la variable du contrôleur
+		// Suppression des données dans la variable du contrôleur
 		unset($this->aData[$sIndex]);
-		// Stockage des données en SESSION
-		unset($_SESSION[$this->_sessionNameSpace][$sIndex]);
+
+		// Suppression des données en SESSION
+		$this->_oSession->unsetIndex($sIndex);
 	}
 
 	/**
@@ -228,11 +234,8 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 	 * @return	mixed
 	 */
 	public function issetSessionData($sIndex) {
-		if (isset($_SESSION[$this->_sessionNameSpace])) {
-			return array_key_exists($sIndex, $_SESSION[$this->_sessionNameSpace]);
-		} else {
-			return null;
-		}
+		// Vérifie de l'existance de l'entrée en SESSION
+		return $this->_oSession->issetIndex($sIndex);
 	}
 
 	/**
@@ -242,11 +245,8 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 	 * @return	mixed
 	 */
 	public function getDataFromSession($sIndex) {
-		if (isset($_SESSION[$this->_sessionNameSpace])) {
-			return DataHelper::get($_SESSION[$this->_sessionNameSpace], $sIndex);
-		} else {
-			return null;
-		}
+		// Récupération de l'entrée en SESSION
+		return $this->_oSession->getIndex($sIndex);
 	}
 
 	/**
@@ -301,22 +301,9 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 		$this->resetDatas();
 		$this->resetParams();
 
-		// Fonctionnalité réalisée si le nom de session
-		if (empty($sSessionName)) {
-			foreach ($_SESSION as $sSessionName => $xData) {
-				if (in_array($sSessionName, $aApplicationSessions)) {
-					continue;
-				} else {
-					// Message de debuggage
-					$this->debug("Purge de la session \"<i>$sSessionName</i>\"");
-					unset($_SESSION[$sSessionName]);
-				}
-			}
-		} elseif (!in_array($sSessionName, $aApplicationSessions)) {
-			// Message de debuggage
-			$this->debug("Purge de la session \"<i>$sSessionName</i>\"");
-			unset($_SESSION[$sSessionName]);
-		}
+		// Message de debuggage
+		$this->debug("Purge de la session \"<i>$sSessionName</i>\"");
+		$this->_oSession->destroy();
 	}
 
 	/**
