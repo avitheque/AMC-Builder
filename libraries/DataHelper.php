@@ -10,8 +10,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 71 $
- * @since		$LastChangedDate: 2017-07-27 20:40:14 +0200 (Thu, 27 Jul 2017) $
+ * @version		$LastChangedRevision: 75 $
+ * @since		$LastChangedDate: 2017-08-02 23:54:49 +0200 (Wed, 02 Aug 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -1596,6 +1596,9 @@ class DataHelper {
 
 				// Fonctionnalité réalisée en MODE_DEBUG
 				if (defined('MODE_DEBUG') && (bool) MODE_DEBUG) {
+					// Récupération de l'instance d'échange
+					$oInstanceStorage	= InstanceStorage::getInstance();
+
 					// Récupération de la trace de l'exception enfant
 					if ($oException->getTraceAsString()) {
 						$sExceptionHTML .= sprintf('<p id="exception-trace">%s</p><hr />', implode("<br />#", explode("#", $oException->getTraceAsString())));
@@ -1622,13 +1625,11 @@ class DataHelper {
 					}
 
 					// Récupération du contrôleur ayant l'exception
-					$sTextAction = "";
 					if (method_exists($oException, 'getController') && $sController = $oException->getController()) {
 						$sExceptionHTML .= sprintf('<li id="exception-controller no-wrap"><span>Contrôleur : </span><i>%s</i></li>', $sController);
 					}
 
 					// Récupération de l'action du contrôleur ayant l'exception
-					$sTextAction = "";
 					if (method_exists($oException, 'getAction') && $sAction = $oException->getAction()) {
 						$sExceptionHTML .= sprintf('<li id="exception-action no-wrap"><span>Action : </span><i>%s</i></li>', $sAction);
 					}

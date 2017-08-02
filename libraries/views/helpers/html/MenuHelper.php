@@ -8,8 +8,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 67 $
- * @since		$LastChangedDate: 2017-07-19 00:09:56 +0200 (Wed, 19 Jul 2017) $
+ * @version		$LastChangedRevision: 75 $
+ * @since		$LastChangedDate: 2017-08-02 23:54:49 +0200 (Wed, 02 Aug 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -18,42 +18,13 @@
 class MenuHelper extends ViewRender {
 
 	/**
-	 * @brief	Liste des menus
-	 *
-	 * Liste des ressources ACL constituant le menu de l'application.
-	 *
-	 * @li	Possibilité d'ajouter des ACTIONS comme ressource du type [ressource_action]
-	 *
-	 * ATTENTION : Si une ressource n'est pas déclarée, le menu correspondant ne sera pas affiché.
-	 * @li	Le titre de chaque menu est déclaré dans les ressources ACL
-	 * @see		application/configs/acl.ini
-	 *
-	 * @var		array
+	 * @brief	Constante de configuration de la navigation.
+	 * @var		string	`navigation.ini` par défaut.
 	 */
-	private $_menu				= array(
-		'index',									// Accueil
-		'login',									// Connexion à un compte
-		'creation',									// Créer un QCM
-		'importation',								// Importer un QCM au format AMC-TEXT
-		'edition',									// Éditer un QCM
-		'validation',								// Valider un QCM
-		'generation',								// Générer le fichier LaTeX
-		'gestion',									// Gérer l'application
-		'supervision',								// Administrer le serveur
-		'epreuve',									// Participer à une épreuve QCM
-		'compte',									// Accéder aux informations du compte
+	const	FILENAME_INI		= 'navigation.ini';
+	const	MAIN_MENU			= 'main';
+	private $_init				= array();
 
-		// Sous-menus de la forme array('ressource_enfant' => 'ressource_parent')
-		'developpement'			=> 'index',			// Page pour les développeurs
-
-		'compte_logout'			=> 'compte',		// Déconnexion de l'utilisateur connecté
-
-		'referentiel'			=> 'gestion',		// Gestion du référentiel
-		'gestion_groupe'		=> 'gestion',		// Gestion des groupes
-		'gestion_utilisateur'	=> 'gestion',		// Gestion des utilisateur de l'application
-		'gestion_stage'			=> 'gestion',		// Gestion d'un stage
-		'gestion_candidat'		=> 'gestion'		// Gestion des candidats
-	);
 	private $_controller		= FW_DEFAULTCONTROLLER;
 	private $_action			= FW_DEFAULTACTION;
 	private $_acl				= array();
@@ -67,23 +38,25 @@ class MenuHelper extends ViewRender {
 	 * @return	void
 	 */
 	public function __construct(array $aAcl, $sController = null, $sAction = null) {
-		// Récupération du singleton AclManager
-		$oAcl = AclManager::getInstance();
+		// Récupération des ACL sous forme de tableau
+		$this->_init					= ParseIniFile::parse(null, self::FILENAME_INI);
 
 		// Initialisation des variables d'instance
-		$this->_acl				= $aAcl;
-		$this->_controller		= $sController;
-		$this->_action			= $sAction;
+		$this->_acl						= $aAcl;
+		$this->_controller				= $sController;
+		$this->_action					= $sAction;
 
-		// Construction du menu selon les ACLs
-		foreach ((array) $this->_menu as $sSousMenu => $sRessource) {
-			// Fonctionnalité réalisée si le sous-menu est valide
-			if (is_string($sSousMenu) && array_key_exists($sRessource, $this->_html)) {
-				// Menu secondaire
-				$this->addItemToMenuController($sRessource, $oAcl->getRessourceLabel($sSousMenu), $sSousMenu);
-			} else {
-				// Menu principal
-				$this->setMenuController($oAcl->getRessourceLabel($sRessource), $sRessource);
+		// Construction du menu principal
+		foreach ($this->_init as $sSection => $aMenu) {
+			foreach ($aMenu as $sRessource => $sLabel) {
+				// Construction du menu principal
+				if ($sSection == self::MAIN_MENU) {
+					// Menu principal
+					$this->setMenuController($sLabel, $sRessource);
+				} elseif (is_string($sLabel) && array_key_exists($sSection, $this->_html)) {
+					// Menu secondaire
+					$this->addItemToMenuController($sRessource, $sLabel, $sLabel);
+				}
 			}
 		}
 

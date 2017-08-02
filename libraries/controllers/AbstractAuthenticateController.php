@@ -23,8 +23,8 @@
  * @subpackage	Libraries
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 72 $
- * @since		$LastChangedDate: 2017-07-29 16:54:10 +0200 (Sat, 29 Jul 2017) $
+ * @version		$LastChangedRevision: 75 $
+ * @since		$LastChangedDate: 2017-08-02 23:54:49 +0200 (Wed, 02 Aug 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -95,7 +95,7 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 			// Nom de la ressource du type CONTROLLER / ACTION
 			$sRessource = $this->_controller . "/" . $this->_action;
 			// Génération d'une exception
-			throw new ApplicationException('EAclNotAllowed', $sRessource, $this->_controller, $this->_action);
+			throw new ApplicationException('EAclNotAllowed', $sRessource);
 		}
 
 		// Initialisation du menu

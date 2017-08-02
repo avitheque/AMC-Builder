@@ -12,18 +12,17 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 24 $
- * @since		$LastChangedDate: 2017-04-30 20:38:39 +0200 (dim., 30 avr. 2017) $
- * 
+ * @version		$LastChangedRevision: 75 $
+ * @since		$LastChangedDate: 2017-08-02 23:54:49 +0200 (Wed, 02 Aug 2017) $
+ *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
  */
 class ApplicationException extends Exception {
-	private $sController	= FW_DEFAULTCONTROLLER;
-	private $sAction		= FW_DEFAULTACTION;
-	private $aParams		= array();
-	private $aExtra			= array();
+	private $_oInstanceStorage		= null;
+	private $aParams				= array();
+	private $aExtra					= array();
 
 	/** @brief	Constructeur.
 	 *
@@ -31,20 +30,21 @@ class ApplicationException extends Exception {
 	 * Il vérifie entre autre si l'on passe des tableaux ou des chaînes en paramètre.
 	 * @param	string		$sMessage	: Code littèral de l'exception.
 	 * @param	array		$aExtra		: Tableau de chaines de caractères informatives décrivant l'exception.
-	 * @param	string		$sAction	: URL générée sous forme de lien.
 	 */
-	public function __construct($sMessage, $aExtra = array(), $sController = FW_DEFAULTCONTROLLER, $sAction = FW_DEFAULTACTION) {
+	public function __construct($sMessage, $aExtra = array()) {
 		if ($sMessage) {
-			$aParams = (array) $sMessage;
+			$aParams				= (array) $sMessage;
 		} else {
-			$aParams = array(Constantes::ERROR_UNDEFINED);
+			$aParams				= array(Constantes::ERROR_UNDEFINED);
 		}
+
+		// Récupération de l'instance du singleton InstanceStorage permettant de gérer les échanges avec le contrôleur
+		$this->_oInstanceStorage	= InstanceStorage::getInstance();
+
 		$sMsg = array_shift($aParams);
 		parent::__construct($sMsg);
-		$this->aParams		= $aParams;
-		$this->sController	= $sController;
-		$this->sAction		= $sAction;
-		$this->aExtra		= (array) $aExtra;
+		$this->aParams				= $aParams;
+		$this->aExtra				= (array) $aExtra;
 	}
 
 	/** @brief	Paramètres associés aux messages.
@@ -62,20 +62,20 @@ class ApplicationException extends Exception {
 
 	/** @brief	Contrôleur.
 	 *
-	 * URL de destination générée sous forme de lien dans la boite d'affichage.
+	 * Récupération du contrôlleur.
 	 * @return	Chaine de caractères.
 	 */
 	public function getController() {
-		return $this->sController;
+		return DataHelper::get($this->_oInstanceStorage->get("execute"), "controller", DataHelper::DATA_TYPE_CLASSID, FW_DEFAULTCONTROLLER);
 	}
 
 	/** @brief	Action.
 	 *
-	 * URL de destination générée sous forme de lien dans la boite d'affichage.
+	 * Récupération de l'action.
 	 * @return	Chaine de caractères.
 	 */
 	public function getAction() {
-		return $this->sAction;
+		return DataHelper::get($this->_oInstanceStorage->get("execute"), "action", DataHelper::DATA_TYPE_CLASSID, FW_DEFAULTACTION);
 	}
 
 	/** @brief	Tableau de lignes d'info supplémentaire.

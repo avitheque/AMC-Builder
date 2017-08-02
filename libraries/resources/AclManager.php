@@ -26,8 +26,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 26 $
- * @since		$LastChangedDate: 2017-05-04 19:34:05 +0200 (jeu., 04 mai 2017) $
+ * @version		$LastChangedRevision: 75 $
+ * @since		$LastChangedDate: 2017-08-02 23:54:49 +0200 (Wed, 02 Aug 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -176,11 +176,11 @@ class AclManager {
 						switch ($sAccess) {
 							case self::ALLOW:
 								$aACL[] = $sRessource;
-							break;
+								break;
 
 							case self::DENY:
 								unset($aACL[$sRessource]);
-							break;
+								break;
 
 							default:
 								// Fonctionnalité réalisée si l'accès correspond à l'environnement de l'application
@@ -189,7 +189,7 @@ class AclManager {
 								} else {
 									continue;
 								}
-							break;
+								break;
 						}
 
 					} else {

@@ -10,8 +10,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 72 $
- * @since		$LastChangedDate: 2017-07-29 16:54:10 +0200 (Sat, 29 Jul 2017) $
+ * @version		$LastChangedRevision: 74 $
+ * @since		$LastChangedDate: 2017-07-30 01:56:01 +0200 (Sun, 30 Jul 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -97,7 +97,7 @@ class GroupButtonEpreuveHelper {
 		$sMilieu					= "";
 		if ($this->_readonly) {
 			// Ajout d'un message d'avertissement
-			ViewRender::setMessageWarning("Droits limités !", "Aucune modification du formulaire n'est autorisée !");
+			ViewRender::setMessageWarning("Droits limités !", "Aucune modification du formulaire n'est autorisée...");
 
 			// Formulaire non modifiable
 			$sDroite				= "<button type=\"submit\" class=\"disabled right tooltip\" name=\"button\" value=\"" . AbstractFormulaireQCMController::ACTION_FERMER . "\" title=\"Enregistrer temporairement le QMC\" role=\"touche_S\" disabled>Sauvegarder</button>";
