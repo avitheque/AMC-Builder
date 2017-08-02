@@ -8,8 +8,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 75 $
- * @since		$LastChangedDate: 2017-08-02 23:54:49 +0200 (Wed, 02 Aug 2017) $
+ * @version		$LastChangedRevision: 76 $
+ * @since		$LastChangedDate: 2017-08-03 00:37:43 +0200 (Thu, 03 Aug 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -55,7 +55,7 @@ class MenuHelper extends ViewRender {
 					$this->setMenuController($sLabel, $sRessource);
 				} elseif (is_string($sLabel) && array_key_exists($sSection, $this->_html)) {
 					// Menu secondaire
-					$this->addItemToMenuController($sRessource, $sLabel, $sLabel);
+					$this->addItemToMenuController($sSection, $sLabel, $sRessource);
 				}
 			}
 		}
@@ -102,14 +102,14 @@ class MenuHelper extends ViewRender {
 	 * @li Si l'action courante correspond au menu, le menu sera déclaré comme sélectionné.
 	 * La classe CSS [.selected] sera affecté au menu.
 	 *
-	 * @param	string	$sMenuController	: ressource du menu.
+	 * @param	string	$sMenuPrincipal		: ressource du menu.
 	 * @param	string	$sLabel				: libellé du menu.
 	 * @param	string	$sRessource			: nom de la ressource.
 	 * @return	void
 	 */
-	public function addItemToMenuController($sMenuController, $sLabel, $sRessource = "") {
+	public function addItemToMenuController($sMenuPrincipal, $sLabel, $sRessource = "") {
 		// Teste si l'utilisateur courant a le droit d'accès sur la ressource
-		if (!in_array($sMenuController, $this->_acl) || !in_array($sRessource, $this->_acl)) {
+		if (!array_key_exists($sMenuPrincipal, $this->_init[self::MAIN_MENU]) || !in_array($sRessource, $this->_acl)) {
 			return false;
 		}
 
@@ -120,13 +120,13 @@ class MenuHelper extends ViewRender {
 			// Sélection de l'élément
 			$sClass				= "selected";
 			// Sélection du menu principal
-			if (isset($this->_html[$sMenuController][0])) {
-				$this->_html[$sMenuController][0]['class'] = $sClass;
+			if (isset($this->_html[$sMenuPrincipal][0])) {
+				$this->_html[$sMenuPrincipal][0]['class'] = $sClass;
 			}
 		}
 
 		// Construction du menu
-		$this->_html[$sMenuController][] = array(
+		$this->_html[$sMenuPrincipal][] = array(
 			'label'				=> $sLabel,
 			'ressource'			=> $sRessource,
 			'class'				=> $sClass
