@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 70 $
- * @since		$LastChangedDate: 2017-07-23 03:54:30 +0200 (Sun, 23 Jul 2017) $
+ * @version		$LastChangedRevision: 77 $
+ * @since		$LastChangedDate: 2017-08-07 21:40:32 +0200 (Mon, 07 Aug 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -46,7 +46,7 @@ class QuestionHelper {
 	 * 		// Données relatives à une question
 	 * 		$aQuestions['question_id']					: Identifiant de la question (en Base de données)
 	 * 		$aQuestions['question_titre']				: Titre de la question
-	 * 		$aQuestions['question_bareme']				: Nombre de points affecté à la question
+	 * 		$aQuestions['question_bareme']				: Nombre de point(s) affecté(s) à la question
 	 * 		$aQuestions['question_stricte']				: Flag de réponse stricte attendue à la question (tout ou rien)
 	 * 		$aQuestions['question_penalite']			: Facteur de pénalité (en %) si le candidat répond mal à la question
 	 * 		$aQuestions['question_enonce']				: Texte de l'énoncé de la question
@@ -138,7 +138,7 @@ class QuestionHelper {
 	 * 		// Données relatives à une question
 	 * 		$aQuestions['question_id']					: Identifiant de la question (en Base de données)
 	 * 		$aQuestions['question_titre']				: Titre de la question
-	 * 		$aQuestions['question_bareme']				: Nombre de points affecté à la question
+	 * 		$aQuestions['question_bareme']				: Nombre de point(s) affecté(s) à la question
 	 * 		$aQuestions['question_stricte']				: Flag de réponse stricte attendue à la question (tout ou rien)
 	 * 		$aQuestions['question_penalite']			: Facteur de pénalité (en %) si le candidat répond mal à la question
 	 * 		$aQuestions['question_enonce']				: Texte de l'énoncé de la question
@@ -369,7 +369,7 @@ class QuestionHelper {
 																	<label for=\"" . $sIdSanction . "\">Sanction</label>
 																</dt>
 																<dd class=\"sanction " . $sClassSanction . "\" id=\"penalite_" . $nQuestion . "_" . $nReponse . "\">
-																	<label for=\"" . $sIdPenalite . "\"><u>Nombre de points à retirer :</u></label>
+																	<label for=\"" . $sIdPenalite . "\"><u>Nombre de point(s) à retirer :</u></label>
 																	<input maxlength=3 type=\"text\" id=\"" . $sIdPenalite . "\" class=\"decimal center width-60\" name=\"reponse_penalite[" . $nQuestion . "][" . $nReponse . "]\" value=\"" . str_replace(".", ",", $fPenaliteReponse) . "\" $sReadonly/>
 																</dd>
 															</dl>
@@ -477,6 +477,7 @@ class QuestionHelper {
 		$pPenaliteFormulaire				= DataHelper::get($this->_aQuestions,	'formulaire_penalite',				DataHelper::DATA_TYPE_INT_ABS,			FormulaireManager::PENALITE_DEFAUT);
 		// Nombre de question du formulaire
 		$nNbTotalQuestions					= DataHelper::get($this->_aQuestions,	'formulaire_nb_total_questions',	DataHelper::DATA_TYPE_INT_ABS,			FormulaireManager::NB_TOTAL_QUESTIONS_DEFAUT);
+		$sPlurielQuestions					= $nNbTotalQuestions > 1	? "s"						: "";
 
 		//#########################################################################################
 		// CONSTRUCTION DU FORMULAIRE RELATIF AUX QUESTIONS
@@ -699,7 +700,7 @@ class QuestionHelper {
 																	<div class=\"no-wrap strong left max-width\">
 																		<label for=\"idBareme_" . $nQuestion . "\">Barème par défaut</label>
 																		<input maxlength=" . FormulaireManager::QUESTION_BAREME_MAXLENGTH . " type=\"text\" id=\"idBareme_" . $nQuestion . "\" class=\"decimal center width-50\" name=\"question_bareme[" . $nQuestion . "]\" value=\"" . str_replace(".", ",", $fBareme) . "\" $sReadonly/>
-																		<label for=\"idBareme_" . $nQuestion . "\">/&nbsp;" . $nNbTotalQuestions . "</label>
+																		<label for=\"idBareme_" . $nQuestion . "\">/&nbsp;" . $nNbTotalQuestions . "&nbsp;question" . $sPlurielQuestions . "</label>
 																	</div>
 																</div>
 																<hr class=\"margin-V-25\"/>

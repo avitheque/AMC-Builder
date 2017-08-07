@@ -11,14 +11,21 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 69 $
- * @since		$LastChangedDate: 2017-07-23 03:02:54 +0200 (dim., 23 juil. 2017) $
+ * @version		$LastChangedRevision: 77 $
+ * @since		$LastChangedDate: 2017-08-07 21:40:32 +0200 (Mon, 07 Aug 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
  */
 class EpreuveController extends AbstractFormulaireQCMController {
+
+	/**
+	 * @brief	Constante de programmation de l'épreuve.
+	 *
+	 * @var		string
+	 */
+	const		STATUT_PROGRAMMATION			= EpreuveManager::STATUT_PROGRAMMATION;
 
 	/**
 	 * @brief	Constantes des actions dans le formulaire.
@@ -102,8 +109,11 @@ class EpreuveController extends AbstractFormulaireQCMController {
 	public function indexAction() {
 		// Chargement du formulaire si l'identifiant est présent en session
 		if ($this->_idEpreuve && empty($this->_idFormulaire)) {
+			// Récupération de l'état de la programmation
+			$nStatutEpreuve	= $this->_oEpreuveManager->getProgrammationSatementByIdEpreuve($this->_idEpreuve);
+
 			// Récupération de l'identifiant du formulaire rattaché à l'épreuve
-			$nIdFormulaire = $this->_oFormulaireManager->getIdFormulaireFromIdEpreuve($this->_idEpreuve);
+			$nIdFormulaire	= $this->_oFormulaireManager->getIdFormulaireFromIdEpreuve($this->_idEpreuve);
 
 			// Chargement du formulaire
 			$this->chargerAction($nIdFormulaire);
@@ -114,6 +124,9 @@ class EpreuveController extends AbstractFormulaireQCMController {
 			// Enregistrement de l'identifiant de l'épreuve en session
 			$this->sendDataToSession($this->_idFormulaire, self::ID_FORMULAIRE);
 
+			// Enregistrement de l'état de programmation en session
+			$this->sendDataToSession($nStatutEpreuve, self::STATUT_PROGRAMMATION);
+
 			// Redirection avec l'action
 			$this->redirect($this->_controller . '/controle');
 		} elseif (!empty($this->_aForm['formulaire_id'])) {
@@ -121,7 +134,7 @@ class EpreuveController extends AbstractFormulaireQCMController {
 			$this->render("controle");
 		} else {
 			// Recherche de la liste des épreuves selon l'identifiant de l'utilisateur connecté
-			$aListeEpreuve = $this->_oEpreuveManager->findAllEpreuvesModifiablesByIdCandidat($this->_oAuth->getIdUtilisateur());
+			$aListeEpreuve	= $this->_oEpreuveManager->findAllEpreuvesModifiablesByIdCandidat($this->_oAuth->getIdUtilisateur());
 
 			// Envoi de la liste à la vue
 			$this->addToData('liste_epreuve', $aListeEpreuve);

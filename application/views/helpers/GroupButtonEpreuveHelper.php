@@ -10,8 +10,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 74 $
- * @since		$LastChangedDate: 2017-07-30 01:56:01 +0200 (Sun, 30 Jul 2017) $
+ * @version		$LastChangedRevision: 77 $
+ * @since		$LastChangedDate: 2017-08-07 21:40:32 +0200 (Mon, 07 Aug 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -54,6 +54,9 @@ class GroupButtonEpreuveHelper {
 
 		// Nom de session du QCM
 		$sSessionNameSpace			= $this->_oInstanceStorage->getData('SESSION_NAMESPACE');
+		
+		// Récupération de l'instance du singleton SessionManager
+		$oSessionManager			= SessionManager::getInstance($sSessionNameSpace);
 
 		// Données du QCM
 		$aFormulaireQCM				= $this->_oInstanceStorage->getData($sSessionNameSpace);
@@ -64,6 +67,9 @@ class GroupButtonEpreuveHelper {
 		//#########################################################################################
 		// CONSTRUCTION DES BOUTONS DU FORMULAIRE QCM
 		//#########################################################################################
+		
+		// Protection du formulaire contre la modification si le statut de programmation de l'épreuve ne le permet pas
+		$this->setReadonly($oSessionManager->getIndex(EpreuveController::STATUT_PROGRAMMATION));
 
 		// Zone de boutons du formulaire QCM
 		$this->_buildGroupButton($nIdFormulaire, $bTerminer);
