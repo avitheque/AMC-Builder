@@ -5,7 +5,7 @@
  * L'ensemble du formulaire est parcouru afin de générer un tableau associatif entre
  * les champs du formulaire et ceux de la base de données.
  *
- * @li Par convention d'écriture, les méthodes
+ * @li	Par convention d'écriture, les méthodes
  * 		- find*	renvoient l'ensemble des données sous forme d'un tableau BIDIMENSIONNEL.
  * 		- get*	ne renvoient qu'un seul élément	sous forme d'un tableau UNIDIMENSIONNEL.
  *
@@ -18,8 +18,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 77 $
- * @since		$LastChangedDate: 2017-08-07 21:40:32 +0200 (Mon, 07 Aug 2017) $
+ * @version		$LastChangedRevision: 79 $
+ * @since		$LastChangedDate: 2017-08-30 01:36:47 +0200 (Wed, 30 Aug 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -29,19 +29,19 @@ class EpreuveManager extends FormulaireManager {
 
 	/**
 	 * @brief	Statut de la programmation d'une épreuve.
-	 * 
+	 *
 	 * Nom du champ SQL calculé afin de déterminer l'état d'une épreuve, selon 3 états
 	 * 		- `statut_programmation`	= -1	: la date de validité est dépassée (trop tard !) ;
 	 * 		- `statut_programmation`	= 0		: la date de validité permet au candidat de s'inscrire ;
 	 * 		- `statut_programmation`	= +1	: la date de validité n'est pas encore atteinte (patience !) ;
-	 * 
+	 *
 	 * @var		string
 	 */
 	const STATUT_PROGRAMMATION	= 'statut_programmation';
-	
+
 	/**
+	 * @brief	Champ relatif à une question sans aucune bonne réponse.
 	 * @var		string
-	 * @var string
 	 */
 	const AUCUNE_REPONSE		= 'X';
 
@@ -49,7 +49,7 @@ class EpreuveManager extends FormulaireManager {
 	 * @todo RECHERCHES
 	 ******************************************************************************************************/
 
-	
+
 	/**
 	 * @brief	Récupère l'état de la programmation d'une épreuve.
 	 *
@@ -65,7 +65,7 @@ class EpreuveManager extends FormulaireManager {
 	public function getProgrammationSatementByIdEpreuve($nIdEpreuve) {
 		// Ajout d'un suivit pour le debuggage
 		$this->debug(__METHOD__, $nIdEpreuve);
-		
+
 		// Requête SELECT
 		$aQuery	= array(
 			"SELECT id_epreuve,",
@@ -76,38 +76,38 @@ class EpreuveManager extends FormulaireManager {
 			"FROM epreuve",
 			"WHERE id_epreuve = :id_epreuve"
 		);
-		
+
 		// Construction du tableau associatif des étiquettes et leurs valeurs
 		$aBind = array(
 			':id_epreuve'			=> $nIdEpreuve
 		);
-		
+
 		// Fonctionnalité réalisée si l'accès aux formulaires est limité au groupe d'utilisateurs du rédacteur
 		if ($bGroupAccess) {
 			// Ajout d'une clause WHERE selon les bornes GAUCHE / DROITE
-			$aQuery[20]				= "  AND borne_gauche BETWEEN :borne_gauche AND :borne_droite AND borne_droite BETWEEN :borne_gauche AND :borne_droite";
-			
+			$aQuery[]				= "  AND borne_gauche BETWEEN :borne_gauche AND :borne_droite AND borne_droite BETWEEN :borne_gauche AND :borne_droite";
+
 			// Ajout des étiquette de la clause WHERE
 			$aBind[':borne_gauche']	= $this->_borneGauche;
 			$aBind[':borne_droite']	= $this->_borneDroite;
 		}
-		
+
 		try {
 			// Récupération de la liste des formulaires
 			$aResultat = $this->executeSQL($aQuery, $aBind, 0);
 		} catch (ApplicationException $e) {
 			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aQuery, $aBind));
 		}
-		
+
 		// Renvoi de la liste
 		return $aResultat['statut_programmation'];
 	}
-	
+
 	/**
 	 * @brief	Recherche de toutes les épreuves modifiables par un candidat.
 	 *
 	 * @li	Possibilité de limiter les formulaires selon le groupe d'appartenance de l'utilisateur connecté.
-	 * 
+	 *
 	 * @li	La requête SQL injecte un champ calculé à 3 états
 	 * 			- `statut_programmation`	= -1	: la date de validité est dépassée (trop tard !) ;
 	 * 			- `statut_programmation`	= 0		: la date de validité permet au candidat de s'inscrire ;
@@ -144,8 +144,8 @@ class EpreuveManager extends FormulaireManager {
 			17	=> "INNER JOIN candidat ON(stage_candidat.id_candidat = candidat.id_candidat)",
 			18	=> "WHERE candidat.id_candidat = :id_candidat",
 			19	=> "  AND (modifiable_controle IS NULL OR modifiable_controle = 1)",
-			20	=> null,
-			21	=> "GROUP BY id_formulaire"
+			'X'	=> null,
+			20	=> "GROUP BY id_formulaire"
 		);
 
 		// Construction du tableau associatif des étiquettes et leurs valeurs
@@ -156,7 +156,79 @@ class EpreuveManager extends FormulaireManager {
 		// Fonctionnalité réalisée si l'accès aux formulaires est limité au groupe d'utilisateurs du rédacteur
 		if ($bGroupAccess) {
 			// Ajout d'une clause WHERE selon les bornes GAUCHE / DROITE
-			$aQuery[20]				= "  AND borne_gauche BETWEEN :borne_gauche AND :borne_droite AND borne_droite BETWEEN :borne_gauche AND :borne_droite";
+			$aQuery['X']			= "  AND borne_gauche BETWEEN :borne_gauche AND :borne_droite AND borne_droite BETWEEN :borne_gauche AND :borne_droite";
+
+			// Ajout des étiquette de la clause WHERE
+			$aBind[':borne_gauche']	= $this->_borneGauche;
+			$aBind[':borne_droite']	= $this->_borneDroite;
+		}
+
+		try {
+			// Récupération de la liste des formulaires
+			$aResultat = $this->executeSQL($aQuery, $aBind);
+		} catch (ApplicationException $e) {
+			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aQuery, $aBind));
+		}
+
+		// Renvoi de la liste
+		return $aResultat;
+	}
+
+	/**
+	 * @brief	Recherche de toutes les épreuves corrigées d'un candidat.
+	 *
+	 * @li	Possibilité de limiter les formulaires selon le groupe d'appartenance de l'utilisateur connecté.
+	 *
+	 * @li	La requête SQL injecte un champ calculé à 3 états
+	 * 			- `statut_programmation`	= -1	: la date de validité est dépassée (trop tard !) ;
+	 * 			- `statut_programmation`	= 0		: la date de validité permet au candidat de s'inscrire ;
+	 * 			- `statut_programmation`	= +1	: la date de validité n'est pas encore atteinte (patience !) ;
+	 *
+	 * @param	integer	$nIdCandidat		: identifiant du candidat.
+	 * @param	boolean	$bGroupAccess		: (optionnel) Filtre sur les groupes du rédacteur.
+	 * @return	array, tableau contenant l'ensemble des résultats de la requête.
+	 * @throws	ApplicationException si la requête ne fonctionne pas.
+	 */
+	public function findAllEpreuvesCorrectionByIdCandidat($nIdCandidat, $bGroupAccess = self::ACCESS_GROUP_BY_DEFAULT) {
+		// Ajout d'un suivit pour le debuggage
+		$this->debug(__METHOD__, $nIdCandidat, $bGroupAccess);
+
+		// Requête SELECT
+		$aQuery	= array(
+			0	=> "SELECT *,",
+			1	=> self::LIBELLE_REDACTEUR . " AS libelle_redacteur,",
+			2	=> self::LIBELLE_VALIDEUR . " AS libelle_valideur,",
+			3	=> self::DATETIME_EPREUVE . " AS datetime_epreuve,",
+			4	=> "UNIX_TIMESTAMP(" . self::DATETIME_EPREUVE . ") AS debut_epreuve,",
+			5	=> "UNIX_TIMESTAMP(" . self::DATETIME_EPREUVE . ") + 60 * duree_epreuve AS fin_epreuve,",
+			6	=> "UNIX_TIMESTAMP(CURRENT_TIMESTAMP()) AS maintenant,",
+			7	=> "IF('maintenant' BETWEEN 'debut_epreuve' AND 'fin_epreuve', 0, IF('maintenant' < 'debut_epreuve', 1, -1)) AS 'statut_programmation'",
+			8	=> "FROM formulaire",
+			9	=> "INNER JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = id_redacteur)",
+			10	=> "INNER JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
+			11	=> "INNER JOIN groupe ON(redacteur.id_groupe = groupe.id_groupe)",
+			12	=> "INNER JOIN generation USING(id_formulaire)",
+			13	=> "INNER JOIN epreuve USING(id_generation)",
+			14	=> "INNER JOIN controle USING(id_epreuve)",
+			15	=> "LEFT  JOIN controle_reponse_candidat USING(id_controle)",
+			16	=> "INNER JOIN stage USING(id_stage)",
+			17	=> "INNER JOIN stage_candidat USING(id_stage)",
+			18	=> "INNER JOIN candidat ON(stage_candidat.id_candidat = candidat.id_candidat)",
+			19	=> "WHERE candidat.id_candidat = :id_candidat",
+			20	=> "  AND (modifiable_controle = 0)",
+			'X'	=> null,
+			21	=> "GROUP BY id_controle"
+		);
+
+		// Construction du tableau associatif des étiquettes et leurs valeurs
+		$aBind = array(
+				':id_candidat'		=> $nIdCandidat
+		);
+
+		// Fonctionnalité réalisée si l'accès aux formulaires est limité au groupe d'utilisateurs du rédacteur
+		if ($bGroupAccess) {
+			// Ajout d'une clause WHERE selon les bornes GAUCHE / DROITE
+			$aQuery['X']			= "  AND borne_gauche BETWEEN :borne_gauche AND :borne_droite AND borne_droite BETWEEN :borne_gauche AND :borne_droite";
 
 			// Ajout des étiquette de la clause WHERE
 			$aBind[':borne_gauche']	= $this->_borneGauche;
@@ -292,11 +364,11 @@ class EpreuveManager extends FormulaireManager {
 		// Renvoi de l'identifiant de la réponse au contrôle si l'épreuve est valide
 		return DataHelper::get($aResultat, 'id_controle_reponse_candidat', DataHelper::DATA_TYPE_INT, null);
 	}
-	
+
 	/******************************************************************************************************
 	 * @todo CHARGER
 	 ******************************************************************************************************/
-	
+
 	/**
 	 * @brief	Chargement d'un formulaire QCM enregistré en base de données.
 	 *
@@ -454,40 +526,40 @@ class EpreuveManager extends FormulaireManager {
 	public function chargerControle($aQCM, $nIdControle) {
 		// Ajout d'un suivit pour le debuggage
 		$this->debug(__METHOD__, $aQCM, $nIdControle);
-		
+
 		try {
 			// Récupération de la liste des questions associées au formulaire
 			$aListeQuestions	= $this->findControleReponseCandidatByIdControle($nIdControle);
-			
+
 			// Parcours de la liste des questions
 			foreach ($aListeQuestions as $nOccurrence => $aQuestion) {
 				// Récupération de l'identifiant de la question
 				$nIdQuestion	= $aQuestion['id_question'];
-				
+
 				// Recherche de l'occurrence de la question dans le formulaire
 				$nQuestion		= array_search($nIdQuestion, $aQCM['question_id']);
-				
+
 				// Fonctionnalité réalisée si les données du candidat ne sont pas déjà chargées
 				if (!isset($aQCM["controle_candidat_libre_reponse"][$nQuestion])) {
 					// Chargement du formulaire à partir de la base de données
 					$aQCM["controle_candidat_libre_reponse"][$nQuestion] = DataHelper::get($aQuestion, "libre_reponse_candidat", DataHelper::DATA_TYPE_TXT);
 				}
-				
+
 				// Fonctionnalité réalisée si les données du candidat ne sont pas déjà chargées
 				if (!isset($aQCM["controle_candidat_liste_reponses"][$nQuestion])) {
 					// Récupération des questions sélectionnées
 					$sEnsembleReponses	= DataHelper::get($aQuestion, "liste_reponses_candidat", DataHelper::DATA_TYPE_TXT);
-					
+
 					// Fonctionnalité réalisée si au moins une réponse est sélectionnée
 					if ($sEnsembleReponses != self::AUCUNE_REPONSE) {
 						// Récupération de la liste des questions sélectionnées sous forme de tableau
 						$aListeReponses = explode(DataHelper::ARRAY_SEPARATOR, $sEnsembleReponses);
-						
+
 						// Parcours de la liste des réponses
 						foreach ($aListeReponses as $nIdReponse) {
 							// Recherche de l'occurrence de la question dans le formulaire
 							$nReponse = array_search($nIdReponse, $aQCM['reponse_id'][$nQuestion]);
-							
+
 							$aQCM["controle_candidat_liste_reponses"][$nQuestion][$nReponse] = true;
 						}
 					} else {
@@ -499,7 +571,7 @@ class EpreuveManager extends FormulaireManager {
 		} catch (ApplicationException $e) {
 			throw new ApplicationException($e->getMessage(), $e->getExtra());
 		}
-		
+
 		// Renvoi du formulaire
 		return $aQCM;
 	}
@@ -545,7 +617,7 @@ class EpreuveManager extends FormulaireManager {
 	 * @brief	Initialise le contrôle d'un candidat.
 	 *
 	 * @li	Recherche dans un premier temps si un contrôle est déjà en cours.
-	 * 
+	 *
 	 * @li	Vérifie le statut de la programation avec un champ calculé à 3 états
 	 * 			- `statut_programmation`	= -1	: la date de validité est dépassée (trop tard !) ;
 	 * 			- `statut_programmation`	= 0		: la date de validité permet au candidat de s'inscrire ;
@@ -564,12 +636,12 @@ class EpreuveManager extends FormulaireManager {
 
 		// Recherche du contrôle en cours pour le candidat
 		$aControle			= $this->getControleByCandidatEpreuve($nIdCandidat, $nIdEpreuve);
-		
+
 		// Fonctionnalité désactivée en MODE_DEBUG
 		if (!defined('MODE_DEBUG') || !(bool) MODE_DEBUG) {
 			// Récupération de l'état de la programmation
 			$nStatutEpreuve	= $this->getProgrammationSatementByIdEpreuve($nIdEpreuve);
-			
+
 			// Contrôle de la validité de la programmation
 			if ($nStatutEpreuve > 0) {
 				throw new ApplicationException("La programmation ne permet pas encore l'accès à l'épreuve !");
@@ -646,7 +718,7 @@ class EpreuveManager extends FormulaireManager {
 	 * Recherche l'identifiant de la relation entre les tables `controle`, `question` et `controle_reponse_candidat`.
 	 *
 	 * @param	integer	$nQuestion			: Occurrence de la question dans $_aQCM.
-	 * @param	integer	$nIdControle		: Identifiant du contrôle.
+	 * @param	integer	$nIdControle		: Identifiant du contrôle en base de données.
 	 * @return	integer, identifiant de la table `controle_reponse_candidat`.
 	 * @throws	ApplicationException gérée par la méthode enregistrerControle() en amont.
 	 */
@@ -720,6 +792,44 @@ class EpreuveManager extends FormulaireManager {
 		return $nIdControleReponseCandidat;
 	}
 
+	/**
+	 * @brief	Modification du résultat de la réponse d'un candidat.
+	 *
+	 * @li	La relation entre les tables `controle`, `question` et `controle_reponse_candidat` existe déjà.
+	 *
+	 * @li	Commit final si toutes les phases d'enregistrement se déroulent correctement, lors de l'enregistrement du LOG.
+	 *
+	 * @param	integer	$nIdQuestion		: Identifiant de la question en base de données.
+	 * @param	integer	$nIdControle		: Identifiant du contrôle en base de données.
+	 * @param	float	$fResultatReponse	: Résultat de la réponse à la question.
+	 * @return	array, tableau contenant l'ensemble des données du formulaire QCM.
+	 * @throws	ApplicationException si la requête ne fonctionne pas.
+	 */
+	public function enregistrerResultatReponseControle($nIdQuestion, $nIdControle, $fResultatReponse = null) {
+		// Ajout d'un suivit pour le debuggage
+		$this->debug(__METHOD__, $nIdQuestion, $nIdControle, $fResultatReponse);
+
+		// Force le mode transactionnel
+		$this->beginTransaction();
+
+		// Requête UPDATE
+		$aUpdate	= array(
+			"UPDATE controle_reponse_candidat",
+			"SET resultat_reponse_candidat = :resultat_reponse_candidat",
+			"WHERE id_controle = :id_controle AND id_question = :id_question"
+		);
+
+		// Construction du tableau associatif des étiquettes et leurs valeurs
+		$aBind		= array(
+			":id_controle"					=> $nIdControle,
+			":id_question"					=> $nIdQuestion,
+			":resultat_reponse_candidat"	=> is_null($fResultatReponse) ? "NULL" : $fResultatReponse
+		);
+
+		// Exécution de la requête UPDATE
+		$this->executeSQL($aUpdate, $aBind);
+	}
+
 	/******************************************************************************************************
 	 * @todo ENREGISTRER
 	 ******************************************************************************************************/
@@ -727,10 +837,10 @@ class EpreuveManager extends FormulaireManager {
 	/**
 	 * @brief	Parcours du formulaire afin d'enregistrer chaque partie.
 	 *
-	 * @li Si l'identifiant existe déjà en base, l'enregistrement sera redirigé vers une méthode UPDATE,
+	 * @li	Si l'identifiant existe déjà en base, l'enregistrement sera redirigé vers une méthode UPDATE,
 	 * sinon, vers une méthode INSERT.
 	 *
-	 * @li Commit final si toutes les phases d'enregistrement se déroulent correctement.
+	 * @li	Commit final si toutes les phases d'enregistrement se déroulent correctement.
 	 *
 	 * @code
 	 * 	$aQCM = array(

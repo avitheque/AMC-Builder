@@ -10,8 +10,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 75 $
- * @since		$LastChangedDate: 2017-08-02 23:54:49 +0200 (Wed, 02 Aug 2017) $
+ * @version		$LastChangedRevision: 79 $
+ * @since		$LastChangedDate: 2017-08-30 01:36:47 +0200 (Wed, 30 Aug 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -100,20 +100,19 @@ class DataHelper {
 	 * @return	bool renvoie TRUE si l'élément comporte au moins une occurence par défaut.
 	 */
 	static function isValidArray($aArray, $nCount = null) {
+		// Initialisation du résultat
 		$bValide = false;
 		if (!is_null($aArray) && (is_array($aArray) || is_object($aArray)) && count($aArray) > 0) {
-			$bValide = true;
-
-			// Fonctionnalité réalisée si le tableau n'est pas vide
-			if (count($aArray) == 1 && isset($aArray[0])) {
-				$bValide = !empty($aArray[0]);
-			}
-
 			// Fonctionnalité réalisée si le nombre d'élément attendu est valide
-			if (!empty($nCount)) {
+			if (!is_null($nCount)) {
+				// Fonctionnalité réalisée si le nombre d'occurrence attendue est valide
 				$bValide = count($aArray) == $nCount;
+			} else {
+				// Fonctionnalité réalisée si le tableau n'est pas vide
+				$bValide = count($aArray) >= 1;
 			}
 		}
+		// Renvoi du résultat
 		return $bValide;
 	}
 

@@ -1,11 +1,11 @@
 <?php
 /**
- * @brief	Classe contrôleur de correction d'une épreuve QCM.
+ * @brief	Classe contrôleur de visualisation de la correction d'un questionnalire QCM.
  *
  * Étend la classe abstraite AbstractFormulaireQCMController.
  * @see			{ROOT_PATH}/libraries/controllers/AbstractFormulaireQCMController.php
  *
- * @name		CorrectionController
+ * @name		VisualisationController
  * @category	Controller
  * @package		Main
  * @subpackage	Application
@@ -18,12 +18,12 @@
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
  */
-class CorrectionController extends AbstractFormulaireQCMController {
+class VisualisationController extends AbstractFormulaireQCMController {
 
 	/**
 	 * @var		integer
 	 */
-	protected	$_idEpreuve		= null;
+	protected	$_idCorrection		= null;
 
 	/**
 	 * @var		FormulaireManager
@@ -42,7 +42,7 @@ class CorrectionController extends AbstractFormulaireQCMController {
 		parent::__construct(__CLASS__, 'CORRECTION');
 
 		// Récupération de l'identifiant du formulaire en session
-		$this->_idEpreuve 		= $this->getDataFromSession('ID_EPREUVE');
+		$this->_idCorrection 		= $this->getDataFromSession('ID_CORRECTION');
 	}
 
 	/**
@@ -52,48 +52,26 @@ class CorrectionController extends AbstractFormulaireQCMController {
 	 */
 	public function indexAction() {
 		// Récupération de l'identifiant du formulaire
-		$nIdEpreuve = $this->getParam("id_epreuve");
+		$nIdFormulaire = $this->getParam("id_formulaire");
 
 		// Fonctionnalité réalisée si le formulaire est valide
-		if ($nIdEpreuve) {
+		if ($nIdFormulaire) {
 			// Stockage de l'identifiant de l'édition en session
-			$this->sendDataToSession($nIdEpreuve, "ID_EPREUVE");
+			$this->sendDataToSession($nIdFormulaire, "ID_CORRECTION");
 
 			// Redirection afin d'effacer les éléments présents en GET
-			$this->redirect('correction/epreuve');
-		}
-	}
-	
-	/**
-	 * @brief	Action du contrôleur réalisée pour lister les controles d'une épreuve.
-	 *
-	 * Si l'identifiant du formulaire est connu, le document est créé, sinon une liste complète est affichée.
-	 */
-	public function epreuveAction() {
-		if ($this->_idEpreuve) {
-			
+			$this->redirect('visualisation');
+		} elseif ($this->_idCorrection) {
+			// Génération du formulaire sous forme PDF
+			$oFormulaire = new ExportCorrectionManager($this->_oFormulaireManager->charger($this->_idCorrection));
+			$oFormulaire->render();
+
+			// Désactivation de la vue
+			$this->render(FW_VIEW_VOID);
 		} else {
-			// Redirection à la page d'accueil
-			$this->redirect('correction');
+			// Retour à la page d'accueil
+			$this->redirect("index");
 		}
-	}
-	
-	/**
-	 * @brief	Action du contrôleur réalisée pour visualiser le controle d'un candidat.
-	 *
-	 * Si l'identifiant du formulaire est connu, le document est créé, sinon une liste complète est affichée.
-	 */
-	public function controleAction() {
-		
-	}
-	
-	/**
-	 * @brief	Action du contrôleur réalisée pour valider une correction.
-	 *
-	 * Si l'identifiant du formulaire est connu, le document est créé, sinon une liste complète est affichée.
-	 */
-	public function validerAction() {
-		
 	}
 
 }

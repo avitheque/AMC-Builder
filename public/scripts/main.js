@@ -297,11 +297,14 @@ $(document).ready(function() {
 		if (event.keyCode == 116) {
 			// Annulation de l'événement
 			event.preventDefault();
+
+			// Protection contre la validation du formulaire
+			return false;
 		}
 	});
 
 	// Inhibition de la validation accidentelle du formulaire
-	$("input, select").keypress(function(event) {
+	$("input, select, textarea").keypress(function(event) {
 		// Protection contre le syndrome du cliqueur intempestif
 		event.stopPropagation();
 

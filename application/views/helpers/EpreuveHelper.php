@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 72 $
- * @since		$LastChangedDate: 2017-07-29 16:54:10 +0200 (Sat, 29 Jul 2017) $
+ * @version		$LastChangedRevision: 78 $
+ * @since		$LastChangedDate: 2017-08-29 18:14:10 +0200 (Tue, 29 Aug 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -151,10 +151,8 @@ class EpreuveHelper extends FormulaireHelper {
 													</fieldset>
 													<hr class=\"margin-V-25 blue\"/>
 													<fieldset class=\"" . $sClassField . "\" id=\"presentation\"><legend>Objectif de l'épreuve</legend>
-														<div class=\"margin-H-25\">
-															<label for=\"idPresentation\">Le texte ci-dessous est destiné à présenter le cadre de l'évaluation des candidats.</label>
-															<textarea rows=5 id=\"idPresentation\" class=\"max-width\" name=\"formulaire_presentation\" $sReadonly>" . $sPresentation . "</textarea>
-															$sPencilIcon
+														<div class=\"margin-H-25 justify strong justify\">
+															 " . nl2br($sPresentation) . "
 														</div>
 													</fieldset>
 													<span id=\"tabs-generalite-bottom\"><a class=\"page-bottom\" href=\"#tabs-generalite-top\" title=\"Haut de page...\">" . self::ICON_UP . "</a></span>

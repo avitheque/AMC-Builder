@@ -52,8 +52,8 @@ $oEdition->setConditionalClassOnColumn('id_domaine', '<=', "0", "strong red", "D
 $oEdition->setConditionalAnchorOnColumn("VALIDEUR",	"validation_formulaire", 0, "id_formulaire", "Terminer",	"/edition/terminer?id_formulaire=",	"blue tooltip-track",	"Soumettre le QCM à validation");
 $oEdition->setConditionalTextOnColumn("VALIDEUR",	"validation_formulaire", 1, "En attente...", "strong");
 $oEdition->setConditionalAnchorOnColumn("ACTION",	"validation_formulaire", 0, "id_formulaire", "Modifier",	"/edition?id_formulaire=",			"green tooltip-track",	"Modifier le QCM");
-$oEdition->setConditionalAnchorOnColumn("ACTION",	"validation_formulaire", 1, "id_formulaire", "Éditer",		"/edition?id_formulaire=",			"blue tooltip-track",	"Éditer le QCM avant sa validation");
-$oEdition->setConditionalAnchorOnColumn("ACTION",	"validation_formulaire", 2, "id_formulaire", "Corriger",	"/edition?id_formulaire=",			"red tooltip-track",	"Revoir le QCM déjà validé");
+$oEdition->setConditionalAnchorOnColumn("ACTION",	"validation_formulaire", 1, "id_formulaire", "Réviser",		"/edition?id_formulaire=",			"blue tooltip-track",	"Revoir le QCM avant sa validation");
+$oEdition->setConditionalAnchorOnColumn("ACTION",	"validation_formulaire", 2, "id_formulaire", "Éditer",		"/edition?id_formulaire=",			"red tooltip-track",	"Éditer le QCM déjà validé");
 
 // Ajout du tableau à VIEW_MAIN
 ViewRender::addToMain($oEdition->renderHTML());

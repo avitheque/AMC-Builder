@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 72 $
- * @since		$LastChangedDate: 2017-07-29 16:54:10 +0200 (Sat, 29 Jul 2017) $
+ * @version		$LastChangedRevision: 78 $
+ * @since		$LastChangedDate: 2017-08-29 18:14:10 +0200 (Tue, 29 Aug 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -610,7 +610,7 @@ class FormulaireHelper {
 
 		// Fonctionnalité réalisée si le formulaire est valide
 		if (!empty($nIdFormulaire)) {
-			$this->_correction			= "<a href=\"/correction?id_formulaire=" . $nIdFormulaire . "\" class=\"button red no-margin right tooltip\" target=\"_blank\" title=\"Affiche la feuille de correction\" role=\"touche_P\">Aperçu de la correction</a>";
+			$this->_correction			= "<a href=\"/visualisation?id_formulaire=" . $nIdFormulaire . "\" class=\"button red no-margin right tooltip\" target=\"_blank\" title=\"Affiche la feuille de correction\" role=\"touche_P\">Aperçu de la correction</a>";
 		}
 
 		// Nom du questionnaire

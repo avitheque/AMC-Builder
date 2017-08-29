@@ -10,8 +10,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 77 $
- * @since		$LastChangedDate: 2017-08-07 21:40:32 +0200 (Mon, 07 Aug 2017) $
+ * @version		$LastChangedRevision: 78 $
+ * @since		$LastChangedDate: 2017-08-29 18:14:10 +0200 (Tue, 29 Aug 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -69,7 +69,7 @@ class GroupButtonEpreuveHelper {
 		//#########################################################################################
 		
 		// Protection du formulaire contre la modification si le statut de programmation de l'épreuve ne le permet pas
-		$this->setReadonly($oSessionManager->getIndex(EpreuveController::STATUT_PROGRAMMATION));
+		$this->setReadonly($oSessionManager->getIndex(EpreuveController::STATUT_PROGRAMMATION) == EpreuveController::NON_MODIFIABLE);
 
 		// Zone de boutons du formulaire QCM
 		$this->_buildGroupButton($nIdFormulaire, $bTerminer);
