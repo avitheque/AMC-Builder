@@ -55,7 +55,6 @@
 
 
 /* CIBLE - Apparence des cellules selon leur état */
-
 .holiday .planning    			        				{ background: #3C75BF; border-color: #3C75BF; }
 .planning.set											{ background: #446693; border-color: #446693; opacity: 1; }
 .planning.hover											{ background: orange !important; opacity: 1; border-color: transparent; }
@@ -64,6 +63,11 @@
 .holiday .planning.set,
 .planning.conflict li,
 .planning.error li										{ background: red !important; border-color: red !important; }
+
+
+/* OUT - Apparence de l'élément hors d'une période valide */
+.planning.ui-state-disabled.set,
+.planning.ui-state-disabled.hover						{ background: #F900FF !important; border-color: #F900FF !important; }
 
 
 /* ITEM - MINIATURES */
@@ -94,6 +98,7 @@ a.ui-icon-pin-w											{ cursor: move !important; }
 .calendar table td										{ margin: 0; padding: 0; }
 .calendar table td.day-7								{ padding-right: 5px; }
 .calendar table td dl									{ width: 100%; margin: 0; padding: 0; }
+
 
 
 /* SOURCE / CIBLE - Apparence de l'élément au format CALENDRIER */

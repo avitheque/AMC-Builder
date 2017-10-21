@@ -17,8 +17,8 @@
 	 * @subpackage	Application
 	 * @author		durandcedric@avitheque.net
 	 * @update		$LastChangedBy: durandcedric $
-	 * @version		$LastChangedRevision: 51 $
-	 * @since		$LastChangedDate: 2017-06-26 23:22:30 +0200 (Mon, 26 Jun 2017) $
+	 * @version		$LastChangedRevision: 80 $
+	 * @since		$LastChangedDate: 2017-10-21 13:24:25 +0200 (Sat, 21 Oct 2017) $
 	 */
 
 	// Répertoire du fichier actuel
@@ -138,38 +138,40 @@
 			*							{ margin: 0; padding: 0; }
 
 			/* Corps HTML */
-			body						{ background: #EEE; overflow: hidden; }
+			body						{ background: #EEE !important; color: #777 !important; overflow: hidden; }
 			header						{ width: 100%; height: 5%; margin-top: 1%; }
-			section						{ width: 100%; height: 95%; }
+			section						{ width: 100%; height: auto; }
 
 			/* Titre de la page */
 			h3							{ text-align: center; }
 
+			/* Conteneur */
+			#main-panel					{ position: fixed; padding-top: 5%; width: 100%; height: 100%; }
+
 			/* Panneaux */
-			#main-panel					{ width: 100%; height: 95%; }
 			#left-panel,
-			#right-panel				{ background: #FFF; font-size: 15px; border: solid 1px #333; vertical-align: top; }
+			#right-panel				{ height: 50%; font-size: 15px; vertical-align: top; overflow: auto; }
 
 			/* Panneau de gauche */
-			#left-panel					{ min-width: 30%; height: 100%; margin: 10px; overflow: auto; }
-			.panel						{ margin: 10px; text-decoration: none; list-style: none; }
-			.sub-panel					{ text-decoration: none; list-style: none; margin: 0 0 0 4%; }
+			#left-panel					{ min-width: 30%; margin: 10px; }
+			.panel						{ overflow: auto; background: #FFF; height: 50%; border: solid 1px #333; padding: 20px 0; text-decoration: none; list-style: none; }
+			.sub-panel					{ text-decoration: none; list-style: none; padding-left: 20px; }
 
 			/* Panneau de droite */
-			#right-panel				{ min-width: 70%; overflow: auto; }
+			#right-panel				{ min-width: 70%; }
 
 			/* Panneau de l'arborescence */
-			#arborescence				{ margin: 10px; text-decoration: none; list-style: none; }
+			#arborescence				{ background: #FFF; height: 50%; border: solid 1px #333; padding: 20px; text-decoration: none; list-style: none; overflow: auto; }
 
 			/* Répertoires */
 			.directory,
-			.sub-directory				{ border: solid 1px #FFF; background: #FFF; width: 100%; font-weight: bold; text-align: left; white-space: nowrap; cursor: pointer; }
+			.sub-directory				{ background: #FFF url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QkbChAI0krP3QAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAGUSURBVDjLpZO/qhNREMZ/J3ezdlpsk1gJdntfII2NT5AuT+Jb+BKWgVRRUtpYWgpBhCsWiiisV01ikj1n5rPY3JtdEkXwwIH5+82cb+YESfzPyRaLhVar1YljOBwyGo1Cnud/B9hsNkwmkxPHcrlkPp/LzE58eZ4zHo9DCIHsT8hlWVKW5VnfbDY7dnAjvH/2BLkjF7iDAxIyB3GwN/cyGe+evlSnA4+R+48ed0uFE6Fzvr56fQRQclRH6i9vjglnAQRuSIm03rYAzPEYsW3djQ+hSfBE8ITkt7r9anFAdBQTvtuDHGToEIgn5EY4VFaqUapJP+50OfDdlvTzG1g6JBqe9qjeIttDOthxANJ2cASI1xXp+zX1xw8o7pDVyCJIzTPO0BHUmsLm6i3x4QPqz5+aqNCdRugKjdZrASg62iV8fUNiOD/BVjfhbtbiIBm+S9i6buWednJbMAS4F8j6/T7T6ZRBFFcvnoP3kDkygTWbKXMwNdsI0OsRLi4YXA4IkqiqSlVVkVL6ty+cZRRFQVEU4Te3RAKlbKxdoQAAAABJRU5ErkJggg==') no-repeat; border: solid 1px #FFF; width: 100%; padding-left: 20px; font-weight: bold; text-align: left; white-space: nowrap; cursor: pointer; }
 			.opened .directory,
-			.opened .sub-directory		{ color: orange; }
+			.opened .sub-directory		{ color: #3366ff; }
 			.selected .directory,
 			.selected .sub-directory,
 			.directory:hover,
-			.sub-directory:hover		{ border: solid 1px #333; background: orange; color: #eef7ed; }
+			.sub-directory:hover		{ border: solid 1px #333; background: orange; color: #eef7ed; background: orange url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QkbChAI0krP3QAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAGUSURBVDjLpZO/qhNREMZ/J3ezdlpsk1gJdntfII2NT5AuT+Jb+BKWgVRRUtpYWgpBhCsWiiisV01ikj1n5rPY3JtdEkXwwIH5+82cb+YESfzPyRaLhVar1YljOBwyGo1Cnud/B9hsNkwmkxPHcrlkPp/LzE58eZ4zHo9DCIHsT8hlWVKW5VnfbDY7dnAjvH/2BLkjF7iDAxIyB3GwN/cyGe+evlSnA4+R+48ed0uFE6Fzvr56fQRQclRH6i9vjglnAQRuSIm03rYAzPEYsW3djQ+hSfBE8ITkt7r9anFAdBQTvtuDHGToEIgn5EY4VFaqUapJP+50OfDdlvTzG1g6JBqe9qjeIttDOthxANJ2cASI1xXp+zX1xw8o7pDVyCJIzTPO0BHUmsLm6i3x4QPqz5+aqNCdRugKjdZrASg62iV8fUNiOD/BVjfhbtbiIBm+S9i6buWednJbMAS4F8j6/T7T6ZRBFFcvnoP3kDkygTWbKXMwNdsI0OsRLi4YXA4IkqiqSlVVkVL6ty+cZRRFQVEU4Te3RAKlbKxdoQAAAABJRU5ErkJggg==') no-repeat; }
 			.selected .directory,
 			.selected .sub-directory	{ color: #FFF; }
 
@@ -182,8 +184,8 @@
 			.sub-directory:hover .flag	{ display: block; color: #000; }
 
 			/* Fichiers */
-			.file						{ background: transparent; border: none; margin-left: 20px; text-decoration: none; color: #000; text-align: left; cursor: pointer; }
-			.file:hover					{ color: orange; font-weight: bold; }
+			.file						{ background: #FFF url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QkbCh8cTwgHbwAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAADrSURBVDjL3ZE9asNAEIU/rfWHYAu1AqlXo84unGuYnCz4FoGQA8QQg3rpAOp0ARkVMbPeNCISxFISJ1UeTDMw37w341hrKcvSighLcl2XJEnIssxRSo19gPP5jfV6Mzt8OLyw3d7RNA1t29qiKBytNQAKQMQsbu+6jjiOyfMcrTVVVdm+70eAMcLlcpmt06kDIIoi0jTF933qurYfEWQAzEkpxX7/gOd5hGE4VDTewIhZBOx29596x+Mr33ZwTWJk4uAGgJkC5IsIVx0Mn/sjB0aw1v7iBjdEMNMI/+ALq5Xi6fnxR4AgCAB4B493prkXlbMhAAAAAElFTkSuQmCC') no-repeat; border: none; margin-left: 20px; padding-left: 20px; text-decoration: none; color: #000; text-align: left; cursor: pointer; }
+			.file:hover					{ color: #3366ff; font-weight: bold; }
 		</style>
 	</head>
 	<body>
@@ -212,7 +214,7 @@
 							print '<ul class="sub-panel">';
 
 							// Tri des répertoires
-							ksort($aRacine, SORT_NATURAL);
+							ksort($aRacine, defined('SORT_NATURAL') ? SORT_NATURAL : SORT_REGULAR);
 							foreach($aRacine as $sDirectoryName => $sName) {
 								// Initialisation de la classe du répertoire parcouru (sélectionné ou ouvert)
 								$sMainClass					= $sDirectoryName == $dir_name	? "selected"							: "";
@@ -237,12 +239,14 @@
 											}
 											// Initialisation de la classe du répertoire sélectionné ou ouvert
 											$sUnderClass	= $sDirectory == $dir_name		? "selected"							: $sMainClass;
+											$sIdSelected	= $sMainClass == "opened"		? "current_directory"					: null;
+											$sIdSelected	= $sUnderClass == "selected"	? "current_directory"					: $sIdSelected;
 											// Ajour d'un indicateur pour le répertoire
 											$sUnderPrefixe	= $sDirectory == $dir_name		? "&#9658;"								: "&#8656;";
 											// Ajour d'un titre pour le répertoire
 											$sUnderTitle	= $sDirectory == $dir_name		? "Répertoire courant"					: "Remonter au répertoire précédent";
 											// Construction du sous-répertoire courant
-											$sUnderList		.= '<li class="' . $sUnderClass . '"><button type="submit" name="dir_name" title="' . $sUnderTitle . '" value="' . htmlspecialchars(addslashes($sDirectory)) . '" class="sub-directory"><span class="flag">' . $sUnderPrefixe . '&nbsp;</span>' . htmlspecialchars($aDirectory[$occurrence]) . '</button></li>';
+											$sUnderList		.= '<li class="' . $sUnderClass . '" id="' . $sIdSelected . '"><button type="submit" name="dir_name" title="' . $sUnderTitle . '" value="' . htmlspecialchars(addslashes($sDirectory)) . '" class="sub-directory"><span class="flag">' . $sUnderPrefixe . '&nbsp;</span>' . htmlspecialchars($aDirectory[$occurrence]) . '</button></li>';
 											for ($count = 0 ; $count < $occurrence ; $count++) {
 												$sUnderList	.= '</ul>';
 											}
@@ -250,12 +254,15 @@
 									}
 								}
 
+								// Identifiant de l'élément s'il est sélectionné par défaut
+								$sIdSelected				= $sMainClass == "selected"		? "current_directory"					: null;
+
 								// Ajour d'un indicateur pour le répertoire
 								$sMainPrefixe				= $sMainClass == "selected"		? "&#9658;"								: "&#8656;";
 								// Ajour d'un titre pour le répertoire
 								$sMainTitle					= $sMainClass == "selected"		? "Répertoire courant"					: "Remonter au répertoire précédent";
 								// Construction de la ligne du répertoire de $_ROOT
-								print '<li class="' . $sMainClass . '"><button type="submit" name="dir_name" title="' . $sMainTitle . '" value="' . htmlspecialchars(addslashes($sDirectoryName)) . '" class="directory"><span class="flag">' . $sMainPrefixe . '&nbsp;</span>' . htmlspecialchars($sName) . '</button>' . $sUnderList . '</li>';
+								print '<li class="' . $sMainClass . '" id="' . $sIdSelected . '"><button type="submit" name="dir_name" title="' . $sMainTitle . '" value="' . htmlspecialchars(addslashes($sDirectoryName)) . '" class="directory"><span class="flag">' . $sMainPrefixe . '&nbsp;</span>' . htmlspecialchars($sName) . '</button>' . $sUnderList . '</li>';
 							}
 
 							// Finalitation de la liste
@@ -270,7 +277,7 @@
 							// Fonctionnalité réalisée si des répertoires sont présents dans $_PATH
 							if (!empty($aDossier)) {
 								// Tri des répertoires
-								ksort($aDossier, SORT_NATURAL);
+								ksort($aDossier, defined('SORT_NATURAL') ? SORT_NATURAL : SORT_REGULAR);
 								foreach($aDossier as $sFileName => $sName) {
 									// Ajour d'un indicateur pour le répertoire
 									$sPrefixe				= $sName == '..'				? "&#8656;"								: "&#9658;";
@@ -284,7 +291,7 @@
 							// Fonctionnalité réalisée si des fichiers sont présents dans $_PATH
 							if (!empty($aFichier)){
 								// Tri des fichiers
-								ksort($aFichier, SORT_NATURAL);
+								ksort($aFichier, defined('SORT_NATURAL') ? SORT_NATURAL : SORT_REGULAR);
 								foreach($aFichier as $sFileName => $sName) {
 									// Construction de la ligne du fichier de $_PATH
 									print '<li><button type="submit" name="dir_name" title="Ouvrir le fichier" value="' . htmlspecialchars(addslashes($sFileName)) . '" class="file">' . htmlspecialchars($sName) . '</button></li>';
@@ -297,6 +304,10 @@
 				</table>
 			</form>
 		</section>
+		<script type="text/javascript">
+			// Focus sur le répertoire sélectionné
+			location.href = "#current_directory";
+		</script>
 	</body>
 </html>
 <?php

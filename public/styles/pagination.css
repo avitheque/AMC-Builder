@@ -7,8 +7,8 @@
  *
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 67 $
- * @since		$LastChangedDate: 2017-07-19 00:09:56 +0200 (Wed, 19 Jul 2017) $
+ * @version		$LastChangedRevision: 80 $
+ * @since		$LastChangedDate: 2017-10-21 13:24:25 +0200 (Sat, 21 Oct 2017) $
  */
 
 .absolute					{ position:			absolute; }
@@ -652,6 +652,7 @@
 
 /* HEIGHT ****************************************************************************************/
 
+.height-40					{ height:			40px; }
 .height-50					{ height:			50px; }
 .height-500					{ height:			500px; }
 
