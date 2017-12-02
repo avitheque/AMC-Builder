@@ -29,28 +29,28 @@
  * @subpackage	Libraries
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 24 $
- * @since		$LastChangedDate: 2017-04-30 20:38:39 +0200 (dim., 30 avr. 2017) $
- * 
+ * @version		$LastChangedRevision: 81 $
+ * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
+ *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
  */
 abstract class AbstractApplicationController implements Interfaces_iAbstractApplicationController {
 
-	protected $oInstanceStorage	= null;
-	protected $aMessages		= array();					// Informations transmises par le contrôleur
-	protected $aErrors			= array();					// Erreurs transmises par le contrôleur
-	protected $aParamTypes		= array();					// Métadonnées des paramètres
-	protected $aParams			= array();					// Données transmises par l'URL et les formulaires
-	protected $aData			= array();					// Données transmises du contrôleur à la vue
+	protected	$oInstanceStorage	= null;
+	protected	$oSessionMessenger	= null;						// Gestionnaire des messages transmis en session
+	protected	$aMessages			= array();					// Messages transmis par le contrôleur
+	protected	$aParamTypes		= array();					// Métadonnées des paramètres
+	protected	$aParams			= array();					// Données transmises par l'URL et les formulaires
+	protected	$aData				= array();					// Données transmises du contrôleur à la vue
 
-	protected $_controller		= FW_DEFAULTCONTROLLER;
-	protected $_subController	= null;
-	protected $_action			= FW_DEFAULTACTION;
-	protected $_subAction		= null;
-	protected $_option			= null;
-	protected $_view			= FW_DEFAULTVIEW;
+	protected	$_controller		= FW_DEFAULTCONTROLLER;
+	protected	$_subController		= null;
+	protected	$_action			= FW_DEFAULTACTION;
+	protected	$_subAction			= null;
+	protected	$_option			= null;
+	protected	$_view				= FW_DEFAULTVIEW;
 
 	/** @brief	Constructeur.
 	 *
@@ -61,13 +61,17 @@ abstract class AbstractApplicationController implements Interfaces_iAbstractAppl
 	 * @param	string	$sNameSpace			: Nom de la classe contrôleur appelée.
 	 */
 	public function __construct($sNameSpace = __CLASS__) {
+		// Mise à jour de l'instance de `SessionMessenger`
+		$this->oSessionMessenger			= SessionMessenger::getInstance();
+
 		// Récupération des variables de l'instance en cours
 		$this->mergeParams();
 
 		// Récupération de l'instance InstanceStorage
-		$this->oInstanceStorage	= InstanceStorage::getInstance();
+		$this->oInstanceStorage				= InstanceStorage::getInstance();
+
 		// Récupère les paramètres d'exécution en cours
-		$aExecute = $this->oInstanceStorage->get('execute');
+		$aExecute = $this->oInstanceStorage->getParam('execute');
 
 		// Initialisation de la variable du contrôleur
 		$this->defineParam('controller',	DataHelper::DATA_TYPE_CLASSID);
@@ -191,7 +195,6 @@ abstract class AbstractApplicationController implements Interfaces_iAbstractAppl
 		$this->aData = array();
 	}
 
-
 	/** @brief	Initialise le tableau de paramètres d'instance.
 	 *
 	 * Cette procédure réinitialise la variable de session $this->aParams.
@@ -232,26 +235,6 @@ abstract class AbstractApplicationController implements Interfaces_iAbstractAppl
 		}
 	}
 
-	/** @brief	Stocke un message à destination de la vue.
-	 *
-	 * Stocke un message informatif.
-	 *
-	 * @param	string	$sMessage		: Contenu du message.
-	 */
-	protected function storeMessage($sMessage) {
-		$this->aMessages[] = $sMessage;
-	}
-
-	/** @brief	Stocke un message d'erreur à destination de la vue.
-	 *
-	 * Stocke un message d'erreur.
-	 *
-	 * @param	string	$sError			: Contenu du message d'erreur.
-	 */
-	protected function storeError($sError) {
-		$this->aErrors[] = $sError;
-	}
-
 	/** @brief	Tableau de stockage des données à destination de la vue.
 	 *
 	 * Renvoie le tableau contenant les objets de stockage a destination de la vue.
@@ -262,24 +245,85 @@ abstract class AbstractApplicationController implements Interfaces_iAbstractAppl
 		return $this->aData;
 	}
 
+	/** @brief	Stocke un message à destination de la vue.
+	 *
+	 * Stocke un message informatif.
+	 *
+	 * @param	string	$sType			: Type du message.
+	 * @param	string	$sMessage		: Contenu du message.
+	 */
+	protected function storeMessage($sType = ViewRender::MESSAGE_INFO, $sMessage) {
+		$this->aMessages[$sType][] = $sMessage;
+	}
+
+	/** @brief	Stocke un message d'erreur à destination de la vue.
+	 *
+	 * Stocke un message d'erreur.
+	 *
+	 * @param	string	$sError			: Contenu du message d'erreur.
+	 */
+	protected function storeError($sError) {
+		$this->storeMessage(ViewRender::MESSAGE_ERROR, $sError);
+	}
+
+	/** @brief	Stocke un message de succès.
+	 *
+	 * Stocke un message de succès à destination de la vue.
+	 *
+	 * @param	string	$sSuccess		: Contenu du message de succès.
+	 */
+	protected function storeSuccess($sSuccess) {
+		$this->storeMessage(ViewRender::MESSAGE_SUCCESS, $sSuccess);
+	}
+
+	/** @brief	Stocke un message d'avertissement.
+	 *
+	 * Stocke un message d'avertissement à destination de la vue.
+	 *
+	 * @param	string	$sWarning		: Contenu du message d'avertissement.
+	 */
+	protected function storeWarning($sWarning) {
+		$this->storeMessage(ViewRender::MESSAGE_WARNING, $sWarning);
+	}
+
 	/** @brief	Tableau de stockage des messages.
 	 *
-	 * Cette fonction renvoie le tableau contenant les message stockés par le contrôleur via la méthode storeMessage().
+	 * Cette fonction renvoie le tableau contenant les messages stockés par le contrôleur via la méthode storeMessage().
 	 *
 	 * @return	Tableau de chaînes.
 	 */
-	public function getMessages() {
-		return $this->aMessages;
+	public function getMessages($sType = ViewRender::MESSAGE_INFO) {
+		return array_key_exists($sType, $this->aMessages) ? $this->aMessages[$sType] : null;
 	}
 
 	/** @brief	Tableau de stockage des messages d'erreur.
 	 *
-	 * Cette fonction renvoie le tableau contenant les message d'erreur, stockés par le contrôleur via la méthode storeError().
+	 * Cette fonction renvoie le tableau contenant les messages d'erreur, stockés par le contrôleur via la méthode storeError().
 	 *
 	 * @return	Tableau de chaînes.
 	 */
 	public function getErrors() {
-		return $this->aErrors;
+		return $this->getMessages(ViewRender::MESSAGE_ERROR);
+	}
+
+	/** @brief	Tableau de stockage des messages de succès.
+	 *
+	 * Cette fonction renvoie le tableau contenant les messages de succès, stockés par le contrôleur via la méthode storeSuccess().
+	 *
+	 * @return	Tableau de chaînes.
+	 */
+	public function getSuccesses() {
+		return $this->getMessages(ViewRender::MESSAGE_SUCCESS);
+	}
+
+	/** @brief	Tableau de stockage des messages d'avertissement.
+	 *
+	 * Cette fonction renvoie le tableau contenant les messages d'avertissement, stockés par le contrôleur via la méthode storeAlert().
+	 *
+	 * @return	Tableau de chaînes.
+	 */
+	public function getWarnings() {
+		return $this->getMessages(ViewRender::MESSAGE_WARNING);
 	}
 
 	/** @brief	Nom du contrôleur.

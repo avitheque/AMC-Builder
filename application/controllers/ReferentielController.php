@@ -11,8 +11,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 81 $
+ * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -321,7 +321,7 @@ class ReferentielController extends AbstractFormulaireController {
 			// Enregistrement du formulaire
 			$aEnregistrement = $this->_oReferentielManager->enregistrer($this->_table, $this->getFormulaire());
 		} catch (ApplicationException $e) {
-			ViewRender::setMessageAlert($e->getMessage());
+			ViewRender::setMessageError($e->getMessage());
 		}
 
 		// Fonctionnalité réalisée si l'enregistrement s'est réalisé correctement
@@ -352,7 +352,7 @@ class ReferentielController extends AbstractFormulaireController {
 			$this->unsetFormulaire();
 		} catch (ApplicationException $e) {
 			// Impossible de supprimer un référentiel lié à une autre table
-			ViewRender::setMessageAlert("Un référentiel lié ne peut être supprimé...");
+			ViewRender::setMessageError("Un référentiel lié ne peut être supprimé...");
 		}
 
 		// Changement de vue

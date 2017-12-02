@@ -6,12 +6,12 @@
  *
  * @name		ItemHelper
  * @category	Helper
- * @package		View
+ * @package		PlanningHelper
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 30 $
- * @since		$LastChangedDate: 2017-05-29 23:21:02 +0200 (Mon, 29 May 2017) $
+ * @version		$LastChangedRevision: 81 $
+ * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -38,20 +38,22 @@ class Planning_ItemHelper {
 	 * @brief	Nom du panel.
 	 * @var		string
 	 */
-	private		$_title						= "Jour de la semaine";
-	private		$_describe					= "";
-	private		$_content					= "";
-	private		$_id						= null;
-	private		$_hrefZoomIn				= "#";
-	private		$_hrefTrash					= "#";
-	private		$_class						= "";
-	private		$_year						= 0;
-	private		$_month						= 0;
-	private		$_day						= 0;
-	private		$_hour						= 0;
-	private		$_minute					= 0;
-	private		$_duration					= 1;
-	private		$_timer						= 60;
+	protected	$_id						= null;
+	protected	$_title						= "Jour de la semaine";
+	protected	$_describe					= "";
+	protected	$_content					= "";
+	protected	$_id_participant			= null;
+	protected	$_participant				= array();
+	protected	$_hrefZoomIn				= "#";
+	protected	$_hrefTrash					= "#";
+	protected	$_class						= "";
+	protected	$_year						= 0;
+	protected	$_month						= 0;
+	protected	$_day						= 0;
+	protected	$_hour						= 0;
+	protected	$_minute					= 0;
+	protected	$_duration					= 1;
+	protected	$_timer						= 60;
 
 
 	/**
@@ -338,11 +340,23 @@ class Planning_ItemHelper {
 		$this->_duration	= $nTime;
 	}
 
+	/**
+	 * @brief	Ajout d'un groupe de participants à la tâche
+	 *
+	 * @param	mixed	$nIdParticipant		: identidiants du groupe de participants.
+	 * @return	void
+	 */
+	public function setParticipant($nIdParticipant, $aListeParticipant = array()) {
+		$this->_id_participant	= $nIdParticipant;
+		$this->_participant		= (array) $aListeParticipant;
+	}
+
 	public function _buildHTML($bDeletable = true) {
 		// Fonctionnalité réalisée si la construction n'a pas été réalisée
 		if (! $this->_build) {
 			// Enregistrement du rendu
-			$this->_build	= true;
+			$this->_build		= true;
+			$this->_titleHTML	= $this->_title;
 
 			// Fonctionnalité réalisée si le bouton [poubelle] peut être affiché
 			$sTrash = "";
@@ -356,14 +370,23 @@ class Planning_ItemHelper {
 				$sZoomIn = "<a class='ui-icon ui-icon-zoomin' title='Voir le contenu' href='" . $this->_hrefZoomIn . "' >&nbsp;</a>";
 			}
 
+			// Fonctionnalité réalisée si des participants sont présents
+			if (!empty($this->_participant)) {
+				foreach ($this->_participant as $sNomHTML) {
+					$this->_titleHTML .= "\n\t└─ " . DataHelper::extractContentFromHTML($sNomHTML);
+				}
+			}
+
 			// Ajout d'un élément
 			$this->_html = "<li class='item " . $this->_class . " ui-widget-content ui-corner-tr ui-draggable' align='center'>
-							<article title='" . $this->_title . "' class='job padding-0' align='center'>
+							<article title=\"" . $this->_titleHTML . "\" class='job padding-0' align='center'>
 								<h3 class='strong left max-width'>" . $this->_title . "</h3>
 								<div class='content center'>
-									<p>" . $this->_describe . "</p>
+									<p class='center'>" . $this->_describe . "</p>
 									
-									" . $this->_content . "
+									<section class='planning-item-content'>" . $this->_content . "</section>
+									
+									<section class='planning-item-participant'>" . implode(" - ", $this->_participant) . "</section>
 									
 									<input type=\"hidden\" value=" . $this->_id			. " name=\"tache_id[]\">
 									<input type=\"hidden\" value=" . $this->_year		. " name=\"tache_annee[]\">
@@ -372,7 +395,7 @@ class Planning_ItemHelper {
 									<input type=\"hidden\" value=" . $this->_hour		. " name=\"tache_heure[]\">
 									<input type=\"hidden\" value=" . $this->_minute		. " name=\"tache_minute[]\">
 									<input type=\"hidden\" value=" . $this->_duration	. " name=\"tache_duree[]\">
-									<input type=\"hidden\" value=\"{}\" name=\"tache_participant[]\">					
+									<input type=\"hidden\" value=" . $this->_id_participant . " name=\"tache_participant[]\">					
 								</div>
 							</article>
 							<section class='item-bottom'>

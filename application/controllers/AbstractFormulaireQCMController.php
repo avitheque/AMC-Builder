@@ -15,8 +15,8 @@
  * @subpackage	Libraries
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 72 $
- * @since		$LastChangedDate: 2017-07-29 16:54:10 +0200 (Sat, 29 Jul 2017) $
+ * @version		$LastChangedRevision: 81 $
+ * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -370,7 +370,7 @@ abstract class AbstractFormulaireQCMController extends AbstractFormulaireControl
 		// Fonctionnalité réalisé si le titre du formulaire est vide
 		if (empty($sFormulaireTitre)) {
 			// Avertissement sur le champ manquant
-			ViewRender::setMessageAlert("ERREUR RENCONTRÉ AU COURS DE L'ENREGISTREMENT !", "Veuillez renseigner le nom du formulaire...");
+			ViewRender::setMessageError("ERREUR RENCONTRÉ AU COURS DE L'ENREGISTREMENT !", "Veuillez renseigner le nom du formulaire...");
 
 			// Récupération des entrées de la bibliothèque non enregistrées dans le formulaire
 			$this->_getUndoBibliothequeItems();
@@ -413,7 +413,7 @@ abstract class AbstractFormulaireQCMController extends AbstractFormulaireControl
 		// Fonctionnalité réalisé si le titre du formulaire est vide
 		if (empty($sFormulaireTitre)) {
 			// Avertissement sur le champ manquant
-			ViewRender::setMessageAlert("ERREUR RENCONTRÉ AU COURS DE L'ENREGISTREMENT !", "Veuillez renseigner le nom du formulaire...");
+			ViewRender::setMessageError("ERREUR RENCONTRÉ AU COURS DE L'ENREGISTREMENT !", "Veuillez renseigner le nom du formulaire...");
 
 			// Récupération des entrées de la bibliothèque non enregistrées dans le formulaire
 			$this->_getUndoBibliothequeItems();

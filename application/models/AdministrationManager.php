@@ -15,8 +15,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 35 $
- * @since		$LastChangedDate: 2017-06-13 06:38:00 +0200 (Tue, 13 Jun 2017) $
+ * @version		$LastChangedRevision: 81 $
+ * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
  * @see			{ROOT_PATH}/libraries/models/MySQLManager.php
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
@@ -999,7 +999,7 @@ class AdministrationManager extends MySQLManager {
 
 		// Fonctionnalité arrêtée si le mot de passe est invalide
 		if (empty($nIdUtilisateur) && empty($sPassword) || $sPassword != $sConfirmation) {
-			ViewRender::setMessageAlert("Mot de passe invalide");
+			ViewRender::setMessageError("Mot de passe invalide");
 			return $aUtilisateur;
 		} elseif (!empty($sPassword) && $sPassword == $sConfirmation) {
 			// Ajout de l'enregistrement du mot de passe s'il n'est pas vide
@@ -1122,7 +1122,7 @@ class AdministrationManager extends MySQLManager {
 				// Annulation des modifications
 				$this->oSQLConnector->rollBack();
 				// Affichage d'un message d'erreur
-				ViewRender::setMessageAlert("Erreur rencontrée lors de l'enregistrement...");
+				ViewRender::setMessageError("Erreur rencontrée lors de l'enregistrement...");
 				// Personnalisation de l'exception
 				throw new ApplicationException('EQueryInsert', DataHelper::queryToString($aQuery, $aBind));
 			}
@@ -1140,7 +1140,7 @@ class AdministrationManager extends MySQLManager {
 			ViewRender::setMessageSuccess("Enregistrement réalisé avec succès !");
 		} else {
 			// Affichage d'un message d'avertissement
-			ViewRender::setMessageAlert("Aucun enregistrement n'a été réalisé...");
+			ViewRender::setMessageError("Aucun enregistrement n'a été réalisé...");
 		}
 
 		// Renvoi du résultat

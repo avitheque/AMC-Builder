@@ -10,8 +10,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 28 $
- * @since		$LastChangedDate: 2017-05-19 18:37:18 +0200 (Fri, 19 May 2017) $
+ * @version		$LastChangedRevision: 81 $
+ * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -406,7 +406,8 @@ class PlanningHelper {
 
 				default:
 					// Construction du champ INPUT
-					$oInput		= new InputHelper($sName, $sValue, $sType, $sLabel, "strong center max-width");
+					$oInput		= new InputHelper($sName, $sValue, $sType);
+					$oInput->addLabel($sLabel, "strong center max-width");
 					$oInput->setId($sId);
 
 					// Ajout du champ INPUT
@@ -575,12 +576,12 @@ class PlanningHelper {
 			$oItemElement	= DataHelper::get($this->_aItems[$IdProgression], $sTimeIndex, DataHelper::DATA_TYPE_ANY, null);
 			$sClassSet		= null;
 			$sItemHTML		= null;
-			
+
 			// Extraction des éléments `Y`, `m` et `d`
 			preg_match("@^([0-9]+)\-([0-9]+)\-([0-9]+)$@", $IdProgression, $aMatched);
 			// Initialisation de l'identifiant de la CELLULE à partir de l'identifiant de la PROGRESSION sous forme `planning-Y-m-d-H` sans la caractère [0] de début
 			$sIdItemElement	= sprintf("planning-%d-%d-%d-%d", $aMatched[1], $aMatched[2], $aMatched[3], $h);
-			
+
 			// Fonctionnalité réalisée si un élément du PLANNING est présent
 			if ($oItemElement instanceof Planning_ItemHelper) {
 				// La classe porte l'identifiant de la tâche
@@ -732,7 +733,7 @@ class PlanningHelper {
 			}
 
 			// Construction de chaque zone de progression selon l'identifiant du jour
-			$this->planning		= "<section id=\"" . $this->_md5 . "\" class=\"planningHelper $this->_planning_format week left center max-width no-wrap\">";
+			$this->planning		= "<section id=\"" . $this->_md5 . "\" class=\"planningHelper $this->_planning_format week center max-width no-wrap\">";
 
 			// Fonctionnalité réalisée si le format à afficher est au format CALENDAR
 			if ($this->_planning_format == self::FORMAT_CALENDAR) {
@@ -781,7 +782,7 @@ class PlanningHelper {
 		$oModal->setDimensions(495);
 		$oModal->setForm(false);
 		$oModal->setPosition("center", "left top", "window");
-		$oModal->linkContent("<section id=\"search-content-" . $this->_md5 . "\" class=\"$this->_planning_format\">" . $this->getItem() . "</section>");
+		$oModal->linkContent("<section id=\"search-content-" . $this->_md5 . "\" class=\"modal-search $this->_planning_format\">" . $this->getItem() . "</section>");
 
 		// Ajout d'un champ caché relatif à l'identifiant
 		$aSearchItems['item_id'] = array(

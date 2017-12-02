@@ -49,7 +49,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 	var PLANNING_ITEM_MARGIN	= 10;
 	var PLANNING_ITEM_ATTRIBUTE	= ["tache_annee", "tache_mois", "tache_jour", "tache_heure"];
 	var PLANNING_ITEM_IGNORE	= ["tache_participant", "tache_duree"];
-	var PLANNING_MOUSEHOVER		= false;														
+	var PLANNING_MOUSEHOVER		= false;
 	var PLANNING_ERROR			= false;
 	var PLANNING_HELPER			= new Array();
 }
@@ -86,7 +86,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 	$.fn.dragging = function(event, ui) {
 		// Protection contre la propagation intempestive
 		event.stopPropagation();
-		
+
 		// Message de debuggage
 		var debug_info;
 
@@ -179,7 +179,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 		$(this).each(function() {
 			// Récupération de l'identifiant du PLANNING
 			var MD5		= $(this).attr("id");
-			
+
 			var parent	= $(this).parents(".accordion");
 			if (typeof(parent.accordion) == 'function' ) {
 				// Fonctionnalité réalisée dans le cas d'une inclusion dans un plugin jQuery.accordion();
@@ -187,7 +187,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 					activate:	function(event, ui) {
 						// Protection contre la propagation intempestive
 						event.stopPropagation();
-						
+
 						// Fonctionnalité réalisée si le PANEL activé contient le PLANNING
 						if (typeof(ui.newPanel.find("section.planningHelper").html()) != 'undefined') {
 							// Fonctionnalité réalisée pour chaque session de PLANNING
@@ -204,7 +204,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 					activate:	function(event, ui) {
 						// Protection contre la propagation intempestive
 						event.stopPropagation();
-						
+
 						// Fonctionnalité réalisée si le PANEL activé contient le PLANNING
 						if (typeof(ui.newPanel.find("section.planningHelper").html()) != 'undefined') {
 							// Fonctionnalité réalisée pour chaque session de PLANNING
@@ -224,14 +224,14 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 				over:				function(event, ui) {
 					// Protection contre la propagation intempestive
 					event.stopPropagation();
-					
+
 					PLANNING_MOUSEHOVER	= true;
 				},
 				// Fonctionnalité réalisée lorsque la souris ne survole aucun PLANNING
 				out:				function(event, ui) {
 					// Protection contre la propagation intempestive
 					event.stopPropagation();
-					
+
 					PLANNING_MOUSEHOVER	= false;
 					// Fonctionnalité réalisée lorsque la souris sort du PLANNING
 					if (typeof(PLANNING[MD5]) != 'undefined') {
@@ -242,7 +242,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 				deactivate:			function(event, ui) {
 					// Protection contre la propagation intempestive
 					event.stopPropagation();
-					
+
 					// Fonctionnalité réalisée lorsque la souris sort du PLANNING
 					if (typeof(PLANNING[MD5]) != 'undefined') {
 						PLANNING[MD5].render();
@@ -263,7 +263,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 					drag:				function(event, ui) {
 						// Protection contre la propagation intempestive
 						event.stopPropagation();
-						
+
 						// Récupération du parent
 						var $parent = $(this).parent();
 						var $position = "absolute";
@@ -286,7 +286,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 					activate:			function(event, ui) {
 						// Protection contre la propagation intempestive
 						event.stopPropagation();
-						
+
 						// Initialisation des variables de gestion des conflits
 						PLANNING_ERROR		= false;
 						PLANNING_MOUSEHOVER	= false;
@@ -295,7 +295,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 					over:				function(event, ui) {
 						// Protection contre la propagation intempestive
 						event.stopPropagation();
-						
+
 						// Récupération de l'identifiant de la SECTION parent (MODAL pour l'ajout / PLANNING pour le déplacement)
 						var sectionItem		= ui.helper.parents("section").attr("id").replace(MODAL_MD5_PREFIXE, "");
 
@@ -313,7 +313,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 					drop:				function(event, ui) {
 						// Protection contre la propagation intempestive
 						event.stopPropagation();
-						
+
 						// Récupération de l'identifiant de la SECTION parent (MODAL pour l'ajout / PLANNING pour le déplacement)
 						var sectionItem		= ui.helper.parents("section").attr("id").replace(MODAL_MD5_PREFIXE, "");
 
@@ -335,7 +335,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 					deactivate:			function(event, ui) {
 						// Protection contre la propagation intempestive
 						event.stopPropagation();
-						
+
 						// Récupération de l'identifiant de la SECTION parent (MODAL pour l'ajout / PLANNING pour le déplacement)
 						var sectionItem		= ui.helper.parents("section").attr("id").replace(MODAL_MD5_PREFIXE, "");
 
@@ -539,7 +539,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 		// Fonctionnalité réalisée si le contenu est valide
 		if (typeof($article) != 'undefined' && $article.length > 0) {
 			// Construction d'un MODAL avec le contenu
-			var $modal = $("<article id=\"panning-viewer\" class=\"modal blue hidden\">" + $article + "</article>").appendTo("dialog");
+			var $modal = $("<article id=\"panning-viewer\" class=\"modal center blue hidden\">" + $article + "</article>").appendTo("dialog");
 
 			// Variables temporaires de manipulation des éléments
 			var $item		= $(this);
@@ -574,7 +574,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 					create:		function(event, ui) {
 						// Protection contre la propagation intempestive
 						event.stopPropagation();
-						
+
 						// Affichage en MODE_DEBUG
 						$("#var-debug").html("Création du MODAL #id_modal_duree");
 					},
@@ -586,10 +586,10 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 						"Valider": function(event) {
 							// Protection contre la propagation intempestive
 							event.stopPropagation();
-							
+
 							// Mise à jour de la durée de l'élément
 							$item.updateDuree($("#id_modal_duree").val(), MD5);
-							
+
 							// Mise à jour de la durée de la tâche
 							if (typeof(PLANNING[MD5]) != 'undefined') {
 								PLANNING[MD5].update($item, $("#id_modal_duree").val(), true);
@@ -620,7 +620,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 		if (typeof(PLANNING_DEBUG) == 'boolean' && PLANNING_DEBUG) {
 			console.debug("$.fn.removeItem()");
 		}
-		
+
 		// Récupération de l'identifiant du PLANNING
 		var MD5 = $(this).parents("section").attr("id");
 
@@ -736,7 +736,7 @@ function addItem(MD5, $source, $destination) {
 
 	// Affichage en MODE_DEBUG
 	$("#var-debug").html($($destination).attr("id"));
-	
+
 	// Mise à jour de l'instance du PLANNING *******************************
 	if (typeof(PLANNING[MD5]) != 'undefined') {
 		PLANNING[MD5].move($source, $destination, true);
@@ -886,10 +886,10 @@ function setPlanning(MD5) {
 	if (typeof(PLANNING_DEBUG) == 'boolean' && PLANNING_DEBUG) {
 		console.debug("setPlanning('" + MD5 + "')");
 	}
-    
+
 	// Construction d'un nouveau planning
 	PLANNING[MD5] = new Planning(MD5);
-	
+
 	// Parcours des tâches déjà présentes afin de les intégrer à l'instance en cours
 	$("li.item", "section#" + MD5).each(function() {
 		// Ajout de la tâche à la collection
@@ -951,7 +951,7 @@ function initPlanning(MD5) {
 		drag:				function(event, ui) {									// Fonctionnalités réalisées lors du déplacement du clône
 			// Protection contre la propagation intempestive
 			event.stopPropagation();
-			
+
 			// Récupération de l'identifiant de la SECTION parent (MODAL pour l'ajout / PLANNING pour le déplacement)
 			var sectionItem		= ui.helper.parents("section").attr("id").replace(MODAL_MD5_PREFIXE, "");
 
@@ -988,13 +988,13 @@ function initPlanning(MD5) {
 	$("td[class*=day-]",	"section#" + MD5).mouseenter(function(event) {
 		// Protection contre la propagation intempestive
 		event.stopPropagation();
-		
+
 		var role = $(this).attr("role");
 		$("th." + role,		"section#" + MD5).addClass("hover");
 	}).mouseleave(function(event) {
 		// Protection contre la propagation intempestive
 		event.stopPropagation();
-		
+
 		var role = $(this).attr("role");
 		$("th." + role,		"section#" + MD5).removeClass("hover");
 	});
@@ -1014,7 +1014,7 @@ $(document).ready(function() {
 	$(document).on("click", "a.ui-icon-zoomin", function(event) {
 		// Protection contre le syndrome du cliqueur intempestif
 		event.stopPropagation();
-		
+
 		// Récupération du conteneur parent
 		var $target = $(this).parents("li.item");
 
@@ -1061,4 +1061,7 @@ $(document).ready(function() {
 			updateCellWidth(true);
 		}, 500);
 	});
+
+	// Actualisation de la largeur des cellules au chargement
+	updateCellWidth(true);
 });

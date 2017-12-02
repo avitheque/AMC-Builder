@@ -8,8 +8,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 81 $
+ * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -21,13 +21,22 @@ class ViewRender {
 	 * Nom du fichier du squelette de page.
 	 * @var 	string
 	 */
-	const SKEL						= "skel";
+	const	SKEL						= "skel";
+
+	/**
+	 * Types de messages.
+	 * @var 	string
+	 */
+	const	MESSAGE_ERROR				= "alert";
+	const	MESSAGE_INFO				= "info";
+	const	MESSAGE_SUCCESS				= "success";
+	const	MESSAGE_WARNING				= "warning";
 
 	/**
 	 * Variable de classe d'activation du rendu de la vue.
 	 * @var		boolean
 	 */
-	static private		$_renderer	= true;
+	static private		$_renderer		= true;
 
 	/**
 	 * @brief	Activation|Désactivation du rendu de la vue.
@@ -42,8 +51,24 @@ class ViewRender {
 	 * @return	void
 	 */
 	static function render() {
+		// Récupération de l'instance de `SessionMessenger`
+		$oSessionMessenger = SessionMessenger::getInstance();
+
+		// Création d'un message par défaut
+		self::setMessageInfo(null, $oSessionMessenger->getMessage(self::MESSAGE_INFO));
+
+		// Création des messages d'erreur
+		self::setMessageError(null, $oSessionMessenger->getMessage(self::MESSAGE_ERROR));
+
+		// Création des messages de succès
+		self::setMessageSuccess(null, $oSessionMessenger->getMessage(self::MESSAGE_SUCCESS));
+
+		// Création des messages d'avertissement
+		self::setMessageWarning(null, $oSessionMessenger->getMessage(self::MESSAGE_WARNING));
+
 		// Fonctionnaliré réalisée si le rendu est actif
 		if (self::$_renderer) {
+			//$oSessionMessenger->unsetIndex('success');
 			require_once FW_HELPERS . '/' . self::SKEL . '.php';
 		} else {
 			// Réinitialisation de l'activation de la vue
@@ -423,6 +448,10 @@ class ViewRender {
 	 * Méthode appelée lors de l'initialisation de la page HTML.
 	 */
 	static function start() {
+		// Récupération de l'instance de `SessionMessenger`
+		$oSessionMessenger = SessionMessenger::getInstance();
+		$oSessionMessenger->setViewRender(DataHelper::getTime());
+
 		self::clearBody();
 		self::clearDebug();
 		self::clearDialog();
@@ -452,25 +481,28 @@ class ViewRender {
 	 * @return	void
 	 */
 	static function setMessageBox($sTitre = null, $xMessage = null, $sClass = "message") {
-		// Création du conteneur
-		$sMessageBox = "<section class=\"" . $sClass . "\" >";
-		// Ajout d'une ancre pour la fermeture du message
-		$sMessageBox .= "<a href=\"#\" class=\"margin-0 close\">x</a>";
+		// Fonctionnalité réalisée si au moins un paramètre est présent
+		if (!empty($sTitre) || !empty($xMessage)) {
+			// Création du conteneur
+			$sMessageBox = "<section class=\"" . $sClass . "\" >";
+			// Ajout d'une ancre pour la fermeture du message
+			$sMessageBox .= "<a href=\"#\" class=\"margin-0 close\">x</a>";
 
-		// Ajout du titre s'il est présent
-		if (!empty($sTitre)) {
-			$sMessageBox .= "<h4 class=\"margin-V-10 margin-H-20\">$sTitre</h4>";
+			// Ajout du titre s'il est présent
+			if (!empty($sTitre)) {
+				$sMessageBox .= "<h4 class=\"margin-V-10 margin-H-20\">$sTitre</h4>";
+			}
+
+			// Ajout du message s'il est présent
+			if (!empty($xMessage)) {
+				$sMessageBox .= "<p class=\"margin-V-10 margin-H-20\">" . implode("<br />", (array) $xMessage) . "</p>";
+			}
+
+			// Finalisation du message
+			$sMessageBox .= "</section>";
+			// Ajout de l'élément au VIEW_BODY
+			self::addToDialog($sMessageBox);
 		}
-
-		// Ajout du message s'il est présent
-		if (!empty($xMessage)) {
-			$sMessageBox .= "<p class=\"margin-V-10 margin-H-20\">" . implode("<br />", (array) $xMessage) . "</p>";
-		}
-
-		// Finalisation du message
-		$sMessageBox .= "</section>";
-		// Ajout de l'élément au VIEW_BODY
-		self::addToDialog($sMessageBox);
 	}
 
 	/**
@@ -480,7 +512,7 @@ class ViewRender {
 	 * @param	string	$sMessage		: Message à afficher.
 	 * @return	void
 	 */
-	static function setMessageAlert($sTitre = null, $sMessage = null) {
+	static function setMessageError($sTitre = null, $sMessage = null) {
 		self::setMessageBox($sTitre, $sMessage, $sClass = "message alert");
 	}
 
@@ -494,7 +526,6 @@ class ViewRender {
 	static function setMessageInfo($sTitre = null, $sMessage = null) {
 		self::setMessageBox($sTitre, $sMessage, $sClass = "message info");
 	}
-
 
 	/**
 	 * @brief	Création d'un message de succès.

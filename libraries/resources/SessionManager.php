@@ -1,13 +1,17 @@
 <?php
 /**
+ * @brief	Gestionnaire de SESSION.
+ * 
+ * @li	Un espace de nom est initialisé avec un SINGLETON.
+ * 
  * @name		SessionManager
  * @category	Resource
  * @package		Main
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 72 $
- * @since		$LastChangedDate: 2017-07-29 16:54:10 +0200 (Sat, 29 Jul 2017) $
+ * @version		$LastChangedRevision: 81 $
+ * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -19,9 +23,9 @@ class SessionManager {
 	 * @brief	Instance du SINGLETON de la classe.
 	 * @var		SessionManager
 	 */
-	private static $oInstance	= null;
+	protected static $oInstance	= null;
 
-	private $_nameSpace			= null;
+	protected $_nameSpace		= null;
 
 	/**
 	 * SessionManager constructor.
@@ -29,7 +33,7 @@ class SessionManager {
 	 * @return	void
 	 */
 	protected function __construct($sNameSpace = '') {
-		session_start();
+		@session_start();
 		session_name($sNameSpace);
 		$this->setNameSpace($sNameSpace);
 	}
@@ -122,5 +126,5 @@ class SessionManager {
 		// Renvoi de la valeur
 		return $xValue;
 	}
-
+	
 }

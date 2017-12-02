@@ -11,10 +11,10 @@
  * 	$oInstance_B	= InstanceStorage::getInstance();
  *
  *  // Enregistrement d'une variable dans l'instance B
- * 	$oInstance_B->set("calcul", 6*6^6);
+ * 	$oInstance_B->setParam("calcul", 6*6^6);
  *
  *  // Récupération de la valeur de la variable depuis l'instance A
- * 	print($oInstance_A->get("calcul"));			// Affiche 279936 !
+ * 	print($oInstance_A->getParam("calcul"));			// Affiche 279936 !
  * @endcode
  *
  * @name		InstanceStorage
@@ -23,8 +23,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 26 $
- * @since		$LastChangedDate: 2017-05-04 19:34:05 +0200 (jeu., 04 mai 2017) $
+ * @version		$LastChangedRevision: 81 $
+ * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -42,7 +42,13 @@ class InstanceStorage {
 	 * @brief	Tableau des données stockées dans l'instance en cours.
 	 * @var		array
 	 */
-	private $_aContent			= array();
+	private $_aParam			= array();
+	
+	/**
+	 * @brief	Tableau des messages stockés dans l'instance en cours.
+	 * @var		array
+	 */
+	private $_aMessages			= array();
 
 	/** @brief	Instanciation du SINGLETON.
 	 *
@@ -66,9 +72,9 @@ class InstanceStorage {
 	 * @param	mixed	$xValue		: valeur à sauvegarder.
 	 * @return	void
 	 */
-	public function set($sIndex, $xValue) {
+	public function setParam($sIndex, $xValue) {
 		// Sauvegarde la variable dans l'instance
-		$this->_aContent[$sIndex] = $xValue;
+		$this->_aParam[$sIndex] = $xValue;
 	}
 
 	/** @brief	Teste une variable.
@@ -78,9 +84,9 @@ class InstanceStorage {
 	 * @param	string	$sIndex		: nom de l'étiquette.
 	 * @return	boolean
 	 */
-	protected function _isset($sIndex) {
+	public function issetParam($sIndex) {
 		// Test de la valeur
-		return isset($this->_aContent[$sIndex]);
+		return isset($this->_aParam[$sIndex]);
 	}
 
 	/** @brief	Récupère une variable.
@@ -90,12 +96,12 @@ class InstanceStorage {
 	 * @param	string	$sIndex		: nom de l'étiquette.
 	 * @return	mixed	: object|array|string|integer|boolean
 	 */
-	public function get($sIndex) {
+	public function getParam($sIndex) {
 		// Initialisation de la valeur par défaut
 		$xValue = null;
 		// Fonctionnalité réalisée si l'étiquette existe
-		if ($this->_isset($sIndex)) {
-			$xValue = $this->_aContent[$sIndex];
+		if ($this->issetParam($sIndex)) {
+			$xValue = $this->_aParam[$sIndex];
 		}
 		// Renvoi de la valeur
 		return $xValue;
@@ -108,13 +114,13 @@ class InstanceStorage {
 	 */
 	public function getDatas() {
 		// Récupère l'ensemble des données stockées
-		return $this->get('data');
+		return $this->getParam('data');
 	}
 
 	/** @brief	Teste une variable d'entrée du contrôleur.
 	 *
 	 * La méthode vérifie si la valeur d'une variable est dans l'entrée du contrôleur.
-	 * La valeur renvoyée sera FALSE si elle n'est pas présente dans $this->_aContent['data'].
+	 * La valeur renvoyée sera FALSE si elle n'est pas présente dans $this->_aParam['data'].
 	 * @param	string	$sIndex		: nom de l'étiquette.
 	 * @return	boolean
 	 */
@@ -144,5 +150,5 @@ class InstanceStorage {
 		// Renvoi de la valeur
 		return $xValue;
 	}
-
+	
 }

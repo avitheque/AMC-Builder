@@ -8,8 +8,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 24 $
- * @since		$LastChangedDate: 2017-04-30 20:38:39 +0200 (dim., 30 avr. 2017) $
+ * @version		$LastChangedRevision: 81 $
+ * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
  * 
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -20,7 +20,7 @@ $oInstanceStorage = InstanceStorage::getInstance();
 
 // Liste des types d'erreurs
 $aErrStr = array_merge(
-	(array) $oInstanceStorage->get('errorstrings'),
+	(array) $oInstanceStorage->getParam('errorstrings'),
 	array(
 		// Identifiant			=> Littéral
 		'ERessourceAclNotFound'	=> Constantes::ERROR_ACL_NORESSOURCE,

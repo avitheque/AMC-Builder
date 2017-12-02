@@ -10,8 +10,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 79 $
- * @since		$LastChangedDate: 2017-08-30 01:36:47 +0200 (Wed, 30 Aug 2017) $
+ * @version		$LastChangedRevision: 81 $
+ * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -154,6 +154,46 @@ class DataHelper {
 		}
 		// Renvoi du résultat
 		return $bValid;
+	}
+	
+	/** @brief	Validation d'un jour.
+	 * Méthode permettant de vérifier la validité d'un jour par son numéro.
+	 * @param	integer		$nNumber		: numéro du jour à tester.
+	 * @return	bool résultat de la vérification.
+	 */
+	static function isValidDay($nNumber) {
+		return $nNumber >= 1 && $nNumber <= 31;
+	}
+	
+	/** @brief	Validation d'un mois.
+	 * Méthode permettant de vérifier la validité d'un mois par son numéro.
+	 * @param	integer		$nNumber		: numéro du mois à tester.
+	 * @return	bool résultat de la vérification.
+	 */
+	static function isValidMonth($nNumber) {
+		return $nNumber >= 1 && $nNumber <= 12;
+	}
+	
+	/** @brief	Validation d'une date.
+	 * Méthode permettant de vérifier la validité d'une date.
+	 * @param	string		$sString		: chaîne de caractères représentant une date.
+	 * @param	bool		$bMySQL			: (optionnel) si la chaîne est au format [Y-m-d].
+	 * @return	bool résultat de la vérification.
+	 */
+	static function isValidDate($sString, $bMySQL = false) {
+		$bValide = false;
+		
+		// Fonctionnalité réalisée si la date est au format MySQL
+		if ($bMySQL && preg_match('@^([0-9]{2,4})\-([0-9]{1,2})\-([0-9]{1,2})$@', $sString, $aMatched)) {
+			// Test le format de DATE [Y-m-d]
+			$bValide = self::isValidMonth($aMatched[2]) && self::isValidDay($aMatched[3]);
+		} elseif (!$bMySQL && preg_match('@^([0-9]{1,2}).([0-9]{1,2}).([0-9]{2,4})$@', $sString, $aMatched)) {
+			// Test le format de DATE [d/m/Y]
+			$bValide = self::isValidDay($aMatched[1]) && self::isValidMonth($aMatched[2]);
+		}
+		
+		// Renvoi du résultat
+		return $bValide;
 	}
 
 	/** @brief	Validation d'une chaîne.
@@ -303,6 +343,32 @@ class DataHelper {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * @brief	Récupère l'heure système avec les millisecondes.
+	 * 
+	 * @li	Possibilité de ne récupérer que la partie TIMESTAMP.
+	 *
+	 * @param	boolean		$bMillisecond	: récupération des millisecondes.
+	 * @param	integer		$nDecimales		: nombre de décimales.
+	 * @return	float TIMESTAMP avec les millisecondes en partie décimale.
+	 */
+	public static function getTime($bMillisecond = true, $nDecimales = 3) {
+		// Extraction de l'heure système sous forme array(MILLISECONDES, TIMESTAMP)
+		$aTime = explode(' ', microtime());
+		
+		// Récupération du TIMESTAMP
+		$fTime	= (int) $aTime[1];
+		
+		// Ajout des millisecondes au timestamp
+		if ($bMillisecond) {
+			// Ajout de la partie des millisecondes en décimales
+			$fTime += $aTime[0];
+		}
+		
+		// Renvoi du résultat
+		return $fTime;
 	}
 
 	/**
@@ -944,6 +1010,27 @@ class DataHelper {
 		}
 		// Renvoi du résultat
 		return $aResultat;
+	}
+	
+	/**
+	 * @brief	Extraction d'un texte contenu entre une balise HTML.
+	 * 
+	 * @param	string		$sHTML			: balise HTML avec son contenu.
+	 * @return	string
+	 */
+	static public function extractContentFromHTML($sHTML) {
+		// Initialisation du résultat
+		$sString		= "";
+		// Fonctionnalité réalisée si un tag HTML est détecté
+		if (preg_match("@>(.*)</@", $sHTML, $aMatched)) {
+			$sString	= $aMatched[1];
+		} elseif (preg_match("@value=(.*)@", $sHTML, $aMatched)) {
+			$sString	= $aMatched[1];
+		} else {
+			$sString	= $sHTML;
+		}
+		// Renvoi du résultat
+		return trim($sString);
 	}
 
 	/** @brief Extraction d'un tableau BIDIMENSIONNEL.

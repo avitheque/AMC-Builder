@@ -12,6 +12,7 @@
 
 /* SOURCE / CIBLE - SUPPORT DES ÉLÉMENTS */
 .diary													{ margin: 5px 0 20px; }
+.planning												{ display: inline-block; min-height: 96px; padding: 3px 0 5px; overflow: hidden; overflow-y: auto; }
 .planning-item											{ float: left; display: block; overflow: auto; }
 .planning-item.custom-state-active						{ background: #FBEC88; border: solid 1px #FAD42E; }
 .planning-item li										{ float: left; padding: 4px; text-align: center; white-space: nowrap; }
@@ -25,12 +26,23 @@
 .planning-item li .ui-icon								{ border: 1px solid transparent; border-radius: 5px; color: transparent; }
 .planning-item li .ui-icon:hover						{ background-color: yellow; border-color: orange; }
 
+.planning-item-content									{ font-size: 7; }
+.planning-item-participant								{ font-size: 7; }
+
+
+/* ITEM - MINIATURES */
+article.job												{ min-height: 50px; overflow: hidden; }
+article.job h3											{ font-size: 14px; }
+article.job p											{ font-size: 10px; height: 38px; width: 100%; margin: 0; padding: 0; text-align: center; }
+section.item-bottom										{ display: inline-flex; text-align: center; min-width: 10px; }
+.planning:not(.modal-search) section.item-bottom		{ display: none; }
+
 
 /* CIBLE - RENDU SOUS FORME DE PROGRESSION */
-.planning												{ display: inline-block; min-height: 96px; padding: 3px 0 5px; overflow: hidden; overflow-y: auto; }
-.planning li											{ white-space: nowrap; }
-.planning h4											{ line-height: 20px; margin: 0; text-align: left; }
-.planning h4 .ui-icon									{ float: left; }
+.progression li											{ white-space: nowrap; min-height: 70px; }
+.progression h4											{ line-height: 20px; margin: 0; text-align: left; }
+.progression h4 .ui-icon								{ float: left; }
+.progression li.item:hover section.item-bottom			{ display: inline-flex; text-align: center; }
 
 
 /* CIBLE - RENDU SOUS FORME DE CALENDRIER */
@@ -45,8 +57,8 @@
 .calendar li.item										{ height: 20px; padding: 0 3px; }
 .calendar li.item .job									{ min-height: 20px; }
 .calendar li.item .content								{ display: none; }
-.calendar li.item section.item-bottom					{ display: inline-block; text-align: center; }
 .calendar li.item .ui-icon								{ position: static; bottom: 0; float: left; display: none; }
+.calendar li.item:hover section.item-bottom				{ display: inline-block; text-align: center; }
 
 .calendar .header										{ position: absolute; left: 5px; padding-top: 15px; border: none; }
 .calendar .header dt									{ display: none; }
@@ -68,13 +80,6 @@
 /* OUT - Apparence de l'élément hors d'une période valide */
 .planning.ui-state-disabled.set,
 .planning.ui-state-disabled.hover						{ background: #F900FF !important; border-color: #F900FF !important; }
-
-
-/* ITEM - MINIATURES */
-article.job												{ min-height: 50px; overflow: hidden; }
-article.job h3											{ font-size: 14px; }
-article.job p											{ font-size: 10px; height: 38px; width: 100%; margin: 0; padding: 0; text-align: center; }
-section.item-bottom										{ display: inline-flex; text-align: center; min-width: 10px; }
 
 
 /* PROGRESSION UNIQUEMENT */

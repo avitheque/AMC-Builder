@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 78 $
- * @since		$LastChangedDate: 2017-08-29 18:14:10 +0200 (Tue, 29 Aug 2017) $
+ * @version		$LastChangedRevision: 81 $
+ * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -593,7 +593,7 @@ class FormulaireHelper {
 					// Validation en réalisée
 				case FormulaireManager::VALIDATION_REALISEE:
 					// Affichage d'un message d'avertissement
-					ViewRender::setMessageAlert("Le formulaire ayant été validé, toute modification devra faire l'objet d'une nouvelle validation...");
+					ViewRender::setMessageError("Le formulaire ayant été validé, toute modification devra faire l'objet d'une nouvelle validation...");
 					break;
 
 				default:

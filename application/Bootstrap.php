@@ -13,8 +13,8 @@
 	 * @subpackage	Application
 	 * @author		durandcedric@avitheque.net
 	 * @update		$LastChangedBy: durandcedric $
-	 * @version		$LastChangedRevision: 71 $
-	 * @since		$LastChangedDate: 2017-07-27 20:40:14 +0200 (Thu, 27 Jul 2017) $
+	 * @version		$LastChangedRevision: 81 $
+	 * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
 	 *
 	 * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
 	 * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -23,10 +23,16 @@
 	class Bootstrap {
 
 	/**
+	 * Instance de la classe SessionMessenger.
+	 * @var		SessionMessenger
+	 */
+	protected  $_oSessionMessenger	= null;
+
+	/**
 	 * Instance de la classe InstanceStorage.
 	 * @var InstanceStorage
 	 */
-	protected  $_oInstanceStorage  = null;
+	protected  $_oInstanceStorage	= null;
 
 	/**
 	 * @brief	Construction de la classe.
@@ -38,8 +44,12 @@
 	 * @return	void
 	 */
 	public function __construct($sEnv = 'default') {
-		// Récupération du singleton
-		$this->_oInstanceStorage  = InstanceStorage::getInstance();
+		// Récupération du singleton de la zone de stockage entre contrôleurs
+		$this->_oSessionMessenger	= SessionMessenger::getInstance();
+		$this->_oSessionMessenger->setFirstRender($this->_oSessionMessenger->getLastRender());
+
+		// Récupération du singleton de la zone de stockage entre contrôleurs
+		$this->_oInstanceStorage	= InstanceStorage::getInstance();
 
 		// Lecture de la configuration
 		$aConfig		=						ParseIniFile::parse($sEnv);
@@ -80,8 +90,8 @@
 		/**
 		 * SESSION
 		 */
-		defined('SESSION_NAME')					||	define('SESSION_NAME',						DataHelper::get($aApplication,	'session_name',				DataHelper::DATA_TYPE_STR,	time()));
-		SessionManager::getInstance(SESSION_NAME);
+		defined('SESSION_NAME')					||	define('SESSION_NAME',						DataHelper::get($aApplication,	'session_name',				DataHelper::DATA_TYPE_STR,	DataHelper::getTime()));
+		$this->_oSessionManager = SessionManager::getInstance(SESSION_NAME);
 
 		/**
 		 * BIBLIOTHÈQUE JQUERY
@@ -143,6 +153,11 @@
 		 * DATABASE
 		 */
 		$this->checkDataBase();
+
+		/**
+		 * LAST_RENDER
+		 */
+		$this->_oSessionMessenger->setLastRender(DataHelper::getTime());
 	}
 
 	/**
@@ -164,7 +179,7 @@
 
 		// Message d'alerte pour l'accès à la base de données
 		if (empty($_SESSION["PDO_ACCESS"])) {
-			ViewRender::setMessageAlert("Erreur de configuration !", "Impossible de se connecter à la base de données...");
+			ViewRender::setMessageError("Erreur de configuration !", "Impossible de se connecter à la base de données...");
 		}
 	}
 
@@ -266,12 +281,12 @@
 
 			// Récupération des données envoyées par le formulaire $_GET[] / $_POST[]
 			$aGetPost					= $_REQUEST;
-			
+
 			// Fonctionnalité réalisée en MODE REWRITE sous serveur Nginx
 			if (isset($aGetPost['base_url']) && (!isset($_SERVER['REDIRECT_URL']) || empty($_SERVER['REDIRECT_URL']))) {
 				$_SERVER['REDIRECT_URL']= $aGetPost['base_url'];
 			}
-			
+
 			// Récupération des paramètres depuis l'URL sous la forme {CONTROLLER}.{SUBCONTROLLER}/{ACTION}.{SUBACTION}/{OPTION}
 			$sSubController				= null;
 			$sSubAction					= null;
@@ -306,7 +321,7 @@
 			$sSubAction					= isset($aAction[1])		? $aAction[1]		: $sSubAction;
 
 			// Enregistrement des informations d'exécution dans le SINGLETON de l'instance
-			$this->_oInstanceStorage->set('execute', array(
+			$this->_oInstanceStorage->setParam('execute', array(
 				'controller'			=> $sController,
 				'subController'			=> $sSubController,
 				'action'				=> $sAction,
@@ -355,21 +370,25 @@
 				throw new ApplicationException('EControllerNotFound', "$sController/$sAction", $sController);
 			}
 
+			// Initialisation du TIMESTAMP de début du rendu
+			$this->_oInstanceStorage->setParam('VIEW_START',	DataHelper::getTime());
+
 			// Initialisation du nom du contrôleur
-			$this->_oInstanceStorage->set('controller',		$sController);
+			$this->_oInstanceStorage->setParam('controller',	$sController);
 			// Initialisation du nom du sous-contrôleur
-			$this->_oInstanceStorage->set('subController',	$sSubController);
+			$this->_oInstanceStorage->setParam('subController',	$sSubController);
 			// Initialisation du nom de l'action
-			$this->_oInstanceStorage->set('action',			$sAction);
+			$this->_oInstanceStorage->setParam('action',		$sAction);
 			// Initialisation du nom de la sous-action
-			$this->_oInstanceStorage->set('subAction',		$sSubAction);
+			$this->_oInstanceStorage->setParam('subAction',		$sSubAction);
 			// Initialisation du nom de l'option
-			$this->_oInstanceStorage->set('option',			$sOption);
+			$this->_oInstanceStorage->setParam('option',		$sOption);
 
 			// Chargement des variables de l'application
-			$this->_oInstanceStorage->set('data',			$oController->getData());
-			$this->_oInstanceStorage->set('messages',		$oController->getMessages());
-			$this->_oInstanceStorage->set('errors',			$oController->getErrors());
+			$this->_oInstanceStorage->setParam('data',			$oController->getData());
+			$this->_oInstanceStorage->setParam('messages',		$oController->getMessages());
+			$this->_oInstanceStorage->setParam('errors',		$oController->getErrors());
+			$this->_oInstanceStorage->setParam('successes',		$oController->getSuccesses());
 
 			// Chargement de la vue
 			self::includeView($sController, $sView);

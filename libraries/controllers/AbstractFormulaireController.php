@@ -20,8 +20,8 @@
  * @subpackage	Libraries
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 24 $
- * @since		$LastChangedDate: 2017-04-30 20:38:39 +0200 (dim., 30 avr. 2017) $
+ * @version		$LastChangedRevision: 81 $
+ * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
  * 
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -106,11 +106,14 @@ abstract class AbstractFormulaireController extends AbstractAuthenticateControll
 	 * @li	Possibilité de récupérer la valeur d'un champ par son index.
 	 *
 	 * @param	string	$sIndex				: Champs du formulaire à récupérer.
+	 * @param	integer	$iType				: (optionnel) Constante de typage de variable
+	 * @param	mixed	$xDefault			: (optionnel) Valeur de l'élément par défaut
+	 * @param	bool	$bForceEmpty		: (optionnel) Force la valeur par défaut si le contenu est vide : "", '', 0, NULL
 	 * @return	mixed|array, élément du formulaire ou tableau de configuration du formulaire.
 	 */
-	public function getFormulaire($sIndex = null) {
+	public function getFormulaire($sIndex = null, $iType = DataHelper::DATA_TYPE_ANY, $xDefault = null, $bForceEmpty = false) {
 		if (!is_null($sIndex)) {
-			return isset($this->_aForm[$sIndex]) ? $this->_aForm[$sIndex] : null;
+			return DataHelper::get($this->_aForm, $sIndex, $iType, $xDefault, $bForceEmpty);
 		} else {
 			return $this->_aForm;
 		}
@@ -158,6 +161,20 @@ abstract class AbstractFormulaireController extends AbstractAuthenticateControll
 		$xData = $this->getFormulaire($sIndex);
 		// Renvoi du résultat
 		return empty($xData);
+	}
+	
+	/**
+	 * @brief	Réinitialisation les données du formulaire.
+	 * 
+	 * Purge toutes les données présentes dans le(s) formulaire(s).
+	 * @see		AbstractAuthenticateController::resetAction()
+	 * @return	void
+	 */
+	public function resetAction() {
+		// Purge des données du formulaire
+		$this->resetFormulaire();
+		// Action du contrôleur parent
+		parent::resetAction($this->_controller);
 	}
 
 	/**

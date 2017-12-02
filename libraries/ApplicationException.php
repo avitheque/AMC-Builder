@@ -12,8 +12,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 75 $
- * @since		$LastChangedDate: 2017-08-02 23:54:49 +0200 (Wed, 02 Aug 2017) $
+ * @version		$LastChangedRevision: 81 $
+ * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -66,7 +66,7 @@ class ApplicationException extends Exception {
 	 * @return	Chaine de caractères.
 	 */
 	public function getController() {
-		return DataHelper::get($this->_oInstanceStorage->get("execute"), "controller", DataHelper::DATA_TYPE_CLASSID, FW_DEFAULTCONTROLLER);
+		return DataHelper::get($this->_oInstanceStorage->getParam("execute"), "controller", DataHelper::DATA_TYPE_CLASSID, FW_DEFAULTCONTROLLER);
 	}
 
 	/** @brief	Action.
@@ -75,7 +75,7 @@ class ApplicationException extends Exception {
 	 * @return	Chaine de caractères.
 	 */
 	public function getAction() {
-		return DataHelper::get($this->_oInstanceStorage->get("execute"), "action", DataHelper::DATA_TYPE_CLASSID, FW_DEFAULTACTION);
+		return DataHelper::get($this->_oInstanceStorage->getParam("execute"), "action", DataHelper::DATA_TYPE_CLASSID, FW_DEFAULTACTION);
 	}
 
 	/** @brief	Tableau de lignes d'info supplémentaire.

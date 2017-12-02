@@ -14,8 +14,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 67 $
- * @since		$LastChangedDate: 2017-07-19 00:09:56 +0200 (Wed, 19 Jul 2017) $
+ * @version		$LastChangedRevision: 81 $
+ * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -98,6 +98,7 @@ class ImportationController extends AbstractFormulaireQCMController {
 
 			// Fonctionnalité réalisée si l'importation du fichier est erroné
 			if (DataHelper::get($aFileName, 'error', DataHelper::DATA_TYPE_INT)) {
+				// Affichage d'un message d'avertissement
 				ViewRender::setMessageWarning("Veuillez sélectionner un fichier valide !");
 			} else {
 				// Contrôle du type de fichier à importer
@@ -137,13 +138,14 @@ class ImportationController extends AbstractFormulaireQCMController {
 						$this->resetDataIntoSession('FILE_NAME');
 
 						// Affichage d'un message d'erreur
-						ViewRender::setMessageAlert("Le fichier sélectionné n'est pas pris en charge par l'application...");
+						ViewRender::setMessageError("Le fichier sélectionné n'est pas pris en charge par l'application...");
 
 						// Rendu de la vue par défaut
 						$this->render('index');
 					}
 				} else {
-					ViewRender::setMessageAlert("Le type de fichier sélectionné n'est pas compatible !");
+					// Affichage d'un message d'erreur
+					ViewRender::setMessageError("Le type de fichier sélectionné n'est pas compatible !");
 				}
 			}
 		}

@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 66 $
- * @since		$LastChangedDate: 2017-07-12 19:33:31 +0200 (Wed, 12 Jul 2017) $
+ * @version		$LastChangedRevision: 81 $
+ * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -807,7 +807,7 @@ class GestionController extends AbstractFormulaireController {
 
 					if (!DataHelper::isValidArray($aDatas)) {
 						// Affichage d'un message d'erreur
-						ViewRender::setMessageAlert("Le fichier sélectionné n'est pas pris en charge par l'application...");
+						ViewRender::setMessageError("Le fichier sélectionné n'est pas pris en charge par l'application...");
 					}
 				} else {
 					ViewRender::setMessageWarning("Le fichier sélectionné n'est pas valide !");

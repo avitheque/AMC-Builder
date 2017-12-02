@@ -12,8 +12,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 61 $
- * @since		$LastChangedDate: 2017-07-08 15:25:46 +0200 (Sat, 08 Jul 2017) $
+ * @version		$LastChangedRevision: 81 $
+ * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -337,7 +337,8 @@ class GalleryHelper {
 
 				default:
 					// Construction du champ INPUT
-					$oInput		= new InputHelper($sName, $nValue, $sType, $sLabel, "strong center max-width");
+					$oInput		= new InputHelper($sName, $nValue, $sType);
+					$oInput->addLabel($sLabel, "strong center max-width");
 					$oInput->setId($sId);
 
 					// Ajout du champ INPUT

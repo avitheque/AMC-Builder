@@ -15,10 +15,10 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 58 $
- * @since		$LastChangedDate: 2017-07-06 19:25:04 +0200 (Thu, 06 Jul 2017) $
+ * @version		$LastChangedRevision: 81 $
+ * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
  * @see			{ROOT_PATH}/libraries/models/AbstractDataManager.php
- * 
+ *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
@@ -44,7 +44,7 @@ class MySQLManager extends AbstractDataManager {
 
 		// Récupération de l'identifiant de l'utilisateur
 		$this->_idUtilisateur	= $this->_oAuth->getIdUtilisateur();
-		
+
 		// Récupération du groupe de l'utilisateur
 		$this->_idGroupe		= $this->_oAuth->getIdGroupe();
 		$this->_borneGauche		= $this->_oAuth->getBorneGauche();
@@ -169,7 +169,7 @@ class MySQLManager extends AbstractDataManager {
 			// Annulation des modifications
 			$this->oSQLConnector->rollBack();
 			// Affichage d'un message d'erreur
-			ViewRender::setMessageAlert("Erreur rencontrée lors de l'enregistrement...");
+			ViewRender::setMessageError("Erreur rencontrée lors de l'enregistrement...");
 			// Personnalisation de l'exception
 			throw new ApplicationException('EQueryCascade', DataHelper::queryToString(array_merge($aInitQuery, $aSet), $aBind));
 		}
@@ -215,7 +215,7 @@ class MySQLManager extends AbstractDataManager {
 			// Annulation des modifications
 			$this->oSQLConnector->rollBack();
 			// Affichage d'un message d'erreur
-			ViewRender::setMessageAlert("Erreur rencontrée lors de la suppression...");
+			ViewRender::setMessageError("Erreur rencontrée lors de la suppression...");
 			// Personnalisation de l'exception
 			throw new ApplicationException('EQueryCascade', DataHelper::queryToString($aQuery, $aBind));
 		}

@@ -7,9 +7,9 @@
  * @subpackage	Libraries
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 24 $
- * @since		$LastChangedDate: 2017-04-30 20:38:39 +0200 (dim., 30 avr. 2017) $
- * 
+ * @version		$LastChangedRevision: 81 $
+ * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
+ *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
@@ -83,7 +83,7 @@ interface Interfaces_iAbstractApplicationController {
 
 	/** @brief	Tableau de stockage des messages.
 	 *
-	 * Cette fonction renvoie le tableau contenant les message stockés par le contrôleur via la méthode storeMessage().
+	 * Cette fonction renvoie le tableau contenant les messages stockés par le contrôleur via la méthode storeMessage().
 	 *
 	 * @return	array	: Tableau de chaînes.
 	 */
@@ -91,11 +91,27 @@ interface Interfaces_iAbstractApplicationController {
 
 	/** @brief	Tableau de stockage des messages d'erreur.
 	 *
-	 * Cette fonction renvoie le tableau contenant les message d'erreur, stockés par le contrôleur via la méthode storeError().
+	 * Cette fonction renvoie le tableau contenant les messages d'erreur, stockés par le contrôleur via la méthode storeError().
 	 *
 	 * @return	array	: Tableau de chaînes.
 	 */
 	public function getErrors();
+
+	/** @brief	Tableau de stockage des messages de succès.
+	 *
+	 * Cette fonction renvoie le tableau contenant les messages de succès, stockés par le contrôleur via la méthode storeSuccess().
+	 *
+	 * @return	array	: Tableau de chaînes.
+	 */
+	public function getSuccesses();
+
+	/** @brief	Tableau de stockage des messages de succès.
+	 *
+	 * Cette fonction renvoie le tableau contenant les messages d'avertissement, stockés par le contrôleur via la méthode storeWarning().
+	 *
+	 * @return	array	: Tableau de chaînes.
+	 */
+	public function getWarnings();
 
 	/** @brief	Nom du contrôleur.
 	 *

@@ -8,8 +8,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 81 $
+ * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -17,15 +17,15 @@
  */
 class InputHelper extends HtmlHelper {
 
-	const	TYPE_CHECKBOX	= "checkbox";
-	const	TYPE_DATE		= "date";
-	const	TYPE_HIDDEN		= "hidden";
-	const	TYPE_RADIO		= "radio";
-	const	TYPE_TEXT		= "text";
+	const	TYPE_CHECKBOX		= "checkbox";
+	const	TYPE_DATE			= "date";
+	const	TYPE_HIDDEN			= "hidden";
+	const	TYPE_RADIO			= "radio";
+	const	TYPE_TEXT			= "text";
 
-	protected	$_type		= null;
-	protected	$_label		= null;
-	protected	$_class		= null;
+	protected	$_type			= null;
+	protected	$_label_text	= null;
+	protected	$_label_class	= null;
 
 	/**
 	 * @brief	Classe contructeur de l'élément HTML.
@@ -35,16 +35,27 @@ class InputHelper extends HtmlHelper {
 	 * @param	string	$sType
 	 * @param	string	$sClass
 	 */
-	public function __construct($sName = "", $xValue = null, $sType = self::TYPE_TEXT, $sLabel = null, $sClass = null) {
+	public function __construct($sName = "", $xValue = null, $sType = self::TYPE_TEXT, $sClass = null) {
 		parent::__construct("input", true);
 		$this->setName($sName);
 		$this->setId($sName, $xValue);
 		$this->setAttribute('value', $xValue);
 		$this->setAttribute('type', $sType);
+		$this->addAttribute('class', $sClass);
 
 		$this->_type	= $sType;
-		$this->_label	= $sLabel;
-		$this->_class	= $sClass;
+	}
+	
+	/**
+	 * @brief	Ajout d'un élément LABEL.
+	 *
+	 * @param	string	$sLabel
+	 * @param	string	$sClass
+	 * @return	void
+	 */
+	public function addLabel($sLabel = null, $sClass = null) {
+		$this->_label_text	= $sLabel;
+		$this->_label_class	= $sClass;
 	}
 
 	/**
@@ -54,9 +65,9 @@ class InputHelper extends HtmlHelper {
 	 * @return	string
 	 */
 	public function renderHTML() {
-		// Fonctionnalité réalisée si le type de l'élément n'est pas TYPE_HIDDEN
-		if (!empty($this->_type) && $this->_type != self::TYPE_HIDDEN) {
-			$this->setLabel($this->_label, $this->_class);
+		// Fonctionnalité réalisée si un LABEL est à ajouter et que le type de l'élément n'est pas TYPE_HIDDEN
+		if (!empty($this->_label_text) && !empty($this->_type) && $this->_type != self::TYPE_HIDDEN) {
+			$this->setLabel($this->_label_text, $this->_label_class);
 		}
 		// Rendu de l'élément
 		return parent::renderHTML();

@@ -23,8 +23,8 @@
  * @subpackage	Libraries
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 75 $
- * @since		$LastChangedDate: 2017-08-02 23:54:49 +0200 (Wed, 02 Aug 2017) $
+ * @version		$LastChangedRevision: 81 $
+ * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -57,25 +57,36 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 	protected	$_oAcl				= null;
 
 	/**
-		 * @var		MenuHelper
-		 */
+	 * @var		MenuHelper
+	 */
 	private		$_oMenu				= null;
 
 	/**
-		 * @var		TaskbarHelper
-		 */
+	 * @var		TaskbarHelper
+	 */
 	private		$_oBar				= null;
+	
+	/**
+	 * @var		Tableau
+	 */
+	protected	$_aMessages			= array();
 
 	/**
 	 * Constructeur de la classe de l'application.
 	 *
-		 * @overload	AbstractApplicationController::construct($sNameSpace = __CLASS__)
+	 * @overload	AbstractApplicationController::construct($sNameSpace = __CLASS__)
 	 *
 	 * @param	string $sNameSpace		: Nom du contrôleur à appeler, par défaut le nom de la classe.
 	 */
 	public function __construct($sNameSpace = __CLASS__) {
 		// Initialisation du contôleur
 		parent::__construct($sNameSpace);
+		
+		// Envoi d'un message de debuggage uniquement en MODE_DEBUG
+		$this->debug('<span class="left width-150">CONTROLLER :</span>' . $sNameSpace);
+		$this->debug('<span class="left width-150">FIRST_RENDER :</span>' . $this->oSessionMessenger->getFirstRender());
+		$this->debug('<span class="left width-150">VIEW_RENDER :</span>' . $this->oSessionMessenger->getViewRender());
+		$this->debug('<span class="left width-150">LAST_RENDER :</span>' . $this->oSessionMessenger->getLastRender());
 
 		// Récupération du SINGLETON de l'instance AuthenticateManager
 		$this->_oAuth	= AuthenticateManager::getInstance();
@@ -120,10 +131,10 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 	}
 
 	/**
-		 * Méthode d'exécution de la classe
-		 *
-		 * @overload	AbstractApplicationController::execute()
-		 */
+	 * Méthode d'exécution de la classe
+	 *
+	 * @overload	AbstractApplicationController::execute()
+	 */
 	public function execute() {
 		// Action de déconnexion
 		if (in_array('logout', array($this->_controller, $this->_action))) {
@@ -137,8 +148,8 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 	}
 
 	/**
-		 * Méthode de redirection vers une ressource de l'application.
-		 */
+	 * Méthode de redirection vers une ressource de l'application.
+	 */
 	public function redirect($sRessource, $bLocal = true) {
 		// Message de debuggage
 		$this->debug("REDIRECTION");
@@ -156,10 +167,10 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 	}
 
 	/**
-		 * @brief	Méthode de création d'un tableau de valeurs provenant des données d'un formulaire.
-		 *
-		 * @param	array	$aForm			: ensemble des valeurs du formulaire
-		 */
+	 * @brief	Méthode de création d'un tableau de valeurs provenant des données d'un formulaire.
+	 *
+	 * @param	array	$aForm			: ensemble des valeurs du formulaire
+	 */
 	public function addFormToData(array $aForm) {
 		if (is_array($aForm)) {
 			foreach ($aForm as $sIndex => $xData) {
@@ -169,10 +180,10 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 	}
 
 	/**
-		 * @brief	Méthode de création d'un message de débuggage.
-		 *
-		 * @param	mixed	$sMessage		: message à afficher, peut être un tableau.
-		 */
+	 * @brief	Méthode de création d'un message de débuggage.
+	 *
+	 * @param	mixed	$sMessage		: message à afficher, peut être un tableau.
+	 */
 	public function debug($sMessage, $sTitle = null) {
 		if (defined('MODE_DEBUG') && (bool) MODE_DEBUG) {
 			// Fonctionnalité réalisée si le contenu est sous forme de tableau
@@ -250,10 +261,10 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 	}
 
 	/**
-		 * @brief	Méthode de stockage de données du formulaire en session.
-		 *
-		 * @li	Parcours les paramètres du formulaire dans la variable de classe du contrôleur @a $this->aParams.
-		 *
+	 * @brief	Méthode de stockage de données du formulaire en session.
+	 *
+	 * @li	Parcours les paramètres du formulaire dans la variable de classe du contrôleur @a $this->aParams.
+	 *
 	 * @param	array	$aForm			: ensemble des noms de champ du formulaire.
 	 * @param	string	$sIndex			: nom de stockage de la variable.
 	 * @return	array
@@ -279,7 +290,7 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 		}
 
 		// Stockage des données en session
-		$this->sendDataToSession($aData, $this->_sessionNameSpace);
+		$this->sendDataToSession($aData, $this->getSessionNameSpace());
 
 		// Renvoi des données à jour
 		return $aData;
@@ -337,19 +348,22 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 	 * @return	void
 	 */
 	public function resetAction($sRessource = null, $aDataSession = array()) {
+		// Purge de la session par son NameSpace
 		$this->_clearSession($this->_sessionNameSpace);
+		// Transfert des données à garder en session
 		foreach ($aDataSession as $sIndex => $xData) {
 			$this->sendDataToSession($xData, $sIndex);
 		}
+		// Redirection vers la ressource, sinon le contrôleur par défaut
 		$this->redirect(!empty($sRessource) ? $sRessource : $this->_controller);
 	}
 
 	/**
-		 * @brief	Méthode d'affichage de l'exception sous forme de message d'erreur.
-		 *
+	 * @brief	Méthode d'affichage de l'exception sous forme de message d'erreur.
+	 *
 	 * @param	Exception $oException exception qui est rencontrée.
 	 * @param	string $sMessage message supplémentaire à afficher.
-		 */
+	 */
 	public function showException($oException, $sMessage = null) {
 		try {
 			// Affichage d'un message

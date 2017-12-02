@@ -14,15 +14,17 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 69 $
- * @since		$LastChangedDate: 2017-07-23 03:02:54 +0200 (Sun, 23 Jul 2017) $
+ * @version		$LastChangedRevision: 81 $
+ * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
  */
 abstract class AbstractDataManager {
-
+	
+	protected static $DB_NAME	= PDO_DBNAME;
+	
 	protected $oSQLConnector	= null;
 	protected $oLDAPConnector	= null;
 
@@ -35,6 +37,22 @@ abstract class AbstractDataManager {
 	//#############################################################################################
 	//	@todo PDO CONNECTOR
 	//#############################################################################################
+	
+	/**
+	 * @brief	Initialise du nom de la base de données.
+	 *
+	 * @li	Possibilité de changer de base de données en cours d'instance.
+	 *
+	 * La méthode initialise le nom de la base
+	 */
+	public function useDatabase($sBaseName = PDO_DBNAME) {
+		// Fonctionnalité réalisée si l'instance de la base de données a changé
+		if ((bool) PDO_ACTIVE && is_object($this->oSQLConnector) && $sBaseName != $this->sDataBaseName) {
+			unset($this->oSQLConnector);
+		}
+		// Modification du nom de la Base de données
+		self::$DB_NAME = $sBaseName;
+	}
 
 	/**
 	 * @brief	Initialise une transaction PDO
@@ -51,7 +69,7 @@ abstract class AbstractDataManager {
 			$oFactory = Connectors_ConnectorFactory::getInstance();
 
 			// Initialisation du paramètre de connexion à la base
-			$sConnection		= 'mysql:dbname=' . PDO_DBNAME . ';host=' . PDO_HOST . ';port=' . PDO_PORT;
+			$sConnection		= 'mysql:dbname=' . self::$DB_NAME . ';host=' . PDO_HOST . ';port=' . PDO_PORT;
 
 			// Construction du tableau de paramètres
 			$aPDOConf = array(
@@ -277,6 +295,16 @@ abstract class AbstractDataManager {
 		
 		// Renvoi du résultat
 		return true;
+	}
+	
+	public function commit() {
+		// Commit de la modification en base de données
+		$this->oSQLConnector->commit();
+	}
+	
+	public function rollback() {
+		// Commit de la modification en base de données
+		$this->oSQLConnector->rollback();
 	}
 
 	//#############################################################################################

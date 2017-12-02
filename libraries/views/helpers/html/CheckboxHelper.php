@@ -10,8 +10,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 81 $
+ * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -51,7 +51,8 @@ class CheckboxHelper extends InputHelper {
 		}
 
 		// Construction du champ visible
-		parent::__construct($sName, $this->_value, "checkbox", $sLabel, $sClass);
+		parent::__construct($sName, $this->_value, "checkbox");
+		$this->addLabel($sLabel, $sClass);
 	}
 
 	/**
