@@ -26,8 +26,8 @@
 .planning-item li .ui-icon								{ border: 1px solid transparent; border-radius: 5px; color: transparent; }
 .planning-item li .ui-icon:hover						{ background-color: yellow; border-color: orange; }
 
-.planning-item-content									{ font-size: 7; }
-.planning-item-participant								{ font-size: 7; }
+.planning-item-content									{ font-size: 7px; }
+.planning-item-participant								{ font-size: 7px; }
 
 
 /* ITEM - MINIATURES */
@@ -54,7 +54,7 @@ section.item-bottom										{ display: inline-flex; text-align: center; min-wid
 .calendar .planning										{ display: list-item; min-height: 0; height: 22px; width: 100%; margin: 0; padding: 0; border: 1px solid #c5dbec; }
 .calendar .planning ul									{ border: none; }
 .calendar .planning h4									{ display: none; }
-.calendar li.item										{ height: 20px; padding: 0 3px; }
+.calendar li.item										{ height: 20px; padding: 0; maring: 0; }
 .calendar li.item .job									{ min-height: 20px; }
 .calendar li.item .content								{ display: none; }
 .calendar li.item .ui-icon								{ position: static; bottom: 0; float: left; display: none; }
@@ -67,7 +67,7 @@ section.item-bottom										{ display: inline-flex; text-align: center; min-wid
 
 
 /* CIBLE - Apparence des cellules selon leur état */
-.holiday .planning    			        				{ background: #3C75BF; border-color: #3C75BF; }
+.holiday .planning										{ background: #3C75BF; border-color: #3C75BF; }
 .planning.set											{ background: #446693; border-color: #446693; opacity: 1; }
 .planning.hover											{ background: orange !important; opacity: 1; border-color: transparent; }
 .planning.conflict,

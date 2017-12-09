@@ -17,8 +17,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 84 $
+ * @since		$LastChangedDate: 2017-12-03 13:01:20 +0100 (Sun, 03 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -96,7 +96,7 @@ class SearchController extends AbstractAuthenticateController {
 	 */
 	public function categorieAction() {
 		// Récupération de l'identifiant du domaine AJAX
-		$nIdDomaine			= $this->getParam('id_domaine');
+		$nIdDomaine				= $this->getParam('id_domaine');
 
 		// Initialisation de l'instance du référentiel
 		$oReferentielManager	= new ReferentielManager();
@@ -214,7 +214,7 @@ class SearchController extends AbstractAuthenticateController {
 		);
 
 		// Récupère la liste des identifiants à exclude du résultat
-		$aListeExcludeId		= explode(GalleryHelper::EXCLUDE_SEPARATOR, $this->getParam('exclude'));
+		$aListeExcludeId		= DataHelper::convertStringToArray(GalleryHelper::EXCLUDE_SEPARATOR, $this->getParam('exclude', DataHelper::DATA_TYPE_STR));
 
 		// Initialisation du référentiel dans la vue
 		$this->_buildReferentiel();

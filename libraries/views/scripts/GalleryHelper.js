@@ -9,6 +9,28 @@
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
  */
 
+var GALLERY_MARGIN_ITEM = 10;
+
+// Mise à jour du MODAL
+function updateGalleryHeight() {
+	// Récupération des éléments du MODAL
+	var titleItem		= $("#modal-gallery").parent().find("div.ui-dialog-titlebar");
+	var searchItem		= $("#gallery");
+	var formItem		= $("form#search-bibliotheque");
+	var documentItem	= $(document);
+
+	// Adaptation de la zone de recherche selon le résultat
+	var newHeight		= searchItem.innerHeight() + formItem.innerHeight() + titleItem.innerHeight() * 1.5 + GALLERY_MARGIN_ITEM;
+
+	// Fonctionnalité réalisée si la nouvelle hauteur est trop grande
+	if (documentItem.innerHeight() <= newHeight) {
+		newHeight		= documentItem.innerHeight() - formItem.innerHeight() - titleItem.innerHeight();
+	}
+
+	// Mise à jour de la nouvelle hauteur du MODAL
+	$("#modal-gallery").dialog("option", "height", newHeight);
+};
+
 // Affichage d'un modal contenant la question
 function viewItem($link) {
 	var href	= $link.attr("href");
@@ -23,7 +45,7 @@ function viewItem($link) {
 
 	/** @todo APPEL DU MODAL S'IL EXISTE DÉJÀ... */
 
-		// Construction du MODAL
+	// Construction du MODAL
 	var $modal = $("<article id=\"gallery-viewer\" class=\"modal blue hidden\" href=\"" + href + "\"></article>").appendTo("dialog");
 	setTimeout(function() {
 		// Récupération du contenu via l'URL
@@ -50,7 +72,7 @@ function viewItem($link) {
 			modal:		true
 		});
 	}, 1);
-}
+};
 
 // Ajoute un élément à la liste des exclus
 function pushToExclude($element) {
@@ -77,7 +99,7 @@ function pushToExclude($element) {
 		// Mise à jour du champ caché de la collection des identifiants exclus
 		$("input[name=bibliotheque_exclude]").val($exlude.join(","));
 	}
-}
+};
 
 // Retire un élément de la liste des exclus
 function deleteFromExclude($element) {
@@ -98,7 +120,7 @@ function deleteFromExclude($element) {
 		// Mise à jour du champ des collection
 		$("input[name=bibliotheque_exclude]").val($exlude.join(","));
 	}
-}
+};
 
 /**
  * Fonctionnalité réalisée à la fin du chargement de la page chez le client
@@ -226,7 +248,8 @@ function initGallery() {
 		// Désactivation du renvoi
 		return false;
 	});
-}
+};
+
 /**
  * Fonctionnalité réalisée à la fin du chargement de la page chez le client
  */

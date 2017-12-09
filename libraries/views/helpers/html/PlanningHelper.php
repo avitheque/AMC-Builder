@@ -10,8 +10,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 81 $
- * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
+ * @version		$LastChangedRevision: 83 $
+ * @since		$LastChangedDate: 2017-12-03 12:14:06 +0100 (Sun, 03 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -406,8 +406,8 @@ class PlanningHelper {
 
 				default:
 					// Construction du champ INPUT
-					$oInput		= new InputHelper($sName, $sValue, $sType);
-					$oInput->addLabel($sLabel, "strong center max-width");
+					$oInput		= new InputHelper($sName, $sValue, $sType, "width-50p right");
+					$oInput->addLabel($sLabel, "strong left width-150-min width-30p");
 					$oInput->setId($sId);
 
 					// Ajout du champ INPUT
@@ -436,12 +436,14 @@ class PlanningHelper {
 
 		// Finalisation du formulaire
 		$sSearch			.= "</ul>
-							<div class=\"margin-20\">
-								<button type=\"reset\" id=\"reset-item-" . $this->_md5 . "\" class=\"left no-margin red\">Annuler</button>
-								<button type=\"button\" id=\"search-item-" . $this->_md5 . "\" class=\"right no-margin blue\">Rechercher</button>
-							</div>
-						</fieldset>
-					</form>";
+								<br />
+								<hr class=\"blue half-width\"/>
+								<div class=\"margin-20\">
+									<button type=\"reset\" id=\"reset-item-" . $this->_md5 . "\" class=\"left no-margin red\">Annuler</button>
+									<button type=\"button\" id=\"search-item-" . $this->_md5 . "\" class=\"right no-margin blue\">Rechercher</button>
+								</div>
+							</fieldset>
+						</form>";
 
 		// Ajout du script d'ouverture
 		$sJQuery = '// Action sur le bouton [Rechercher] du MODAL
@@ -456,10 +458,16 @@ class PlanningHelper {
 							success:	function(html) {
 								// Chargement du contenu trouvé
 								$("ul#planning-item-' . $this->_md5 . '").html(html);
+						
+								// Adaptation de la zone de recherche selon le résultat
+								updateModalHeight("' . $this->_md5 . '");
 							},
 							complete:	function() {
 								// Initialisation de la fonctionnalité de planification
 								initPlanning("' . $this->_md5 . '");
+						
+								// Adaptation de la zone de recherche selon le résultat
+								updateModalHeight("' . $this->_md5 . '");
 							}
 						});
 					});
@@ -468,6 +476,9 @@ class PlanningHelper {
 					$("button#reset-item-' . $this->_md5 . '").on("click", function() {
 						// Suppression du contenu
 						$("ul#planning-item-' . $this->_md5 . '").html("");
+						
+						// Adaptation de la zone de recherche selon le résultat
+						updateModalHeight("' . $this->_md5 . '");
 					});';
 
 		// Compression du script avec JavaScriptPacker
@@ -497,7 +508,7 @@ class PlanningHelper {
 			// Libellé du jour
 			$sTitreJour			= strtoupper($sLibelleJour) . " " . $sLibelleDate;
 			if ($this->_planning_format == self::FORMAT_CALENDAR) {
-				$sTitreJour		=  $this->_planning_semaine_court[$this->_planning_jour_id];
+				$sTitreJour		= $this->_planning_semaine_court[$this->_planning_jour_id];
 			}
 		}
 

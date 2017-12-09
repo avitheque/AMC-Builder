@@ -10,8 +10,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 81 $
- * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
+ * @version		$LastChangedRevision: 84 $
+ * @since		$LastChangedDate: 2017-12-03 13:01:20 +0100 (Sun, 03 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -734,7 +734,7 @@ class DataHelper {
 	 * @param	string		$sName			: nom du champ à convertir contenant les caractères "[" et "]"
 	 * @param	string		$sValue			: (optionnel) valeur à injecter dans l'identifiant
 	 * @return	string modifié exploitable par JavaScript
-	 * @author durandcedric
+	 * @author	durandcedric
 	 */
 	static function convertStringToId($sName, $sValue = null) {
 		// Recherche de la présence des caractères "[" et "]" représentatif d'un tableau
@@ -756,6 +756,27 @@ class DataHelper {
 	}
 
 	/**
+	 * Transforme une chaîne de caractères en tableau.
+	 *
+	 * @param	string		$sSeparator		: caractère de séparation entre chaque élément
+	 * @param	string		$sText			: texte à analyser
+	 * @return	array
+	 * @author	durandcedric
+	 */
+	static function convertStringToArray($sSeparator, $sText) {
+	    // Extraction du contenu sous forme de tableau
+		$aResultat = explode($sSeparator, $sText);
+
+		// Fonctionnalité réalisée si le résultat est vide
+		if (count($aResultat) == 1 && $aResultat[0] == "") {
+			$aResultat = array();
+		}
+
+		// Renvoi du résultat
+		return $aResultat;
+	}
+
+	/**
 	 * Coupe une chaîne de caractères en préservant les caractères UTF-8
 	 *
 	 * @li	Supprime les caractères [espace] en trop en début et en fin de chaîne.
@@ -765,7 +786,7 @@ class DataHelper {
 	 * @param	integer		$nLenght		: longueur de la chaîne à extraire.
 	 * @param	string		$sSuffix		: chaîne à injecter à la fin.
 	 * @return	string modifié
-	 * @author durandcedric
+	 * @author	durandcedric
 	 */
 	static function subString($sString = "", $nStart = 0, $nLenght = null, $sSuffix = "...") {
 		// Fonctionnalité réalisée si la longueur n'est pas définie
@@ -818,15 +839,14 @@ class DataHelper {
 				// Fonctionnalité réalisée si le contenu est du style 5:8-12
 				$aResultat[$aConcatList[0]] = self::getArrayFromList($aConcatList[1], $sSeparatorList, $sSeparatorItem, $sConcatItem);
 			} else {
-				$aPlage = explode($sSeparatorItem, $aConcatList[0]);
+				$aPlage = self::convertStringToArray($sSeparatorItem, $aConcatList[0]);
 				// Fonctionnalité réalisée si le contenu est du style 8-12
 				if (isset($aPlage[0]) && isset($aPlage[1])) {
 					// Extraction des paramètres
 					for ($nEntry = $aPlage[0] ; $nEntry <= $aPlage[1] ; $nEntry++) {
 						$aResultat[$nEntry] = $nEntry;
 					}
-				}
-				else {
+				} else {
 					$aResultat[$xList] = $xList;
 				}
 			}
@@ -899,7 +919,7 @@ class DataHelper {
 	 * @param	string		$xRegExp		: Expression régulière du paramètre.
 	 * @param	bool		$sKeyOnly		: (optionnel) ne récupère que les clés.
 	 * @return	array, tableau final
-	 * @author durandcedric
+	 * @author	durandcedric
 	 */
 	static function getLinesFromArrayLike($aArray, $xRegExp = ".*", $bKeyOnly = false) {
 		// Initialisation du résultat
@@ -944,7 +964,7 @@ class DataHelper {
 	 * @param	array		$aRequest		: données à traiter
 	 * @param	array		$aFiltre		: filtre des colonnes à récupérer
 	 * @return	array, tableau final
-	 * @author durandcedric
+	 * @author	durandcedric
 	 */
 	static function getLinesFromRequest($aRequest, $aFiltre) {
 		// Initialisation du résultat
@@ -982,7 +1002,7 @@ class DataHelper {
 	 * @param	array		$aRequest		: données à traiter
 	 * @param	array		$aFiltre		: filtre des données à ignorer
 	 * @return	array, tableau final
-	 * @author durandcedric
+	 * @author	durandcedric
 	 */
 	static function removeLinesFromRequest($aRequest, $aFiltre) {
 		// Initialisation du résultat
@@ -1292,7 +1312,7 @@ class DataHelper {
 					return array();
 				} elseif (is_string($xValue) && preg_match("@^.*\\" . self::ARRAY_SEPARATOR . "*@", $xValue)) {
 					// Chaîne de caractères représentant un tableau
-					$xValue = explode(self::ARRAY_SEPARATOR, $xValue);
+					$xValue = self::convertStringToArray(self::ARRAY_SEPARATOR, $xValue);
 				}
 				// Renvoi sous forme de tableau
 				return (array) $xValue;
@@ -1645,7 +1665,7 @@ class DataHelper {
 	 * @param	string		$sTitre			: titre de l'exception.
 	 * @param	string		$sMessage		: message supplémentaire à afficher.
 	 * @return	string
-	 * @author durandcedric
+	 * @author	durandcedric
 	 */
 	public static function displayException($oException, $sTitre = null, $sMessage = null) {
 		try {
@@ -1759,7 +1779,7 @@ class DataHelper {
 	 * @param	string		$sClass			: class CSS de l'élément.
 	 * @param	boolean		$bRecursive		: (optionnel) si la méthode est appelée par elle-même.
 	 * @return	string
-	 * @author durandcedric
+	 * @author	durandcedric
 	 */
 	public static function debugArray($aArray = array(), $sClass = "code", $bRecursive = false) {
 		// Initialisation des variables de construction

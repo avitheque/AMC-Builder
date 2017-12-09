@@ -1,7 +1,7 @@
 <?php
 /**
  * @brief       Fichier d'initialisation de l'application.
- * 
+ *
  * Ce fichier permet de déclarer toutes les constantes exploitées par le Framework afin d'initialiser le pattern MVC.
  *
  * @li Appel du fichier de démarrage de l'application.
@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 19 $
- * @since		$LastChangedDate: 2017-04-30 15:27:06 +0200 (dim., 30 avr. 2017) $
+ * @version		$LastChangedRevision: 83 $
+ * @since		$LastChangedDate: 2017-12-03 12:14:06 +0100 (Sun, 03 Dec 2017) $
  */
 
 /**
@@ -69,6 +69,7 @@ define('VIEWS_HELPERS',				VIEWS.'/helpers');
  * Constantes des noms de session protégées de l'application
  */
 define('AUTHENTICATE',				"AuthenticateManage");
+define('SESSION_MESSENGER',			"SessionMessenger");
 define('VIEW_BODY',					"body");
 define('VIEW_CACHE',				"cache");
 define('VIEW_DEBUG',				"debug");
@@ -92,6 +93,7 @@ define('VIEW_MD5',					"MD5");
  */
 $aApplicationSessions = array(
 	AUTHENTICATE,
+    SESSION_MESSENGER,
 	VIEW_BODY,
 	VIEW_CACHE,
 	VIEW_DEBUG,
@@ -161,7 +163,7 @@ function __autoload($sClass) {
 
 /**
  * @brief	Récupération du fichier de chargement de l'application.
- * 
+ *
  * @li  La classe Bootstrap permet de charger les ressources de l'application selon l'environnement passé en paramètre.
  */
 require_once APPLICATION . '/Bootstrap.php';

@@ -19,7 +19,7 @@
  * @code
  * 	globale	PLANNING_DEBUG		: boolean
  * 	globale	PLANNING_MD5		: array
- *  globale PLANNING_CELL_WIDTH	: array
+ *	globale PLANNING_CELL_WIDTH	: array
  * @endcode
  *
  * @li	Variables déclarées dans `main.js`
@@ -45,13 +45,17 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 	// Constantes de gestion du PLANNING
 	var PLANNING_MD5_PREFIXE	= "planning-item-";
 	var PLANNING_ITEM_REGEXP	= /^planning-[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}-[0-9]+$/;
-	var PLANNING_ITEM_FACTEUR	= 0.65;
-	var PLANNING_ITEM_MARGIN	= 10;
 	var PLANNING_ITEM_ATTRIBUTE	= ["tache_annee", "tache_mois", "tache_jour", "tache_heure"];
 	var PLANNING_ITEM_IGNORE	= ["tache_participant", "tache_duree"];
 	var PLANNING_MOUSEHOVER		= false;
 	var PLANNING_ERROR			= false;
 	var PLANNING_HELPER			= new Array();
+
+	// Constantes de gestion du PLANNING
+	var PLANNING_ITEM_FACTEUR	= 0.65;
+	var PLANNING_ITEM_MARGIN	= 10;
+	var PROGRESSION_ITEM_MARGIN	= 10;
+	var CALENDAR_ITEM_MARGIN	= 6;
 }
 
 //=================================================================================================
@@ -401,6 +405,9 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 
 						// Actualisation de la largeur des cellules
 						updateCellWidth(false, MD5);
+
+						// Adaptation de la hauteur du MODAL
+						updateModalHeight(MD5);
 					});
 
 					// Annulation de l'événement
@@ -491,12 +498,16 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 
 		// Fonctionnalité réalisée si la largeur de la cellule ne dépend par de la durée
 		if ($(this).parents("section").hasClass("calendar") || $(this).parents("section").hasClass("static")) {
+			// Largeur de la cellule fixe
 			newDuree	= 1;
+			var facteur	= 0;
+		} else if ($(this).parents("section").hasClass("progression")) {
+			// Facteur adaptatif selon la durée de la tâche
+			var facteur	= (newDuree - PROGRESSION_ITEM_MARGIN) + (PLANNING_ITEM_FACTEUR * newDuree);
 		}
 
 		// Redimentionnement de la CELLULE
 		var newWidth	= PLANNING_CELL_WIDTH[MD5];
-        var facteur		= (newDuree - PLANNING_ITEM_MARGIN) + (PLANNING_ITEM_FACTEUR * newDuree);
 		newWidth		= newWidth * newDuree + facteur;
 
 		// Affectation de la nouvelle valeur à la CELLULE
@@ -529,8 +540,8 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 
 		// Suppression éventuelle de toutes les MODALES précédentes
 		$("#panning-viewer").each(function() {
-            $(this).dialog("close");
-            $(this).remove();
+			$(this).dialog("close");
+			$(this).remove();
 		});
 
 		// Récupération du contenu de la tâche
@@ -849,7 +860,7 @@ function setPlanningItemAttribute(name, value, MD5) {
 		console.debug("setPlanningItemAttribute('" + name + "', " + value + ", '" + MD5 + "')");
 	}
 
-	// Parcours chaque entrée caché
+	// Parcours chaque entrée cachée
 	$("li.item", "#" + PLANNING_MD5_PREFIXE + MD5).each(function() {
 		// Change le contenu de la valeur input
 		$("input[name^=" + name + "]", this).val(value);
@@ -898,7 +909,7 @@ function setPlanning(MD5) {
 
 	// Actualisation des cellules du PLANNING
 	PLANNING[MD5].render();
-}
+};
 
 /**
  * @brief	Récupération du PLANNING par son identifiant.
@@ -911,11 +922,43 @@ function getPlanning(MD5) {
 	if (typeof(PLANNING[MD5]) == 'undefined') {
 		// Construction d'un nouveau PLANNING
 		setPlanning(MD5);
-	};
+	}
 
 	// Renvoi du PLANNING
 	return PLANNING[MD5];
-}
+};
+
+/**
+ * @brief	Initialisation de la hauteur du MODAL
+ *
+ * La SOURCE correspond au contenu édité par le formulaire MODAL.
+ *
+ * @li	Fonctionnalité appelée lors de l'actualisation du moteur de recherche dans le MODAL.
+ * @li	Déclaration et initialisation du déplacement des éléments de la SOURCE.
+ * @li	Adaptation de des cellules selon la résolution de l'affichage CLIENT.
+ *
+ * @param	string		MD5				: identifiant du PLANNING au format MD5.
+ */
+function updateModalHeight(MD5) {
+	// Récupération des éléments du MODAL
+	var titleItem		= $("#modal-item-" + MD5).parent().find("div.ui-dialog-titlebar");
+	var searchItem		= $("ul#planning-item-" + MD5);
+	var formItem		= $("form#search-planning-" + MD5);
+	var documentItem	= $(document);
+
+	// Adaptation de la zone de recherche selon le résultat
+	var newHeight		= searchItem.innerHeight() + formItem.innerHeight() + titleItem.innerHeight() * 1.5;
+
+	// Fonctionnalité réalisée si la nouvelle hauteur est trop grande
+	if (documentItem.innerHeight() <= newHeight) {
+		newHeight		= documentItem.innerHeight() - formItem.innerHeight() - titleItem.innerHeight();
+	} else {
+        formItem.css({position: "absolute", bottom: "0", left: "0"});
+	}
+
+	// Mise à jour de la nouvelle hauteur du MODAL
+	$("#modal-item-" + MD5).dialog("option", "height", newHeight);
+};
 
 /**
  * @brief	Initialisation de la gestion de la plannification depuis la SOURCE

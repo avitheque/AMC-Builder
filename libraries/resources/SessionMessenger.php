@@ -10,8 +10,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 81 $
- * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
+ * @version		$LastChangedRevision: 86 $
+ * @since		$LastChangedDate: 2017-12-09 19:52:40 +0100 (Sat, 09 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -20,35 +20,18 @@
 class SessionMessenger extends SessionManager {
 
 	/**
-	 * @brief	Instance du SINGLETON de la classe.
-	 * @var		SessionMessenger
-	 */
-	protected static $oInstance	= null;
-
-	protected $_nameSpace		= SESSION_MESSENGER;
-
-	/**
-	 * SessionManager constructor.
-	 * @param	string	$sNameSpace		: nom de la session.
-	 * @return	void
-	 */
-	protected function __construct() {
-		@session_start();
-		session_name(SESSION_MESSENGER);
-	}
-
-	/**
 	 * @brief	Instanciation du SINGLETON.
 	 *
 	 * La méthode instancie le SINGLETON s'il n'était pas déjà instancié.
+     *
 	 * @param	string	$sNameSpace		: nom de la session.
 	 * @return	SessionMessenger
 	 */
-	public static function getInstance() {
+	public static function getInstance($sNameSpace = SESSION_MESSENGER) {
 		// Fonctionnalité réalisée si l'instance du SINGLETON n'existe pas encore
 		if (is_null(self::$oInstance)) {
 			// Initialisation du SINGLETON
-			self::$oInstance = new SessionMessenger();
+			self::$oInstance = new SessionMessenger($sNameSpace);
 		}
 
 		// Renvoi de l'instance du SINGLETON
@@ -131,7 +114,7 @@ class SessionMessenger extends SessionManager {
 	 *
 	 * @param	string	$sType		: type de message.
 	 * @param	string	$xTag		: (optionnel) identifiant du message.
-	 * @return	mixed.
+     * @return	void.
 	 */
 	public function unsetMessage($sType = ViewRender::MESSAGE_INFO, $xTag = null) {
 		// Purge du contenu s'il existe
@@ -150,6 +133,7 @@ class SessionMessenger extends SessionManager {
 	 * @param	string	$sType		: type de message.
 	 * @param	string	$sMessage	: corps du message.
 	 * @param	string	$xTag		: (optionnel) identifiant du message.
+     * @return	void.
 	 */
 	public function setMessage($sType = ViewRender::MESSAGE_INFO, $sMessage, $xTag = null) {
 		// Ajout d'un message à la collection
@@ -163,6 +147,7 @@ class SessionMessenger extends SessionManager {
 	 *
 	 * @param	string	$sMessage	: corps du message.
 	 * @param	string	$xTag		: (optionnel) identifiant du message.
+     * @return	void.
 	 */
 	public function setMessageError($sMessage, $xTag = null) {
 		// Ajout d'un message à la collection
@@ -176,6 +161,7 @@ class SessionMessenger extends SessionManager {
 	 *
 	 * @param	string	$sMessage	: corps du message.
 	 * @param	string	$xTag		: (optionnel) identifiant du message.
+     * @return	void.
 	 */
 	public function setMessageSuccess($sMessage, $xTag = null) {
 		// Ajout d'un message à la collection
@@ -189,6 +175,7 @@ class SessionMessenger extends SessionManager {
 	 *
 	 * @param	string	$sMessage	: corps du message.
 	 * @param	string	$xTag		: (optionnel) identifiant du message.
+     * @return	void.
 	 */
 	public function setMessageWarning($sMessage, $xTag = null) {
 		// Ajout d'un message à la collection
@@ -202,17 +189,22 @@ class SessionMessenger extends SessionManager {
 	 *
 	 * @param	string	$sType		: type de message.
 	 * @param	string	$xTag		: (optionnel) identifiant du message.
-	 * @return	mixed.
+	 * @return	boolean.
 	 */
 	public function issetMessage($sType = ViewRender::MESSAGE_INFO, $xTag = null) {
+        // Initialisation de la liste de(s) message(s)
+        $bExists = false;
 		// Récupération du message
 		if (!is_null($xTag)) {
 			// Recherche si le message existe par son titre
-			return isset($_SESSION[SESSION_MESSENGER][$sType][$xTag]);
+            $bExists = isset($_SESSION[SESSION_MESSENGER][$sType][$xTag]);
 		} else {
 			// Recherche si le message existe par sa présence
-			return isset($_SESSION[SESSION_MESSENGER][$sType]);
+            $bExists = isset($_SESSION[SESSION_MESSENGER][$sType]);
 		}
+
+        // Renvoi de la vérification
+        return $bExists;
 	}
 
 	/**
@@ -224,11 +216,11 @@ class SessionMessenger extends SessionManager {
 	 * @return	mixed.
 	 */
 	public function getMessage($sType = ViewRender::MESSAGE_INFO) {
+        // Initialisation de la liste de(s) message(s)
+        $aMessages = array();
+
 		// Fonctionnalité réalisée si le type de message existe dans la collection
 		if (isset($_SESSION[SESSION_MESSENGER][$sType])) {
-			// Initialisation de la liste de(s) message(s)
-			$aMessages = array();
-
 			// Parcours de l'ensemble des messages selon le type en paramètre
 			foreach ($_SESSION[SESSION_MESSENGER][$sType] as $fTime => $sMessage) {
 				// Fonctionnalité réalisée si le message est périmé
@@ -240,10 +232,10 @@ class SessionMessenger extends SessionManager {
 					$aMessages[$fTime] = $sMessage;
 				}
 			}
-
-			// Renvoi de la liste de(s) message(s)
-			return $aMessages;
 		}
+
+        // Renvoi de la liste de(s) message(s)
+        return $aMessages;
 	}
 
 }

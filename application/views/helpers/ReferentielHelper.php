@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 67 $
- * @since		$LastChangedDate: 2017-07-19 00:09:56 +0200 (Wed, 19 Jul 2017) $
+ * @version		$LastChangedRevision: 83 $
+ * @since		$LastChangedDate: 2017-12-03 12:14:06 +0100 (Sun, 03 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -184,12 +184,12 @@ class ReferentielHelper {
 		// Poursuite de la création du formulaire
 		$this->_html				.= "			<li>
 														<label for=\"idDateDebutReferentiel\">Date de début</label>
-														<input maxlength=" . AdministrationManager::DATE_MAX_LENGTH . " type=\"date\" id=\"idDateDebutReferentiel\" class=\"date\" name=\"referentiel_date_debut\" value=\"" . $dDateDebut . "\" $sReadonly/>
+														<input maxlength=" . AdministrationManager::DATE_MAX_LENGTH . " type=\"text\" id=\"idDateDebutReferentiel\" class=\"date\" name=\"referentiel_date_debut\" value=\"" . $dDateDebut . "\" $sReadonly/>
 														<span id=\"resetDateDebut\" class=\"icon-blue icon-reset pointer padding-left-10\" title=\"Réinitialiser la date\">&nbsp;</span>
 													</li>
 													<li>
 														<label for=\"idDateFinReferentiel\">Date de fin</label>
-														<input maxlength=" . AdministrationManager::DATE_MAX_LENGTH . " type=\"date\" id=\"idDateFinReferentiel\" class=\"date\" name=\"referentiel_date_fin\" value=\"" . $dDateFin . "\" $sReadonly/>
+														<input maxlength=" . AdministrationManager::DATE_MAX_LENGTH . " type=\"text\" id=\"idDateFinReferentiel\" class=\"date\" name=\"referentiel_date_fin\" value=\"" . $dDateFin . "\" $sReadonly/>
 														<span id=\"resetDateFin\" class=\"icon-blue icon-reset pointer padding-left-10\" title=\"Réinitialiser la date\">&nbsp;</span>
 													</li>
 												</ol>

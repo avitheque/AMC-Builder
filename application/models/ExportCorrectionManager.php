@@ -15,8 +15,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 42 $
- * @since		$LastChangedDate: 2017-06-17 15:39:33 +0200 (Sat, 17 Jun 2017) $
+ * @version		$LastChangedRevision: 84 $
+ * @since		$LastChangedDate: 2017-12-03 13:01:20 +0100 (Sun, 03 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -490,7 +490,7 @@ class ExportCorrectionManager extends DocumentManager {
 		$this->_document->setFontStyle(PDFManager::STYLE_DEFAULT);
 
 		// Extraction des lignes de l'énoncé
-		$aEnonce						= explode("\n", $sEnonce);
+		$aEnonce						= DataHelper::convertStringToArray("\n", $sEnonce);
 		// Parcours de chaque ligne de l'énoncé
 		foreach ($aEnonce as $sLigneEnonce) {
 			// Ajout de la ligne à l'énoncé
@@ -509,7 +509,7 @@ class ExportCorrectionManager extends DocumentManager {
 			$this->_document->setX($this->_document->getLeftMargin() * 2);
 
 			// Respect des lignes
-			$aCorrection = explode("\n", $sCorrection);
+			$aCorrection = DataHelper::convertStringToArray("\n", $sCorrection);
 			foreach ($aCorrection as $sCorrection) {
 				// Suppression des caractères [espace] superflus
 				$sCorrection			= trim($sCorrection);

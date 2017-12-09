@@ -15,8 +15,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 67 $
- * @since		$LastChangedDate: 2017-07-19 00:09:56 +0200 (Wed, 19 Jul 2017) $
+ * @version		$LastChangedRevision: 83 $
+ * @since		$LastChangedDate: 2017-12-03 12:14:06 +0100 (Sun, 03 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -199,12 +199,12 @@ class StageHelper {
 													</li>
 													<li>
 														<label for=\"idDateDebutStage\">Date de début</label>
-														<input maxlength=" . AdministrationManager::STAGE_DATE_MAXLENGTH . " type=\"date\" id=\"idDateDebutStage\" class=\"date\" name=\"stage_date_debut\" value=\"" . $sDateDebutStage . "\" $sReadonly/>
+														<input maxlength=" . AdministrationManager::STAGE_DATE_MAXLENGTH . " type=\"text\" id=\"idDateDebutStage\" class=\"date\" name=\"stage_date_debut\" value=\"" . $sDateDebutStage . "\" $sReadonly/>
 														" . $sAdd . "
 													</li>
 													<li>
 														<label for=\"idDateFinStage\">Date de fin</label>
-														<input maxlength=" . AdministrationManager::STAGE_DATE_MAXLENGTH . " type=\"date\" id=\"idDateFinStage\" class=\"date\" name=\"stage_date_fin\" value=\"" . $sDateFinStage . "\" $sReadonly/>
+														<input maxlength=" . AdministrationManager::STAGE_DATE_MAXLENGTH . " type=\"text\" id=\"idDateFinStage\" class=\"date\" name=\"stage_date_fin\" value=\"" . $sDateFinStage . "\" $sReadonly/>
 													</li>
 												</ol>
 											</fieldset>

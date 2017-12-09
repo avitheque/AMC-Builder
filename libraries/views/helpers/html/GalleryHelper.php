@@ -12,8 +12,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 81 $
- * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
+ * @version		$LastChangedRevision: 85 $
+ * @since		$LastChangedDate: 2017-12-03 13:24:27 +0100 (Sun, 03 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -391,6 +391,9 @@ class GalleryHelper {
 							complete:	function() {
 								// Initialisation de la fonctionnalité de la Gallery
 								initGallery();
+								
+								// Mise à jour de la hauteur de la Gallery selon le résultat de la recherche
+								updateGalleryHeight();
 							}
 						});
 					});
@@ -398,7 +401,10 @@ class GalleryHelper {
 					// Action sur le bouton [Annuler] de la Gallerie
 					$("button#reset-gallery").click(function() {
 						// Suppression du contenu
-						$("section#search-content").html("");		
+						$("section#search-content").html("");	
+								
+						// Mise à jour de la hauteur de la Gallery selon le résultat de la recherche
+						updateGalleryHeight();	
 					});';
 
 		// Compression du script avec JavaScriptPacker
