@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS `categorie` (
 --
 
 INSERT INTO `categorie` (`id_categorie`, `id_domaine`, `libelle_categorie`, `description_categorie`, `date_debut_categorie`, `date_fin_categorie`, `date_modification_categorie`) VALUES
-(0, NULL, 'aucun', NULL, NULL, NULL, '2016-04-21 10:34:59');
+(0, NULL, 'aucun', NULL, NULL, NULL, '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -155,7 +155,7 @@ CREATE TABLE IF NOT EXISTS `domaine` (
 --
 
 INSERT INTO `domaine` (`id_domaine`, `libelle_domaine`, `description_domaine`, `date_debut_domaine`, `date_fin_domaine`, `date_modification_domaine`) VALUES
-(0, 'aucun', NULL, NULL, NULL, '2016-04-21 10:34:59');
+(0, 'aucun', NULL, NULL, NULL, '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -239,6 +239,13 @@ CREATE TABLE IF NOT EXISTS `formulaire` (
 --       `utilisateur` -> `id_utilisateur`
 --
 
+--
+-- Contenu de la table `formulaire`
+--
+
+INSERT INTO `formulaire` (`id_formulaire`, `id_domaine`, `id_sous_domaine`, `id_categorie`, `id_sous_categorie`, `titre_formulaire`, `presentation_formulaire`, `strict_formulaire`, `note_finale_formulaire`, `penalite_formulaire`, `id_redacteur`, `validation_formulaire`, `id_valideur`, `date_modification_formulaire`) VALUES
+(0, 0, 0, 0, 0, 'Système', 'Entré réservée au système', 0, 0, 0, '0', 0, '0', '0000-00-00 00:00:00');
+
 -- --------------------------------------------------------
 
 --
@@ -262,6 +269,13 @@ CREATE TABLE IF NOT EXISTS `formulaire_question` (
 --   `id_question`
 --       `question` -> `id_question`
 --
+
+--
+-- Contenu de la table `formulaire_question`
+--
+
+INSERT INTO `formulaire_question` (`id_formulaire_question`, `id_formulaire`, `id_question`, `date_modification_question`) VALUES
+(0, 0, 0, '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -320,28 +334,28 @@ CREATE TABLE IF NOT EXISTS `grade` (
 --
 
 INSERT INTO `grade` (`id_grade`, `libelle_grade`, `libelle_court_grade`, `description_grade`, `ordre_grade`, `date_debut_grade`, `date_fin_grade`, `date_modification_grade`) VALUES
-(0, 'Aucun', '-', NULL, 0, NULL, NULL, '2016-04-21 10:34:59'),
-(1, 'N1A', 'N1A', NULL, 1, NULL, NULL, '2016-04-21 10:34:59'),
-(2, 'N2A', 'N2A', NULL, 2, NULL, NULL, '2016-04-21 10:34:59'),
-(3, 'N3A', 'N3A', NULL, 3, NULL, NULL, '2016-04-21 10:34:59'),
-(4, 'TSEF', 'TSEF', NULL, 4, NULL, NULL, '2016-04-21 10:34:59'),
-(5, 'GENDARME ADJOINT', 'GAV', NULL, 5, NULL, NULL, '2016-04-21 10:34:59'),
-(6, 'BRIGADIER', 'BRI', NULL, 6, NULL, NULL, '2016-04-21 10:34:59'),
-(7, 'BRIGADIER CHEF', 'BRC', NULL, 7, NULL, NULL, '2016-04-21 10:34:59'),
-(8, 'MARECHAL DES LOGIS', 'MDL', NULL, 8, NULL, NULL, '2016-04-21 10:34:59'),
-(9, 'GENDARME', 'GND', NULL, 9, NULL, NULL, '2016-04-21 10:34:59'),
-(10, 'GARDE', 'GRD', NULL, 10, NULL, NULL, '2016-04-21 10:34:59'),
-(11, 'MARECHAL DES LOGIS CHEF', 'MDC', NULL, 11, NULL, NULL, '2016-04-21 10:34:59'),
-(12, 'ADJUDANT', 'ADJ', NULL, 12, NULL, NULL, '2016-04-21 10:34:59'),
-(13, 'ADJUDANT CHEF', 'ADC', NULL, 13, NULL, NULL, '2016-04-21 10:34:59'),
-(14, 'MAJOR', 'MAJ', NULL, 14, NULL, NULL, '2016-04-21 10:34:59'),
-(15, 'LIEUTENANT', 'LTN', NULL, 15, NULL, NULL, '2016-04-21 10:34:59'),
-(16, 'CAPITAINE', 'CNE', NULL, 16, NULL, NULL, '2016-04-21 10:34:59'),
-(17, 'CHEF D''ESCADRON', 'CEN', NULL, 17, NULL, NULL, '2016-04-21 10:34:59'),
-(18, 'LIEUTENANT COLONEL', 'LTC', NULL, 18, NULL, NULL, '2016-04-21 10:34:59'),
-(19, 'COLONEL', 'COL', NULL, 19, NULL, NULL, '2016-04-21 10:34:59'),
-(20, 'Monsieur', 'Mr.', NULL, 20, NULL, NULL, '2016-04-21 10:34:59'),
-(21, 'Madame', 'Mme.', NULL, 21, NULL, NULL, '2016-04-21 10:34:59');
+(0, 'Aucun', '-', NULL, 0, NULL, NULL, '0000-00-00 00:00:00'),
+(1, 'N1A', 'N1A', NULL, 1, NULL, NULL, '0000-00-00 00:00:00'),
+(2, 'N2A', 'N2A', NULL, 2, NULL, NULL, '0000-00-00 00:00:00'),
+(3, 'N3A', 'N3A', NULL, 3, NULL, NULL, '0000-00-00 00:00:00'),
+(4, 'TSEF', 'TSEF', NULL, 4, NULL, NULL, '0000-00-00 00:00:00'),
+(5, 'GENDARME ADJOINT', 'GAV', NULL, 5, NULL, NULL, '0000-00-00 00:00:00'),
+(6, 'BRIGADIER', 'BRI', NULL, 6, NULL, NULL, '0000-00-00 00:00:00'),
+(7, 'BRIGADIER CHEF', 'BRC', NULL, 7, NULL, NULL, '0000-00-00 00:00:00'),
+(8, 'MARECHAL DES LOGIS', 'MDL', NULL, 8, NULL, NULL, '0000-00-00 00:00:00'),
+(9, 'GENDARME', 'GND', NULL, 9, NULL, NULL, '0000-00-00 00:00:00'),
+(10, 'GARDE', 'GRD', NULL, 10, NULL, NULL, '0000-00-00 00:00:00'),
+(11, 'MARECHAL DES LOGIS CHEF', 'MDC', NULL, 11, NULL, NULL, '0000-00-00 00:00:00'),
+(12, 'ADJUDANT', 'ADJ', NULL, 12, NULL, NULL, '0000-00-00 00:00:00'),
+(13, 'ADJUDANT CHEF', 'ADC', NULL, 13, NULL, NULL, '0000-00-00 00:00:00'),
+(14, 'MAJOR', 'MAJ', NULL, 14, NULL, NULL, '0000-00-00 00:00:00'),
+(15, 'LIEUTENANT', 'LTN', NULL, 15, NULL, NULL, '0000-00-00 00:00:00'),
+(16, 'CAPITAINE', 'CNE', NULL, 16, NULL, NULL, '0000-00-00 00:00:00'),
+(17, 'CHEF D''ESCADRON', 'CEN', NULL, 17, NULL, NULL, '0000-00-00 00:00:00'),
+(18, 'LIEUTENANT COLONEL', 'LTC', NULL, 18, NULL, NULL, '0000-00-00 00:00:00'),
+(19, 'COLONEL', 'COL', NULL, 19, NULL, NULL, '0000-00-00 00:00:00'),
+(20, 'Monsieur', 'Mr.', NULL, 20, NULL, NULL, '0000-00-00 00:00:00'),
+(21, 'Madame', 'Mme.', NULL, 21, NULL, NULL, '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -363,7 +377,7 @@ CREATE TABLE IF NOT EXISTS `groupe` (
 --
 
 INSERT INTO `groupe` (`id_groupe`, `libelle_groupe`, `borne_gauche`, `borne_droite`, `date_modification_groupe`) VALUES
-(0, 'public', 1, 2, '2017-06-10 10:34:59');
+(0, 'public', 1, 2, '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -657,12 +671,12 @@ CREATE TABLE IF NOT EXISTS `profil` (
 --
 
 INSERT INTO `profil` (`id_profil`, `libelle_profil`, `description_profil`, `role_profil`, `date_modification_profil`) VALUES
-(1, 'Utilisateur non authentifié', NULL, 'guest', '2016-04-21 10:34:59'),
-(2, 'Utilisateur', NULL, 'user', '2016-04-21 10:34:59'),
-(3, 'Rédacteur', NULL, 'editor', '2016-04-21 10:34:59'),
-(4, 'Valideur', NULL, 'validator', '2016-04-21 10:34:59'),
-(5, 'Administrateur', NULL, 'administrator', '2016-04-21 10:34:59'),
-(6, 'Webmaster', NULL, 'webmaster', '2016-04-21 10:34:59');
+(1, 'Utilisateur non authentifié', NULL, 'guest', '0000-00-00 00:00:00'),
+(2, 'Utilisateur', NULL, 'user', '0000-00-00 00:00:00'),
+(3, 'Rédacteur', NULL, 'editor', '0000-00-00 00:00:00'),
+(4, 'Valideur', NULL, 'validator', '0000-00-00 00:00:00'),
+(5, 'Administrateur', NULL, 'administrator', '0000-00-00 00:00:00'),
+(6, 'Webmaster', NULL, 'webmaster', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -692,6 +706,13 @@ CREATE TABLE IF NOT EXISTS `question` (
 --       `utilisateur` -> `id_utilisateur`
 --
 
+--
+-- Contenu de la table `question`
+--
+
+INSERT INTO `question` (`id_question`, `titre_question`, `stricte_question`, `enonce_question`, `correction_question`, `bareme_question`, `penalite_question`, `libre_question`, `lignes_question`, `id_redacteur`, `date_modification_question`) VALUES
+(0, 'Système', 0, 'Réservé au système', 'aucun', 0, 0, 0, 0, '0', '0000-00-00 00:00:00');
+
 -- --------------------------------------------------------
 
 --
@@ -715,6 +736,14 @@ CREATE TABLE IF NOT EXISTS `question_reponse` (
 --   `id_reponse`
 --       `reponse` -> `id_reponse`
 --
+
+--
+-- Contenu de la table `question_reponse`
+--
+
+INSERT INTO `question_reponse` (`id_question_reponse`, `id_question`, `id_reponse`, `date_modification_question_reponse`) VALUES
+(0, 0, 0, '0000-00-00 00:00:00');
+
 
 -- --------------------------------------------------------
 
@@ -740,6 +769,13 @@ CREATE TABLE IF NOT EXISTS `reponse` (
 --   `id_redacteur`
 --       `utilisateur` -> `id_utilisateur`
 --
+
+--
+-- Contenu de la table `reponse`
+--
+
+INSERT INTO `reponse` (`id_reponse`, `texte_reponse`, `valide_reponse`, `valeur_reponse`, `sanction_reponse`, `penalite_reponse`, `id_redacteur`, `date_modification_reponse`) VALUES
+(0, 'Système', 0, 0, 0, 0, '0', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -818,7 +854,7 @@ CREATE TABLE IF NOT EXISTS `sous_categorie` (
 --
 
 INSERT INTO `sous_categorie` (`id_sous_categorie`, `id_categorie`, `libelle_sous_categorie`, `description_sous_categorie`, `date_debut_sous_categorie`, `date_fin_sous_categorie`, `date_modification_sous_categorie`) VALUES
-(0, 0, 'aucun', NULL, NULL, NULL, '2016-04-21 10:34:59');
+(0, 0, 'aucun', NULL, NULL, NULL, '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -849,7 +885,7 @@ CREATE TABLE IF NOT EXISTS `sous_domaine` (
 --
 
 INSERT INTO `sous_domaine` (`id_sous_domaine`, `id_domaine`, `libelle_sous_domaine`, `description_sous_domaine`, `date_debut_sous_domaine`, `date_fin_sous_domaine`, `date_modification_sous_domaine`) VALUES
-(0, 0, 'aucun', NULL, NULL, NULL, '2016-04-21 10:34:59');
+(0, 0, 'aucun', NULL, NULL, NULL, '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -976,7 +1012,8 @@ CREATE TABLE IF NOT EXISTS `utilisateur` (
 --
 
 INSERT INTO `utilisateur` (`id_utilisateur`, `id_profil`, `id_grade`, `login_utilisateur`, `password_utilisateur`, `nom_utilisateur`, `prenom_utilisateur`, `editable_utilisateur`, `modifiable_utilisateur`, `date_modification_utilisateur`) VALUES
-('1', 6, 0, 'webmaster', 'fe01ce2a7fbac8fafaed7c982a04e229', 'AMC-BUILDER', 'Webmaster', '0', '1', '2016-04-21 10:34:59');
+('0', 6, 0, 'system', '', '', '', '0', '0', '0000-00-00 00:00:00'),
+('1', 6, 0, 'webmaster', 'fe01ce2a7fbac8fafaed7c982a04e229', 'AMC-BUILDER', 'Webmaster', '0', '1', '0000-00-00 00:00:00');
 
 --
 -- Contraintes pour les tables exportées

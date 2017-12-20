@@ -11,8 +11,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 87 $
+ * @since		$LastChangedDate: 2017-12-20 19:19:01 +0100 (Wed, 20 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -48,6 +48,16 @@ class GenerationController extends AbstractFormulaireQCMController {
 				$this->debug("EXPORTER");
 				// Exécution de l'action
 				$this->exporterAction();
+				break;
+
+			case self::ACTION_EMARGER:
+				
+				die("STOP");
+				
+				// Message de débuggage
+				$this->debug("EMARGER");
+				// Exécution de l'action
+				$this->emargerAction();
 				break;
 
 			default:
@@ -102,6 +112,15 @@ class GenerationController extends AbstractFormulaireQCMController {
 			$this->addToData('liste_generation',	$aListeGeneration);
 			$this->addToData('liste_epreuves',		$aListeEpreuves);
 		}
+	}
+
+	/**
+	 * @brief	Générer une feuille d'émargement seule.
+	 *
+	 * @return	void
+	 */
+	public function emargerAction() {
+		die("OK");
 	}
 
 	/**

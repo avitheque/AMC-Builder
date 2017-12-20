@@ -23,7 +23,7 @@ ViewRender::addToMain("<span id=\"top\"><a class=\"page-top\" href=\"#bottom\" t
 // ================================================================================================
 
 // Titre de la page
-$sTitrePage =  "<h2>Génération d'une épreuve</h2>
+$sTitrePage =  "<h2>Génération d'une épreuve QCM</h2>
 				<p>
 				</p>";
 ViewRender::addToMain($sTitrePage);
@@ -67,7 +67,7 @@ ViewRender::addToMain($oGeneration->renderHTML());
 
 // Titre de la page
 $sTitrePage =  "<hr class=\"blue margin-V-30\" />
-				<h2>Ensemble des épreuves par stage</h2>
+				<h2>Feuilles d'émargement des épreuves</h2>
 				<p>
 				</p>";
 ViewRender::addToMain($sTitrePage);
@@ -112,6 +112,17 @@ $oEpreuves->setConditionalClassOnColumn('SUM(capacite_statut_salle)', '<', 'COUN
 
 // Ajout du tableau à VIEW_MAIN
 ViewRender::addToMain($oEpreuves->renderHTML());
+
+// ================================================================================================
+// INSERTION D'ÉPREUVES
+// ================================================================================================
+
+/** @todo Mise en place d'une interface permettant de générer les feuilles d'émargement indépendamment des QCM
+// Boucle de création de la liste des questions
+ViewRender::addToFooter("<div class=\"group-button\">
+							<button type=\"submit\" class=\"blue tooltip\" name=\"button\" value=\"" . AbstractFormulaireQCMController::ACTION_EMARGER . "\" title=\"Générer une feuille d'émargement qui n'est pas associée à une épreuve QCM\" role=\"touche_E\">Ajouter une feuille d'émargement</button>
+						</div>");
+*/
 
 // BOUTON [HAUT DE PAGE]
 ViewRender::addToMain("<span id=\"bottom\"><a class=\"page-bottom\" href=\"#top\" title=\"Haut de page...\">&#8593;</a></span>");

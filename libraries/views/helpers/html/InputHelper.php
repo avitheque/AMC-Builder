@@ -8,8 +8,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 81 $
- * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
+ * @version		$LastChangedRevision: 87 $
+ * @since		$LastChangedDate: 2017-12-20 19:19:01 +0100 (Wed, 20 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -43,7 +43,7 @@ class InputHelper extends HtmlHelper {
 		$this->setAttribute('type', $sType);
 		$this->addAttribute('class', $sClass);
 
-		$this->_type	= $sType;
+		$this->_type		= $sType;
 	}
 	
 	/**
@@ -67,6 +67,7 @@ class InputHelper extends HtmlHelper {
 	public function renderHTML() {
 		// Fonctionnalité réalisée si un LABEL est à ajouter et que le type de l'élément n'est pas TYPE_HIDDEN
 		if (!empty($this->_label_text) && !empty($this->_type) && $this->_type != self::TYPE_HIDDEN) {
+			// Ajout du label
 			$this->setLabel($this->_label_text, $this->_label_class);
 		}
 		// Rendu de l'élément

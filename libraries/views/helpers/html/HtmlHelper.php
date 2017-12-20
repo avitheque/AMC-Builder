@@ -8,8 +8,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 81 $
- * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
+ * @version		$LastChangedRevision: 87 $
+ * @since		$LastChangedDate: 2017-12-20 19:19:01 +0100 (Wed, 20 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -30,7 +30,9 @@ class HtmlHelper {
 	private		$_closing		= false;
 	private		$_dataPosition	= self::APPEND;
 
-	protected	$_data			= null;
+	protected	$_before		= "";
+	protected	$_data			= "";
+	protected	$_after			= "";
 
 	/**********************************************************************************************
 	 * @todo	METHODES STATIQUES
@@ -198,9 +200,9 @@ class HtmlHelper {
 	 * @return	mixed
 	 */
 	public function getAttribute($sName) {
-		$xValue = null;
+		$xValue			= null;
 		if (isset($this->_attribute[$sName])) {
-			$xValue = $this->_attribute[$sName];
+			$xValue		= $this->_attribute[$sName];
 		}
 		return $xValue;
 	}
@@ -278,12 +280,23 @@ class HtmlHelper {
 	/**
 	 * @brief	Initialisation des données.
 	 *
-	 * @param	mixed	$xData
+	 * @param	mixed	$xContent
 	 * @return	void
 	 */
-	public function setData($xData) {
+	public function setData($xContent) {
 		// Traitement des données
-		$this->_data .= ($xData instanceof HtmlHelper)	? $xData->renderHTML()	: $xData;
+		$this->_data	= ($xContent instanceof HtmlHelper)		? $xContent->renderHTML()	: $xContent;
+	}
+
+	/**
+	 * @brief	Ajout des données.
+	 *
+	 * @param	mixed	$xContent
+	 * @return	void
+	 */
+	public function addData($xContent) {
+		// Traitement des données
+		$this->_data	.= ($xContent instanceof HtmlHelper)	? $xContent->renderHTML()	: $xContent;
 	}
 
 	/**
@@ -291,7 +304,67 @@ class HtmlHelper {
 	 * @return	void
 	 */
 	public function clearData() {
-		$this->_data = null;
+		$this->_data	= "";
+	}
+
+	/**
+	 * @brief	Initialisation du contenu après la balise.
+	 *
+	 * @param	mixed	$xContent
+	 * @return	void
+	 */
+	public function setAfter($xContent) {
+		// Traitement des données
+		$this->_after	= ($xContent instanceof HtmlHelper)		? $xContent->renderHTML()	: $xContent;
+	}
+
+	/**
+	 * @brief	Ajout du contenu après la balise.
+	 *
+	 * @param	mixed	$xContent
+	 * @return	void
+	 */
+	public function addAfter($xContent) {
+		// Traitement des données
+		$this->_after	.= ($xContent instanceof HtmlHelper)	? $xContent->renderHTML()	: $xContent;
+	}
+
+	/**
+	 * @brief	Suppression du contenu après la balise.
+	 * @return	void
+	 */
+	public function clearAfter() {
+		$this->_after	= "";
+	}
+
+	/**
+	 * @brief	Initialisation du contenu avant la balise.
+	 *
+	 * @param	mixed	$xContent
+	 * @return	void
+	 */
+	public function setBefore($xContent) {
+		// Traitement des données
+		$this->_before	= ($xContent instanceof HtmlHelper)		? $xContent->renderHTML()	: $xContent;
+	}
+	
+	/**
+	 * @brief	Ajout du contenu avant la balise.
+	 *
+	 * @param	mixed	$xContent
+	 * @return	void
+	 */
+	public function addBefore($xContent) {
+		// Traitement des données
+		$this->_before	.= ($xContent instanceof HtmlHelper)	? $xContent->renderHTML()	: $xContent;
+	}
+
+	/**
+	 * @brief	Suppression du contenu avant la balise.
+	 * @return	void
+	 */
+	public function clearBefore() {
+		$this->_before	= "";
 	}
 
 	/**
@@ -309,7 +382,7 @@ class HtmlHelper {
 		$oLabel->setAttribute("for", $this->getAttribute('id'));
 
 		// Ajout de l'élément aux données
-		$this->setData($oLabel);
+		$this->addData($oLabel);
 	}
 
 	/**********************************************************************************************
@@ -333,17 +406,19 @@ class HtmlHelper {
 			}
 		}
 
-		$sHTML = "";
+		// Initialisation du contenu HTML
+		$sHTML = $this->_before;
 		if ($this->_closing && $this->_dataPosition == self::APPEND) {
 			// Balise auto-fermante avec DATA après la balise
-			$sHTML = sprintf('<%s %s/>%s', $this->_tag, $sAttributes, $this->_data);
+			$sHTML .= sprintf('<%s %s/>%s', $this->_tag, $sAttributes, $this->_data);
 		} elseif ($this->_closing && $this->_dataPosition == self::PREPEND) {
 			// Balise auto-fermante avec DATA avant la balise
-			$sHTML = sprintf('%s<%s %s/>', $this->_data, $this->_tag, $sAttributes);
+			$sHTML .= sprintf('%s<%s %s/>', $this->_data, $this->_tag, $sAttributes);
 		} else {
 			// Balise avec données
-			$sHTML = sprintf('<%s %s>%s</%s>', $this->_tag, $sAttributes, $this->_data, $this->_tag);
+			$sHTML .= sprintf('<%s %s>%s</%s>', $this->_tag, $sAttributes, $this->_data, $this->_tag);
 		}
+		$sHTML .= $this->_after;
 
 		// Renvoi du code HTML
 		return $sHTML;

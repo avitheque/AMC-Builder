@@ -10,8 +10,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 81 $
- * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
+ * @version		$LastChangedRevision: 87 $
+ * @since		$LastChangedDate: 2017-12-20 19:19:01 +0100 (Wed, 20 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -399,7 +399,7 @@ class TableHelper extends HtmlHelper {
 	 * @param	string	$sClass			: classe CSS de l'élément.
 	 * @return	void
 	 */
-	public function addInputOnColumn($sTitre, $xRefData = 0, $sName, $sType = "text", $sLabel = "", $sClass = null) {
+	public function addInputOnColumn($sTitre, $xRefData = 0, $sName, $sType = InputHelper::TYPE_TEXT, $sLabel = null, $sClass = null) {
 		// Ajout du titre de la colonne à la liste visible
 		$this->_addVisibleColumn($sTitre);
 
@@ -413,7 +413,13 @@ class TableHelper extends HtmlHelper {
 
 			// Création de l'élément HTML
 			$oInput = new InputHelper($sName, $sValue, $sType);
-			$oInput->addLabel($sLabel);
+			// Fonctionnalité réalisée si le LABEL doit être ajouté
+			if (isset($sLabel) || $sType == InputHelper::TYPE_CHECKBOX) {
+				// Cas particulier pour de champ TYPE_CHECKBOX qui doit avoir un LABEL
+				$oInput->setLabel(!is_null($sLabel) ? $sLabel : "&nbsp;");
+			}
+
+			// Ajout de l'élément à la collection
 			$this->_data[$nOccurrence][$sTitre] = $oInput->renderHTML();
 		}
 	}

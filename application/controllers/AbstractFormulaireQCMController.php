@@ -15,8 +15,8 @@
  * @subpackage	Libraries
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 84 $
- * @since		$LastChangedDate: 2017-12-03 13:01:20 +0100 (Sun, 03 Dec 2017) $
+ * @version		$LastChangedRevision: 87 $
+ * @since		$LastChangedDate: 2017-12-20 19:19:01 +0100 (Wed, 20 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -33,6 +33,8 @@ abstract class AbstractFormulaireQCMController extends AbstractFormulaireControl
 	const		ACTION_AJOUTER						= "ajouter";
 	const		ACTION_EDITER						= "editer";
 	const		ACTION_EFFACER						= "effacer";
+	const		ACTION_EMARGER						= "emarger";
+	const		ACTION_SIGNER						= "signer";
 	const		ACTION_ENREGISTRER					= "enregistrer";
 	const		ACTION_EXPORTER						= "exporter";
 	const		ACTION_FERMER						= "fermer";

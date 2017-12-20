@@ -15,8 +15,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 83 $
- * @since		$LastChangedDate: 2017-12-03 12:14:06 +0100 (Sun, 03 Dec 2017) $
+ * @version		$LastChangedRevision: 87 $
+ * @since		$LastChangedDate: 2017-12-20 19:19:01 +0100 (Wed, 20 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -258,7 +258,7 @@ class StageHelper {
 			// Boutons [Tout cocher] [Tout décocher]
 			$sCheck					= "	<a id=\"check_all\" class=\"button green margin-0\" href=\"#\">Tout cocher</a>
 										<a id=\"remove_all\" class=\"button green hidden margin-0\" href=\"#\">Tout décocher</a>";
-			$oCandidats->addInputOnColumn("$sCheck", "id_candidat", "selection[]", "checkbox");
+			$oCandidats->addInputOnColumn("$sCheck", "id_candidat", "selection[]", InputHelper::TYPE_CHECKBOX);
 			$oCandidats->disableOrderingOnColumn("$sCheck");
 		}
 
