@@ -8,8 +8,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 81 $
- * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
+ * @version		$LastChangedRevision: 89 $
+ * @since		$LastChangedDate: 2017-12-27 00:05:27 +0100 (Wed, 27 Dec 2017) $
  * 
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -43,6 +43,7 @@ $aErrStr = array_merge(
 		'EFieldNotFound'		=> Constantes::ERROR_SQL_BADFIELD,
 		'EBadQuery'				=> Constantes::ERROR_SQL_BADQUERY,
 		'EQueryCascade'			=> Constantes::ERROR_SQL_CASCADE,
+		'EQueryData'			=> Constantes::ERROR_SQL_BADDATA,
 		'EQueryDelete'			=> Constantes::ERROR_SQL_NODELETE,
 		'EQueryNotFound'		=> Constantes::ERROR_SQL_NOQUERY,
 		'EQuerySave'			=> Constantes::ERROR_SQL_NOSAVE,

@@ -1,10 +1,8 @@
 <?php
 /**
- * @brief	Génération d'une épreuve QCM.
+ * @brief	Programmation d'une épreuve.
  *
- * Vue de création de l'épreuve associée à un QCM.
- *
- * @li Dans les tableaux, les clés de questions et de réponses commencent à la valeur [1].
+ * Vue permettant d'éditer les paramètres de programmation d'une épreuve.
  * User: durandcedric
  * Date: 25/09/16
  * Time: 11:43
@@ -15,22 +13,22 @@
  */
 
 //#################################################################################################
-// INTERFACE DE CRÉATION DU QUESTIONNAIRE
+// INTERFACE DE CRÉATION DU FORMULAIRE
 //#################################################################################################
 
 // Initialisation du formulaire
 ViewRender::addToFormStart("<form action=\"#\" method=\"post\" name=\"generation\">");
 
 // Construction du formulaire QCM
-$oFormulaire = new GenerationHelper(true, false);
+$oFormulaire = new GenerationHelper(false, false);
 
 // Création de l'entête du formulaire
 $sArticle = "<h2>
-				Génération d'un formulaire QCM
+				Programmation d'une épreuve
 				" . $oFormulaire->getCorrectionButton() . "
 			</h2>
 			<p>
-				Cette interface permet de configurer la génération du formulaire QCM.
+				Cette interface permet de configurer une épreuve.
 			</p>";
 // Ajout du contenu au VIEW_MAIN
 ViewRender::addToMain($sArticle);

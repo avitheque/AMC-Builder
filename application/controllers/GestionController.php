@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 81 $
- * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
+ * @version		$LastChangedRevision: 88 $
+ * @since		$LastChangedDate: 2017-12-26 11:14:42 +0100 (Tue, 26 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -202,13 +202,13 @@ class GestionController extends AbstractFormulaireController {
 		$this->addToData('liste_candidats',				$this->_oAdministrationManager->findAllCandidats());
 
 		// Construction de la liste des stages
-		$this->addToData('liste_stages',					$this->_oAdministrationManager->findAllStages());
+		$this->addToData('liste_stages',				$this->_oAdministrationManager->findAllStages());
 
 		// Construction de la liste des utilisateurs
 		$this->addToData('liste_utilisateurs',			$this->_oAdministrationManager->findAllUtilisateurs());
 
 		// Construction de la liste des groupes
-		$this->addToData('liste_groupes',					$this->_oAdministrationManager->findAllGroupes());
+		$this->addToData('liste_groupes',				$this->_oAdministrationManager->findAllGroupes());
 	}
 
 	/******************************************************************************************************
@@ -421,18 +421,20 @@ class GestionController extends AbstractFormulaireController {
 
 		// Récupération de l'identifiant du stage passé en GET
 		$nIdStage								= $this->getParam('id');
+		$nIdDomaine								= $this->getFormulaire('stage_domaine',		DataHelper::DATA_TYPE_INT);
+		$nIdCategorie							= $this->getFormulaire('stage_categorie',	DataHelper::DATA_TYPE_INT);
 
 		// Construction de la liste des domaines
-		$this->addToData('liste_domaines',			$this->_oReferentielManager->findListeDomaines());
+		$this->addToData('liste_domaines',				$this->_oReferentielManager->findListeDomaines());
 
 		// Construction de la liste des sous-domaines
-		$this->addToData('liste_sous_domaines',		$this->_oReferentielManager->findListeSousDomaines());
+		$this->addToData('liste_sous_domaines',			$this->_oReferentielManager->findListeSousDomaines($nIdDomaine));
 
 		// Construction de la liste des catégories
-		$this->addToData('liste_categories',			$this->_oReferentielManager->findListeCategories());
+		$this->addToData('liste_categories',			$this->_oReferentielManager->findListeCategories($nIdDomaine));
 
 		// Construction de la liste des sous-categories
-		$this->addToData('liste_sous_categories',		$this->_oReferentielManager->findListeSousCategories());
+		$this->addToData('liste_sous_categories',		$this->_oReferentielManager->findListeSousCategories($nIdCategorie));
 
 		// Chargement du formulaire si l'identifiant est présent en session
 		if ($nIdStage && empty($this->_idStage)) {

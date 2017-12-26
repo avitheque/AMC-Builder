@@ -244,7 +244,7 @@ CREATE TABLE IF NOT EXISTS `formulaire` (
 --
 
 INSERT INTO `formulaire` (`id_formulaire`, `id_domaine`, `id_sous_domaine`, `id_categorie`, `id_sous_categorie`, `titre_formulaire`, `presentation_formulaire`, `strict_formulaire`, `note_finale_formulaire`, `penalite_formulaire`, `id_redacteur`, `validation_formulaire`, `id_valideur`, `date_modification_formulaire`) VALUES
-(0, 0, 0, 0, 0, 'Système', 'Entré réservée au système', 0, 0, 0, '0', 0, '0', '0000-00-00 00:00:00');
+(0, 0, 0, 0, 0, '-', 'Entré réservée au système', 0, 0, 0, '0', 0, '0', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -711,7 +711,7 @@ CREATE TABLE IF NOT EXISTS `question` (
 --
 
 INSERT INTO `question` (`id_question`, `titre_question`, `stricte_question`, `enonce_question`, `correction_question`, `bareme_question`, `penalite_question`, `libre_question`, `lignes_question`, `id_redacteur`, `date_modification_question`) VALUES
-(0, 'Système', 0, 'Réservé au système', 'aucun', 0, 0, 0, 0, '0', '0000-00-00 00:00:00');
+(0, '-', 0, 'Réservé au système', 'aucun', 0, 0, 0, 0, '0', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -775,7 +775,7 @@ CREATE TABLE IF NOT EXISTS `reponse` (
 --
 
 INSERT INTO `reponse` (`id_reponse`, `texte_reponse`, `valide_reponse`, `valeur_reponse`, `sanction_reponse`, `penalite_reponse`, `id_redacteur`, `date_modification_reponse`) VALUES
-(0, 'Système', 0, 0, 0, 0, '0', '0000-00-00 00:00:00');
+(0, '-', 0, 0, 0, 0, '0', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 

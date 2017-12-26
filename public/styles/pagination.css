@@ -7,8 +7,8 @@
  *
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 80 $
- * @since		$LastChangedDate: 2017-10-21 13:24:25 +0200 (Sat, 21 Oct 2017) $
+ * @version		$LastChangedRevision: 89 $
+ * @since		$LastChangedDate: 2017-12-27 00:05:27 +0100 (Wed, 27 Dec 2017) $
  */
 
 .absolute					{ position:			absolute; }
@@ -423,6 +423,7 @@
 .width-100					{ width:			100px; }
 .width-150					{ width:			150px; }
 .width-200					{ width:			200px; }
+.width-225					{ width:			225px; }
 .width-250					{ width:			250px; }
 .width-300					{ width:			300px; }
 .width-350					{ width:			350px; }

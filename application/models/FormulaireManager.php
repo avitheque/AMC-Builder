@@ -18,8 +18,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 81 $
- * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
+ * @version		$LastChangedRevision: 89 $
+ * @since		$LastChangedDate: 2017-12-27 00:05:27 +0100 (Wed, 27 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -214,10 +214,71 @@ class FormulaireManager extends MySQLManager {
 			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aQuery, $aBind));
 		}
 
-		var_dump($aResultat);
-
 		// Renvoi de la liste
 		return DataHelper::isValidArray($aResultat);
+	}
+
+	/**
+	 * @brief	Recherche de toutes les programmations.
+	 *
+	 * @li	Possibilité de limiter les formulaires selon le groupe d'appartenance de l'utilisateur connecté.
+	 * @li	L'entrée $aQuery['X'] correspond à une zone d'injection pour la clause WHERE de recherche intervallaire.
+	 *
+	 * @remark	Une épreuve n'est pas liée à un formulaire (v2.17.12.26).
+	 *
+	 * @param	boolean	$bGroupAccess		: (optionnel) Filtre sur les groupes du rédacteur.
+	 * @return	array, tableau contenant l'ensemble des résultats de la requête.
+	 * @throws	ApplicationException si la requête ne fonctionne pas.
+	 */
+	public function findAllProgrammations($bGroupAccess = self::ACCESS_GROUP_BY_DEFAULT) {
+		// Ajout d'un suivit pour le debuggage
+		$this->debug(__METHOD__, $bGroupAccess);
+
+		// Requête SELECT
+		$aQuery	= array(
+			0	=> "SELECT *,",
+			1	=> self::LIBELLE_REDACTEUR . " AS libelle_redacteur,",
+			2	=> self::LIBELLE_VALIDEUR . " AS libelle_valideur,",
+			3	=> self::DATETIME_EPREUVE . " AS datetime_epreuve,",
+			4	=> "UNIX_TIMESTAMP(" . self::DATETIME_EPREUVE . ") AS debut_epreuve,",
+			5	=> "UNIX_TIMESTAMP(" . self::DATETIME_EPREUVE . ") + 60 * duree_epreuve AS fin_epreuve,",
+			6	=> "UNIX_TIMESTAMP(CURRENT_TIMESTAMP()) AS maintenant,",
+			7	=> "COUNT(id_stage_candidat)",
+			8	=> "FROM epreuve",
+			9	=> "INNER JOIN generation USING(id_generation)",
+			10	=> "LEFT  JOIN formulaire USING(id_formulaire)",
+			11	=> "LEFT  JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = formulaire.id_redacteur)",
+			12	=> "LEFT  JOIN utilisateur AS valideur ON(valideur.id_utilisateur = generation.id_valideur)",
+			13	=> "LEFT  JOIN groupe ON(valideur.id_groupe = groupe.id_groupe)",
+			14	=> "INNER JOIN stage USING(id_stage)",
+			15	=> "LEFT  JOIN stage_candidat USING(id_stage)",
+			16	=> "LEFT  JOIN candidat USING(id_candidat)",
+			'X'	=> null,
+			17	=> "GROUP BY id_epreuve"
+		);
+
+		// Construction du tableau associatif des étiquettes et leurs valeurs
+		$aBind = array();
+
+		// Fonctionnalité réalisée si l'accès aux formulaires est limité au groupe d'utilisateurs du rédacteur
+		if ($bGroupAccess) {
+			// Ajout d'une clause WHERE selon les bornes GAUCHE / DROITE
+			$aQuery['X']			= "WHERE borne_gauche BETWEEN :borne_gauche AND :borne_droite AND borne_droite BETWEEN :borne_gauche AND :borne_droite";
+
+			// Ajout des étiquette de la clause WHERE
+			$aBind[':borne_gauche']	= $this->_borneGauche;
+			$aBind[':borne_droite']	= $this->_borneDroite;
+		}
+
+		try {
+			// Récupération de la liste des formulaires
+			$aResultat = $this->executeSQL($aQuery, $aBind);
+		} catch (ApplicationException $e) {
+			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aQuery, $aBind));
+		}
+
+		// Renvoi de la liste
+		return $aResultat;
 	}
 
 	/**
@@ -225,6 +286,8 @@ class FormulaireManager extends MySQLManager {
 	 *
 	 * @li	Possibilité de limiter les formulaires selon le groupe d'appartenance de l'utilisateur connecté.
 	 * @li	L'entrée $aQuery['X'] correspond à une zone d'injection pour la clause WHERE de recherche intervallaire.
+	 *
+	 * @remark	Une épreuve n'est pas liée à un formulaire (v2.17.12.26).
 	 *
 	 * @param	boolean	$bGroupAccess		: (optionnel) Filtre sur les groupes du rédacteur.
 	 * @return	array, tableau contenant l'ensemble des résultats de la requête.
@@ -240,22 +303,22 @@ class FormulaireManager extends MySQLManager {
 			1	=> self::LIBELLE_REDACTEUR . " AS libelle_redacteur,",
 			2	=> self::LIBELLE_VALIDEUR . " AS libelle_valideur,",
 			3	=> self::DATETIME_EPREUVE . " AS datetime_epreuve,",
-			4	=> self::DATETIME_EPREUVE . " AS datetime_epreuve,",
-			5	=> "UNIX_TIMESTAMP(" . self::DATETIME_EPREUVE . ") AS debut_epreuve,",
-			6	=> "UNIX_TIMESTAMP(" . self::DATETIME_EPREUVE . ") + 60 * duree_epreuve AS fin_epreuve,",
-			7	=> "UNIX_TIMESTAMP(CURRENT_TIMESTAMP()) AS maintenant,",
-			8	=> "COUNT(id_stage_candidat)",
-			9	=> "FROM formulaire",
-			10	=> "INNER JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = id_redacteur)",
-			11	=> "INNER JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
-			12	=> "INNER JOIN groupe ON(redacteur.id_groupe = groupe.id_groupe)",
-			13	=> "INNER JOIN generation USING(id_formulaire)",
-			14	=> "INNER JOIN epreuve USING(id_generation)",
+			4	=> "UNIX_TIMESTAMP(" . self::DATETIME_EPREUVE . ") AS debut_epreuve,",
+			5	=> "UNIX_TIMESTAMP(" . self::DATETIME_EPREUVE . ") + 60 * duree_epreuve AS fin_epreuve,",
+			6	=> "UNIX_TIMESTAMP(CURRENT_TIMESTAMP()) AS maintenant,",
+			7	=> "COUNT(id_stage_candidat)",
+			8	=> "FROM epreuve",
+			9	=> "INNER JOIN generation USING(id_generation)",
+			10	=> "LEFT  JOIN formulaire USING(id_formulaire)",
+			11	=> "LEFT  JOIN domaine USING(id_domaine)",
+			12	=> "LEFT  JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = formulaire.id_redacteur)",
+			13	=> "LEFT  JOIN utilisateur AS valideur ON(valideur.id_utilisateur = generation.id_valideur)",
+			14	=> "LEFT  JOIN groupe ON(valideur.id_groupe = groupe.id_groupe)",
 			15	=> "INNER JOIN stage USING(id_stage)",
-			16	=> "LEFT JOIN stage_candidat USING(id_stage)",
-			17	=> "LEFT JOIN candidat USING(id_candidat)",
+			16	=> "LEFT  JOIN stage_candidat USING(id_stage)",
+			17	=> "LEFT  JOIN candidat USING(id_candidat)",
 			'X'	=> null,
-			19	=> "GROUP BY id_formulaire"
+			18	=> "GROUP BY id_epreuve"
 		);
 
 		// Construction du tableau associatif des étiquettes et leurs valeurs
@@ -317,7 +380,7 @@ class FormulaireManager extends MySQLManager {
 			15	=> "INNER JOIN candidat USING(id_candidat)",
 			16	=> "WHERE candidat.id_candidat = :id_candidat",
 			'X'	=> null,
-			18	=> "GROUP BY id_formulaire"
+			17	=> "GROUP BY id_epreuve"
 		);
 
 		// Construction du tableau associatif des étiquettes et leurs valeurs
@@ -407,8 +470,8 @@ class FormulaireManager extends MySQLManager {
 			"INNER JOIN generation USING(id_formulaire)",
 			"INNER JOIN epreuve USING(id_generation)",
 			"INNER JOIN stage USING(id_stage)",
-			"LEFT JOIN stage_candidat USING(id_stage)",
-			"LEFT JOIN candidat USING(id_candidat)",
+			"LEFT  JOIN stage_candidat USING(id_stage)",
+			"LEFT  JOIN candidat USING(id_candidat)",
 			"WHERE id_epreuve = :id_epreuve",
 			"GROUP BY id_formulaire"
 		);
@@ -656,9 +719,6 @@ class FormulaireManager extends MySQLManager {
 			1	=> self::LIBELLE_REDACTEUR . " AS libelle_redacteur,",
 			2	=> self::LIBELLE_VALIDEUR . " AS libelle_valideur,",
 			3	=> self::DATETIME_EPREUVE . " AS datetime_epreuve,",
-			4	=> "UNIX_TIMESTAMP(" . self::DATETIME_EPREUVE . ") AS debut_epreuve,",
-			5	=> "UNIX_TIMESTAMP(" . self::DATETIME_EPREUVE . ") + 60 * duree_epreuve AS fin_epreuve,",
-			6	=> "UNIX_TIMESTAMP(CURRENT_TIMESTAMP()) AS maintenant,",
 			7	=> "COUNT(id_question)",
 			8	=> "FROM formulaire",
 			9	=> "LEFT  JOIN domaine USING(id_domaine)",
@@ -2401,6 +2461,7 @@ class FormulaireManager extends MySQLManager {
 		// Force le mode transactionnel
 		$this->beginTransaction();
 
+		$aErrorMessage								= array();
 		try {
 			// Enregistrement du formulaire QCM sans la génération
 			if (!$bGeneration) {
@@ -2482,18 +2543,23 @@ class FormulaireManager extends MySQLManager {
 					// Purge de la question en mémoire une fois le traitement terminé
 					unset($this->_aQCM['bibliotheque_id'][$nOccurrence]);
 				}
-			} elseif (!empty($this->_aQCM['formulaire_id'])) {
+			} else {
 				// Enregistrement de la génération selon l'identifiant du formulaire
-				$this->_aQCM['generation_id'] = $this->enregistrerGeneration();
+				$this->_aQCM['generation_id']		= $this->enregistrerGeneration();
 
 				// Fonctionnalité réalisée si un stage est sélectionné
 				if (isset($this->_aQCM['epreuve_stage']) && !empty($this->_aQCM['epreuve_stage'])) {
 					// Enregistrement de l'épreuve
-					$this->_aQCM['epreuve_id'] = $this->enregistrerEpreuve();
+					$this->_aQCM['epreuve_id']		= $this->enregistrerEpreuve();
 				} elseif (!empty($this->_aQCM['epreuve_id'])) {
 					// Suppression de l'épreuve associée
 					$this->supprimerEpreuve($this->_aQCM['epreuve_id']);
 					unset($this->_aQCM['epreuve_id']);
+				} else {
+					// Ajout d'un message d'erreur à la collection
+					$aErrorMessage[]				= "Veuillez renseigner un stage valide...";
+					// Le champ du stage n'est pas correct
+					throw new ApplicationException('EQueryData');
 				}
 			}
 
@@ -2507,9 +2573,8 @@ class FormulaireManager extends MySQLManager {
 			$this->oSQLConnector->rollBack();
 
 			// Affichage d'un message d'erreur
-			ViewRender::setMessageError("Erreur rencontrée lors de l'enregistrement...");
-
-			throw new ApplicationException($e->getMessage(), $e->getExtra());
+			ViewRender::setMessageError("Erreur rencontrée lors de l'enregistrement...", $aErrorMessage);
+			//throw new ApplicationException($e->getMessage(), $e->getExtra());
 		}
 
 		// Récupération de l'ensemble des champs de la bibliothèque
@@ -2715,31 +2780,6 @@ class FormulaireManager extends MySQLManager {
 			$this->_aQCM['formulaire_note_finale']								= DataHelper::get($aFormulaire, 'note_finale_formulaire', 			DataHelper::DATA_TYPE_INT_ABS,	FormulaireManager::NOTE_FINALE_DEFAUT);
 			$this->_aQCM['formulaire_penalite']									= DataHelper::get($aFormulaire, 'penalite_formulaire', 				DataHelper::DATA_TYPE_INT_ABS,	FormulaireManager::PENALITE_DEFAUT);
 
-			// Chargement des données de génération (optionnelles)
-			$this->_aQCM['generation_id']										= DataHelper::get($aFormulaire, 'id_generation', 					DataHelper::DATA_TYPE_INT,		null);
-			$this->_aQCM['generation_langue']									= DataHelper::get($aFormulaire, 'langue_generation', 				DataHelper::DATA_TYPE_STR,		FormulaireManager::GENERATION_LANGUE_DEFAUT);
-			$this->_aQCM['generation_format']									= DataHelper::get($aFormulaire, 'format_generation', 				DataHelper::DATA_TYPE_STR,		FormulaireManager::GENERATION_FORMAT_DEFAUT);
-			$this->_aQCM['generation_separate']									= DataHelper::get($aFormulaire, 'separate_generation', 				DataHelper::DATA_TYPE_BOOL,		FormulaireManager::GENERATION_SEPARATE_DEFAUT);
-			$this->_aQCM['generation_seed']										= DataHelper::get($aFormulaire, 'seed_generation', 					DataHelper::DATA_TYPE_ANY,		LatexFormManager::DOCUMENT_RANDOMISEED_DEFAUT);
-			$this->_aQCM['generation_consignes']								= DataHelper::get($aFormulaire, 'consignes_generation', 			DataHelper::DATA_TYPE_TXT,		FormulaireManager::GENERATION_CONSIGNES_DEFAUT);
-			$this->_aQCM['generation_exemplaires']								= DataHelper::get($aFormulaire, 'exemplaires_generation', 			DataHelper::DATA_TYPE_INT_ABS,	FormulaireManager::GENERATION_EXEMPLAIRES_DEFAUT);
-			$this->_aQCM['generation_nom_epreuve']								= DataHelper::get($aFormulaire, 'nom_epreuve_generation', 			DataHelper::DATA_TYPE_STR,		FormulaireManager::GENERATION_NOM_DEFAUT);
-			$this->_aQCM['generation_date_epreuve']								= DataHelper::get($aFormulaire, 'date_epreuve_generation', 			DataHelper::DATA_TYPE_DATE,		date(FormulaireManager::EPREUVE_DATE_FORMAT));
-			$this->_aQCM['generation_code_candidat']							= DataHelper::get($aFormulaire, 'code_candidat_generation', 		DataHelper::DATA_TYPE_INT_ABS,	FormulaireManager::CANDIDATS_CODE_DEFAUT);
-			$this->_aQCM['generation_cartouche_candidat']						= DataHelper::get($aFormulaire, 'cartouche_candidat_generation', 	DataHelper::DATA_TYPE_TXT,		FormulaireManager::CANDIDATS_CARTOUCHE_DEFAUT);
-
-			// Chargement des données de l'épreuve (optionnelles)
-			$this->_aQCM['epreuve_id']											= DataHelper::get($aFormulaire, 'id_epreuve',				 		DataHelper::DATA_TYPE_INT,		null);
-			$this->_aQCM['epreuve_stage']										= DataHelper::get($aFormulaire, 'id_stage',					 		DataHelper::DATA_TYPE_INT,		null);
-			$this->_aQCM['epreuve_type']										= DataHelper::get($aFormulaire, 'type_epreuve',				 		DataHelper::DATA_TYPE_STR,		FormulaireManager::EPREUVE_TYPE_DEFAUT);
-			$this->_aQCM['epreuve_date']										= DataHelper::get($aFormulaire, 'date_epreuve',						DataHelper::DATA_TYPE_DATE,		$this->_aQCM['generation_date_epreuve']);
-			$this->_aQCM['epreuve_heure']										= DataHelper::get($aFormulaire, 'heure_epreuve',					DataHelper::DATA_TYPE_TIME,		FormulaireManager::EPREUVE_HEURE_DEFAUT);
-			$this->_aQCM['epreuve_duree']										= DataHelper::get($aFormulaire, 'duree_epreuve',					DataHelper::DATA_TYPE_INT_ABS,	FormulaireManager::EPREUVE_DUREE_DEFAUT);
-			$this->_aQCM['epreuve_libelle']										= DataHelper::get($aFormulaire, 'libelle_epreuve',					DataHelper::DATA_TYPE_STR,		$this->_aQCM['generation_nom_epreuve']);
-			$this->_aQCM['epreuve_liste_salles']								= DataHelper::get($aFormulaire, 'liste_salles_epreuve',				DataHelper::DATA_TYPE_ARRAY,	null);
-			$this->_aQCM['epreuve_table_affectation']							= DataHelper::get($aFormulaire, 'table_affectation_epreuve',		DataHelper::DATA_TYPE_BOOL,		false);
-			$this->_aQCM['epreuve_table_aleatoire']								= DataHelper::get($aFormulaire, 'table_aleatoire_epreuve',			DataHelper::DATA_TYPE_BOOL,		false);
-
 			// Récupération de la liste des questions associées au formulaire
 			$aListeQuestions	= $this->findQuestionsByIdFormulaire($nIdFormulaire);
 
@@ -2816,6 +2856,223 @@ class FormulaireManager extends MySQLManager {
 
 			// Initialisation du nombre maximal de réponses par question
 			$this->_aQCM['formulaire_nb_max_reponses']							= $nNombreMaxReponses;
+
+		} catch (ApplicationException $e) {
+			throw new ApplicationException($e->getMessage(), $e->getExtra());
+		}
+
+		// Renvoi du formulaire
+		return $this->_aQCM;
+	}
+
+	/******************************************************************************************************
+	 * @todo GÉNÉRATION D'UNE ÉPREUVE
+	 ******************************************************************************************************/
+
+	/**
+	 * @brief	Génération d'une épreuve QCM enregistré en base de données.
+	 *
+	 * @param	integer	$nIdEpreuve	: Identifiant de l'épreuve à générer.
+	 * @return	array, tableau au format attendu par le formulaire HTML
+	 * @code
+	 * 	$aQCM = array(
+	 * 		// GÉNÉRALITÉS ************************************************************************
+	 * 		'formulaire_id'					=> "Identifiant du questionnaire (en BDD)",
+	 * 		'formulaire_titre'				=> "Nom du questionnaire",
+	 * 		'formulaire_validation'			=> "Mise en validation du questionnaire",
+	 * 		'formulaire_presentation'		=> "Présentation du questionnaire",
+	 * 		'formulaire_domaine'			=> "Identifiant du domaine du formulaire (en BDD)",
+	 * 		'formulaire_sous_domaine'		=> "Identifiant du sous-domaine du formulaire en (BDD)",
+	 * 		'formulaire_categorie'			=> "Identifiant de la catégorie du formulaire en (BDD)",
+	 * 		'formulaire_sous_categorie'		=> "Identifiant de la sous-catégorie du formulaire (en BDD)",
+	 * 		'formulaire_note_finale'		=> "Note du questionnaire, par défaut sur 20 points",
+	 * 		'formulaire_penalite'			=> "Facteur de pénalité pour une mauvaise réponse aux questions à choix multiple",
+	 * 		'formulaire_nb_max_reponses'	=> "Nombre de réponses maximum par question",
+	 * 		'formulaire_nb_total_questions'	=> "Nombre total de questions",
+	 *
+	 * 		// QUESTIONNAIRE **********************************************************************
+	 * 		'question_id'					=> array(
+	 * 				0	=> "Identifiant de la première question (en BDD)",
+	 * 				1	=> "Identifiant de la deuxième question (en BDD)",
+	 * 				...
+	 * 				N-1	=> "Identifiant de la Nième question (en BDD)"
+	 * 		),
+	 * 		'question_titre'				=> array(
+	 * 				0	=> "Titre de la première question",
+	 * 				1	=> "Titre de la deuxième question",
+	 * 				...
+	 * 				N-1	=> "Titre de la Nième question"
+	 * 		),
+	 * 		'question_stricte'				=> array(
+	 * 				0	=> "Attente d'une réponse stricte à la première question",
+	 * 				1	=> "Attente d'une réponse stricte à la deuxième question",
+	 * 				...
+	 * 				N-1	=> "Attente d'une réponse stricte à la Nième question"
+	 * 		),
+	 * 		'question_bareme'				=> array(
+	 * 				0	=> "Barème attribué à la première question",
+	 * 				1	=> "Barème attribué à la deuxième question",
+	 * 				...
+	 * 				N-1	=> "Barème attribué à la Nième question"
+	 * 		),
+	 * 		'question_enonce'				=> array(
+	 * 				0	=> "Énoncé de la première question",
+	 * 				1	=> "Énoncé de la deuxième question",
+	 * 				...
+	 * 				N-1	=> "Énoncé de la Nième question"
+	 * 		),
+	 *
+	 * 		// RÉPONSES ***************************************************************************
+	 * 		'reponse_id'					=> array(
+	 * 				// Réponses concernant la 1ère question
+	 * 				0	=> array(
+	 * 						0	=>	"Identifiant de la première réponse (en BDD)",
+	 * 						1	=>	"Identifiant de la deuxième réponse (en BDD)",
+	 * 						...
+	 * 						D-1	=>	"Identifiant de la dernière réponse (en BDD)"
+	 * 				),
+	 * 				// Réponses concernant la 2ème question
+	 * 				1	=> array(
+	 * 						0	=>	"Identifiant de la première réponse (en BDD)",
+	 * 						1	=>	"Identifiant de la deuxième réponse (en BDD)",
+	 * 						...
+	 * 						D-1	=>	"Identifiant de la dernière réponse (en BDD)"
+	 * 				),
+	 * 				...
+	 * 				// Réponses concernant la Nème question
+	 * 				N-1	=> array(
+	 * 						0	=>	"Identifiant de la première réponse (en BDD)",
+	 * 						1	=>	"Identifiant de la deuxième réponse (en BDD)",
+	 * 						...
+	 * 						D-1	=>	"Identifiant de la dernière réponse (en BDD)"
+	 * 				)
+	 * 		),
+	 * 		'reponse_texte'					=> array(
+	 * 				// Réponses concernant la 1ère question
+	 * 				0	=> array(
+	 * 						0	=>	"Texte de la première réponse (en BDD)",
+	 * 						1	=>	"Texte de la deuxième réponse (en BDD)",
+	 * 						...
+	 * 						D-1	=>	"Texte de la dernière réponse (en BDD)"
+	 * 				),
+	 * 				// Réponses concernant la 2ème question
+	 * 				1	=> array(
+	 * 						0	=>	"Texte de la première réponse (en BDD)",
+	 * 						1	=>	"Texte de la deuxième réponse (en BDD)",
+	 * 						...
+	 * 						D-1	=>	"Texte de la dernière réponse (en BDD)"
+	 * 				),
+	 * 				...
+	 * 				// Réponses concernant la Nème question
+	 * 				N-1	=> array(
+	 * 						0	=>	"Texte de la première réponse (en BDD)",
+	 * 						1	=>	"Texte de la deuxième réponse (en BDD)",
+	 * 						...
+	 * 						D-1	=>	"Texte de la dernière réponse (en BDD)"
+	 * 				)
+	 * 		),
+	 * 		'reponse_valide'		=> array(
+	 * 				// Réponses concernant la 1ère question
+	 * 				0	=> array(
+	 * 						0	=>	"Validation de la première réponse (en BDD)",
+	 * 						1	=>	"Validation de la deuxième réponse (en BDD)",
+	 * 						...
+	 * 						D-1	=>	"Validation de la dernière réponse (en BDD)"
+	 * 				),
+	 * 				// Réponses concernant la 2ème question
+	 * 				1	=> array(
+	 * 						0	=>	"Validation de la première réponse (en BDD)",
+	 * 						1	=>	"Validation de la deuxième réponse (en BDD)",
+	 * 						...
+	 * 						D-1	=>	"Validation de la dernière réponse (en BDD)"
+	 * 				),
+	 * 				...
+	 * 				// Réponses concernant la Nème question
+	 * 				N-1	=> array(
+	 * 						0	=>	"Validation de la première réponse (en BDD)",
+	 * 						1	=>	"Validation de la deuxième réponse (en BDD)",
+	 * 						...
+	 * 						D-1	=>	"Validation de la dernière réponse (en BDD)"
+	 * 				)
+	 * 		),
+	 * 		'reponse_valeur'		=> array(
+	 * 				// Réponses concernant la 1ère question
+	 * 				0	=> array(
+	 * 						0	=>	"Valeur de la première réponse (en BDD)",
+	 * 						1	=>	"Valeur de la deuxième réponse (en BDD)",
+	 * 						...
+	 * 						D-1	=>	"Valeur de la dernière réponse (en BDD)"
+	 * 				),
+	 * 				// Réponses concernant la 2ème question
+	 * 				1	=> array(
+	 * 						0	=>	"Valeur de la première réponse (en BDD)",
+	 * 						1	=>	"Valeur de la deuxième réponse (en BDD)",
+	 * 						...
+	 * 						D-1	=>	"Valeur de la dernière réponse (en BDD)"
+	 * 				),
+	 * 				...
+	 * 				// Réponses concernant la Nème question
+	 * 				N-1	=> array(
+	 * 						0	=>	"Valeur de la première réponse (en BDD)",
+	 * 						1	=>	"Valeur de la deuxième réponse (en BDD)",
+	 * 						...
+	 * 						D-1	=>	"Valeur de la dernière réponse (en BDD)"
+	 * 				)
+	 * 		)
+	 * );
+	 * @endcode
+	 * @throws	ApplicationException si la requête ne fonctionne pas.
+	 */
+	public function generer($nIdEpreuve) {
+		// Ajout d'un suivit pour le debuggage
+		$this->debug(__METHOD__, $nIdEpreuve);
+
+		// Initialisation du formulaire
+		$this->_aQCM = array();
+
+		try {
+			// Initialisation du formulaire
+			$this->_aQCM['epreuve_id']											= $nIdEpreuve;
+
+			// Récupération des données de l'épreuve
+			$aEpreuve			= $this->getEpreuveById($nIdEpreuve);
+
+			// Fonctionnalité réalisée si le formulaire n'est pas valide
+			if (!DataHelper::isValidArray($aEpreuve)) {
+				// Initialisation de l'identifiant
+				$this->_aData['epreuve_id']										= null;
+				// Génération d'une exception
+				throw new ApplicationException('EParamBadValue');
+			}
+
+			// Récupération du formulaire associé
+			$nIdFormulaire														= DataHelper::get($aEpreuve,	'id_formulaire',					DataHelper::DATA_TYPE_INT);
+			$this->_aQCM		= $this->charger($nIdFormulaire);
+
+			// Chargement des données de génération (optionnelles)
+			$this->_aQCM['generation_id']										= DataHelper::get($aEpreuve,	'id_generation', 					DataHelper::DATA_TYPE_INT,		null);
+			$this->_aQCM['generation_langue']									= DataHelper::get($aEpreuve,	'langue_generation', 				DataHelper::DATA_TYPE_STR,		FormulaireManager::GENERATION_LANGUE_DEFAUT);
+			$this->_aQCM['generation_format']									= DataHelper::get($aEpreuve,	'format_generation', 				DataHelper::DATA_TYPE_STR,		FormulaireManager::GENERATION_FORMAT_DEFAUT);
+			$this->_aQCM['generation_separate']									= DataHelper::get($aEpreuve,	'separate_generation', 				DataHelper::DATA_TYPE_BOOL,		FormulaireManager::GENERATION_SEPARATE_DEFAUT);
+			$this->_aQCM['generation_seed']										= DataHelper::get($aEpreuve,	'seed_generation', 					DataHelper::DATA_TYPE_ANY,		LatexFormManager::DOCUMENT_RANDOMISEED_DEFAUT);
+			$this->_aQCM['generation_consignes']								= DataHelper::get($aEpreuve,	'consignes_generation', 			DataHelper::DATA_TYPE_TXT,		FormulaireManager::GENERATION_CONSIGNES_DEFAUT);
+			$this->_aQCM['generation_exemplaires']								= DataHelper::get($aEpreuve,	'exemplaires_generation', 			DataHelper::DATA_TYPE_INT_ABS,	FormulaireManager::GENERATION_EXEMPLAIRES_DEFAUT);
+			$this->_aQCM['generation_nom_epreuve']								= DataHelper::get($aEpreuve,	'nom_epreuve_generation', 			DataHelper::DATA_TYPE_STR,		FormulaireManager::GENERATION_NOM_DEFAUT);
+			$this->_aQCM['generation_date_epreuve']								= DataHelper::get($aEpreuve,	'date_epreuve_generation', 			DataHelper::DATA_TYPE_DATE,		date(FormulaireManager::EPREUVE_DATE_FORMAT));
+			$this->_aQCM['generation_code_candidat']							= DataHelper::get($aEpreuve,	'code_candidat_generation', 		DataHelper::DATA_TYPE_INT_ABS,	FormulaireManager::CANDIDATS_CODE_DEFAUT);
+			$this->_aQCM['generation_cartouche_candidat']						= DataHelper::get($aEpreuve,	'cartouche_candidat_generation', 	DataHelper::DATA_TYPE_TXT,		FormulaireManager::CANDIDATS_CARTOUCHE_DEFAUT);
+
+			// Chargement des données de l'épreuve (optionnelles)
+			$this->_aQCM['epreuve_id']											= DataHelper::get($aEpreuve,	'id_epreuve',				 		DataHelper::DATA_TYPE_INT,		null);
+			$this->_aQCM['epreuve_stage']										= DataHelper::get($aEpreuve,	'id_stage',					 		DataHelper::DATA_TYPE_INT,		null);
+			$this->_aQCM['epreuve_type']										= DataHelper::get($aEpreuve,	'type_epreuve',				 		DataHelper::DATA_TYPE_STR,		FormulaireManager::EPREUVE_TYPE_DEFAUT);
+			$this->_aQCM['epreuve_date']										= DataHelper::get($aEpreuve,	'date_epreuve',						DataHelper::DATA_TYPE_DATE,		$this->_aQCM['generation_date_epreuve']);
+			$this->_aQCM['epreuve_heure']										= DataHelper::get($aEpreuve,	'heure_epreuve',					DataHelper::DATA_TYPE_TIME,		FormulaireManager::EPREUVE_HEURE_DEFAUT);
+			$this->_aQCM['epreuve_duree']										= DataHelper::get($aEpreuve,	'duree_epreuve',					DataHelper::DATA_TYPE_INT_ABS,	FormulaireManager::EPREUVE_DUREE_DEFAUT);
+			$this->_aQCM['epreuve_libelle']										= DataHelper::get($aEpreuve,	'libelle_epreuve',					DataHelper::DATA_TYPE_STR,		$this->_aQCM['generation_nom_epreuve']);
+			$this->_aQCM['epreuve_liste_salles']								= DataHelper::get($aEpreuve,	'liste_salles_epreuve',				DataHelper::DATA_TYPE_ARRAY,	null);
+			$this->_aQCM['epreuve_table_affectation']							= DataHelper::get($aEpreuve,	'table_affectation_epreuve',		DataHelper::DATA_TYPE_BOOL,		false);
+			$this->_aQCM['epreuve_table_aleatoire']								= DataHelper::get($aEpreuve,	'table_aleatoire_epreuve',			DataHelper::DATA_TYPE_BOOL,		false);
 
 		} catch (ApplicationException $e) {
 			throw new ApplicationException($e->getMessage(), $e->getExtra());

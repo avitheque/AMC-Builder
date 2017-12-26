@@ -10,8 +10,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 74 $
- * @since		$LastChangedDate: 2017-07-30 01:56:01 +0200 (Sun, 30 Jul 2017) $
+ * @version		$LastChangedRevision: 89 $
+ * @since		$LastChangedDate: 2017-12-27 00:05:27 +0100 (Wed, 27 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -36,6 +36,8 @@ class GroupButtonFormulaireHelper {
 	 * @var		string
 	 */
 	protected	$_html				= "";
+	protected	$_nIdFormulaire		= null;
+	protected	$_nIdEpreuve		= null;
 
 	/**
 	 * @brief	Constructeur de la classe.
@@ -63,7 +65,10 @@ class GroupButtonFormulaireHelper {
 		$aFormulaireQCM				= $this->_oInstanceStorage->getData($sSessionNameSpace);
 
 		// Identifiant du questionnaire
-		$nIdFormulaire				= DataHelper::get($aFormulaireQCM, 'formulaire_id', DataHelper::DATA_TYPE_INT,	null);
+		$this->_nIdFormulaire		= DataHelper::get($aFormulaireQCM, 'formulaire_id',	DataHelper::DATA_TYPE_INT,	null);
+		
+		// Identifiant de l'épreuve
+		$this->_nIdEpreuve			= DataHelper::get($aFormulaireQCM, 'epreuve_id',	DataHelper::DATA_TYPE_INT,	null);
 
 		//#########################################################################################
 		// CONSTRUCTION DES BOUTONS DU FORMULAIRE QCM
@@ -73,7 +78,7 @@ class GroupButtonFormulaireHelper {
 		$this->setReadonly($oSessionManager->getIndex('CONTROLE_EPREUVE_EXISTS'));
 
 		// Zone de boutons du formulaire QCM
-		$this->_buildGroupButton($nIdFormulaire, $bTerminer, $bExporter);
+		$this->_buildGroupButton($bTerminer, $bExporter);
 	}
 
 	/**
@@ -89,12 +94,11 @@ class GroupButtonFormulaireHelper {
 	/**
 	 * @brief	Zone de boutons du formulaire QCM.
 	 *
-	 * @param	integer	$nIdFormulaire	: Identifiant du formulaire QCM.
 	 * @param	boolean	$bTerminer		: Fait apparaître le bouton [Terminer].
 	 * @param	boolean	$bExporter		: Fait apparaître le bouton [Exporter].
 	 * @return	void
 	 */
-	private function _buildGroupButton($nIdFormulaire = null, $bTerminer = false, $bExporter = false) {
+	private function _buildGroupButton($bTerminer = false, $bExporter = false) {
 		//#########################################################################################
 		// CONSTRUCTION DU GROUPE DE BOUTONS RELATIF AU QUESTIONNAIRE QCM
 		//#########################################################################################
@@ -114,14 +118,14 @@ class GroupButtonFormulaireHelper {
 		}
 
 		// Fonctionnalité réalisée si le QCM est déjà enregistré
-		if ($nIdFormulaire) {
+		if ($this->_nIdFormulaire || $this->_nIdEpreuve) {
 			$sGauche				= "<button type=\"submit\" class=\"red confirm left tooltip\" name=\"button\" value=\"" . AbstractFormulaireQCMController::ACTION_FERMER . "\" title=\"Retour à la page précédente\" role=\"touche_F\">Fermer</button>";
 		}
 
 		// Fonctionnalité réalisée si le bouton [Exporter] est actif
-		if ($bExporter) {
+		if ($this->_nIdFormulaire && $bExporter) {
 			$sMilieu				= "<button type=\"submit\" class=\"blue tooltip\" name=\"button\" value=\"" . AbstractFormulaireQCMController::ACTION_EXPORTER . "\" title=\"Générer le code LaTeX du QCM\" role=\"touche_E\">Exporter</button>";
-		} elseif (!$this->_readonly && ($nIdFormulaire || $bTerminer)) {
+		} elseif (!$this->_readonly && ($this->_nIdFormulaire || $bTerminer)) {
 			// Fonctionnalité réalisée afin de proposer le formulaire à la validation
 			$sMilieu				= "<button type=\"submit\" class=\"blue tooltip\" name=\"button\" value=\"" . AbstractFormulaireQCMController::ACTION_TERMINER . "\" title=\"Soumettre le QCM à validation\" role=\"touche_T\">Terminer</button>";
 		}

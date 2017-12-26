@@ -339,6 +339,14 @@ $(document).ready(function() {
 		// Protection contre le syndrome du cliqueur intempestif
 		event.stopPropagation();
 
+		// Fonctionnalité réalisée si l'événement doit être annulé
+		if ($(this).prop("disabled")) {
+			// Annulation de l'événement
+			event.preventDefault();
+			// Arrêt du traitement
+			return false;
+		}
+
 		// Initialisation de l'action du formulaire par défaut
 		var button_or_url	= "/" + CONTROLLER + "/reset";
 
@@ -375,6 +383,14 @@ $(document).ready(function() {
 		// Protection contre le syndrome du cliqueur intempestif
 		event.stopPropagation();
 
+		// Fonctionnalité réalisée si l'événement doit être annulé
+		if ($(selector).prop("disabled")) {
+			// Annulation de l'événement
+			event.preventDefault();
+			// Arrêt du traitement
+			return false;
+		}
+
 		// Demande une confirmation avant la perte des données
 		setDialogConfirm("#dialog-delete", this);
 		$("#dialog-delete").dialog("open");
@@ -388,6 +404,14 @@ $(document).ready(function() {
 	$(document).on("click", "a[class*=confirm]", function(event) {
 		// Protection contre le syndrome du cliqueur intempestif
 		event.stopPropagation();
+
+		// Fonctionnalité réalisée si l'événement doit être annulé
+		if ($(this).prop("disabled") || $(this).hasClass("disabled")) {
+			// Annulation de l'événement
+			event.preventDefault();
+			// Arrêt du traitement
+			return false;
+		}
 
 		// Récupération de l'URL
 		var url = $(this).attr("href");
@@ -423,7 +447,7 @@ $(document).ready(function() {
 		// Récupération de l'identifiant du champ via l'attribut FOR
 		var selector = "#" + $(this).attr("for");
 
-		// Fonctionnalité réalisé si le focus doit être annulé
+		// Fonctionnalité réalisée si le focus doit être annulé
 		if ($(selector).prop("readonly") || $(selector).prop("disabled")) {
 			// Annulation de l'événement
 			event.preventDefault();

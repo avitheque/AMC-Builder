@@ -7,9 +7,9 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 24 $
- * @since		$LastChangedDate: 2017-04-30 20:38:39 +0200 (dim., 30 avr. 2017) $
- * 
+ * @version		$LastChangedRevision: 89 $
+ * @since		$LastChangedDate: 2017-12-27 00:05:27 +0100 (Wed, 27 Dec 2017) $
+ *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
@@ -28,12 +28,13 @@ class Constantes {
 	 *
 	 * @var		string
 	 */
-	const PROFIL_GUEST				= "Visiteur";				# role = 'guest'		# id_profil = 1
-	const PROFIL_USER				= "Utilisateur";			# role = 'user'			# id_profil = 2
-	const PROFIL_EDITOR				= "Éditeur";				# role = 'editor'		# id_profil = 3
-	const PROFIL_VALIDATOR			= "Valideur";				# role = 'validator'	# id_profil = 4
-	const PROFIL_ADMIN				= "Administrateur";			# role = 'admin'		# id_profil = 5
-	const PROFIL_GOD				= "Webmaster";				# role = 'god'			# id_profil = 6
+	const PROFIL_SYSTEM				= "System";					# role = 'system'				# id_profil = 0
+	const PROFIL_GUEST				= "Visiteur";				# role = 'guest'				# id_profil = 1
+	const PROFIL_USER				= "Utilisateur";			# role = 'user'					# id_profil = 2
+	const PROFIL_EDITOR				= "Éditeur";				# role = 'editor'				# id_profil = 3
+	const PROFIL_VALIDATOR			= "Valideur";				# role = 'validator'			# id_profil = 4
+	const PROFIL_ADMIN				= "Administrateur";			# role = 'administrator'		# id_profil = 5
+	const PROFIL_GOD				= "Webmaster";				# role = 'webmaster'			# id_profil = 6
 
 	/**
 	 * Constantes des messages de l'application.
@@ -65,6 +66,7 @@ class Constantes {
 
 
 	const ERROR_SQL_BADFIELD		= 'SQL::Un des champs de la table n\'a pas été trouvé';
+	const ERROR_SQL_BADDATA			= 'SQL::Une des valeurs saisies n\'est pas correcte';
 	const ERROR_SQL_BADQUERY		= 'SQL::La requête contient des erreurs';
 	const ERROR_SQL_CASCADE			= 'SQL::Les contraintes de la base empêchent la suppression de l\'enregistrement...';
 	const ERROR_SQL_NODELETE		= 'SQL::Suppression impossible !';

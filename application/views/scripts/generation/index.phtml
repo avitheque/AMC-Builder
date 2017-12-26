@@ -1,6 +1,6 @@
 <?php
 /**
- * @brief	Génération
+ * @brief	Génération d'une épreuve
  *
  * Vue principale de la génération d'une épreuve QCM.
  * User: durandcedric
@@ -29,10 +29,10 @@ $sTitrePage =  "<h2>Génération d'une épreuve QCM</h2>
 ViewRender::addToMain($sTitrePage);
 
 // Récupération de la liste des formulaires QCM en attente de validation
-$aListeQCMGeneration	= $oInstanceStorage->getData('liste_generation');
+$aListeGeneration		= $oInstanceStorage->getData('liste_generation');
 
 // Construction du tableau récapitulatif des formulaires
-$oGeneration = new DatatableHelper("table-generation", $aListeQCMGeneration);
+$oGeneration = new DatatableHelper("table-generation", $aListeGeneration);
 $oGeneration->setClassColumn("align-left strong", "titre_formulaire");
 $oGeneration->setClassColumn("strong", "libelle_groupe");
 
@@ -56,73 +56,74 @@ $oGeneration->setConditionalClassOnColumn('id_domaine', '<=', "0", "grey", "TITR
 $oGeneration->setConditionalClassOnColumn('id_domaine', '<=', "0", "strong red", "DOMAINE");
 
 // Ajout d'une colonne [ACTION] avec un lien HREF
-$oGeneration->addAnchorOnColumn("ACTION",	"id_formulaire",	"Générer",	"/generation?id_formulaire=",			"green tooltip-track",	null,		"Générer le QCM pour une épreuve");
+$oGeneration->addAnchorOnColumn("ACTION",			"id_formulaire",	"Générer",	"/generation/epreuve?id_formulaire=",		"green tooltip-track",					null,		"Générer le QCM pour une épreuve");
 
 // Ajout du tableau à VIEW_MAIN
 ViewRender::addToMain($oGeneration->renderHTML());
 
 // ================================================================================================
-// ÉPREUVES
+// PROGRAMMATIONS
 // ================================================================================================
 
-// Titre de la page
+// Titre de l'article
 $sTitrePage =  "<hr class=\"blue margin-V-30\" />
-				<h2>Feuilles d'émargement des épreuves</h2>
+				<h2>Liste des dernières programmations</h2>
 				<p>
 				</p>";
 ViewRender::addToMain($sTitrePage);
 
 // Récupération de la liste des épreuves
-$aListeEpreuves			= $oInstanceStorage->getData('liste_epreuves');
+$aListeProgrammations			= $oInstanceStorage->getData('liste_programmations');
 
 // Construction du tableau récapitulatif des formulaires
-$oEpreuves = new DatatableHelper("table-epreuves", $aListeEpreuves);
-$oEpreuves->setClassColumn("align-left strong", "titre_formulaire");
+$oProgrammation = new DatatableHelper("table-epreuves", $aListeProgrammations);
+$oProgrammation->setClassColumn("align-left strong", "titre_formulaire");
 
 // Formatage du champ DATE
-$oEpreuves->setFormatOnColumn('datetime_epreuve',	DataHelper::DATA_TYPE_DATETIME);
+$oProgrammation->setFormatOnColumn('datetime_epreuve',	DataHelper::DATA_TYPE_DATETIME);
 
 // Personnalisation des noms de colonne
 $aColonnes = array(
 	'libelle_epreuve'				=> "ÉPREUVE",
 	'SUM(capacite_statut_salle)'	=> "CAPACITÉ D'ACCUEIL",
 	'COUNT(id_stage_candidat)'		=> "NOMBRE DE CANDIDATS",
+	'titre_formulaire'				=> "TITRE",
 	'datetime_epreuve'				=> "PROGRAMMATION DE L'ÉPREUVE",
 	'duree_epreuve'					=> "DURÉE (en&nbsp;minutes)"
 );
-$oEpreuves->renameColumns($aColonnes, true);
+$oProgrammation->renameColumns($aColonnes, true);
 
 // Tri du tableau sur la colonne `date_epreuve` par ordre DESC
-$oEpreuves->setOrderColumn('datetime_epreuve', DatatableHelper::ORDER_DESC);
+$oProgrammation->setOrderColumn('datetime_epreuve', DatatableHelper::ORDER_DESC);
 
 // Ajout d'une colonne [ACTION] avec un lien HREF - (TOUJOURS DISPONIBLE)
-$oEpreuves->addAnchorOnColumn("ACTION",		"id_epreuve",		"Imprimer",	"/generation/epreuve?id_epreuve=",		"blue tooltip-track",           	   "_blanck",	"Imprimer la programmation de l'épreuve");
+$oProgrammation->addAnchorOnColumn("ACTION",		"id_epreuve",		"Imprimer",	"/generation/imprimer?id_epreuve=",			"blue tooltip-track",					"_blanck",	"Imprimer la programmation de l'épreuve");
 
-// Indicateur d'annulation non disponible
-$oEpreuves->setConditionalClassOnColumn('debut_epreuve',	'>', 'maintenant', "strong grey",	$aColonnes);
-$oEpreuves->setConditionalClassOnColumn('fin_epreuve',	'<', 'maintenant', "strong grey",	$aColonnes);
-$oEpreuves->setConditionalClassOnColumn('debut_epreuve',	'>', 'maintenant', "disabled",		"ACTION");
-$oEpreuves->setConditionalClassOnColumn('fin_epreuve',	'<', 'maintenant', "disabled",		"ACTION");
+// Indicateur d'annulation toujours accessible pour l'administrateur
+$oAuthenticateManager	= AuthenticateManager::getInstance();
+if (!$oAuthenticateManager->isProfil(AclManager::ID_PROFIL_ADMINISTRATOR)) {
+	$oProgrammation->setConditionalClassOnColumn('fin_epreuve', '<', 'maintenant', "strong grey", $aColonnes);
+	$oProgrammation->setConditionalClassOnColumn('fin_epreuve', '<', 'maintenant', "disabled", "ACTION");
+}
 
 // Ajout d'une colonne [ACTION] avec un lien HREF - DISPONIBLE TANT QUE L'ÉPREUVE N'A PAS DÉBUTÉE
-$oEpreuves->addAnchorOnColumn("ACTION",		"id_epreuve",		"Annuler",	"/generation/supprimer?id_epreuve=",	"red confirm-delete tooltip-track", 	null,		"Annuler l'épreuve");
+$oProgrammation->addAnchorOnColumn("ACTION",		"id_epreuve",		"Éditer",	"/generation/epreuve?id_epreuve=",			"green tooltip-track", 					null,		"Éditer l'épreuve");
+$oProgrammation->addAnchorOnColumn("ACTION",		"id_epreuve",		"Annuler",	"/generation/supprimer?id_epreuve=",		"red confirm-delete tooltip-track", 	null,		"Annuler l'épreuve");
 
 // Coloration de l'épreuve en ROUGE si il y a une erreur
-$oEpreuves->setConditionalClassOnColumn('SUM(capacite_statut_salle)', '<', 'COUNT(id_stage_candidat)', "error", array("ÉPREUVE", "CAPACITÉ D'ACCUEIL", "NOMBRE DE CANDIDATS"));
+$oProgrammation->setConditionalClassOnColumn('SUM(capacite_statut_salle)', '<', 'COUNT(id_stage_candidat)', "error", array("ÉPREUVE", "CAPACITÉ D'ACCUEIL", "NOMBRE DE CANDIDATS"));
 
 // Ajout du tableau à VIEW_MAIN
-ViewRender::addToMain($oEpreuves->renderHTML());
+ViewRender::addToMain($oProgrammation->renderHTML());
 
 // ================================================================================================
-// INSERTION D'ÉPREUVES
+// PROGRAMMATION D'UNE NOUVELLE ÉPREUVE
 // ================================================================================================
 
-/** @todo Mise en place d'une interface permettant de générer les feuilles d'émargement indépendamment des QCM
 // Boucle de création de la liste des questions
 ViewRender::addToFooter("<div class=\"group-button\">
-							<button type=\"submit\" class=\"blue tooltip\" name=\"button\" value=\"" . AbstractFormulaireQCMController::ACTION_EMARGER . "\" title=\"Générer une feuille d'émargement qui n'est pas associée à une épreuve QCM\" role=\"touche_E\">Ajouter une feuille d'émargement</button>
+							<a class=\"button green tooltip-track\" href=\"/generation/epreuve\" title=\"Programmer une nouvelle épreuve parmis les formulaires proposés\" role=\"touche_A\">Ajouter une nouvelle épreuve</a>
 						</div>");
-*/
 
 // BOUTON [HAUT DE PAGE]
 ViewRender::addToMain("<span id=\"bottom\"><a class=\"page-bottom\" href=\"#top\" title=\"Haut de page...\">&#8593;</a></span>");

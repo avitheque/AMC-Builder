@@ -12,8 +12,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 9 $
- * @since		$LastChangedDate: 2017-04-17 10:11:15 +0200 (lun., 17 avr. 2017) $
+ * @version		$LastChangedRevision: 88 $
+ * @since		$LastChangedDate: 2017-12-26 11:14:42 +0100 (Tue, 26 Dec 2017) $
  * @see			{ROOT_PATH}/libraries/models/MySQLManager.php
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
@@ -203,12 +203,12 @@ class ReferentielManager extends MySQLManager {
 	 * @li	Méthode générique de consultation du référentiel.
 	 * @li	Le profil [AclManager::ID_PROFIL_ADMINISTRATOR] n'est pas limité sur les dates de validité du référentiel.
 	 *
-	 * @param	string	$sTable		: Nom de la table du référentiel en base de données.
-	 * @param	array	$xWhere		: Clause WHERE de la requête.
+	 * @param	string	$sTable			: Nom de la table du référentiel en base de données.
+	 * @param	array	$xWhere			: Clause WHERE de la requête.
 	 * @code
 	 * 	$xWhere = array('nom_du_champ' => "valeur du champ");
 	 * @endcode
-	 * @param	array	$xFinal    	: Clause finale de la requête.
+	 * @param	array	$xFinal  	  	: Clause finale de la requête.
 	 * @return	array
 	 */
 	public function findListeReferentiel($sTable, $xWhere = array(), $xOrder = array(), $xFinal = array()) {
@@ -297,12 +297,12 @@ class ReferentielManager extends MySQLManager {
 	 * 	- DATE_DEBUT	inférieur à CURRENT_DATE() ;
 	 * 	- DATE_FIN		supérieur à CURRENT_DATE().
 	 *
-	 * @param	string	$sTable		: Nom de la table du référentiel en base de données.
-	 * @param	array	$xWhere		: Clause WHERE de la requête.
+	 * @param	string	$sTable			: Nom de la table du référentiel en base de données.
+	 * @param	array	$xWhere			: Clause WHERE de la requête.
 	 * @code
 	 * 	$xWhere = array('nom_du_champ' => "valeur du champ");
 	 * @endcode
-	 * @param	array	$xFinal    	: Clause finale de la requête.
+	 * @param	array	$xFinal   	 	: Clause finale de la requête.
 	 * @return	array
 	 */
 	public function findListeReferentielValid($sTable, $xWhere = array(), $xOrder = array(), $xFinal = array()) {
@@ -319,8 +319,8 @@ class ReferentielManager extends MySQLManager {
 	/**
 	 * @brief	Récupèration d'un référentiel par son identifiant.
 	 *
-	 * @param	string	$sTable		: Nom de la table du référentiel en base de données.
-	 * @param	integer	$nId		: Identifiant à récupérer.
+	 * @param	string	$sTable			: Nom de la table du référentiel en base de données.
+	 * @param	integer	$nId			: Identifiant à récupérer.
 	 * @return	array
 	 */
 	public function getReferentielById($sTable, $nId) {
@@ -344,7 +344,7 @@ class ReferentielManager extends MySQLManager {
 	 *
 	 * @li	Recherche le nom de la table parent passée en paramètre.
 	 *
-	 * @param	string	$sTable		: Nom de la table du référentiel en base de données.
+	 * @param	string	$sTable			: Nom de la table du référentiel en base de données.
 	 * @return	array
 	 */
 	public function findListeParent($sTable) {
@@ -375,6 +375,7 @@ class ReferentielManager extends MySQLManager {
 
 	/**
 	 * @brief	Récupèration de la liste des sous-domaines.
+	 * @param	integer	$nIdDomaine		: Identifiant du domaine de référence.
 	 * @return	array
 	 */
 	public function findListeSousDomaines($nIdDomaine = null) {
@@ -394,6 +395,7 @@ class ReferentielManager extends MySQLManager {
 
 	/**
 	 * @brief	Récupèration de la liste des catégories.
+	 * @param	integer	$nIdDomaine		: Identifiant du domaine associé.
 	 * @return	array
 	 */
 	public function findListeCategories($nIdDomaine = null) {
@@ -413,6 +415,7 @@ class ReferentielManager extends MySQLManager {
 
 	/**
 	 * @brief	Récupèration de la liste des sous-catégories.
+	 * @param	integer	$nIdCategorie	: identifiant de la catégorie de référence.
 	 * @return	array
 	 */
 	public function findListeSousCategories($nIdCategorie = null) {
@@ -458,12 +461,30 @@ class ReferentielManager extends MySQLManager {
 	 * @brief	Récupèration de la liste des stages.
 	 *
 	 * @li	Possibilité de filtrer la liste des stages selon le domaine.
+	 * @li	Possibilité de filtrer uniquement les stages qui se termineront ultérieurement.
 	 *
+	 * @param	integer	$nIdDomaine		: (optionnel) Identifiant du domaine associé.
+	 * @param	boolean	$bActif			: (optionnel) Ne récupère que les stages non terminés ou à venir.
 	 * @return	array
 	 */
-	public function findListeStages($nIdDomaine = null) {
+	public function findListeStages($nIdDomaine = null, $bActif = false) {
+		// Initialisation de la clause WHERE
+		$aWhere = array();
+		
 		// Construction de la clause WHERE
-		$aWhere = array("id_domaine = %d" => $nIdDomaine);
+		$aWhere = array();
+		
+		// Fonctionnalité réalisée si un domaine est passé en paramètre
+		if (!is_null($nIdDomaine)) {
+			$aWhere["id_domaine = %d"]	= $nIdDomaine;
+		}
+		
+		// Fonctionnalité réalisée si le stage ne doit pas être terminé
+		if ($bActif) {
+			// Filtre selon la date de fin
+			$aWhere["date_fin_stage >= %s"]	= date("Y-m-d");
+		}
+		
 		// Récupération du référentiel
 		$aReferentiel = $this->findListeReferentiel('stage', $aWhere, array('libelle_stage ASC'));
 		// Transformation du tableau en array('id' => 'libelle')
@@ -491,11 +512,11 @@ class ReferentielManager extends MySQLManager {
 	 *
 	 * @li	Possibilité de filtrer la liste des salles selon leur disponibilité.
 	 *
-	 * @param	date	$dDate		: (optionnel) Date de disponibilité à rechercher au format [Y-m-d].
-	 * @param	time	$tHeure		: (optionnel) Heure de disponibilité à rechercher au format [H:i].
-	 * @param	integer	$nDuree		: (optionnel) Durée nécessaire à l'utilisation, en minutes.
-	 * @param	boolean	$bExamen	: (optionnel) Si la salle est destinée à une épreuve.
-	 * @param	boolean	$bReservable: (optionnel) Si la salle est destinée à une épreuve.
+	 * @param	date	$dDate				: (optionnel) Date de disponibilité à rechercher au format [Y-m-d].
+	 * @param	time	$tHeure				: (optionnel) Heure de disponibilité à rechercher au format [H:i].
+	 * @param	integer	$nDuree				: (optionnel) Durée nécessaire à l'utilisation, en minutes.
+	 * @param	boolean	$bExamen			: (optionnel) Si la salle est destinée à une épreuve.
+	 * @param	boolean	$bReservable		: (optionnel) Si la salle est destinée à une épreuve.
 	 * @return	array
 	 */
 	public function findListeSalles($dDate = null, $tHeure = null, $nDuree = 0, $bExamen = true, $bReservable = null) {

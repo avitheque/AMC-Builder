@@ -8,8 +8,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 62 $
- * @since		$LastChangedDate: 2017-07-09 11:09:53 +0200 (Sun, 09 Jul 2017) $
+ * @version		$LastChangedRevision: 89 $
+ * @since		$LastChangedDate: 2017-12-27 00:05:27 +0100 (Wed, 27 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -54,7 +54,8 @@ class AutocompleteHelper extends InputHelper {
 			}
 		}
 		// Construction du LABEL permettant d'ouvrir la liste disponible
-		parent::__construct($sName, $sValue, "text", "&#9013;", "drop-down");
+		parent::__construct($sName, $sValue, "text");
+		$this->addLabel("&#9013;", "drop-down");
 
 		// Fonctionnalité réalisée si la liste AUTOCOMPLETE est valide
 		$this->_list = $aListe;

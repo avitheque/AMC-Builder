@@ -15,8 +15,8 @@
  * @subpackage	Libraries
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 87 $
- * @since		$LastChangedDate: 2017-12-20 19:19:01 +0100 (Wed, 20 Dec 2017) $
+ * @version		$LastChangedRevision: 88 $
+ * @since		$LastChangedDate: 2017-12-26 11:14:42 +0100 (Tue, 26 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -33,13 +33,12 @@ abstract class AbstractFormulaireQCMController extends AbstractFormulaireControl
 	const		ACTION_AJOUTER						= "ajouter";
 	const		ACTION_EDITER						= "editer";
 	const		ACTION_EFFACER						= "effacer";
-	const		ACTION_EMARGER						= "emarger";
-	const		ACTION_SIGNER						= "signer";
 	const		ACTION_ENREGISTRER					= "enregistrer";
 	const		ACTION_EXPORTER						= "exporter";
 	const		ACTION_FERMER						= "fermer";
 	const		ACTION_FORCER						= "forcer";
 	const		ACTION_IMPORTER						= "importer";
+	const		ACTION_PROGRAMMER					= "programmer";
 	const		ACTION_RETIRER						= "retirer";
 	const		ACTION_SUPPRIMER					= "supprimer";
 	const		ACTION_TERMINER						= "terminer";
@@ -79,6 +78,7 @@ abstract class AbstractFormulaireQCMController extends AbstractFormulaireControl
 	 * @var		integer
 	 */
 	protected	$_idFormulaire						= null;
+	protected	$_idEpreuve							= null;
 
 	/**
 	 * @brief	Constructeur de la classe.
@@ -107,13 +107,16 @@ abstract class AbstractFormulaireQCMController extends AbstractFormulaireControl
 		$this->_oReferentielManager					= new ReferentielManager();
 
 		// Récupération des éléments du référentiel sélectionnés
-		$nIdDomaine									= $this->getFormulaire('formulaire_domaine');
-		$nIdSousDomaine								= $this->getFormulaire('formulaire_sous_domaine');
-		$nIdCategorie								= $this->getFormulaire('formulaire_categorie');
-		$nIdSousCategorie							= $this->getFormulaire('formulaire_sous_categorie');
+		$nIdDomaine									= $this->getFormulaire('formulaire_domaine',		DataHelper::DATA_TYPE_INT);
+		$nIdSousDomaine								= $this->getFormulaire('formulaire_sous_domaine',	DataHelper::DATA_TYPE_INT);
+		$nIdCategorie								= $this->getFormulaire('formulaire_categorie',		DataHelper::DATA_TYPE_INT);
+		$nIdSousCategorie							= $this->getFormulaire('formulaire_sous_categorie',	DataHelper::DATA_TYPE_INT);
 
 		// Construction du référentiel
 		$aListeDomaines								= $this->_oReferentielManager->findListeDomaines();
+		$aListeSousDomaines							= array();
+		$aListeCategories							= array();
+		$aListeSousCategories						= array();
 
 		// Récupération des référentiels relatifs au DOMAINE
 		if (!empty($nIdDomaine)) {

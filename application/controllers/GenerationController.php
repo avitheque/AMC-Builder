@@ -11,8 +11,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 87 $
- * @since		$LastChangedDate: 2017-12-20 19:19:01 +0100 (Wed, 20 Dec 2017) $
+ * @version		$LastChangedRevision: 89 $
+ * @since		$LastChangedDate: 2017-12-27 00:05:27 +0100 (Wed, 27 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -21,9 +21,11 @@
 class GenerationController extends AbstractFormulaireQCMController {
 
 	/**
-	 * @var		integer
+	 * @brief	Constantes de l'épreuve.
+	 *
+	 * @var		string
 	 */
-	protected	$_idEpreuve						= null;
+	const		ID_EPREUVE							= 'ID_EPREUVE';
 
 	/**
 	 * @brief	Constructeur de la classe.
@@ -38,7 +40,7 @@ class GenerationController extends AbstractFormulaireQCMController {
 		$this->resetDataIntoSession('FILE_NAME');
 
 		// Récupération de l'identifiant du formulaire en session
-		$this->_idEpreuve 		= $this->getDataFromSession('ID_EDITION');
+		$this->_idEpreuve 			= $this->getDataFromSession(self::ID_EPREUVE);
 
 		// Fonctionnalité réalisée selon l'action du bouton
 		switch (strtolower($this->getParam('button'))) {
@@ -48,16 +50,6 @@ class GenerationController extends AbstractFormulaireQCMController {
 				$this->debug("EXPORTER");
 				// Exécution de l'action
 				$this->exporterAction();
-				break;
-
-			case self::ACTION_EMARGER:
-				
-				die("STOP");
-				
-				// Message de débuggage
-				$this->debug("EMARGER");
-				// Exécution de l'action
-				$this->emargerAction();
 				break;
 
 			default:
@@ -72,55 +64,28 @@ class GenerationController extends AbstractFormulaireQCMController {
 	 * Si l'identifiant du formulaire est connu, le document est créé, sinon une liste complète est affichée.
 	 */
 	public function indexAction() {
-		// Fonctionnalité réalisée si l'identifiant du formulaire est renseigné
-		if ($this->_idFormulaire) {
-			// Chargement du formulaire si l'identifiant est présent en session
-			$this->chargerAction($this->_idFormulaire);
+		// Suppression de l'identifiant de l'épreuve en session
+		$this->resetDataIntoSession(self::ID_EPREUVE);
 
-			// Construction du référentiel des différents formats exploités
-			$this->addToData('liste_formats',	$this->_oReferentielManager->findListeFormatPapier());
+		// Recherche de la liste des formulaires en attente de génération
+		$aListeGeneration			= $this->_oFormulaireManager->findAllFormulairesForGeneration();
 
-			// Construction du référentiel des différents types d'épreuve
-			$this->addToData('liste_types',		$this->_oReferentielManager->findListeTypesEpreuve());
+		// Recherche de la liste des épreuves générées
+		$aListeEpreuves				= $this->_oFormulaireManager->findAllEpreuves();
 
-			// Construction de la liste des stages
-			$nIdDomaine			= DataHelper::get($this->getFormulaire(), 'formulaire_domaine',	DataHelper::DATA_TYPE_INT, 0);
-			$this->addToData('liste_stages',	$this->_oReferentielManager->findListeStages($nIdDomaine));
+		// Recherche de la liste des épreuves générées
+		$aListeProgrammations		= $this->_oFormulaireManager->findAllProgrammations();
 
-			// Construction de la liste des salles
-			$dDateEpreuve		= DataHelper::get($this->getFormulaire(), 'epreuve_date', 		DataHelper::DATA_TYPE_MYDATE);
-			$tHeureEpreuve		= DataHelper::get($this->getFormulaire(), 'epreuve_heure',		DataHelper::DATA_TYPE_TIME);
-			$nDureeEpreuve		= DataHelper::get($this->getFormulaire(), 'epreuve_duree',		DataHelper::DATA_TYPE_INT);
-			$this->addToData('liste_salles',	$this->_oReferentielManager->findListeSalles($dDateEpreuve, $tHeureEpreuve, $nDureeEpreuve));
-
-			// Message de débuggage
-			$this->debug(":id_domaine = $nIdDomaine");
-		} else {
-			// Recherche de la liste des formulaires en attente de génération
-			$aListeGeneration	= $this->_oFormulaireManager->findAllFormulairesForGeneration();
-
-			// Recherche de la liste des épreuves générées
-			$aListeEpreuves		= $this->_oFormulaireManager->findAllEpreuves();
-
-			// Recherche de la capacité d'accueil de chaque épreuve
-			foreach ($aListeEpreuves as $nOccurrence => $aEpreuve) {
-				// Ajout de l'information de la capacité à l'épreuve courante
-				$aListeEpreuves[$nOccurrence]['SUM(capacite_statut_salle)']	= $this->_oFormulaireManager->getCapacitesByEpreuveId($aEpreuve['id_epreuve']);
-			}
-
-			// Envoi de la liste à la vue
-			$this->addToData('liste_generation',	$aListeGeneration);
-			$this->addToData('liste_epreuves',		$aListeEpreuves);
+		// Recherche de la capacité d'accueil de chaque épreuve
+		foreach ($aListeProgrammations as $nOccurrence => $aEpreuve) {
+			// Ajout de l'information de la capacité à l'épreuve courante
+			$aListeProgrammations[$nOccurrence]['SUM(capacite_statut_salle)']	= $this->_oFormulaireManager->getCapacitesByEpreuveId($aEpreuve['id_epreuve']);
 		}
-	}
 
-	/**
-	 * @brief	Générer une feuille d'émargement seule.
-	 *
-	 * @return	void
-	 */
-	public function emargerAction() {
-		die("OK");
+		// Envoi de la liste à la vue
+		$this->addToData('liste_generation',		$aListeGeneration);
+		$this->addToData('liste_epreuves',			$aListeProgrammations);
+		$this->addToData('liste_programmations',	$aListeProgrammations);
 	}
 
 	/**
@@ -146,7 +111,7 @@ class GenerationController extends AbstractFormulaireQCMController {
 	 */
 	public function exporterAction() {
 		// Génération du formulaire
-		$oFormulaire			= new LatexFormManager($this->getFormulaire());
+		$oFormulaire				= new LatexFormManager($this->getFormulaire());
 		$oFormulaire->render();
 
 		// Désactivation de la vue
@@ -154,23 +119,81 @@ class GenerationController extends AbstractFormulaireQCMController {
 	}
 
 	/**
-	 * @brief	Édition d'une épreuve.
+	 * @brief	Programmer une nouvelle épreuve.
 	 *
+	 * Programmation d'une nouvelle épreuve.
+	 * @li	Si l'identifiant d'une épreuve est passé en paramètre, l'identifiant du formulaire est recherché
 	 * @return	void
 	 */
 	public function epreuveAction() {
 		// Récupération de l'identifiant de l'épreuve
-		$nIdEpreuve = $this->getParam('id_epreuve');
+		$nIdEpreuve					= $this->getParam('id_epreuve');
 
+		// Récupération de l'identifiant de l'épreuve
+		$nIdFormulaire				= $this->getParam('id_formulaire');
+
+		// Initialisation des données de l'épreuve
 		if (!empty($nIdEpreuve)) {
-			// Stockage de l'identifiant de l'édition en session
-			$this->sendDataToSession($nIdEpreuve, "ID_EDITION");
+			// Stockage de l'identifiant de l'épreuve en session
+			$this->sendDataToSession($nIdEpreuve, self::ID_EPREUVE);
 
 			// Redirection afin d'effacer les éléments présents en GET
-			$this->redirect('generation/epreuve');
+			$this->redirect($this->_controller . '/epreuve');
+		} elseif ($this->_idEpreuve) {
+			// Actualisation des données du formulaire
+			$this->resetFormulaire(
+				// Initialisation du formulaire avec les données en base
+				$this->_oFormulaireManager->generer($this->_idEpreuve)
+			);
+
+			// Protection du formulaire contre la modification si un contrôle est en cours
+			$this->sendDataToSession($this->_oFormulaireManager->isControleExistsByIdEpreuve($this->_aForm['epreuve_id']), 'CONTROLE_EPREUVE_EXISTS');
+			$this->addToData('CONTROLE_EPREUVE_EXISTS', $this->_oFormulaireManager->isControleExistsByIdEpreuve($this->_aForm['epreuve_id']));
+
+		}
+
+		// Construction du référentiel des différents formats exploités
+		$this->addToData('liste_formats',	$this->_oReferentielManager->findListeFormatPapier());
+
+		// Construction du référentiel des différents types d'épreuve
+		$this->addToData('liste_types',		$this->_oReferentielManager->findListeTypesEpreuve());
+
+		// Construction de la liste des stages
+		$nIdDomaine					= null;
+		if ($nIdFormulaire) {
+			$nIdDomaine				= $this->getFormulaire('formulaire_domaine',	DataHelper::DATA_TYPE_INT);
+		}
+		// Chargement de la liste des stages en cours
+		$this->addToData('liste_stages',	$this->_oReferentielManager->findListeStages($nIdDomaine));
+
+		// Construction de la liste des salles
+		$dDateEpreuve				= $this->getFormulaire('epreuve_date', 			DataHelper::DATA_TYPE_MYDATE);
+		$tHeureEpreuve				= $this->getFormulaire('epreuve_heure',			DataHelper::DATA_TYPE_TIME);
+		$nDureeEpreuve				= $this->getFormulaire('epreuve_duree',			DataHelper::DATA_TYPE_INT);
+		$this->addToData('liste_salles',	$this->_oReferentielManager->findListeSalles($dDateEpreuve, $tHeureEpreuve, $nDureeEpreuve));
+
+		// Message de débuggage
+		$this->debug(":id_domaine = $nIdDomaine");
+	}
+
+	/**
+	 * @brief	Impression d'une programmation d'épreuve.
+	 *
+	 * @return	void
+	 */
+	public function imprimerAction() {
+		// Récupération de l'identifiant de l'épreuve
+		$nIdEpreuve					= $this->getParam('id_epreuve');
+
+		if (!empty($nIdEpreuve)) {
+			// Stockage de l'identifiant de l'épreuve en session
+			$this->sendDataToSession($nIdEpreuve, self::ID_EPREUVE);
+
+			// Redirection afin d'effacer les éléments présents en GET
+			$this->redirect($this->_controller . '/imprimer');
 		} elseif ($this->_idEpreuve) {
 			// Édition de l'épreuve à partir de l'identifiant stocké en session
-			$oEpreuve			= new ExportEpreuveManager($this->_idEpreuve, true, true);
+			$oEpreuve				= new ExportEpreuveManager($this->_idEpreuve, true, true);
 			$oEpreuve->render();
 
 			// Désactivation de la vue
@@ -179,17 +202,17 @@ class GenerationController extends AbstractFormulaireQCMController {
 	}
 
 	/**
-	 * @brief	Édition d'une épreuve.
+	 * @brief	Suppression d'une épreuve.
 	 *
 	 * @return	void
 	 */
 	public function supprimerAction() {
 		// Récupération de l'identifiant de l'épreuve
-		$nIdEpreuve = $this->getParam('id_epreuve');
+		$nIdEpreuve					= $this->getParam('id_epreuve');
 
 		if (!empty($nIdEpreuve)) {
 			// Recherche si l'épreuve existe
-			$aEpreuve = $this->_oFormulaireManager->getEpreuveById($nIdEpreuve);
+			$aEpreuve				= $this->_oFormulaireManager->getEpreuveById($nIdEpreuve);
 
 			// Fonctionnalité réalisée si l'épreuve est valide
 			if (DataHelper::isValidArray($aEpreuve)) {
@@ -198,8 +221,11 @@ class GenerationController extends AbstractFormulaireQCMController {
 			}
 		}
 
+		// Suppression de l'identifiant de l'épreuve en session
+		$this->resetDataIntoSession(self::ID_EPREUVE);
+
 		// Redirection afin d'effacer les éléments présents en GET
-		$this->redirect('generation');
+		$this->redirect($this->_controller);
 	}
 
 }
