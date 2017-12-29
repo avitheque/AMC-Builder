@@ -11,8 +11,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 93 $
- * @since		$LastChangedDate: 2017-12-29 15:37:13 +0100 (Fri, 29 Dec 2017) $
+ * @version		$LastChangedRevision: 94 $
+ * @since		$LastChangedDate: 2017-12-29 17:27:29 +0100 (Fri, 29 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -47,7 +47,6 @@ class ExportEpreuveManager extends DocumentManager {
 
 		// Récupération du nom du stage
 		$sStage								= DataHelper::get($aEpreuve,				"libelle_stage",				DataHelper::DATA_TYPE_PDF);
-		$this->setFilename($sStage);
 
 		// Récupération du libellé de l'épreuve
 		$sLibelleEpreuve					= DataHelper::get($aEpreuve,				"libelle_epreuve",				DataHelper::DATA_TYPE_PDF);
@@ -118,7 +117,11 @@ class ExportEpreuveManager extends DocumentManager {
 		//	@todo PDF
 		// ========================================================================================
 		// Initialisation du nom du fichier à partir des noms du STAGE et du FORMULAIRE
-		$this->setFilename($sStage . ' - ' . $sLibelleEpreuve);
+		if (strlen($sLibelleEpreuve)) {
+			$this->setFilename($sStage . ' - ' . $sLibelleEpreuve);
+		} else {
+			$this->setFilename($sStage);
+		}
 
 		// Initialisation de la capacité totale à mettre en place pour l'examen
 		$nTotalCapaciteExamen				= 0;

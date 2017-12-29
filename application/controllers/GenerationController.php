@@ -11,8 +11,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 93 $
- * @since		$LastChangedDate: 2017-12-29 15:37:13 +0100 (Fri, 29 Dec 2017) $
+ * @version		$LastChangedRevision: 94 $
+ * @since		$LastChangedDate: 2017-12-29 17:27:29 +0100 (Fri, 29 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -71,9 +71,6 @@ class GenerationController extends AbstractFormulaireQCMController {
 		$aListeGeneration			= $this->_oFormulaireManager->findAllFormulairesForGeneration();
 
 		// Recherche de la liste des épreuves générées
-		$aListeEpreuves				= $this->_oFormulaireManager->findAllEpreuves();
-
-		// Recherche de la liste des épreuves générées
 		$aListeProgrammations		= $this->_oFormulaireManager->findAllProgrammations();
 
 		// Recherche de la capacité d'accueil de chaque épreuve
@@ -84,7 +81,6 @@ class GenerationController extends AbstractFormulaireQCMController {
 
 		// Envoi de la liste à la vue
 		$this->addToData('liste_generation',		$aListeGeneration);
-		$this->addToData('liste_epreuves',			$aListeProgrammations);
 		$this->addToData('liste_programmations',	$aListeProgrammations);
 	}
 

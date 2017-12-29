@@ -39,7 +39,7 @@ $oValidation->setFormatOnColumn('date_modification_formulaire',	DataHelper::DATA
 $aColonnes = array(
 	'titre_formulaire'				=> "TITRE",
 	'libelle_domaine'				=> "DOMAINE",
-	'COUNT(id_question)'			=> "QUESTIONS",
+	'total_questions'				=> "QUESTIONS",
 	'date_modification_formulaire'	=> "MODIFICATION",
 	'libelle_groupe'				=> "GROUPE",
 	'libelle_redacteur'				=> "REDACTEUR",
@@ -53,7 +53,7 @@ $oValidation->setConditionalClassOnColumn('id_domaine', '<=', "0", "strong red",
 
 // Ajout d'une colonne [ACTION] avec un lien HREF conditionnel selon l'état de validation
 $oValidation->setConditionalAnchorOnColumn("ACTION", "validation_formulaire", 1, "id_formulaire", "Valider", "/validation?id_formulaire=", "green tooltip-track",	"Valider le QCM pour une épreuve");
-$oValidation->setConditionalAnchorOnColumn("ACTION", "validation_formulaire", 2, "id_formulaire", "Générer", "/generation?id_formulaire=", "blue tooltip-track",	"Générer le QCM pour une épreuve");
+$oValidation->setConditionalAnchorOnColumn("ACTION", "validation_formulaire", 2, "id_formulaire", "Générer", "/generation/epreuve?id_formulaire=", "blue tooltip-track",	"Générer le QCM pour une épreuve");
 
 // Tri du tableau sur la colonne ACTION par ordre DESC
 $oValidation->setOrderColumn('ACTION', DatatableHelper::ORDER_DESC);

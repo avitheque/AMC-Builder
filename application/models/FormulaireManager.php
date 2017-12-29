@@ -18,8 +18,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 93 $
- * @since		$LastChangedDate: 2017-12-29 15:37:13 +0100 (Fri, 29 Dec 2017) $
+ * @version		$LastChangedRevision: 94 $
+ * @since		$LastChangedDate: 2017-12-29 17:27:29 +0100 (Fri, 29 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -611,7 +611,7 @@ class FormulaireManager extends MySQLManager {
 			0	=> "SELECT *,",
 			1	=> self::LIBELLE_REDACTEUR . " AS libelle_redacteur,",
 			2	=> self::LIBELLE_VALIDEUR . " AS libelle_valideur,",
-			3	=> "COUNT(id_question)",
+			3	=> "COUNT(id_question) AS total_questions",
 			4	=> "FROM formulaire",
 			5	=> "LEFT  JOIN domaine USING(id_domaine)",
 			6	=> "INNER JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = id_redacteur)",
@@ -668,21 +668,21 @@ class FormulaireManager extends MySQLManager {
 			0	=> "SELECT *,",
 			1	=> self::LIBELLE_REDACTEUR . " AS libelle_redacteur,",
 			2	=> self::LIBELLE_VALIDEUR . " AS libelle_valideur,",
-			3	=> "COUNT(id_question)",
+			3	=> "COUNT(id_question) AS total_questions",
 			4	=> "FROM formulaire",
 			5	=> "LEFT  JOIN domaine USING(id_domaine)",
 			6	=> "INNER JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = id_redacteur)",
 			7	=> "LEFT  JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
 			8	=> "INNER JOIN groupe ON(redacteur.id_groupe = groupe.id_groupe)",
 			9	=> "LEFT  JOIN formulaire_question USING(id_formulaire)",
-			10	=> "WHERE validation_formulaire > :validation_formulaire",
+			10	=> "WHERE validation_formulaire >= :validation_formulaire",
 			'X'	=> null,
-			12	=> "GROUP BY id_formulaire"
+			11	=> "GROUP BY id_formulaire"
 		);
 
 		// Construction du tableau associatif des étiquettes et leurs valeurs
 		$aBind = array(
-			':validation_formulaire'		=> FormulaireManager::VALIDATION_DEFAUT
+			':validation_formulaire'		=> FormulaireManager::VALIDATION_ATTENTE
 		);
 
 		// Fonctionnalité réalisée si l'accès aux formulaires est limité au groupe d'utilisateurs du rédacteur
@@ -725,24 +725,21 @@ class FormulaireManager extends MySQLManager {
 			0	=> "SELECT *,",
 			1	=> self::LIBELLE_REDACTEUR . " AS libelle_redacteur,",
 			2	=> self::LIBELLE_VALIDEUR . " AS libelle_valideur,",
-			3	=> self::DATETIME_EPREUVE . " AS datetime_epreuve,",
-			7	=> "COUNT(id_question)",
-			8	=> "FROM formulaire",
-			9	=> "LEFT  JOIN domaine USING(id_domaine)",
-			10	=> "INNER JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = id_redacteur)",
-			11	=> "INNER JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
-			12	=> "INNER JOIN groupe ON(redacteur.id_groupe = groupe.id_groupe)",
-			13	=> "LEFT  JOIN formulaire_question USING(id_formulaire)",
-			14	=> "LEFT  JOIN generation USING(id_formulaire)",
-			15	=> "LEFT  JOIN epreuve USING(id_generation)",
-			16	=> "WHERE validation_formulaire > :validation_formulaire",
+			3	=> "COUNT(id_question) AS total_questions",
+			4	=> "FROM formulaire",
+			5	=> "LEFT  JOIN domaine USING(id_domaine)",
+			6	=> "INNER JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = id_redacteur)",
+			7	=> "INNER JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
+			8	=> "INNER JOIN groupe ON(redacteur.id_groupe = groupe.id_groupe)",
+			9	=> "LEFT  JOIN formulaire_question USING(id_formulaire)",
+			10	=> "WHERE validation_formulaire = :validation_formulaire",
 			'X'	=> null,
-			17	=> "GROUP BY id_formulaire"
+			11	=> "GROUP BY id_formulaire"
 		);
 
 		// Construction du tableau associatif des étiquettes et leurs valeurs
 		$aBind = array(
-			':validation_formulaire'		=> FormulaireManager::VALIDATION_DEFAUT
+			':validation_formulaire'		=> FormulaireManager::VALIDATION_REALISEE
 		);
 
 		// Fonctionnalité réalisée si l'accès aux formulaires est limité au groupe d'utilisateurs du rédacteur
