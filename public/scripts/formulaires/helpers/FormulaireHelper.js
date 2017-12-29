@@ -432,7 +432,7 @@ $(document).ready(function() {
 	//#############################################################################################
 
 	// Surcharge de l'autocomplétion lors du changement de destinataire
-	$("#idDestinataires").autocomplete({
+	$("#idStageLibelle").autocomplete({
 		close:		function() {
 			// Recherche du stage par son identifiant
 			$.ajax({

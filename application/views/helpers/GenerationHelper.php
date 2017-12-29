@@ -131,6 +131,7 @@ class GenerationHelper extends FormulaireHelper {
 
 		// Identifiant du stage
 		$nIdStage						= DataHelper::get($this->_aQCM, 'epreuve_stage', 					DataHelper::DATA_TYPE_INT,		null);
+		$sLibelleStage					= DataHelper::get($this->_aQCM, 'epreuve_stage_libelle', 			DataHelper::DATA_TYPE_STR,		'-');
 
 		// Format du document à générer
 		$sLanqueGeneration				= DataHelper::get($this->_aQCM, 'generation_langue',				DataHelper::DATA_TYPE_STR,		FormulaireManager::GENERATION_LANGUE_DEFAUT);
@@ -157,7 +158,7 @@ class GenerationHelper extends FormulaireHelper {
 		$dDateEpreuveGeneration			= DataHelper::get($this->_aQCM,	'generation_date_epreuve',			DataHelper::DATA_TYPE_DATE,		date(FormulaireManager::EPREUVE_DATE_FORMAT));
 
 		// Récupération du libellé de l'épreuve, à défaut, le nom et la date de l'épreuve à partir de la génération
-		$sLibelleEpreuve				= DataHelper::get($this->_aQCM,	'epreuve_libelle',					DataHelper::DATA_TYPE_STR,		$sNomEpreuveGeneration);
+		$sLibelleEpreuve				= DataHelper::get($this->_aQCM,	'epreuve_libelle',					DataHelper::DATA_TYPE_STR,		$sNomFormulaire);
 		$dDateEpreuve					= DataHelper::get($this->_aQCM,	'epreuve_date',						DataHelper::DATA_TYPE_DATE,		$dDateEpreuveGeneration);
 
 		// Type de l'épreuve
@@ -172,8 +173,8 @@ class GenerationHelper extends FormulaireHelper {
 		$sFormatOptions					= HtmlHelper::buildListOptions($this->_oInstanceStorage->getData('liste_formats'), $sIdFormat);
 
 		// Construction du champ AutoComplete exploitant le plugin jQuery.autoComplete()
-		$oAutocomplete 					= new AutocompleteHelper("epreuve_libelle", $this->_oInstanceStorage->getData('liste_stages'), $sLibelleEpreuve, !empty($nIdStage));
-		$oAutocomplete->setId("idDestinataires");
+		$oAutocomplete 					= new AutocompleteHelper("epreuve_stage_libelle", $this->_oInstanceStorage->getData('liste_stages'), $sLibelleStage, !empty($nIdStage));
+		$oAutocomplete->setId("idStageLibelle");
 		$oAutocomplete->setClass("half-width");
 		$oAutocomplete->setHiddenInputName("epreuve_stage");
 		$oAutocomplete->setRequired(true);
@@ -259,8 +260,12 @@ class GenerationHelper extends FormulaireHelper {
 																<input type=\"hidden\" id=\"idEpreuve\" name=\"epreuve_id\" value=\"" . $nIdEpreuve . "\" />
 															</li>
 															<li>
-																<label for=\"idDestinataires\" class=\"width-225\">Stage concerné par l'épreuve</label>
+																<label for=\"idStageLibelle\" class=\"width-225\">Stage concerné par l'épreuve</label>
 																" . $oAutocomplete->renderHTML() . "
+															</li>
+															<li>
+																<label for=\"idEpreuveLibelle\" class=\"width-225\">Nom de l'épreuve</label>
+																<input maxlength=50 type=\"text\" class=\"half-width\" id=\"idEpreuveLibelle\" name=\"epreuve_libelle\" value=\"" . $sLibelleEpreuve . "\" $sReadonly/>
 															</li>
 															<li>
 																<label for=\"idDateEpreuve\" class=\"width-225\">Date prévue de l'épreuve</label>

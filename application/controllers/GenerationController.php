@@ -11,8 +11,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 89 $
- * @since		$LastChangedDate: 2017-12-27 00:05:27 +0100 (Wed, 27 Dec 2017) $
+ * @version		$LastChangedRevision: 93 $
+ * @since		$LastChangedDate: 2017-12-29 15:37:13 +0100 (Fri, 29 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -150,6 +150,9 @@ class GenerationController extends AbstractFormulaireQCMController {
 			$this->sendDataToSession($this->_oFormulaireManager->isControleExistsByIdEpreuve($this->_aForm['epreuve_id']), 'CONTROLE_EPREUVE_EXISTS');
 			$this->addToData('CONTROLE_EPREUVE_EXISTS', $this->_oFormulaireManager->isControleExistsByIdEpreuve($this->_aForm['epreuve_id']));
 
+		} elseif (empty($this->_idFormulaire)) {
+			// Suppression de l'identifiant de l'épreuve en session
+			$this->resetDataIntoSession(self::ID_EPREUVE);
 		}
 
 		// Construction du référentiel des différents formats exploités
@@ -192,9 +195,24 @@ class GenerationController extends AbstractFormulaireQCMController {
 			// Redirection afin d'effacer les éléments présents en GET
 			$this->redirect($this->_controller . '/imprimer');
 		} elseif ($this->_idEpreuve) {
-			// Édition de l'épreuve à partir de l'identifiant stocké en session
-			$oEpreuve				= new ExportEpreuveManager($this->_idEpreuve, true, true);
-			$oEpreuve->render();
+			// Suppression de l'identifiant de l'épreuve en session
+			$this->resetDataIntoSession(self::ID_EPREUVE);
+
+			try {
+				// Édition de l'épreuve à partir de l'identifiant stocké en session
+				$oDocument = new ExportEpreuveManager($this->_idEpreuve, true, true);
+			} catch (ApplicationException $e) {
+				$oDocument = new PDFManager();
+				$oDocument->setFilename("Erreur d'impression");
+				$oDocument->addLine();
+				$oDocument->setTextColor(255, 0, 0);
+				$oDocument->title("Erreur rencontrée lors de l'impression", 20);
+				$oDocument->addLine();
+				$oDocument->setFontSizePt(15);
+				$oDocument->setTextColor(0);
+				$oDocument->textMiddle($e->getMessage());
+			}
+			$oDocument->render();
 
 			// Désactivation de la vue
 			$this->render(FW_VIEW_VOID);

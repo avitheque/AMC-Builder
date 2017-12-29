@@ -18,8 +18,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 89 $
- * @since		$LastChangedDate: 2017-12-27 00:05:27 +0100 (Wed, 27 Dec 2017) $
+ * @version		$LastChangedRevision: 93 $
+ * @since		$LastChangedDate: 2017-12-29 15:37:13 +0100 (Fri, 29 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -96,6 +96,7 @@ class FormulaireManager extends MySQLManager {
 	const LIBELLE_CANDIDAT					= "CONCAT(grade.libelle_court_grade, \" \", candidat.nom_candidat, \" \", candidat.prenom_candidat)";
 	const LIBELLE_REDACTEUR					= "CONCAT(redacteur.nom_utilisateur, \" \", redacteur.prenom_utilisateur)";
 	const LIBELLE_VALIDEUR					= "CONCAT(valideur.nom_utilisateur, \" \", valideur.prenom_utilisateur)";
+	const LIBELLE_STAGE_SPRINTF				= "CONCAT(stage.libelle_stage, \"<br />(\", DATE_FORMAT(stage.date_debut_stage, '%s'), \" - \", DATE_FORMAT(stage.date_fin_stage, '%s'), \")\")";
 
 	/**
 	 * Format des DATETIME pour la requête SQL
@@ -243,18 +244,19 @@ class FormulaireManager extends MySQLManager {
 			4	=> "UNIX_TIMESTAMP(" . self::DATETIME_EPREUVE . ") AS debut_epreuve,",
 			5	=> "UNIX_TIMESTAMP(" . self::DATETIME_EPREUVE . ") + 60 * duree_epreuve AS fin_epreuve,",
 			6	=> "UNIX_TIMESTAMP(CURRENT_TIMESTAMP()) AS maintenant,",
-			7	=> "COUNT(id_stage_candidat)",
-			8	=> "FROM epreuve",
-			9	=> "INNER JOIN generation USING(id_generation)",
-			10	=> "LEFT  JOIN formulaire USING(id_formulaire)",
-			11	=> "LEFT  JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = formulaire.id_redacteur)",
-			12	=> "LEFT  JOIN utilisateur AS valideur ON(valideur.id_utilisateur = generation.id_valideur)",
-			13	=> "LEFT  JOIN groupe ON(valideur.id_groupe = groupe.id_groupe)",
-			14	=> "INNER JOIN stage USING(id_stage)",
-			15	=> "LEFT  JOIN stage_candidat USING(id_stage)",
-			16	=> "LEFT  JOIN candidat USING(id_candidat)",
+			7	=> sprintf(self::LIBELLE_STAGE_SPRINTF, $this->_dateFormat, $this->_dateFormat) . " AS libelle_stage_complet,",
+			8	=> "COUNT(id_stage_candidat)",
+			9	=> "FROM epreuve",
+			10	=> "INNER JOIN generation USING(id_generation)",
+			11	=> "LEFT  JOIN formulaire USING(id_formulaire)",
+			12	=> "LEFT  JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = formulaire.id_redacteur)",
+			13	=> "LEFT  JOIN utilisateur AS valideur ON(valideur.id_utilisateur = generation.id_valideur)",
+			14	=> "LEFT  JOIN groupe ON(valideur.id_groupe = groupe.id_groupe)",
+			15	=> "INNER JOIN stage USING(id_stage)",
+			16	=> "LEFT  JOIN stage_candidat USING(id_stage)",
+			17	=> "LEFT  JOIN candidat USING(id_candidat)",
 			'X'	=> null,
-			17	=> "GROUP BY id_epreuve"
+			18	=> "GROUP BY id_epreuve"
 		);
 
 		// Construction du tableau associatif des étiquettes et leurs valeurs
@@ -306,19 +308,20 @@ class FormulaireManager extends MySQLManager {
 			4	=> "UNIX_TIMESTAMP(" . self::DATETIME_EPREUVE . ") AS debut_epreuve,",
 			5	=> "UNIX_TIMESTAMP(" . self::DATETIME_EPREUVE . ") + 60 * duree_epreuve AS fin_epreuve,",
 			6	=> "UNIX_TIMESTAMP(CURRENT_TIMESTAMP()) AS maintenant,",
-			7	=> "COUNT(id_stage_candidat)",
-			8	=> "FROM epreuve",
-			9	=> "INNER JOIN generation USING(id_generation)",
-			10	=> "LEFT  JOIN formulaire USING(id_formulaire)",
-			11	=> "LEFT  JOIN domaine USING(id_domaine)",
-			12	=> "LEFT  JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = formulaire.id_redacteur)",
-			13	=> "LEFT  JOIN utilisateur AS valideur ON(valideur.id_utilisateur = generation.id_valideur)",
-			14	=> "LEFT  JOIN groupe ON(valideur.id_groupe = groupe.id_groupe)",
-			15	=> "INNER JOIN stage USING(id_stage)",
-			16	=> "LEFT  JOIN stage_candidat USING(id_stage)",
-			17	=> "LEFT  JOIN candidat USING(id_candidat)",
+			7	=> sprintf(self::LIBELLE_STAGE_SPRINTF, $this->_dateFormat, $this->_dateFormat) . " AS libelle_stage_complet,",
+			8	=> "COUNT(id_stage_candidat)",
+			9	=> "FROM epreuve",
+			10	=> "INNER JOIN generation USING(id_generation)",
+			11	=> "LEFT  JOIN formulaire USING(id_formulaire)",
+			12	=> "LEFT  JOIN domaine USING(id_domaine)",
+			13	=> "LEFT  JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = formulaire.id_redacteur)",
+			14	=> "LEFT  JOIN utilisateur AS valideur ON(valideur.id_utilisateur = generation.id_valideur)",
+			15	=> "LEFT  JOIN groupe ON(valideur.id_groupe = groupe.id_groupe)",
+			16	=> "INNER JOIN stage USING(id_stage)",
+			17	=> "LEFT  JOIN stage_candidat USING(id_stage)",
+			18	=> "LEFT  JOIN candidat USING(id_candidat)",
 			'X'	=> null,
-			18	=> "GROUP BY id_epreuve"
+			19	=> "GROUP BY id_epreuve"
 		);
 
 		// Construction du tableau associatif des étiquettes et leurs valeurs
@@ -462,6 +465,7 @@ class FormulaireManager extends MySQLManager {
 			"SELECT *,",
 			self::LIBELLE_REDACTEUR . " AS libelle_redacteur,",
 			self::LIBELLE_VALIDEUR . " AS libelle_valideur,",
+			sprintf(self::LIBELLE_STAGE_SPRINTF, $this->_dateFormat, $this->_dateFormat) . " AS libelle_stage_complet,",
 			"COUNT(id_stage_candidat)",
 			"FROM formulaire",
 			"INNER JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = id_redacteur)",
@@ -614,17 +618,20 @@ class FormulaireManager extends MySQLManager {
 			7	=> "LEFT  JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",
 			8	=> "INNER JOIN groupe ON(redacteur.id_groupe = groupe.id_groupe)",
 			9	=> "LEFT  JOIN formulaire_question USING(id_formulaire)",
+			10	=> "WHERE id_formulaire <> :id_formulaire_system",
 			'X'	=> null,
 			11	=> "GROUP BY id_formulaire"
 		);
 
 		// Construction du tableau associatif des étiquettes et leurs valeurs
-		$aBind = array();
+		$aBind = array(
+			':id_formulaire_system'			=> 0
+		);
 
 		// Fonctionnalité réalisée si l'accès aux formulaires est limité au groupe d'utilisateurs du rédacteur
 		if ($bGroupAccess) {
 			// Ajout d'une clause WHERE selon les bornes GAUCHE / DROITE
-			$aQuery['X']			= "WHERE borne_gauche BETWEEN :borne_gauche AND :borne_droite AND borne_droite BETWEEN :borne_gauche AND :borne_droite";
+			$aQuery['X']			= "AND borne_gauche BETWEEN :borne_gauche AND :borne_droite AND borne_droite BETWEEN :borne_gauche AND :borne_droite";
 
 			// Ajout des étiquette de la clause WHERE
 			$aBind[':borne_gauche']	= $this->_borneGauche;
@@ -1417,6 +1424,39 @@ class FormulaireManager extends MySQLManager {
 	 ******************************************************************************************************/
 
 	/**
+	 * @brief	Enregistrement du LOG sur la table `epreuve`.
+	 *
+	 * @param	integer	$nIdEpreuve			: Identifiant de l'épreuve en base de données.
+	 * @param	array	$aQuery				: Tableau représentant la requête d'enregistrement en base de données.
+	 * @param	boolean	$bFinalCommit		: (optionnel) TRUE si le commit doit être réalisé immédiatement.
+	 * @return	boolean
+	 */
+	protected function logEpreuve($nIdEpreuve, $aQuery, $bFinalCommit = true) {
+		// Ajout d'un suivit pour le debuggage
+		$this->debug(__METHOD__, $nIdEpreuve, $aQuery, $bFinalCommit);
+
+		// Récupération du type de l'action de la requête
+		$sTypeAction = DataHelper::getTypeSQL($aQuery, true);
+
+		// Construction du tableau associatif des champs à enregistrer
+		$aSet	= array(
+			"type_action = :type_action,",
+			"id_epreuve = :id_epreuve,",
+			"id_utilisateur = :id_utilisateur"
+		);
+
+		// Construction du tableau associatif des étiquettes et leurs valeurs
+		$aBind	= array(
+			':type_action'					=> $sTypeAction,
+			':id_epreuve'					=> $nIdEpreuve,
+			':id_utilisateur'				=> $this->_idUtilisateur
+		);
+
+		// Enregistrement du LOG
+		return $this->logAction('log_epreuve', $aSet, $aBind, $bFinalCommit);
+	}
+
+	/**
 	 * @brief	Enregistrement de l'épreuve.
 	 *
 	 * Méthode exploitant une requête préparées pour l'enregistrement dans la table `epreuve`.
@@ -1487,6 +1527,9 @@ class FormulaireManager extends MySQLManager {
 			// Exécution de la requête INSERT
 			$nIdEpreuve = $this->executeSQL(array_merge($aInitQuery, $aSet), $aBind);
 		}
+
+		// Enregistrement de l'action dans les LOGs avec COMMIT
+		$this->logEpreuve($nIdEpreuve, $aInitQuery);
 
 		// Renvoi de l'identifiant
 		return $nIdEpreuve;
@@ -1635,7 +1678,7 @@ class FormulaireManager extends MySQLManager {
 			$nIdGeneration = $this->executeSQL(array_merge($aInitQuery, $aSet), $aBind);
 		}
 
-		// Enregistrement de l'action dans les LOGs
+		// Enregistrement de l'action dans les LOGs avec COMMIT
 		$this->logGeneration($nIdGeneration, $aInitQuery);
 
 		// Renvoi de l'identifiant
@@ -2127,7 +2170,7 @@ class FormulaireManager extends MySQLManager {
 		// Enregistrement de la relation FORMULAIRE / QUESTION dans la table `formulaire_question`
 		$this->enregistrerFormulaireQuestion($nIdQuestion);
 
-		// Enregistrement de l'action dans les LOGs
+		// Enregistrement de l'action dans les LOGs avec COMMIT
 		$this->logQuestion($nIdQuestion, $aInitQuery);
 
 		// Renvoi de l'identifiant
@@ -3065,11 +3108,12 @@ class FormulaireManager extends MySQLManager {
 			// Chargement des données de l'épreuve (optionnelles)
 			$this->_aQCM['epreuve_id']											= DataHelper::get($aEpreuve,	'id_epreuve',				 		DataHelper::DATA_TYPE_INT,		null);
 			$this->_aQCM['epreuve_stage']										= DataHelper::get($aEpreuve,	'id_stage',					 		DataHelper::DATA_TYPE_INT,		null);
+			$this->_aQCM['epreuve_stage_libelle']								= DataHelper::get($aEpreuve,	'libelle_stage_complet',		 		DataHelper::DATA_TYPE_STR,		'-');
 			$this->_aQCM['epreuve_type']										= DataHelper::get($aEpreuve,	'type_epreuve',				 		DataHelper::DATA_TYPE_STR,		FormulaireManager::EPREUVE_TYPE_DEFAUT);
 			$this->_aQCM['epreuve_date']										= DataHelper::get($aEpreuve,	'date_epreuve',						DataHelper::DATA_TYPE_DATE,		$this->_aQCM['generation_date_epreuve']);
 			$this->_aQCM['epreuve_heure']										= DataHelper::get($aEpreuve,	'heure_epreuve',					DataHelper::DATA_TYPE_TIME,		FormulaireManager::EPREUVE_HEURE_DEFAUT);
 			$this->_aQCM['epreuve_duree']										= DataHelper::get($aEpreuve,	'duree_epreuve',					DataHelper::DATA_TYPE_INT_ABS,	FormulaireManager::EPREUVE_DUREE_DEFAUT);
-			$this->_aQCM['epreuve_libelle']										= DataHelper::get($aEpreuve,	'libelle_epreuve',					DataHelper::DATA_TYPE_STR,		$this->_aQCM['generation_nom_epreuve']);
+			$this->_aQCM['epreuve_libelle']										= DataHelper::get($aEpreuve,	'libelle_epreuve',					DataHelper::DATA_TYPE_STR,		$this->_aQCM['formulaire_titre']);
 			$this->_aQCM['epreuve_liste_salles']								= DataHelper::get($aEpreuve,	'liste_salles_epreuve',				DataHelper::DATA_TYPE_ARRAY,	null);
 			$this->_aQCM['epreuve_table_affectation']							= DataHelper::get($aEpreuve,	'table_affectation_epreuve',		DataHelper::DATA_TYPE_BOOL,		false);
 			$this->_aQCM['epreuve_table_aleatoire']								= DataHelper::get($aEpreuve,	'table_aleatoire_epreuve',			DataHelper::DATA_TYPE_BOOL,		false);
@@ -3303,18 +3347,18 @@ class FormulaireManager extends MySQLManager {
 	}
 
 	/**
-	 * @brief	Suppression définitive d'une génération d'un formulaire.
+	 * @brief	Suppression définitive d'une épreuve d'un formulaire.
 	 *
 	 * @li	Une génération ne peut être supprimée que s'il n'y a plus d'épreuve associée.
 	 *
 	 * @li	Suppression de l'entrée dans la table `epreuve` relative à la table `generation`.
 	 *
-	 * @param	integer	$nIdFormulaire		: Identifiant du formulaire généré à supprimer.
+	 * @param	integer	$nIdFormulaire		: Identifiant du formulaire à supprimer.
 	 * @param	integer	$bCommit			: (optionnel) Lance l'instruction COMMIT à la fin du traitement.
 	 * @return	boolean, résultat de l'enregistrement.
 	 * @throws	ApplicationException si la requête ne fonctionne pas.
 	 */
-	public function supprimerGenerationByIdFormulaire($nIdFormulaire, $bCommit = true) {
+	public function supprimerEpreuveByIdFormulaire($nIdFormulaire, $bCommit = true) {
 		// Ajout d'un suivit pour le debuggage
 		$this->debug(__METHOD__, $nIdFormulaire, $bCommit);
 
@@ -3331,12 +3375,6 @@ class FormulaireManager extends MySQLManager {
 			"WHERE id_formulaire = :id_formulaire"
 		);
 
-		// Suppression de la table `generation`
-		$aQuery = array(
-			"DELETE FROM generation",
-			"WHERE id_formulaire = :id_formulaire"
-		);
-
 		// Construction du tableau associatif de l'étiquette du formulaire
 		$aBind	= array(
 			":id_formulaire"				=> $nIdFormulaire
@@ -3344,27 +3382,18 @@ class FormulaireManager extends MySQLManager {
 
 		try {
 			// Recherche de l'entrée dans la table `epreuve`
-			$aSearch		= $this->executeSQL($aSelect, $aBind, 0);
+			$aSearch		= $this->executeSQL($aSelect, $aBind);
+
+			var_dump($aSearch);
 
 			// Fonctionnalité réalisée si une épreuve est présente
 			if (DataHelper::isValidArray($aSearch)) {
 				// Suppression de l'épreuve liée à l'entrée `generation`
-				$aDelete	= array(
-					"DELETE FROM epreuve",
-					"WHERE id_epreuve = :id_epreuve"
-				);
-
-				// Suppression de la table `generation`
-				$aEpreuve	= array(
-					":id_epreuve"			=> $aSearch['id_epreuve']
-				);
-
-				// Exécution de la requête
-				$bValide	= $this->executeSQL($aDelete, $aEpreuve);
+				foreach ($aSearch as $nOccurrence => $aEpreuve) {
+					// Exécution de la requête de suppression de l'épreuve
+					$bValide = $this->supprimerEpreuveById($aEpreuve['id_epreuve'], false);
+				}
 			}
-
-			// Exécution de la requête de suppression dans la table `generation`
-			$bValide		= $this->executeSQL($aQuery, $aBind);
 
 			// Validation des modifications
 			if ($bCommit) {
@@ -3373,7 +3402,7 @@ class FormulaireManager extends MySQLManager {
 		} catch (ApplicationException $e) {
 			// Annulation des modifications
 			$this->oSQLConnector->rollBack();
-			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aQuery, $aBind));
+			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aSelect, $aBind));
 		}
 
 		// Renvoi du résultat
@@ -3384,7 +3413,7 @@ class FormulaireManager extends MySQLManager {
 	 * @brief	Suppression définitive d'une épreuve.
 	 *
 	 * @li	À cause de la protection des données apportée par le moteur InnoDB associé aux clés étrangères,
-	 * il est nécessaire de supprimer dans un premier temps la relation dans la table `reservation`.
+	 * il est nécessaire de supprimer dans un premier temps la relation dans les tables `reservation` et `generation`.
 	 *
 	 * @param	integer	$nIdEpreuve			: Identifiant de l'épreuve à supprimer.
 	 * @param	integer	$bCommit			: (optionnel) Lance l'instruction COMMIT à la fin du traitement.
@@ -3401,28 +3430,60 @@ class FormulaireManager extends MySQLManager {
 		// Force le mode transactionnel
 		$this->beginTransaction();
 
-		$aQuery = array(
+		// Recherche de la relation `epreuve/generation`
+		$aSelect			= array(
+			"SELECT * FROM epreuve",
+			"LEFT JOIN generation USING(id_generation)",
+			"WHERE id_epreuve = :id_epreuve"
+		);
+
+		// Suppression dans la table `reservation`
+		$aReservation		= array(
 			"DELETE FROM reservation",
 			"WHERE id_epreuve = :id_epreuve"
 		);
 
-		// Construction du tableau associatif de l'étiquette du formulaire
-		$aBind	= array(
+		// Suppression dans la table `epreuve`
+		$aEpreuve			= array(
+			"DELETE FROM epreuve",
+			"WHERE id_epreuve = :id_epreuve"
+		);
+
+		// Construction du tableau associatif de l'étiquette de l'épreuve
+		$aBindEpreuve		= array(
 			":id_epreuve"					=> $nIdEpreuve
 		);
 
+		// Suppression dans la table `generation`
+		$aGeneration		= array(
+			"DELETE FROM generation",
+			"WHERE id_generation = :id_generation"
+		);
+		// Préparation du tableau associatif de l'étiquette de la génération
+		$aBindGeneration	= array();
+
 		try {
-			// Exécution de la requête
-			$this->executeSQL($aQuery, $aBind);
+			// Recherche de l'entrée dans la table `epreuve`
+			$aSearch		= $this->executeSQL($aSelect, $aBindEpreuve, 0);
 
-			// Suppression de l'épreuve directement à la suite
-			$aQuery = array(
-				"DELETE FROM epreuve",
-				"WHERE id_epreuve = :id_epreuve"
-			);
+			// Exécution de la requête de suppression dans les réservations
+			$this->executeSQL($aReservation, $aBindEpreuve);
 
-			// Exécution de la requête
-			$bValide = $this->executeSQL($aQuery, $aBind);
+			// Exécution de la requête de suppression de l'épreuve
+			$bValide		= $this->executeSQL($aEpreuve, $aBindEpreuve);
+			// Enregistrement de l'action dans les LOGs SANS COMMIT
+			$this->logEpreuve($nIdEpreuve, $aEpreuve, false);
+
+			// Fonctionnalité réalisée si une génération est présente
+			if (DataHelper::isValidArray($aSearch)) {
+				// Renseignement du tableau associatif de l'étiquette de la génération
+				$aBindGeneration[":id_generation"] = $aSearch['id_generation'];
+
+				// Exécution de la requête de suppression dans la table `generation`
+				$bValide	= $this->executeSQL($aGeneration, $aBindGeneration);
+				// Enregistrement de l'action dans les LOGs SANS COMMIT
+				$this->logGeneration($aSearch['id_generation'], $aGeneration, false);
+			}
 
 			// Validation des modifications
 			if ($bCommit) {
@@ -3431,7 +3492,7 @@ class FormulaireManager extends MySQLManager {
 		} catch (ApplicationException $e) {
 			// Annulation des modifications
 			$this->oSQLConnector->rollBack();
-			throw new ApplicationException('EQueryDelete', DataHelper::queryToString($aQuery, $aBind));
+			throw new ApplicationException('EQueryDelete', DataHelper::queryToString($aEpreuve, $aBindEpreuve));
 		}
 
 		// Renvoi du résultat
@@ -3625,7 +3686,7 @@ class FormulaireManager extends MySQLManager {
 
 		try {
 			// Suppression de la relation dans la table `generation`
-			$this->supprimerGenerationByIdFormulaire($nIdFormulaire);
+			$this->supprimerEpreuveByIdFormulaire($nIdFormulaire);
 
 			// Suppression de la relation dans la table `formulaire_question`
 			$this->supprimerFormulaireQuestion($nIdFormulaire);

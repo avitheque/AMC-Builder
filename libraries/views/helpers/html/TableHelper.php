@@ -10,8 +10,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 87 $
- * @since		$LastChangedDate: 2017-12-20 19:19:01 +0100 (Wed, 20 Dec 2017) $
+ * @version		$LastChangedRevision: 93 $
+ * @since		$LastChangedDate: 2017-12-29 15:37:13 +0100 (Fri, 29 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -103,18 +103,27 @@ class TableHelper extends HtmlHelper {
 		// Initialisation de la référence
 		$sKey = null;
 
-		if (isset($this->_columns[$xRefData])) {
+		// Teste si le champ comporte un format SPRINTF() de la forme `nom_colonne <> %s`
+		if (preg_match("@([\<\>\=\!])+@", $xRefData, $aMatched)) {
+			// Fonctionnalité permettant d'extraire un format SPRINTF()
+			list($xRefData, $sString) = explode($aMatched[0], $xRefData);
+		}
+
+		// Suppression des caractères [espace] superflus
+		$xColumn = trim($xRefData);
+
+		if (isset($this->_columns[$xColumn])) {
 			// Récupération dans les occurrences
-			$sKey = $this->_columns[$xRefData];
-		} elseif (in_array($xRefData, $this->_columns)) {
+			$sKey = $this->_columns[$xColumn];
+		} elseif (in_array($xColumn, $this->_columns)) {
 			// Récupération dans les titres de colonnes
-			$sKey = $xRefData;
-		} elseif (in_array($xRefData, $this->_visible)) {
+			$sKey = $xColumn;
+		} elseif (in_array($xColumn, $this->_visible)) {
 			// Récupération dans les titres personnalisés
 			$aColumns = array_flip($this->_visible);
-			$sKey = $aColumns[$xRefData];
+			$sKey = $aColumns[$xColumn];
 		} else {
-			$sKey = $xRefData;
+			$sKey = $xColumn;
 		}
 
 		// Renvoi de la colonne de référence
@@ -541,41 +550,8 @@ class TableHelper extends HtmlHelper {
 				$sValueRIGHT	= $aEntity[$sColumnRIGHT];
 			}
 
-			switch ($sOperator) {
-				case ">":
-					$bTest	= $sValueLEFT > $sValueRIGHT;
-					break;
-
-				case ">=":
-					$bTest	= $sValueLEFT >= $sValueRIGHT;
-					break;
-
-				case "=":
-				case "==":
-					$bTest	= $sValueLEFT == $sValueRIGHT;
-					break;
-
-				case "===":
-					$bTest	= $sValueLEFT === $sValueRIGHT;
-					break;
-
-				case "<=":
-					$bTest	= $sValueLEFT <= $sValueRIGHT;
-					break;
-
-				case "<":
-					$bTest	= $sValueLEFT < $sValueRIGHT;
-					break;
-
-				case "<>":
-				case "!=":
-					$bTest	= $sValueLEFT != $sValueRIGHT;
-					break;
-
-				default:
-					$bTest	= false;
-					break;
-			}
+			// Teste les valeurs entre elles
+			$bTest				= DataHelper::isValidOperation($sValueLEFT, $sOperator, $sValueRIGHT);
 
 			// Ajout de la valeur d'origine à la fin de la cellule
 			if ($bTest && is_null($xRefColumn)) {
@@ -616,6 +592,12 @@ class TableHelper extends HtmlHelper {
 
 		// Récupération de la clé de la colonne de référence
 		$sKeyCond	= $this->getColumnKey($xRefCondition);
+
+		// Teste si le champ comporte un format SPRINTF() de la forme `nom_colonne <> %s`
+		if (preg_match("@([\<\>\=\!])+@", $xRefCondition, $aMatched)) {
+			// Fonctionnalité permettant d'extraire un format SPRINTF()
+			$sCondition = sprintf($xRefCondition, $sCondition);
+		}
 
 		// Création de l'élément HTML
 		$this->_condition[$sKeyTitre][$sKeyCond][$sCondition] = array(
@@ -888,8 +870,23 @@ class TableHelper extends HtmlHelper {
 									continue;
 								}
 
+								// Teste si le champ comporte un opérateur de la forme `nom_colonne <> %s`
+								$bTest		= false;
+								if (preg_match("@([\<\>\=\!])+@", $sTestValue, $aMatched)) {
+									// Récupération de l'opérateur
+									$sOperator	= $aMatched[0];
+									// Fonctionnalité permettant d'extraire un format SPRINTF()
+									list($xRefGauche, $xRefDroite) = explode($sOperator, $sTestValue);
+
+									// Fonctionnalité réalisée si la colonne est celle attendu par le test
+									if ($this->getColumnKey($xRefGauche) == $sColumn) {
+										// Teste les valeurs entre elles
+										$bTest = DataHelper::isValidOperation($sValue, $sOperator, $xRefDroite);
+									}
+								}
+
 								// Fonctionnalité réalisée si la condition est réalisée
-								if ($sValue == $sTestValue) {
+								if ($sValue == $sTestValue || $bTest) {
 									// Ajout de la classe de la colonne à l'élément
 									if (!empty($sColumnClass) && array_key_exists('class', $aConfig)) {
 										$aConfig['class'] .= " " . $sColumnClass;

@@ -77,21 +77,29 @@ $aListeProgrammations			= $oInstanceStorage->getData('liste_programmations');
 
 // Construction du tableau récapitulatif des formulaires
 $oProgrammation = new DatatableHelper("table-epreuves", $aListeProgrammations);
+$oProgrammation->setClassColumn("no-wrap strong", "libelle_stage_complet");
 $oProgrammation->setClassColumn("align-left strong", "titre_formulaire");
+$oProgrammation->setClassColumn("strong", "libelle_groupe");
+
 
 // Formatage du champ DATE
 $oProgrammation->setFormatOnColumn('datetime_epreuve',	DataHelper::DATA_TYPE_DATETIME);
 
 // Personnalisation des noms de colonne
 $aColonnes = array(
+	'libelle_stage_complet'			=> "STAGE",
 	'libelle_epreuve'				=> "ÉPREUVE",
+	"QCM",							// Injection d'une colonne vide
 	'SUM(capacite_statut_salle)'	=> "CAPACITÉ D'ACCUEIL",
 	'COUNT(id_stage_candidat)'		=> "NOMBRE DE CANDIDATS",
-	'titre_formulaire'				=> "TITRE",
 	'datetime_epreuve'				=> "PROGRAMMATION DE L'ÉPREUVE",
-	'duree_epreuve'					=> "DURÉE (en&nbsp;minutes)"
+	'duree_epreuve'					=> "DURÉE (en&nbsp;minutes)",
+	'libelle_groupe'				=> "GROUPE"
 );
 $oProgrammation->renameColumns($aColonnes, true);
+
+// Mise en évidence d'une épreuve qui n'est pas associée à un formulaire
+$oProgrammation->setConditionalTextOnColumn("QCM", 'id_formulaire<>%d', 0, "X");
 
 // Tri du tableau sur la colonne `date_epreuve` par ordre DESC
 $oProgrammation->setOrderColumn('datetime_epreuve', DatatableHelper::ORDER_DESC);
@@ -111,7 +119,8 @@ $oProgrammation->addAnchorOnColumn("ACTION",		"id_epreuve",		"Éditer",	"/genera
 $oProgrammation->addAnchorOnColumn("ACTION",		"id_epreuve",		"Annuler",	"/generation/supprimer?id_epreuve=",		"red confirm-delete tooltip-track", 	null,		"Annuler l'épreuve");
 
 // Coloration de l'épreuve en ROUGE si il y a une erreur
-$oProgrammation->setConditionalClassOnColumn('SUM(capacite_statut_salle)', '<', 'COUNT(id_stage_candidat)', "error", array("ÉPREUVE", "CAPACITÉ D'ACCUEIL", "NOMBRE DE CANDIDATS"));
+$oProgrammation->setConditionalClassOnColumn('SUM(capacite_statut_salle)', '<', 'COUNT(id_stage_candidat)', "error", array("CAPACITÉ D'ACCUEIL", "NOMBRE DE CANDIDATS"));
+
 
 // Ajout du tableau à VIEW_MAIN
 ViewRender::addToMain($oProgrammation->renderHTML());

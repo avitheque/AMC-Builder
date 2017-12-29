@@ -13,8 +13,8 @@
 	 * @subpackage	Application
 	 * @author		durandcedric@avitheque.net
 	 * @update		$LastChangedBy: durandcedric $
-	 * @version		$LastChangedRevision: 81 $
-	 * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
+	 * @version		$LastChangedRevision: 92 $
+	 * @since		$LastChangedDate: 2017-12-29 05:09:06 +0100 (Fri, 29 Dec 2017) $
 	 *
 	 * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
 	 * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -86,6 +86,7 @@
 		defined('FW_AUTO_SUBCONTROLLER')		||	define('FW_AUTO_SUBCONTROLLER',				DataHelper::get($aApplication,	'auto_subcontroller',		DataHelper::DATA_TYPE_BOOL));
 		defined('FW_AUTO_SUBCONTROLLER_PREFIX')	||	define('FW_AUTO_SUBCONTROLLER_PREFIX',		DataHelper::get($aApplication,	'auto_subcontroller_prefix'));
 		defined('FW_UTF8_ENCODE')				||	define('FW_UTF8_ENCODE',					DataHelper::get($aApplication,	'utf8_encode',				DataHelper::DATA_TYPE_BOOL));
+		defined('DATE_FORMAT')					||	define('DATE_FORMAT',						DataHelper::get($aApplication,	'date_format',				DataHelper::DATA_TYPE_STR));
 
 		/**
 		 * SESSION

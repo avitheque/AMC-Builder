@@ -11,8 +11,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 69 $
- * @since		$LastChangedDate: 2017-07-23 03:02:54 +0200 (Sun, 23 Jul 2017) $
+ * @version		$LastChangedRevision: 93 $
+ * @since		$LastChangedDate: 2017-12-29 15:37:13 +0100 (Fri, 29 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -52,6 +52,7 @@ abstract class FormulaireQCMInterface {
 		'epreuve_libelle'					=> DataHelper::DATA_TYPE_STR,
 		'epreuve_liste_salles'				=> DataHelper::DATA_TYPE_ARRAY,
 		'epreuve_stage'						=> DataHelper::DATA_TYPE_INT,
+		'epreuve_stage_libelle'				=> DataHelper::DATA_TYPE_STR,
 		'epreuve_table_affectation'			=> DataHelper::DATA_TYPE_BOOL,
 		'epreuve_table_aleatoire'			=> DataHelper::DATA_TYPE_BOOL,
 		'epreuve_type'						=> DataHelper::DATA_TYPE_STR,

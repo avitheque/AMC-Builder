@@ -15,8 +15,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 81 $
- * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
+ * @version		$LastChangedRevision: 92 $
+ * @since		$LastChangedDate: 2017-12-29 05:09:06 +0100 (Fri, 29 Dec 2017) $
  * @see			{ROOT_PATH}/libraries/models/AbstractDataManager.php
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
@@ -34,6 +34,7 @@ class MySQLManager extends AbstractDataManager {
 	protected $_idGroupe		= null;
 	protected $_borneGauche		= null;
 	protected $_borneDroite		= null;
+	protected $_dateFormat		= "%d/%m/%Y";
 
 	/**
 	 * @brief	Constructeur de la classe
@@ -49,6 +50,14 @@ class MySQLManager extends AbstractDataManager {
 		$this->_idGroupe		= $this->_oAuth->getIdGroupe();
 		$this->_borneGauche		= $this->_oAuth->getBorneGauche();
 		$this->_borneDroite		= $this->_oAuth->getBorneDroite();
+
+		// Chargement du format de la date
+		if (defined('DATE_FORMAT')) {
+			// Récupération de la structure avec les caractères de séparation
+			preg_match("@(.+)([\.\-\/]+)(.+)([\.\-\/]+)(.+)@", DATE_FORMAT, $aMatched);
+			// Initialisation du format de la date
+			$this->_dateFormat = sprintf("%%%s%s%%%s%s%%%s", $aMatched[1], $aMatched[2], $aMatched[3], $aMatched[4], $aMatched[5]);
+		}
 	}
 
 	/**

@@ -11,8 +11,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 72 $
- * @since		$LastChangedDate: 2017-07-29 16:54:10 +0200 (Sat, 29 Jul 2017) $
+ * @version		$LastChangedRevision: 93 $
+ * @since		$LastChangedDate: 2017-12-29 15:37:13 +0100 (Fri, 29 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -49,8 +49,8 @@ class ExportEpreuveManager extends DocumentManager {
 		$sStage								= DataHelper::get($aEpreuve,				"libelle_stage",				DataHelper::DATA_TYPE_PDF);
 		$this->setFilename($sStage);
 
-		// Récupération du titre du formulaire
-		$sTitreFormulaire					= DataHelper::get($aEpreuve,				"titre_formulaire",				DataHelper::DATA_TYPE_PDF);
+		// Récupération du libellé de l'épreuve
+		$sLibelleEpreuve					= DataHelper::get($aEpreuve,				"libelle_epreuve",				DataHelper::DATA_TYPE_PDF);
 
 		// Récupération du type de l'épreuve
 		$sType								= DataHelper::get($aEpreuve,				"type_epreuve",					DataHelper::DATA_TYPE_PDF);
@@ -118,7 +118,7 @@ class ExportEpreuveManager extends DocumentManager {
 		//	@todo PDF
 		// ========================================================================================
 		// Initialisation du nom du fichier à partir des noms du STAGE et du FORMULAIRE
-		$this->setFilename($sStage . ' - ' . $sTitreFormulaire);
+		$this->setFilename($sStage . ' - ' . $sLibelleEpreuve);
 
 		// Initialisation de la capacité totale à mettre en place pour l'examen
 		$nTotalCapaciteExamen				= 0;
@@ -127,7 +127,7 @@ class ExportEpreuveManager extends DocumentManager {
 		$this->_document = new EpreuvePDFManager();
 		$this->_document->setFont('Arial', '', 15);
 		$this->_document->setStage($sStage);
-		$this->_document->setTitre($sTitreFormulaire);
+		$this->_document->setTitre($sLibelleEpreuve);
 		$this->_document->setEpreuve($sType . " du " . $dDate . " à " . $tHeure);
 		$this->_document->setDuree("Durée : " . $nDuree . "mn");
 

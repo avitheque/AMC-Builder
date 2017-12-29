@@ -10,8 +10,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 84 $
- * @since		$LastChangedDate: 2017-12-03 13:01:20 +0100 (Sun, 03 Dec 2017) $
+ * @version		$LastChangedRevision: 93 $
+ * @since		$LastChangedDate: 2017-12-29 15:37:13 +0100 (Fri, 29 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -155,7 +155,7 @@ class DataHelper {
 		// Renvoi du résultat
 		return $bValid;
 	}
-	
+
 	/** @brief	Validation d'un jour.
 	 * Méthode permettant de vérifier la validité d'un jour par son numéro.
 	 * @param	integer		$nNumber		: numéro du jour à tester.
@@ -164,7 +164,7 @@ class DataHelper {
 	static function isValidDay($nNumber) {
 		return $nNumber >= 1 && $nNumber <= 31;
 	}
-	
+
 	/** @brief	Validation d'un mois.
 	 * Méthode permettant de vérifier la validité d'un mois par son numéro.
 	 * @param	integer		$nNumber		: numéro du mois à tester.
@@ -173,7 +173,7 @@ class DataHelper {
 	static function isValidMonth($nNumber) {
 		return $nNumber >= 1 && $nNumber <= 12;
 	}
-	
+
 	/** @brief	Validation d'une date.
 	 * Méthode permettant de vérifier la validité d'une date.
 	 * @param	string		$sString		: chaîne de caractères représentant une date.
@@ -182,7 +182,7 @@ class DataHelper {
 	 */
 	static function isValidDate($sString, $bMySQL = false) {
 		$bValide = false;
-		
+
 		// Fonctionnalité réalisée si la date est au format MySQL
 		if ($bMySQL && preg_match('@^([0-9]{2,4})\-([0-9]{1,2})\-([0-9]{1,2})$@', $sString, $aMatched)) {
 			// Test le format de DATE [Y-m-d]
@@ -191,7 +191,7 @@ class DataHelper {
 			// Test le format de DATE [d/m/Y]
 			$bValide = self::isValidDay($aMatched[1]) && self::isValidMonth($aMatched[2]);
 		}
-		
+
 		// Renvoi du résultat
 		return $bValide;
 	}
@@ -210,6 +210,54 @@ class DataHelper {
 		}
 		// Fonctionnalité réalisée si la chaîne ne commence pas par [0]
 		return is_string($sString) && $bValide;
+	}
+
+
+	/** @brief	Validation d'une comparaison entre deux valeurs.
+	 * Méthode permettant de vérifier la validité d'une opération.
+	 * @param	mixed		$xValueLEFT		: valeur de référence.
+	 * @param	string		$sOperator		: opérateur.
+	 * @param	mixed		$xValueRIGHT	: valeur de comparaison.
+	 * @return	bool résultat de la vérification.
+	 */
+	static function isValidOperation($xValueLEFT, $sOperator, $xValueRIGHT) {
+		switch (trim($sOperator)) {
+			case ">":
+				$bTest	= $xValueLEFT > $xValueRIGHT;
+				break;
+
+			case ">=":
+				$bTest	= $xValueLEFT >= $xValueRIGHT;
+				break;
+
+			case "=":
+			case "==":
+				$bTest	= $xValueLEFT == $xValueRIGHT;
+				break;
+
+			case "===":
+				$bTest	= $xValueLEFT === $xValueRIGHT;
+				break;
+
+			case "<=":
+				$bTest	= $xValueLEFT <= $xValueRIGHT;
+				break;
+
+			case "<":
+				$bTest	= $xValueLEFT < $xValueRIGHT;
+				break;
+
+			case "<>":
+			case "!=":
+				$bTest	= $xValueLEFT != $xValueRIGHT;
+				break;
+
+			default:
+				$bTest	= false;
+				break;
+		}
+
+		return $bTest;
 	}
 
 	/** @brief	Converti un nombre en TIME
@@ -344,10 +392,10 @@ class DataHelper {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * @brief	Récupère l'heure système avec les millisecondes.
-	 * 
+	 *
 	 * @li	Possibilité de ne récupérer que la partie TIMESTAMP.
 	 *
 	 * @param	boolean		$bMillisecond	: récupération des millisecondes.
@@ -357,16 +405,16 @@ class DataHelper {
 	public static function getTime($bMillisecond = true, $nDecimales = 3) {
 		// Extraction de l'heure système sous forme array(MILLISECONDES, TIMESTAMP)
 		$aTime = explode(' ', microtime());
-		
+
 		// Récupération du TIMESTAMP
 		$fTime	= (int) $aTime[1];
-		
+
 		// Ajout des millisecondes au timestamp
 		if ($bMillisecond) {
 			// Ajout de la partie des millisecondes en décimales
 			$fTime += $aTime[0];
 		}
-		
+
 		// Renvoi du résultat
 		return $fTime;
 	}
@@ -492,6 +540,24 @@ class DataHelper {
 		"–"			=> "&#150;",
 
 		"\\"		=> "&#92;"
+	);
+
+	/**
+	 * @brief	Remplacement des caractères spéciaux par leur équivalent ASCII
+	 *
+	 * @li	Tableau exploité via la méthode PHP @strtr().
+	 * @var		array
+	 */
+	public static $STR_REPLACE	= array(
+		"<br />"	=> " ",
+		"&#10;"		=> " ",
+		"\n"		=> ' ',
+		"&#34;"		=> '"',			// double quote
+		"&#39;"		=> "'",			// simple quote
+		"&#92;"		=> "\\\\",
+		"&#150;"	=> "-",
+		"&#8211;"	=> "-",
+		"&#8212;"	=> "-",
 	);
 
 	/**
@@ -627,35 +693,41 @@ class DataHelper {
 	 * @param	string		$sFormat		: Expression du formatage à réaliser.
 	 * @return	string
 	 */
-	public static function convertToString($xInput = null, $sFormat = null) {
+	public static function convertToString($xInput = null, $sFormat = self::DATA_TYPE_STR) {
 		// Extraction du contenu sous forme de texte
-		$sText = self::convertToText($xInput, chr(32));
+		$sInput = self::convertToText($xInput, chr(32));
 
 		// Formatage du texte
 		if (!is_null($sFormat) && preg_match("@\%[0-9bcdeEfFgGosuxX]+@", $sFormat)) {
 			// Formatage selon le format exploité par la méthode PHP sprintf()
-			$sText = sprintf($sFormat, $sText);
+			$sText = sprintf($sFormat, $sInput);
 		} else {
 			// Formatage selon le type
 			switch ($sFormat) {
 
 				// Formatage en date FR du type [d/m/Y]
 				case self::DATA_TYPE_DATE:
-					$sText = self::dateMyToFr($xInput);
+					$sText = self::dateMyToFr($sInput);
 					break;
 
 				// Formatage en date et heure FR du type [d/m/Y à H:i:s]
 				case self::DATA_TYPE_DATETIME:
-					$sText = self::dateTimeMyToFr($xInput);
+					$sText = self::dateTimeMyToFr($sInput);
+					break;
+
+				// Formatage en chaîne de caractères
+				case self::DATA_TYPE_STR:
+					$sText = strtr($sInput, self::$STR_REPLACE);
 					break;
 
 				default:
+					$sText = $sInput;
 					break;
 			}
 		}
 
 		// Suppression des espaces en trop
-		return preg_replace("/\s\s+/", chr(32), strtr($sText, array(chr(9) => chr(32), chr(13) => chr(32))));
+		return preg_replace("/\s\s+/", chr(32), strtr($sText, array(chr(9) => chr(32), chr(10) => chr(32), chr(13) => chr(32))));
 	}
 
 	/**
@@ -668,7 +740,6 @@ class DataHelper {
 	 * @param	boolean		$bForceKey		: (optionnel) Force les clés dans les objets JSON.
 	 * @return	string
 	 */
-
 	public static function convertToJSON($xInput = null, $sLabel = null) {
 		// Traitement réalisé si le libellé contient un [espace]
 		if (preg_match('@^.+\s.+$@', $sLabel)) {
@@ -1031,10 +1102,10 @@ class DataHelper {
 		// Renvoi du résultat
 		return $aResultat;
 	}
-	
+
 	/**
 	 * @brief	Extraction d'un texte contenu entre une balise HTML.
-	 * 
+	 *
 	 * @param	string		$sHTML			: balise HTML avec son contenu.
 	 * @return	string
 	 */
