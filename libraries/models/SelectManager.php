@@ -15,9 +15,9 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 24 $
- * @since		$LastChangedDate: 2017-04-30 20:38:39 +0200 (dim., 30 avr. 2017) $
- * 
+ * @version		$LastChangedRevision: 90 $
+ * @since		$LastChangedDate: 2017-12-29 01:17:05 +0100 (Fri, 29 Dec 2017) $
+ *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
@@ -219,7 +219,7 @@ class SelectManager extends AbstractDataManager {
 		$xWhere = (array) $xWhere;
 
 		if (DataHelper::isValidArray($xWhere)) {
-			$aWhere = "";
+			$aWhere = array();
 			foreach ($xWhere as $sFormat => $xValue) {
 				if (!is_numeric($sFormat)) {
 					// Récupération du nom
@@ -228,7 +228,7 @@ class SelectManager extends AbstractDataManager {
 					// Récupération du nom du champ
 					$sChamp = $sFormat;
 					if (isset($aMatches[1])) {
-						$sChamp		= $aMatches[1];
+						$sChamp	= $aMatches[1];
 					}
 
 					// Récupération de l'opérateur
