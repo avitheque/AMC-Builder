@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 88 $
- * @since		$LastChangedDate: 2017-12-26 11:14:42 +0100 (Tue, 26 Dec 2017) $
+ * @version		$LastChangedRevision: 96 $
+ * @since		$LastChangedDate: 2017-12-29 19:03:44 +0100 (Fri, 29 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -55,13 +55,13 @@ class FormulaireHelper {
 	 * @var		string
 	 */
 	private		$_sBoutonAjouter		= null;
-	
+
 	/**
 	 * @brief	Identifiant du formulaire QCM.
 	 * @var		integer
 	 */
 	protected	$_nIdFormulaire			= 0;
-	
+
 	/**
 	 * @brief	Onglets HTML.
 	 * @var		array
@@ -185,7 +185,7 @@ class FormulaireHelper {
 		//#####################################################################################
 		// CONSTRUCTION DU FORMULAIRE QCM
 		//#####################################################################################
-		
+
 		// Zone du formulaire QCM
 		$this->_buildFormulaireQCM($bBibliotheque);
 	}
@@ -539,9 +539,6 @@ class FormulaireHelper {
 											</section>
 										</section>";
 
-		// Ajout de la feuille de style
-		ViewRender::linkFormulaireStyle("helpers/FormulaireHelper.css");
-
 		// Ajout du JavaScript
 		ViewRender::linkFormulaireScript("helpers/FormulaireHelper.js");
 	}
@@ -561,6 +558,9 @@ class FormulaireHelper {
 	 * @return	string
 	 */
 	public function render() {
+		// Ajout de la feuille de style
+		ViewRender::linkFormulaireStyle("helpers/FormulaireHelper.css");
+
 		// Activation de l'onglet sélectionné
 		ViewRender::addToJQuery("$(\"section.tabs\").tabs({ active: " . $this->_activeTab . " });");
 

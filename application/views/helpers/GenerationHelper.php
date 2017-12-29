@@ -23,6 +23,12 @@
 class GenerationHelper extends FormulaireHelper {
 
 	/**
+	 * @brief	Identifiant de l'épreuve.
+	 * @var		integer
+	 */
+	protected	$_nIdEpreuve			= 0;
+
+	/**
 	 * @brief	Constructeur de la classe.
 	 *
 	 * @param	boolean	$bReadonly		: Verrouillage de la modification des champs.
@@ -151,7 +157,7 @@ class GenerationHelper extends FormulaireHelper {
 		$sTexteCandidat					= DataHelper::get($this->_aQCM, 'generation_cartouche_candidat',	DataHelper::DATA_TYPE_TXT,		FormulaireManager::CANDIDATS_CARTOUCHE_DEFAUT);
 
 		// Données de l'épreuve
-		$nIdEpreuve						= DataHelper::get($this->_aQCM, 'epreuve_id', 						DataHelper::DATA_TYPE_INT,		null);
+		$this->_nIdEpreuve				= DataHelper::get($this->_aQCM, 'epreuve_id', 						DataHelper::DATA_TYPE_INT,		null);
 		$tHeureEpreuve					= DataHelper::get($this->_aQCM,	'epreuve_heure',					DataHelper::DATA_TYPE_TIME,		FormulaireManager::EPREUVE_HEURE_DEFAUT);
 		$nDureeEpreuve					= DataHelper::get($this->_aQCM,	'epreuve_duree',					DataHelper::DATA_TYPE_INT_ABS,	FormulaireManager::EPREUVE_DUREE_DEFAUT);
 		$sNomEpreuveGeneration			= DataHelper::get($this->_aQCM,	'generation_nom_epreuve',			DataHelper::DATA_TYPE_STR,		'-');
@@ -230,15 +236,15 @@ class GenerationHelper extends FormulaireHelper {
 																<h3 class=\"strong center\">&#151;&nbsp;" . $sNomFormulaire . "&nbsp;&#151;</h3>
 															</li>
 															<li>
-																<label for=\"idFormat\" class=\"width-225\">Format de sortie</label>
+																<label for=\"idFormat\">Format de sortie</label>
 																<select id=\"idFormat\" name=\"generation_format\" $sDisabled>" . $sFormatOptions . "</select>
 															</li>
 															<li>
-																<label for=\"idExemplaires\" class=\"width-225\">Nombre d'exemplaires</label>
+																<label for=\"idExemplaires\">Nombre d'exemplaires</label>
 																<input maxlength=2 type=\"number\" id=\"idExemplaires\" class=\"numeric center width-50\" name=\"generation_exemplaires\" value=\"" . $nExemplaires . "\" required=\"required\" $sReadonly/>
 															</li>
 															<li>
-																<label for=\"idCodeCandidat\" class=\"width-225\">Format du code candidat sur</label>
+																<label for=\"idCodeCandidat\">Format du code candidat sur</label>
 																<select id=\"idCodeCandidat\" class=\"center\" name=\"generation_code_candidat\" required=\"required\" $sDisabled/>" . $sCodeCandidatOptions . "</select>
 																<label for=\"idCodeCandidat\">chiffres</label>
 															</li>
@@ -247,36 +253,36 @@ class GenerationHelper extends FormulaireHelper {
 															</li>
 															<hr class=\"blue\" />
 															</li>";
-		} elseif (empty($nIdEpreuve)) {
+		} elseif (empty($this->_nIdEpreuve)) {
 			$sConsignes					= "";
 		}
 
 		// Poursuite du formulaire
 		$this->_html					.= "				<li>
-																<label for=\"idTypeEpreuve\" class=\"width-225\">Type d'épreuve</label>
+																<label for=\"idTypeEpreuve\">Type d'épreuve</label>
 																<select id=\"idTypeEpreuve\" name=\"epreuve_type\" $sDisabled>" . $sTypeOptions . "</select>
 								
 																<input type=\"hidden\" id=\"idGeneration\" name=\"generation_id\" value=\"" . $nIdGeneration . "\" />
-																<input type=\"hidden\" id=\"idEpreuve\" name=\"epreuve_id\" value=\"" . $nIdEpreuve . "\" />
+																<input type=\"hidden\" id=\"idEpreuve\" name=\"epreuve_id\" value=\"" . $this->_nIdEpreuve . "\" />
 															</li>
 															<li>
-																<label for=\"idStageLibelle\" class=\"width-225\">Stage concerné par l'épreuve</label>
+																<label for=\"idStageLibelle\">Stage concerné par l'épreuve</label>
 																" . $oAutocomplete->renderHTML() . "
 															</li>
 															<li>
-																<label for=\"idEpreuveLibelle\" class=\"width-225\">Nom de l'épreuve</label>
+																<label for=\"idEpreuveLibelle\">Nom de l'épreuve</label>
 																<input maxlength=50 type=\"text\" class=\"half-width\" id=\"idEpreuveLibelle\" name=\"epreuve_libelle\" value=\"" . $sLibelleEpreuve . "\" $sReadonly/>
 															</li>
 															<li>
-																<label for=\"idDateEpreuve\" class=\"width-225\">Date prévue de l'épreuve</label>
+																<label for=\"idDateEpreuve\">Date prévue de l'épreuve</label>
 																<input maxlength=10 type=\"text\" class=\"date\" id=\"idDateEpreuve\" name=\"epreuve_date\" value=\"" . $dDateEpreuve . "\" $sReadonly/>
 															</li>
 															<li>
-																<label for=\"idHeureEpreuve\" class=\"width-225\">Heure prévue de l'épreuve</label>
+																<label for=\"idHeureEpreuve\">Heure prévue de l'épreuve</label>
 																<input maxlength=5 type=\"text\" class=\"time\" id=\"idHeureEpreuve\" name=\"epreuve_heure\" value=\"" . $tHeureEpreuve . "\" $sReadonly/>
 															</li>
 															<li>
-																<label for=\"idDureeEpreuve\" class=\"width-225\">Durée de l'épreuve</label>
+																<label for=\"idDureeEpreuve\">Durée de l'épreuve</label>
 																<input maxlength=3 type=\"number\" id=\"idDureeEpreuve\" class=\"numeric center width-50\" name=\"epreuve_duree\" value=\"" . $nDureeEpreuve . "\" required=\"required\" $sReadonly/>
 																<label for=\"idDureeEpreuve\">minutes</label>
 															</li>
