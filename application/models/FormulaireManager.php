@@ -18,8 +18,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 94 $
- * @since		$LastChangedDate: 2017-12-29 17:27:29 +0100 (Fri, 29 Dec 2017) $
+ * @version		$LastChangedRevision: 95 $
+ * @since		$LastChangedDate: 2017-12-29 18:45:58 +0100 (Fri, 29 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -245,7 +245,7 @@ class FormulaireManager extends MySQLManager {
 			5	=> "UNIX_TIMESTAMP(" . self::DATETIME_EPREUVE . ") + 60 * duree_epreuve AS fin_epreuve,",
 			6	=> "UNIX_TIMESTAMP(CURRENT_TIMESTAMP()) AS maintenant,",
 			7	=> sprintf(self::LIBELLE_STAGE_SPRINTF, $this->_dateFormat, $this->_dateFormat) . " AS libelle_stage_complet,",
-			8	=> "COUNT(id_stage_candidat)",
+			8	=> "COUNT(id_stage_candidat) AS total_candidats",
 			9	=> "FROM epreuve",
 			10	=> "INNER JOIN generation USING(id_generation)",
 			11	=> "LEFT  JOIN formulaire USING(id_formulaire)",
@@ -309,7 +309,7 @@ class FormulaireManager extends MySQLManager {
 			5	=> "UNIX_TIMESTAMP(" . self::DATETIME_EPREUVE . ") + 60 * duree_epreuve AS fin_epreuve,",
 			6	=> "UNIX_TIMESTAMP(CURRENT_TIMESTAMP()) AS maintenant,",
 			7	=> sprintf(self::LIBELLE_STAGE_SPRINTF, $this->_dateFormat, $this->_dateFormat) . " AS libelle_stage_complet,",
-			8	=> "COUNT(id_stage_candidat)",
+			8	=> "COUNT(id_stage_candidat) AS total_candidats",
 			9	=> "FROM epreuve",
 			10	=> "INNER JOIN generation USING(id_generation)",
 			11	=> "LEFT  JOIN formulaire USING(id_formulaire)",
@@ -413,6 +413,43 @@ class FormulaireManager extends MySQLManager {
 	}
 
 	/**
+	 * @brief	Recherche des salles réservées pour une épreuve.
+	 *
+	 * @param	integer	$nIdEpreuve			: identifiant de l'épreuve.
+	 * @return	array, résultat de la requête.
+	 * @throws	ApplicationException si la requête ne fonctionne pas.
+	 */
+	public function getListeSallesByEpreuveId($nIdEpreuve) {
+		// Ajout d'un suivit pour le debuggage
+		$this->debug(__METHOD__, $nIdEpreuve);
+
+		// Requête SELECT
+		$aQuery = array(
+			"SELECT GROUP_CONCAT(DISTINCT libelle_salle) AS liste_salles",
+			"FROM epreuve, salle",
+			"INNER JOIN statut_salle USING(id_salle)",
+			"WHERE FIND_IN_SET(salle.id_salle, epreuve.liste_salles_epreuve) != 0",
+			"AND id_epreuve = :id_epreuve",
+			"ORDER BY libelle_salle"
+		);
+
+		// Construction du tableau associatif des étiquettes et leurs valeurs
+		$aBind = array(
+			':id_epreuve'					=> $nIdEpreuve
+		);
+
+		try {
+			// Exécution de la requête et récupération du premier résultat
+			$aResultat = $this->executeSQL($aQuery, $aBind, 0);
+		} catch (ApplicationException $e) {
+			throw new ApplicationException($e->getMessage(), DataHelper::queryToString($aQuery, $aBind));
+		}
+
+		// Renvoi de la liste
+		return explode(',', $aResultat['liste_salles']);
+	}
+
+	/**
 	 * @brief	Recherche des capacités d'accueil selon l'identifiant d'une épreuve.
 	 *
 	 * @param	integer	$nIdEpreuve			: identifiant de l'épreuve.
@@ -425,7 +462,7 @@ class FormulaireManager extends MySQLManager {
 
 		// Requête SELECT
 		$aQuery = array(
-			"SELECT SUM(capacite_statut_salle)",
+			"SELECT SUM(capacite_statut_salle) AS capacite_totale_salles",
 			"FROM epreuve, salle",
 			"INNER JOIN statut_salle USING(id_salle)",
 			"WHERE FIND_IN_SET(salle.id_salle, epreuve.liste_salles_epreuve) != 0",
@@ -446,7 +483,7 @@ class FormulaireManager extends MySQLManager {
 		}
 
 		// Renvoi de la capacité
-		return $aResultat['SUM(capacite_statut_salle)'];
+		return $aResultat['capacite_totale_salles'];
 	}
 
 	/**
@@ -466,7 +503,7 @@ class FormulaireManager extends MySQLManager {
 			self::LIBELLE_REDACTEUR . " AS libelle_redacteur,",
 			self::LIBELLE_VALIDEUR . " AS libelle_valideur,",
 			sprintf(self::LIBELLE_STAGE_SPRINTF, $this->_dateFormat, $this->_dateFormat) . " AS libelle_stage_complet,",
-			"COUNT(id_stage_candidat)",
+			"COUNT(id_stage_candidat) AS total_candidats",
 			"FROM formulaire",
 			"INNER JOIN utilisateur AS redacteur ON(redacteur.id_utilisateur = id_redacteur)",
 			"INNER JOIN utilisateur AS valideur ON(valideur.id_utilisateur = id_valideur)",

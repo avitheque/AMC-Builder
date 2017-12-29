@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 67 $
- * @since		$LastChangedDate: 2017-07-19 00:09:56 +0200 (Wed, 19 Jul 2017) $
+ * @version		$LastChangedRevision: 95 $
+ * @since		$LastChangedDate: 2017-12-29 18:45:58 +0100 (Fri, 29 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -206,7 +206,7 @@ class CandidatHelper {
 		// Personnalisation des noms de colonne
 		$aColonnes = array(
 			'libelle_stage'				=> "LIBELLÉ DU STAGE",
-			'COUNT(id_stage_candidat)'	=> "NOMBRE DE CANDIDATS",
+			'total_candidats'			=> "NOMBRE DE CANDIDATS",
 			'date_debut_stage'			=> "DEBUT",
 			'date_fin_stage'			=> "FIN"
 		);

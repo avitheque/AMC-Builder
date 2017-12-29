@@ -15,8 +15,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 81 $
- * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
+ * @version		$LastChangedRevision: 95 $
+ * @since		$LastChangedDate: 2017-12-29 18:45:58 +0100 (Fri, 29 Dec 2017) $
  * @see			{ROOT_PATH}/libraries/models/MySQLManager.php
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
@@ -409,7 +409,7 @@ class AdministrationManager extends MySQLManager {
 	public function findAllStages() {
 		// Requête SELECT
 		$sQuery = "SELECT *,
-						COUNT(id_stage_candidat)
+						COUNT(id_stage_candidat) AS total_candidats
 					FROM stage
 					LEFT JOIN domaine USING(id_domaine)
 					LEFT JOIN sous_domaine USING(id_sous_domaine)

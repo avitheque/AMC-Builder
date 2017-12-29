@@ -90,8 +90,9 @@ $aColonnes = array(
 	'libelle_stage_complet'			=> "STAGE",
 	'libelle_epreuve'				=> "ÉPREUVE",
 	"QCM",							// Injection d'une colonne vide
-	'SUM(capacite_statut_salle)'	=> "CAPACITÉ D'ACCUEIL",
-	'COUNT(id_stage_candidat)'		=> "NOMBRE DE CANDIDATS",
+	'liste_salles'					=> "SALLE(S)",
+	'capacite_totale_salles'		=> "CAPACITÉ D'ACCUEIL",
+	'total_candidats'				=> "NOMBRE DE CANDIDATS",
 	'datetime_epreuve'				=> "PROGRAMMATION DE L'ÉPREUVE",
 	'duree_epreuve'					=> "DURÉE (en&nbsp;minutes)",
 	'libelle_groupe'				=> "GROUPE"
@@ -119,7 +120,7 @@ $oProgrammation->addAnchorOnColumn("ACTION",		"id_epreuve",		"Éditer",	"/genera
 $oProgrammation->addAnchorOnColumn("ACTION",		"id_epreuve",		"Annuler",	"/generation/supprimer?id_epreuve=",		"red confirm-delete tooltip-track", 	null,		"Annuler l'épreuve");
 
 // Coloration de l'épreuve en ROUGE si il y a une erreur
-$oProgrammation->setConditionalClassOnColumn('SUM(capacite_statut_salle)', '<', 'COUNT(id_stage_candidat)', "error", array("CAPACITÉ D'ACCUEIL", "NOMBRE DE CANDIDATS"));
+$oProgrammation->setConditionalClassOnColumn('capacite_totale_salles', '<', 'total_candidats', "error", array("SALLE(S)", "CAPACITÉ D'ACCUEIL", "NOMBRE DE CANDIDATS"));
 
 
 // Ajout du tableau à VIEW_MAIN

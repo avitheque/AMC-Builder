@@ -304,7 +304,7 @@ $(document).ready(function() {
 	});
 
 	// Inhibition de la validation accidentelle du formulaire
-	$("input, select, textarea").keypress(function(event) {
+	$("input, select").keypress(function(event) {
 		// Protection contre le syndrome du cliqueur intempestif
 		event.stopPropagation();
 

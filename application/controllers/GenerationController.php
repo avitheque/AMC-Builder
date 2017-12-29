@@ -11,8 +11,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 94 $
- * @since		$LastChangedDate: 2017-12-29 17:27:29 +0100 (Fri, 29 Dec 2017) $
+ * @version		$LastChangedRevision: 95 $
+ * @since		$LastChangedDate: 2017-12-29 18:45:58 +0100 (Fri, 29 Dec 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -75,8 +75,15 @@ class GenerationController extends AbstractFormulaireQCMController {
 
 		// Recherche de la capacité d'accueil de chaque épreuve
 		foreach ($aListeProgrammations as $nOccurrence => $aEpreuve) {
+			// Récupération de la capacité totale des salles attribuées
+			$nTotalCapacite			= $this->_oFormulaireManager->getCapacitesByEpreuveId($aEpreuve['id_epreuve']);
 			// Ajout de l'information de la capacité à l'épreuve courante
-			$aListeProgrammations[$nOccurrence]['SUM(capacite_statut_salle)']	= $this->_oFormulaireManager->getCapacitesByEpreuveId($aEpreuve['id_epreuve']);
+			$aListeProgrammations[$nOccurrence]['capacite_totale_salles']	= $nTotalCapacite;
+
+			// Récupération de la liste des salles attribuées
+			$aListeSalles			= $this->_oFormulaireManager->getListeSallesByEpreuveId($aEpreuve['id_epreuve']);
+			// Ajout de l'information de la liste des salles réservées pour l'épreuve
+			$aListeProgrammations[$nOccurrence]['liste_salles']				= implode("<br />", $aListeSalles);
 		}
 
 		// Envoi de la liste à la vue

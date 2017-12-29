@@ -247,7 +247,7 @@ class GenerationHelper extends FormulaireHelper {
 															</li>
 															<hr class=\"blue\" />
 															</li>";
-		} elseif (empty($this->_nIdEpreuve)) {
+		} elseif (empty($nIdEpreuve)) {
 			$sConsignes					= "";
 		}
 
