@@ -18,7 +18,7 @@
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
  * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (Mon, 27 Feb 2017) $
  */
 
 /**
