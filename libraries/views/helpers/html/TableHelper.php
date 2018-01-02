@@ -10,8 +10,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 93 $
- * @since		$LastChangedDate: 2017-12-29 15:37:13 +0100 (Fri, 29 Dec 2017) $
+ * @version		$LastChangedRevision: 98 $
+ * @since		$LastChangedDate: 2018-01-02 11:17:00 +0100 (Tue, 02 Jan 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -77,7 +77,7 @@ class TableHelper extends HtmlHelper {
 		}
 
 		// Parcours des colonnes à afficher
-		foreach ($aDiff as $sKey) {
+		foreach ((array) $aDiff as $sKey) {
 			$this->_visible[$sKey] = $sKey;
 		}
 	}
@@ -303,7 +303,7 @@ class TableHelper extends HtmlHelper {
 	public function renameColumns($aNewNames = array(), $bHideOther = false) {
 		$aColumns = array();
 		// Parcours l'ensemble des colonnes à renommer
-		foreach ($aNewNames as $sKey => $sRename) {
+		foreach ((array) $aNewNames as $sKey => $sRename) {
 			// Fonctionnalité réalisée si le champ est à ajouter
 			if (is_numeric($sKey)) {
 				$aColumns[$sRename] = $sRename;
@@ -530,7 +530,7 @@ class TableHelper extends HtmlHelper {
 
 	public function setConditionalClassOnColumn($xRefLEFT, $sOperator, $xRefRIGHT, $sClass, $xRefColumn = null) {
 		// Parcours l'ensemble des données
-		foreach ($this->_data as $nOccurrence => $aEntity) {
+		foreach ((array) $this->_data as $nOccurrence => $aEntity) {
 
 			if (is_numeric($xRefLEFT)) {
 				$sValueLEFT		= $xRefLEFT;
@@ -735,7 +735,7 @@ class TableHelper extends HtmlHelper {
 		// Parcours des lignes du tableau
 		foreach ($this->_data as $nOccurrence => $aLine) {
 			// Parcours des colonnes de la ligne
-			foreach ($aLine as $sColumn) {
+			foreach ((array) $aLine as $sColumn) {
 				// Fonctionnalité réalisée si la colonne est à filtrer
 				if (in_array($sColumn, $aFiltre)) {
 					// Suppression de la ligne
@@ -837,7 +837,7 @@ class TableHelper extends HtmlHelper {
 						// Parcours de la configuration de la concaténation
 						foreach ($this->_concat[$xRefData] as $sFormat => $aRefColumns) {
 							$aArgs = array();
-							foreach ($aRefColumns as $sColumn) {
+							foreach ((array) $aRefColumns as $sColumn) {
 								$aArgs[] = $aEntity[$sColumn];
 							}
 							// Formatage de la concaténation
@@ -858,7 +858,7 @@ class TableHelper extends HtmlHelper {
 						}
 
 						foreach ($this->_condition[$xRefData] as $sReference => $aCondition) {
-							foreach ($aCondition as $sTestValue => $aConfig) {
+							foreach ((array) $aCondition as $sTestValue => $aConfig) {
 								// Récupération du nom de la colonne à tester
 								$sColumn = $this->getColumnKey($sReference);
 
@@ -990,7 +990,7 @@ class TableHelper extends HtmlHelper {
 				}
 
 				$sHTML .=	"	<tr class=\"" . $sClassLine . "\">";
-				foreach ($aColumn as $sKey => $sData) {
+				foreach ((array) $aColumn as $sKey => $sData) {
 					$sClassColumn = null;
 					// Fonctionnalité réalisée si une classe est appliquée à la colonne
 					if (isset($this->_class['td'][$sKey])) {
@@ -1029,7 +1029,7 @@ class TableHelper extends HtmlHelper {
 							<tfoot>";
 			foreach ($this->_foot as $aColumn) {
 				$sHTML .=	"	<tr>";
-				foreach ($aColumn as $sData) {
+				foreach ((array) $aColumn as $sData) {
 					$sHTML .= "		<td>" . $sData . "</td>";
 				}
 				$sHTML .=	"	</tr>";
