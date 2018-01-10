@@ -1,7 +1,7 @@
 ## AMC-Builder
-###Application Web destinée aux centres de formation.
+#### Application Web destinée aux centres de formation.
 
-Sous Linux, l'application _[Auto-Multiple-Choice](http://home.gna.org/auto-qcm/index.fr) (AMC)_ répond aux exigences des centres de formation qui ont besoin de réaliser des questionnaires à choix multiples _(QCM)_ à grand volume avec correction automatique des copies de tous les candidats. Les questionnaires sont produits sur support papier.
+Sous Linux, l'application _[Auto-Multiple-Choice](https://www.auto-multiple-choice.net) (AMC)_ répond aux exigences des centres de formation qui ont besoin de réaliser des questionnaires à choix multiples _(QCM)_ à grand volume avec correction automatique des copies de tous les candidats. Les questionnaires sont produits sur support papier.
 La force d'_AMC_ réside dans le fait que pour chaque copie, les questions sont toutes mélangées entre elles et les réponses sont elles-mêmes mélangées dans chaque question...
 
 Au final, aucune copie n'est identique et les suspicions de tricheries ne sont plus possibles !
