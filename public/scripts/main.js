@@ -350,19 +350,19 @@ $(document).ready(function() {
 		// Initialisation de l'action du formulaire par défaut
 		var button_or_url	= "/" + CONTROLLER + "/reset";
 
-        // Initialisation du sélecteur de la boîte dialogue par défaut
+		// Initialisation du sélecteur de la boîte dialogue par défaut
 		var selector		= "#dialog-confirm";
 
 		// Fonctionnalité réalisée dans le cas d'une boîte de dialogue pour finalisation
 		if (!MODIFICATION && $(this).hasClass("final-confirm")) {
-            // Modification de l'URL de la boîte de dialogue
-            button_or_url	= $(this);
+			// Modification de l'URL de la boîte de dialogue
+			button_or_url	= $(this);
 
-            // Modification du sélecteur de la boîte de dialogue
-            selector		= "#dialog-final";
+			// Modification du sélecteur de la boîte de dialogue
+			selector		= "#dialog-final";
 		}
 
-        // Fonctionnalité réalisée si une modification a été réalisée sur le formulaire
+		// Fonctionnalité réalisée si une modification a été réalisée sur le formulaire
 		if (MODIFICATION || $(this).hasClass("force-confirm") || $(this).hasClass("final-confirm")) {
 			// Demande une confirmation avant le changement de la page
 			setDialogConfirm(selector, button_or_url);
@@ -480,95 +480,105 @@ $(document).ready(function() {
 	$(document).on("keypress", "body, input, select, textarea", function(event) {
 		// Protection contre le syndrome du cliqueur intempestif
 		event.stopImmediatePropagation();
-		var message = "...";
+		var message		= "...";
+
+		// Inhibition de l'action par défaut
+		var bDefault	= true;
 
 		// Fonctionnalité réalisée dans le cas de la touche [SAVE]
 		if (event.ctrlKey) {
 			switch (event.which) {
 
-				case 65:				// Touche [a]
-				case 97:				// Touche [A]
-					message = "TOUCHE A";
+				case 65:		// Touche [a]
+				case 97:		// Touche [A]
+					message		= "TOUCHE A";
+					bDefault	= false;
 					$("[role=touche_A]").click();
 					break;
 
-				case 67:				// Touche [c]
-				case 99:				// Touche [C]
-					message = "TOUCHE C";
+				case 67:		// Touche [c]
+				case 99:		// Touche [C]
+					message		= "TOUCHE C";
+					bDefault	= false;
 					$("[role=touche_C]").click();
 					break;
 
-				case 68:				// Touche [d]
-				case 100:				// Touche [D]
-					message = "TOUCHE D";
+				case 68:		// Touche [d]
+				case 100:		// Touche [D]
+					message		= "TOUCHE D";
 					$("[role=touche_D]").click();
 					break;
 
-				case 69:				// Touche [e]
-				case 101:				// Touche [E]
-					message = "TOUCHE E";
+				case 69:		// Touche [e]
+				case 101:		// Touche [E]
+					message		= "TOUCHE E";
 					$("[role=touche_E]").click();
 					break;
 
-				case 70:				// Touche [f]
-				case 102:				// Touche [F]
-					message = "TOUCHE F";
+				case 70:		// Touche [f]
+				case 102:		// Touche [F]
+					message		= "TOUCHE F";
 					$("[role=touche_F]").click();
 					break;
 
-				case 78:				// Touche [n]
-				case 110:				// Touche [N]
-					message = "TOUCHE N";
+				case 78:		// Touche [n]
+				case 110:		// Touche [N]
+					message		= "TOUCHE N";
 					$("[role=touche_N]").click();
 					break;
 
-				case 80:				// Touche [p]
-				case 112:				// Touche [P]
-					message = "TOUCHE P";
+				case 80:		// Touche [p]
+				case 112:		// Touche [P]
+					message		= "TOUCHE P";
 					$("[role=touche_P]").click();
 					break;
 
-				case 82:				// Touche [r]
-				case 114:				// Touche [R]
-					message = "RELOAD";
+				case 82:		// Touche [r]
+				case 114:		// Touche [R]
+					message		= "RELOAD";
 					window.location.reload(true);
 					break;
 
-				case 13:				// Touche [Entrée]
-				case 83:				// Touche [s]
-				case 115:				// Touche [S]
-					message = "TOUCHE S";
+				case 13:		// Touche [Entrée]
+				case 83:		// Touche [s]
+				case 115:		// Touche [S]
+					message		= "TOUCHE S";
 					$("[role=touche_S]").click();
 					break;
 
-				case 84:				// Touche [t]
-				case 116:				// Touche [T]
-					message = "TOUCHE T";
+				case 84:		// Touche [t]
+				case 116:		// Touche [T]
+					message		= "TOUCHE T";
 					$("[role=touche_T]").click();
 					break;
 
-				case 86:				// Touche [v]
-				case 118:				// Touche [V]
-					message = "TOUCHE V";
+				case 86:		// Touche [v]
+				case 118:		// Touche [V]
+					message		= "TOUCHE V";
+					bDefault	= false;
 					$("[role=touche_V]").click();
 					break;
 
-				case 88:				// Touche [x]
-				case 120:				// Touche [X]
-					message = "TOUCHE X";
+				case 88:		// Touche [x]
+				case 120:		// Touche [X]
+					message		= "TOUCHE X";
+					bDefault	= false;
 					$("[role=touche_X]").click();
 					break;
 
 				default:
-					message = "[Ctrl] + ";
+					message		= "[Ctrl] + ";
 					break;
 			}
 
 			// Message de debuggage
 			$("#var-debug").text(message + " [" + event.which + "]");
 
-			// Annulation de l'événement
-			event.preventDefault();
+			// Fonctionnalité réalisée si l'événement doit être inhibé
+			if (bDefault) {
+				// Annulation de l'événement
+				event.preventDefault();
+			}
 		}
 	});
 

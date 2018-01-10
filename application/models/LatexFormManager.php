@@ -125,8 +125,8 @@ require_once('LatexFormManager/Closure.php');
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 56 $
- * @since		$LastChangedDate: 2017-07-05 02:05:10 +0200 (Wed, 05 Jul 2017) $
+ * @version		$LastChangedRevision: 100 $
+ * @since		$LastChangedDate: 2018-01-10 19:53:46 +0100 (Wed, 10 Jan 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -562,7 +562,7 @@ class LatexFormManager extends DocumentManager {
 		}
 
 		// Récupération des variables du document
-		$this->_name	= DataHelper::get($this->_aQCM, 'formulaire_titre',				DataHelper::DATA_TYPE_STR,		FormulaireManager::TITRE_DEFAUT);
+		$this->_name	= DataHelper::get($this->_aQCM, 'formulaire_titre',				DataHelper::DATA_TYPE_LATEX,	FormulaireManager::TITRE_DEFAUT);
 
 		// Initialisation des paramètres d'export
 		$this->setFilename($this->_name);
@@ -736,8 +736,11 @@ class LatexFormManager extends DocumentManager {
 		 */
 		$oExemplaire = new LatexFormManager_Exemplaire();
 		$oExemplaire->setNumber($nExemplaires);
-		$oExemplaire->setTitle($this->_name);
 		$oExemplaire->setLabel($sLibelleEpreuve);
+		// Ajout du titre de l'épreuve s'il est différent du nom du stage
+		if ($sLibelleEpreuve != $this->_name) {
+			$oExemplaire->setTitle($this->_name);
+		}
 		$oExemplaire->setDate("$sTypeEpreuve du $sDateEpreuve");
 		$oExemplaire->setTime($sDureeEpreuve);
 		$this->_document .= $oExemplaire->render();
@@ -817,16 +820,16 @@ class LatexFormManager extends DocumentManager {
 			 * @li Construction du format pour la page de garde des réponses séparées
 			 *
 			 * @code
-			 *        \AMCcleardoublepage
-			 *        \AMCdebutFormulaire
-			 *        \noindent{\bf %s \hfill %s \\ %s \hfill Durée : %d minutes}
+			 *		\AMCcleardoublepage
+			 *		\AMCdebutFormulaire
+			 *		\noindent{\bf %s \hfill %s \\ %s \hfill Durée : %d minutes}
 			 *
-			 *        \noindent\hrulefill
-			 *        \vspace*{5mm}
+			 *		\noindent\hrulefill
+			 *		\vspace*{5mm}
 			 *
-			 *        \begin{center}
-			 *            {\large\bf Feuille des réponses :}
-			 *        \end{center}
+			 *		\begin{center}
+			 *			{\large\bf Feuille des réponses :}
+			 *		\end{center}
 			 * @endcode
 			 */
 			$oSeparate = new LatexFormManager_Separate();

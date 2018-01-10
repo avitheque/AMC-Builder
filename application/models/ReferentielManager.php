@@ -12,8 +12,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 88 $
- * @since		$LastChangedDate: 2017-12-26 11:14:42 +0100 (Tue, 26 Dec 2017) $
+ * @version		$LastChangedRevision: 100 $
+ * @since		$LastChangedDate: 2018-01-10 19:53:46 +0100 (Wed, 10 Jan 2018) $
  * @see			{ROOT_PATH}/libraries/models/MySQLManager.php
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
@@ -360,6 +360,36 @@ class ReferentielManager extends MySQLManager {
 	}
 
 	/**
+	 * @brief	Récupèration de la liste des domaines selon un libellé.
+	 * @param	string	$sLabel			: Nom du domaine à rechercher.
+	 * @return	array
+	 */
+	public function findDomainesByLabel($sLabel = null) {
+		// Découpage du contenu en mots clés
+		$aItems		= explode(" ", $sLabel);
+		
+		$aSearch	= array();
+		$nCount		= 0;
+		
+		// Parcours du référentiel avec chaque mot-clé à la recherche d'un seul résultat
+		while (!DataHelper::isValidArray($aSearch, 1) && $nCount < count($aItems)) {
+			// Initialisation de la clause WHERE
+			$aWhere	= array(
+				sprintf("libelle_domaine LIKE LOWER('%%%s%%')", strtolower(DataHelper::get($aItems, $nCount, DataHelper::DATA_TYPE_STR)))
+			);
+
+			// Récupération du référentiel selon le fragment du nom de catégorie
+			$aSearch = $this->findListeReferentiel('domaine', $aWhere, "libelle_referentiel ASC");
+			
+			// Comptage de boucle
+			$nCount++;
+		}
+		
+		// Renvoi du résultat sous forme de tableau
+		return $aSearch;
+	}
+
+	/**
 	 * @brief	Récupèration de la liste des domaines.
 	 * @return	array
 	 */
@@ -391,6 +421,36 @@ class ReferentielManager extends MySQLManager {
 		$aReferentiel = $this->findListeReferentiel('sous_domaine', $aWhere, "libelle_referentiel ASC");
 		// Transformation du tableau en array('id' => 'libelle')
 		return DataHelper::requestToList($aReferentiel, array('id_referentiel' => "libelle_referentiel"));
+	}
+
+	/**
+	 * @brief	Récupèration de la liste des catégories selon un libellé.
+	 * @param	string	$sLabel			: Nom de la catégorie à rechercher.
+	 * @return	array
+	 */
+	public function findCategoriesByLabel($sLabel = null) {
+		// Découpage du contenu en mots clés
+		$aItems		= explode(" ", $sLabel);
+		
+		$aSearch	= array();
+		$nCount		= 0;
+		
+		// Parcours du référentiel avec chaque mot-clé à la recherche d'un seul résultat
+		while (!DataHelper::isValidArray($aSearch, 1) && $nCount < count($aItems)) {
+			// Initialisation de la clause WHERE
+			$aWhere	= array(
+				sprintf("libelle_categorie LIKE LOWER('%%%s%%')", strtolower(DataHelper::get($aItems, $nCount, DataHelper::DATA_TYPE_STR)))
+			);
+
+			// Récupération du référentiel selon le fragment du nom de catégorie
+			$aSearch = $this->findListeReferentiel('categorie', $aWhere, "libelle_referentiel ASC");
+			
+			// Comptage de boucle
+			$nCount++;
+		}
+		
+		// Renvoi du résultat sous forme de tableau
+		return $aSearch;
 	}
 
 	/**

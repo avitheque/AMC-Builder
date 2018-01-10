@@ -12,14 +12,27 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 46 $
- * @since		$LastChangedDate: 2017-06-18 01:19:51 +0200 (Sun, 18 Jun 2017) $
+ * @version		$LastChangedRevision: 100 $
+ * @since		$LastChangedDate: 2018-01-10 19:53:46 +0100 (Wed, 10 Jan 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
  */
 class ImportQuestionnaireManager extends ImportManager {
+
+	/**
+	 * @brief	Format de recherche d'une catégorie dans le fichier d'importation.
+	 * @var		regexp
+	 */
+	const		CATEGORY_PATTERN	= "@CATEGORY:\s.*\/(.*)$@";
+
+	/**
+	 * @brief	Détermination des éléments du référentiel.
+	 * @var		integer
+	 */
+	private		$_nDomaine			= null;
+	private		$_nCategorie		= null;
 
 	/**
 	 * @brief	Caractères de remplacement du titre.
@@ -238,7 +251,7 @@ class ImportQuestionnaireManager extends ImportManager {
 		} elseif (preg_match("@^\=(.*)$@", trim($sString))) {
 			$fBonus = FormulaireManager::BONUS_MAX;
 		}
-		
+
 		// Renvoi du résultat
 		return $fBonus;
 	}
@@ -615,14 +628,42 @@ class ImportQuestionnaireManager extends ImportManager {
 					$aTemp = array_values($aTemp);
 				}
 
+				// Récupération de la catégorie dans l'export Moodle avec le nom de la catégorie
+				if (empty($nQuestion) && (bool) preg_match(self::CATEGORY_PATTERN, $this->extractEnonce($aTemp[0]), $aMatched)) {
+					// Instance du référentiel de l'application
+					$oReferenciel	= new ReferentielManager();
+
+					// Récupération du libellé de la catégorie
+					$sNomCategorie	= $aMatched[1];
+
+					// Recherche de la catégorie par son libellé
+					$aListeCategory = $oReferenciel->findCategoriesByLabel($sNomCategorie);
+
+					// Fonctionnalité réalisée s'il n'y a qu'une catégorie trouvée dans le référentiel
+					if (DataHelper::isValidArray($aListeCategory, 1)) {
+						// Initialisation de l'identifiant du domaine
+						$this->_nDomaine							= (int) $aListeCategory[0]['id_parent'];
+						// Initialisation de l'identifiant de la catégorie
+						$this->_nCategorie							= (int) $aListeCategory[0]['id_referentiel'];
+					}
+
+					// Suppression de la première ligne
+					unset($aTemp[0]);
+					// Réaffectation des valeurs
+					$aTemp = array_values($aTemp);
+
+					// Passage à la ligne suivante
+					continue;
+				}
+
 				// Récupération du titre de la question
-				$aListeQuestions[$nQuestion]['titre_question'] = $this->extractTitre($aTemp[0]);
+				$aListeQuestions[$nQuestion]['titre_question']		= $this->extractTitre($aTemp[0]);
 
 				// Récupération de l'énoncé de la question
-				$aListeQuestions[$nQuestion]['enonce_question'] = $this->extractEnonce($aTemp[0]);
+				$aListeQuestions[$nQuestion]['enonce_question']		= $this->extractEnonce($aTemp[0]);
 
 				// Récupération de la correction de la question
-				$aListeQuestions[$nQuestion]['correction_question'] = null;
+				$aListeQuestions[$nQuestion]['correction_question']	= null;
 
 				// Récupération de la première ligne avant de supprimer la valeur dans le tableau
 				$sFirstLine = $aTemp[0];
@@ -815,4 +856,17 @@ class ImportQuestionnaireManager extends ImportManager {
 		return $this->_aQCM;
 	}
 
+	/**
+	 * @brief	Récupération de l'identifiant du domaine du questionnaire.
+	 */
+	public function getDomaine() {
+		return $this->_nDomaine;
+	}
+
+	/**
+	 * @brief	Récupération de l'identifiant de la catégorie du questionnaire.
+	 */
+	public function getCategorie() {
+		return $this->_nCategorie;
+	}
 }

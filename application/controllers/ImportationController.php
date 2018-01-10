@@ -14,8 +14,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 81 $
- * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
+ * @version		$LastChangedRevision: 100 $
+ * @since		$LastChangedDate: 2018-01-10 19:53:46 +0100 (Wed, 10 Jan 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -113,12 +113,32 @@ class ImportationController extends AbstractFormulaireQCMController {
 					// Récupération de la sélection des questions strictes (tout ou rien)
 					$bStrict	= DataHelper::get($this->getParams(),	'formulaire_strict',	DataHelper::DATA_TYPE_BOOL,		FormulaireManager::QUESTION_STRICTE_IMPORT);
 					// Récupération de la valeur de la pénalité par défaut des questions à choix multiples (non strictes)
-					$pPenalite	= DataHelper::get($this->getParams(),	'formulaire_penalite',	DataHelper::DATA_TYPE_INT_ABS,  FormulaireManager::PENALITE_DEFAUT);
+					$pPenalite	= DataHelper::get($this->getParams(),	'formulaire_penalite',	DataHelper::DATA_TYPE_INT_ABS,	FormulaireManager::PENALITE_DEFAUT);
 					// Initialisation des données du formulaire à partir de l'importation
 					$this->resetFormulaire(
 						// Importation du formulaire
 						$this->_oImportQuestionnaireManager->importer($sFileName, $sName, $bStrict, $pPenalite)
 					);
+					
+					// Fonctionnalité réalisée si le référentiel a été trouvé pour la catégorie du formulaire
+					if ($nIdDomaine = $this->_oImportQuestionnaireManager->getDomaine()) {
+						// Chargement du domaine
+						$this->_aForm['formulaire_domaine']				= $nIdDomaine;
+						
+						// Chargement de la liste des sous-domaines
+						$this->addToData('liste_sous_domaines',			$this->_oReferentielManager->findListeSousDomaines($nIdDomaine));
+						// Chargement de la liste des catégories
+						$this->addToData('liste_categories',			$this->_oReferentielManager->findListeCategories($nIdDomaine));
+					
+						// Fonctionnalité réalisée si la catégorie a été trouvé
+						if ($nIdCategorie = $this->_oImportQuestionnaireManager->getCategorie()) {
+							// Chargement de la catégorie
+							$this->_aForm['formulaire_categorie']		= $nIdCategorie;
+
+							// Chargement de la liste des sous-catégories
+							$this->addToData('liste_sous_categories',	$this->_oReferentielManager->findListeSousCategories($nIdCategorie));
+						}
+					}
 
 					// Fonctionnalité réalisée si l'importation du formulaire est valide
 					if ($this->issetFormulaire()) {
