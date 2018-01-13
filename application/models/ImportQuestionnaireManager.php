@@ -12,8 +12,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 100 $
- * @since		$LastChangedDate: 2018-01-10 19:53:46 +0100 (Wed, 10 Jan 2018) $
+ * @version		$LastChangedRevision: 101 $
+ * @since		$LastChangedDate: 2018-01-13 17:07:07 +0100 (Sat, 13 Jan 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -149,8 +149,8 @@ class ImportQuestionnaireManager extends ImportManager {
 	 *
 	 * @li Différenciation du caractère [#] réservé à la correction de celui éventuellement présent dans la réponse [\#].
 	 * @code
-	 * 		// Réponse proposée				| Correction
-	 * 		[a-zA-Z0-9]+[\\#*][a-zA-Z0-9]*[#]Ceci est la partie à prendre en compte !\n
+	 * 		// Réponse proposée				| Correction				# Commentaire
+	 * 		[a-zA-Z0-9]+[\\#*]Ceci est la partie à prendre en compte ! [#]Commentaire de la réponse\n
 	 * @endcode
 	 *
 	 * @li	Réponse unique
@@ -166,7 +166,7 @@ class ImportQuestionnaireManager extends ImportManager {
 		$sTexteCorrection = null;
 		// Extraction de la correction de la réponse proposée au candidat
 		if (preg_match("@^[\=|\~](\%.*\%){0,1}(.*)[#]\s{0,1}(.+)$@", trim($sString), $aMatches)) {
-			$sTexteCorrection = $aMatches[3];
+			$sTexteCorrection = $aMatches[2];
 		}
 
 		// Renvoi du résultat adapté au format LaTeX
@@ -366,7 +366,7 @@ class ImportQuestionnaireManager extends ImportManager {
 	 * 		);
 	 * @endcode
 	 */
-	protected function extractListeReponses($aReponses) {
+	protected function extractListeReponses($nQuestion, $aReponses) {
 		// Réaffectation des clés du tableau dans l'ordre
 		$aReponses = array_values($aReponses);
 
@@ -389,11 +389,10 @@ class ImportQuestionnaireManager extends ImportManager {
 
 				// Fonctionnalité réalisée si le texte de la réponse est valide
 				if (!empty($sTexteReponse)) {
-					$aListeReponses[$nReponse]['texte_reponse']		= $sTexteReponse;
-					$aListeReponses[$nReponse]['texte_correction']	= $this->extractCorrection($sString);
-					$aListeReponses[$nReponse]['bonus_reponse']		= $this->extractBonus($sString);
-					$aListeReponses[$nReponse]['malus_reponse']		= $this->extractMalus($sString);
-					$aListeReponses[$nReponse]['sanction_reponse']	= $this->extractSanction($sString);
+					$aListeReponses[$nReponse]['texte_reponse']			= $sTexteReponse;
+					$aListeReponses[$nReponse]['bonus_reponse']			= $this->extractBonus($sString);
+					$aListeReponses[$nReponse]['malus_reponse']			= $this->extractMalus($sString);
+					$aListeReponses[$nReponse]['sanction_reponse']		= $this->extractSanction($sString);
 				}
 			}
 		} else {
@@ -411,15 +410,18 @@ class ImportQuestionnaireManager extends ImportManager {
 			// Fonctionnalité réalisée si la réponse est valide
 			if ($fBonusTRUE || $fBonusFALSE) {
 				// Réponse VRAI
-				$aListeReponses[0]['texte_reponse']		= FormulaireManager::TEXTE_REPONSE_TRUE;
-				$aListeReponses[0]['bonus_reponse']		= $fBonusTRUE;
-				$aListeReponses[0]['malus_reponse']		= 0;
-				$aListeReponses[0]['sanction_reponse']	= 0;
+				$aListeReponses[0]['texte_reponse']						= FormulaireManager::TEXTE_REPONSE_TRUE;
+				$aListeReponses[0]['bonus_reponse']						= $fBonusTRUE;
+				$aListeReponses[0]['malus_reponse']						= 0;
+				$aListeReponses[0]['sanction_reponse']					= 0;
 				// Réponse FAUX
-				$aListeReponses[1]['texte_reponse']		= FormulaireManager::TEXTE_REPONSE_FALSE;
-				$aListeReponses[1]['bonus_reponse']		= $fBonusFALSE;
-				$aListeReponses[1]['malus_reponse']		= 0;
-				$aListeReponses[1]['sanction_reponse']	= 0;
+				$aListeReponses[1]['texte_reponse']						= FormulaireManager::TEXTE_REPONSE_FALSE;
+				$aListeReponses[1]['bonus_reponse']						= $fBonusFALSE;
+				$aListeReponses[1]['malus_reponse']						= 0;
+				$aListeReponses[1]['sanction_reponse']					= 0;
+			} else {
+				// Récupération de la correction
+				$this->_aQCM['question_correction'][$nQuestion]			= $this->extractCorrection($aReponses[0]);
 			}
 		}
 
@@ -434,7 +436,7 @@ class ImportQuestionnaireManager extends ImportManager {
 	 * @li	La première ligne du bloc correspond au titre de la question [name:], avec éventuellement son identifiant [question:].
 	 * @li	L'ensemble des réponses est contenu entre les caractères [{] et [}].
 	 * @code
-	 * 	// question: 725  name: ﻿Interface graphique Linux
+	 * 	// question: 725	name: ﻿Interface graphique Linux
 	 * 	::﻿Interface graphique Linux::[html]﻿L'interface graphique par défaut sous <em>Linux</em> se nomme \:{
 	 * 		=Unity
 	 * 		~KDE
@@ -717,7 +719,7 @@ class ImportQuestionnaireManager extends ImportManager {
 				}
 
 				// Récupération des réponses à la question
-				$aListeQuestions[$nQuestion]['liste_reponses']		= $this->extractListeReponses($aTemp);
+				$aListeQuestions[$nQuestion]['liste_reponses']		= $this->extractListeReponses($nQuestion, $aTemp);
 				$nNombreReponses	= count($aListeQuestions[$nQuestion]['liste_reponses']);
 				$bLibreQuestion		= false;
 				if ($nNombreReponses > $nNombreMaxReponses) {
@@ -777,7 +779,6 @@ class ImportQuestionnaireManager extends ImportManager {
 				$this->_aQCM['question_id'][$nQuestion]							= null;
 				$this->_aQCM['question_titre'][$nQuestion]						= $aQuestion['titre_question'];
 				$this->_aQCM['question_enonce'][$nQuestion]						= $aQuestion['enonce_question'];
-				$this->_aQCM['question_correction'][$nQuestion]					= $aQuestion['correction_question'];
 				$aListeReponses													= $aQuestion['liste_reponses'];
 
 				// Attente d'une réponse stricte à la question

@@ -186,16 +186,24 @@ ViewRender::addToMain("<span id=\"bottom\"><a class=\"page-bottom\" href=\"#top\
 //#################################################################################################
 
 // Ajout d'un bouton si l'utilisateur est Webmaster
-$sWebmaster	= "";
+$sWebmaster			= "";
 if ($aConnexion['webmaster']) {
-	$sWebmaster = "<a href=\"/developpement/phpinfo\" class=\"button green\" target=\"_blank\">PHPInfo</a>
+	$sWebmaster		= "<a href=\"/developpement/phpinfo\" class=\"width-150 button green tooltip\" title=\"Affichage de la configuration PHP\" target=\"_blank\">PHPInfo</a>
 					<span class=\"margin-left-50 margin-right-50\">&nbsp;</span>";
+}
+
+// Ajout d'un bouton si le dépôt Git est actif
+$sRepository		= "";
+if (defined('GIT_ACTIVE') && (bool) GIT_ACTIVE) {
+	$sRepository	= "<span class=\"margin-left-50 margin-right-50\">&nbsp;</span>
+					<a href=\"" . GIT_REPOSITORY . "\" class=\"width-150 button green tooltip\" title=\"Accès au dépôt de l'application\" target=\"_blank\">Dépôt Git</a>";
 }
 
 // Présentation d'un bouton en bas, dans la barre des tâches de la page grâce au CSS
 $sBottom = "<div class=\"group-button\">
 				$sWebmaster
-				<a href=\"" . JQUERY_PATH . "/" .JQUERY_UI_VERSION . "\" class=\"button green\" target=\"_blank\">Bibliothèque jQuery</a>
+				<a href=\"" . JQUERY_PATH . "/" .JQUERY_UI_VERSION . "\" class=\"width-150 button green tooltip\" title=\"Accès à la documentation jQuery\" target=\"_blank\">Bibliothèque jQuery</a>
+				$sRepository
 			</div>";
 ViewRender::addToFooter($sBottom);
 

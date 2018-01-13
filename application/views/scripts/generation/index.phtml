@@ -56,7 +56,7 @@ $oGeneration->setConditionalClassOnColumn('id_domaine', '<=', "0", "grey", "TITR
 $oGeneration->setConditionalClassOnColumn('id_domaine', '<=', "0", "strong red", "DOMAINE");
 
 // Ajout d'une colonne [ACTION] avec un lien HREF
-$oGeneration->addAnchorOnColumn("ACTION",			"id_formulaire",	"Générer",	"/generation/epreuve?id_formulaire=",		"green tooltip-track",					null,		"Générer le QCM pour une épreuve");
+$oGeneration->addAnchorOnColumn("ACTION",			"id_formulaire",	"Générer",	"/generation/epreuve?id_formulaire=",		"green tooltip-track",					null,		"Générer une nouvelle épreuve QCM");
 
 // Ajout du tableau à VIEW_MAIN
 ViewRender::addToMain($oGeneration->renderHTML());
@@ -106,7 +106,7 @@ $oProgrammation->setConditionalTextOnColumn("QCM", 'id_formulaire<>%d', 0, "X");
 $oProgrammation->setOrderColumn('datetime_epreuve', DatatableHelper::ORDER_DESC);
 
 // Ajout d'une colonne [ACTION] avec un lien HREF - (TOUJOURS DISPONIBLE)
-$oProgrammation->addAnchorOnColumn("ACTION",		"id_epreuve",		"Imprimer",	"/generation/imprimer?id_epreuve=",			"blue tooltip-track",					"_blanck",	"Imprimer la programmation de l'épreuve");
+$oProgrammation->addAnchorOnColumn("ACTION",		"id_epreuve",		"Imprimer",	"/generation/imprimer?id_epreuve=",			"blue tooltip-right",					"_blanck",	"Imprimer la programmation de l'épreuve");
 
 // Indicateur d'annulation toujours accessible pour l'administrateur
 $oAuthenticateManager	= AuthenticateManager::getInstance();
@@ -132,7 +132,7 @@ ViewRender::addToMain($oProgrammation->renderHTML());
 
 // Boucle de création de la liste des questions
 ViewRender::addToFooter("<div class=\"group-button\">
-							<a class=\"button green tooltip-track\" href=\"/generation/epreuve\" title=\"Programmer une nouvelle épreuve parmis les formulaires proposés\" role=\"touche_A\">Ajouter une nouvelle épreuve</a>
+							<a class=\"button green tooltip\" href=\"/generation/epreuve\" title=\"Programmer une épreuve non QCM\" role=\"touche_A\">Ajouter une nouvelle épreuve</a>
 						</div>");
 
 // BOUTON [HAUT DE PAGE]

@@ -39,4 +39,8 @@ $sArticle .= "	<p>
 					<span class='commentaire pointer hover-bold' title='Commentaire : cette ligne ne sera pas prise en compte'>// Autre forme possible pour une question Vrai/Faux</span><br/>
 					<span class='pointer hover-bold' title='Titre de la question'>::Q004::</span><span class='pointer hover-bold' title='Énoncé de la question'>3 x 8 = 36</span> {<span class='pointer hover-bold' title='Réponse fausse'>F</span> <span class='pointer hover-bold' title='Commentaire de la réponse'>#La bonne réponse était 24 !</span>}<br />
 					<br />
+					<span class='commentaire pointer hover-bold' title='Commentaire : cette ligne ne sera pas prise en compte'>// Exemple d'une question libre à laquelle le candidat doit saisir lui-même la réponse</span><br/>
+					<span class='pointer hover-bold' title='Titre de la question'>::Q005::</span><span class='pointer hover-bold' title='Énoncé de la question'>Que signifie le sigle HTML ? </span>  {<br/>
+					<span class='indentation'>&nbsp;&nbsp;</span><span class='pointer hover-bold' title='Réponse type attenue'>=Hyper*Text Markup Language</span> <span class='pointer hover-bold' title='Commentaire de la réponse'>#Attribution de tous les points si la réponse est correcte</span><br />
+					}<br />
 				</p>";

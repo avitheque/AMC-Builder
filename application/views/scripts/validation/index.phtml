@@ -53,7 +53,7 @@ $oValidation->setConditionalClassOnColumn('id_domaine', '<=', "0", "strong red",
 
 // Ajout d'une colonne [ACTION] avec un lien HREF conditionnel selon l'état de validation
 $oValidation->setConditionalAnchorOnColumn("ACTION", "validation_formulaire", 1, "id_formulaire", "Valider", "/validation?id_formulaire=", "green tooltip-track",	"Valider le QCM pour une épreuve");
-$oValidation->setConditionalAnchorOnColumn("ACTION", "validation_formulaire", 2, "id_formulaire", "Générer", "/generation/epreuve?id_formulaire=", "blue tooltip-track",	"Générer le QCM pour une épreuve");
+$oValidation->setConditionalAnchorOnColumn("ACTION", "validation_formulaire", 2, "id_formulaire", "Générer", "/generation/epreuve?id_formulaire=", "blue tooltip-track",	"Générer une nouvelle épreuve QCM");
 
 // Tri du tableau sur la colonne ACTION par ordre DESC
 $oValidation->setOrderColumn('ACTION', DatatableHelper::ORDER_DESC);

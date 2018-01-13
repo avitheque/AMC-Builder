@@ -79,7 +79,7 @@ function setDatePicker(selector) {
 			$(this).removeClass("invalid");
 		}
 	});
-}
+};
 
 // Initialisation du plugin TimePicker
 function setTimePicker(selector) {
@@ -101,7 +101,7 @@ function setTimePicker(selector) {
 		'timezoneText':		"Time Zone",
 		'isRTL':			false
 	});
-}
+};
 
 // Initialisation de la boîte de dialogue de confirmation
 function setDialogConfirm(selector, button_or_url) {
@@ -155,7 +155,7 @@ function setDialogConfirm(selector, button_or_url) {
 			}
 		}
 	});
-}
+};
 
 /**
  * Méthode de comparaison entre deux tableaux
@@ -174,7 +174,7 @@ function arrayCompare(a1, a2) {
 		}
 	}
 	return true;
-}
+};
 
 /**
  * Méthode de recherche d'une entrée dans un tableau
@@ -194,7 +194,7 @@ function inArray(needle, haystack) {
 		}
 	}
 	return false;
-}
+};
 
 /**
  * Méthode de récupération de la clé d'une entrée dans un tableau
@@ -214,7 +214,7 @@ function getArrayKey(needle, haystack) {
 		}
 	}
 	return null;
-}
+};
 
 /**
  * Méthode de protection du chargement de la page contre les cliqueurs intempestifs
@@ -236,7 +236,57 @@ function waitingStatement(event) {
 			$("div#stop-click").css({display: "none"});
 		}, 1000);
 	}
-}
+};
+
+/**
+ * Méthode d'initialisation des TOOLTIPS personnalisés
+ * @param	string	className
+ * @param	mixed	selector
+ * @param	string	option
+ * @returns void
+ */
+function resetTooltip(className, selector, option) {
+	// Fonctionnalité réalisée si le selecteur n'est pas initialisé
+	if (typeof(selector) == 'undefined') {
+		selector = "." + className;
+	}
+	
+	// Fonctionnalité réalisée selon le nom de la classe
+	switch (className) {
+		case "tooltip":
+			// Activation des TOOLTIPS statiques
+			$(selector).tooltip({
+				position:	{my: "top+20", at: "center"}
+			});
+			break;
+
+        case "tooltip-right":
+            // Activation des TOOLTIPS qui suivent la souris de l'utilisateur
+            $(selector).tooltip({
+                position:	{my: "left+30", at: "right center"}
+            });
+            break;
+		
+		case "tooltip-track":
+			// Activation des TOOLTIPS qui suivent la souris de l'utilisateur
+			$(selector).tooltip({
+				track:		true,
+				position:	{my: "left+30", at: "right center"}
+			});
+			break;
+			
+		default:
+            // Activation du TOOLTIP avec les paramètres par défaut
+            $(selector).tooltip();
+			break;
+	}
+	
+	// Fonctionnalité réalisée une option est passée en paramètre
+	if (typeof(option) != 'undefined') {
+		// Activation de l'option du TOOLTIP
+		$(selector).tooltip(option);
+	}
+};
 
 // Initialisation de l'indicateur de modification du formulaire
 var MODIFICATION = false;
@@ -261,16 +311,36 @@ $(document).ready(function() {
 	$(".delete").tooltip({
 		position:	{my: "left+10", at: "right center"}
 	});
-
+	
 	// Activation des TOOLTIPS statiques
-	$(".tooltip").tooltip({
-		position:	{my: "top+20", at: "center"}
-	});
+	resetTooltip("tooltip");
 
+    // Activation des TOOLTIPS positionnés à droite
+    resetTooltip("tooltip-right");
+	
 	// Activation des TOOLTIPS qui suivent la souris de l'utilisateur
-	$(".tooltip-track").tooltip({
-		track:		true,
-		position:	{my: "left+10", at: "right center"}
+	resetTooltip("tooltip-track");
+	
+	// Fonctionnaltié réalisée lors du clic sur un élément TOOLTIP, notamment lors de l'ouverture d'un lien vers une nouvelle fenêtre
+	$(document).on("click", "[class*=tooltip]", function(event) {
+		// Forçage de la fermeture du TOOLTIP
+		$(this).tooltip("destroy");
+		
+		// Récupération de la classe de l'élément
+		var string		= $(this).attr("class");
+		
+		// Recherche du nom du TOOLTIP personnalisé
+		var mached		= string.match("\s*(tooltip.*)\s*");
+		var className	= mached[1];
+		
+		// Fonctionnalité réalisée lors de la première entrée du curseur sur l'élément suivant le clic
+		$(this).one("mouseenter", function() {
+			// Fonctionnalité réalisée si la classe du TOOLTIP a été trouvé
+			if (className != '') {
+				// Réinitialisation du TOOLTIP personnalisé
+				resetTooltip(className, this, "open");
+			}
+		});
 	});
 
 	// Activation des ONGLETS
@@ -324,7 +394,7 @@ $(document).ready(function() {
 			return false;
 		}
 	});
-
+	
 	// Fermeture du message de l'application au clic sur le bouton [X]
 	$("a.close").click(function() {
 		// Effacement progressif
