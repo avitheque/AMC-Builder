@@ -18,8 +18,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 95 $
- * @since		$LastChangedDate: 2017-12-29 18:45:58 +0100 (Fri, 29 Dec 2017) $
+ * @version		$LastChangedRevision: 103 $
+ * @since		$LastChangedDate: 2018-01-18 00:11:50 +0100 (Thu, 18 Jan 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -3417,8 +3417,6 @@ class FormulaireManager extends MySQLManager {
 		try {
 			// Recherche de l'entrée dans la table `epreuve`
 			$aSearch		= $this->executeSQL($aSelect, $aBind);
-
-			var_dump($aSearch);
 
 			// Fonctionnalité réalisée si une épreuve est présente
 			if (DataHelper::isValidArray($aSearch)) {

@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 77 $
- * @since		$LastChangedDate: 2017-08-07 21:40:32 +0200 (Mon, 07 Aug 2017) $
+ * @version		$LastChangedRevision: 102 $
+ * @since		$LastChangedDate: 2018-01-18 00:09:48 +0100 (Thu, 18 Jan 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -92,6 +92,32 @@ class QuestionHelper {
 	private		$_bShowQuestion				= true;
 
 	/**
+	 * @brief	Valeur du barème attribuée à question.
+	 * @var		float
+	 */
+	private		$_fBareme					= null;
+
+	/**
+	 * @brief	Valeur totale des points attribuées à la question.
+	 *
+	 * @li	Valeur exprimée en pourcentage du barème.
+	 * @var		percent
+	 */
+	private		$_fBonusQuestionMAX			= null;
+
+	/**
+	 * @brief	Valeur totale de la pénalité attribuée à question.
+	 * @var		float
+	 */
+	private		$_fMalusQuestionMAX			= null;
+
+	/**
+	 * @brief	La question comporte une sanction sur une mauvaise réponse.
+	 * @var		bool
+	 */
+	private		$_bSanctionnedQuestion		= true;
+
+	/**
 	 * @brief	Réponse stricte attendue par défaut.
 	 * @var		bool
 	 */
@@ -125,6 +151,12 @@ class QuestionHelper {
 	 * @var		array
 	 */
 	private 	$_aListeTypeQuestion		= array();
+
+	/**
+	 * @brief	Erreurs lors de la construction.
+	 * @var		array
+	 */
+	private 	$_aError					= array();
 
 	const		TYPE_LIBRE					= "libre";
 	const		TYPE_MULTIPLE				= "multiple";
@@ -262,6 +294,8 @@ class QuestionHelper {
 		// Boucle de création de la liste des réponses
 		$nCountChoix						= 0;
 		$nCountReponse						= 0;
+		$this->_fBonusQuestionMAX			= 0;
+		$this->_fMalusQuestionMAX			= 0;
 		for ($nReponse = 0 ; $nReponse < $nNbMaxReponses ; $nReponse++) {
 			// Identifiant de la réponse en base
 			$nId							= null;
@@ -302,12 +336,14 @@ class QuestionHelper {
 				if (isset($this->_aQuestions['reponse_valeur'][$nQuestion])) {
 					$fValeurReponse			= DataHelper::get($this->_aQuestions['reponse_valeur'][$nQuestion],		$nReponse,	DataHelper::DATA_TYPE_MYFLT_ABS,$fValeurReponse);
 				}
+				$this->_fBonusQuestionMAX	+= $fValeurReponse;
 
 				// Valeur de la pénalité de la réponse
 				$fPenaliteReponse			= 0;
 				if (isset($this->_aQuestions['reponse_penalite'][$nQuestion])) {
 					$fPenaliteReponse		= DataHelper::get($this->_aQuestions['reponse_penalite'][$nQuestion],	$nReponse,	DataHelper::DATA_TYPE_MYFLT_ABS,$fPenaliteReponse);
 				}
+				$this->_fMalusQuestionMAX	+= $fPenaliteReponse;
 
 				// Identifiants CSS des champ de la réponse
 				$sIdReponse					= "idReponse_"	. $nQuestion . "_" . $nReponse;
@@ -511,9 +547,9 @@ class QuestionHelper {
 		}
 
 		// Barème de la question
-		$fBareme							= FormulaireManager::QUESTION_BAREME_DEFAUT;
+		$this->_fBareme						= FormulaireManager::QUESTION_BAREME_DEFAUT;
 		if (array_key_exists("question_id", $this->_aQuestions)) {
-			$fBareme						= DataHelper::get($this->_aQuestions['question_bareme'], 	$nQuestion,		DataHelper::DATA_TYPE_MYFLT_ABS,		$fBareme);
+			$this->_fBareme					= DataHelper::get($this->_aQuestions['question_bareme'], 	$nQuestion,		DataHelper::DATA_TYPE_MYFLT_ABS,		$this->_fBareme);
 		}
 
 		// Facteur de pénalité
@@ -560,7 +596,7 @@ class QuestionHelper {
 
 		$sRemoveQuestion					= "";
 		// Fonctionnalité réalisable uniquement si le formulaire est en cours de rédaction et que le formulaire existe en base
-		if (!$this->_bEpreuve && !$this->_bDisable && !empty($this->_nIdFormulaire)) {
+		if (!$this->_bEpreuve && !$this->_bReadonly && !empty($this->_nIdFormulaire)) {
 			// Bouton de suppression
 			$sRemoveQuestion				.= "<button type=\"submit\" class=\"no-margin red confirm right delete\" name=\"button\" value=\"retirer_" . $nQuestion . "\" title=\"Retirer la question au QCM\">X</button>";
 		}
@@ -572,7 +608,7 @@ class QuestionHelper {
 		$sTitleQuestion						= null;
 		// Identifiant de la question courante
 		$nCurrentQuestionNumber				= sprintf(self::QUESTION_FORMAT_NUMBER,	$nQuestion + 1);
-		$sCurrentQuestionId					= sprintf(self::QUESTION_FORMAT_ID,		$nQuestion + 1);
+		$this->_sCurrentQuestionId			= sprintf(self::QUESTION_FORMAT_ID,		$nQuestion + 1);
 		// Construction de l'entête de la question
 		if (is_numeric($nQuestion) && $this->_bShowQuestion) {
 			$sTitleQuestion					= "Question n°" . $nCurrentQuestionNumber;
@@ -665,7 +701,7 @@ class QuestionHelper {
 			$sMiniInformations				= sprintf("<span class=\"small strong right italic pointer\">%s</span>", $this->_bLibreQuestion ? "(Saisie libre)" : $sInfoNombreReponses);
 
 			// Construction de la miniature
-			$this->_html					.= "<article class=\"miniature padding-0\" title=\"" . $sEnonce . "\" id=\"mini-Q" . $sCurrentQuestionId . "\">
+			$this->_html					.= "<article class=\"miniature padding-0\" title=\"" . $sEnonce . "\" id=\"mini-Q" . $this->_sCurrentQuestionId . "\">
 													<h3 class=\"strong left\">" . $sMiniTitre . "</h3>
 													<input type=\"hidden\" id=\"idBibliotheque\" name=\"bibliotheque_id[]\" value=\"" . $nIdQuestion . "\" />
 													<p>
@@ -676,7 +712,7 @@ class QuestionHelper {
 
 		} else {
 			// Construction du contenu de la question
-				$this->_html				.= "<h3 class=\"item-title\" id=\"" . $sCurrentQuestionId . "\" title=\"" . $sEnonce . "\">" . $sTitleQuestion . $sInfoNombreReponses . $sInformations . "</h3>
+			$this->_html					.= "<h3 class=\"item-title\" id=\"" . $this->_sCurrentQuestionId . "\" title=\"" . $sEnonce . "\">" . $sTitleQuestion . $sInfoNombreReponses . $sInformations . "</h3>
 												<div class=\"item-content auto-height\">
 													" . $sRemoveQuestion . "
 													<table class=\"max-width\">
@@ -699,7 +735,7 @@ class QuestionHelper {
 																	$sPencilIcon
 																	<div class=\"no-wrap strong left max-width\">
 																		<label for=\"idBareme_" . $nQuestion . "\">Barème par défaut</label>
-																		<input maxlength=" . FormulaireManager::QUESTION_BAREME_MAXLENGTH . " type=\"text\" id=\"idBareme_" . $nQuestion . "\" class=\"decimal center width-50\" name=\"question_bareme[" . $nQuestion . "]\" value=\"" . str_replace(".", ",", $fBareme) . "\" $sReadonly/>
+																		<input maxlength=" . FormulaireManager::QUESTION_BAREME_MAXLENGTH . " type=\"text\" id=\"idBareme_" . $nQuestion . "\" class=\"decimal center width-50\" name=\"question_bareme[" . $nQuestion . "]\" value=\"" . str_replace(".", ",", $this->_fBareme) . "\" $sReadonly/>
 																		<label for=\"idBareme_" . $nQuestion . "\">/&nbsp;" . $nNbTotalQuestions . "&nbsp;question" . $sPlurielQuestions . "</label>
 																	</div>
 																</div>
@@ -803,6 +839,48 @@ class QuestionHelper {
 	 */
 	public function getAllQuestionsType() {
 		return $this->_aListeTypeQuestion;
+	}
+
+	/**
+	 * @brief	Récupère la valeur totale du BONUS
+	 * @return	percent
+	 */
+	public function getBonusMax() {
+		return $this->_fBonusQuestionMAX;
+	}
+
+	/**
+	 * @brief	Récupère le nombre totale du MALUS
+	 * @return	float
+	 */
+	public function getMalusMax() {
+		return $this->_fMalusQuestionMAX;
+	}
+
+	/**
+	 * @brief	Récupère l'identifiant de la question
+	 * @return	string
+	 */
+	public function getCurrentQuestionId() {
+		return $this->_sCurrentQuestionId;
+	}
+
+	/**
+	 * @brief	Vérifie la validité du BONUS à la question
+	 * @return	boolean
+	 */
+	public function isValidQuestionBonus() {
+		// Test à réalisé si la réponse attendue à la question n'est pas STRICTE (Tout ou rien)
+		return !$this->_bStrictQuestion ? $this->_fBonusQuestionMAX <= 100 : true;
+	}
+
+	/**
+	 * @brief	Vérifie la validité du MALUS à la question
+	 * @return	boolean
+	 */
+	public function isValidQuestionMalus($fMaxi = 1) {
+		// Test à réalisé si la réponse attendue à la question n'est pas STRICTE (Tout ou rien)
+		return !$this->_bStrictQuestion && $this->_bSanctionnedQuestion ? $this->_fMalusQuestionMAX <= $this->_fBareme : true;
 	}
 
 	/**

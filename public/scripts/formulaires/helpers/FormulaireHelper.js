@@ -93,6 +93,27 @@ function updateValeurs(questionSelected) {
 			$("input[id=idValeur_" + questionSelected + "_" + reponse + "]").val(0);
 		}
 	});
+
+	// Mise à jour de chaque valeur des réponses à la question
+	$("input[id^=idSanction_" + questionSelected + "_]").each(function() {
+		// Récupération de la valeur de l'identifiant sélectionné du type [{name}_{question}_{reponse}]
+		var aTableauID = $(this).attr("id").split("_");
+
+		// Récupération de l'occurrence de la réponse
+		var reponse		= aTableauID[2];
+
+		// Fonctionnalité réalisée si la réponse est valide
+		if ($(this).is(":checked")) {
+			// Fonctionnalité réalisée si la sanction est supérieure au barème
+			if ($("input[id=idPenalite_" + questionSelected + "_" + reponse + "]").val() > $("input[id=idBareme_" + questionSelected).val()) {
+				// Remplacement de la valeur courante avec celui du barème
+				$("input[id=idPenalite_" + questionSelected + "_" + reponse + "]").val($("input[id=idBareme_" + questionSelected).val());
+			}
+		} else {
+			// La valeur correspond à 0%
+			$("input[id=idPenalite_" + questionSelected + "_" + reponse + "]").val(0);
+		}
+	});
 }
 
 /**
@@ -202,14 +223,21 @@ function updateReponses(questionSelected, updateValues) {
  * Déplacement du SCROLL de la fenêtre vers la question sélectionnée par son sélecteur.
  *
  * @param	string		selector			: sélecteur de la question du type [#Q999].
+ * @param	boolean		force				: (optionnel) oblige le focus sur l'élément sélectionné.
  */
-function scrollToQuestionById(selector) {
+function scrollToQuestionById(selector, force) {
 	// 1er ancrage sur la question sélectionnée
 	setTimeout(function() {
-		// Récupération de la position de la question dans la fenêtre
-		var scroll = $(selector).offset().top - $("#article-main").offset().top + parseInt($("#article-main").css("margin-top"));
-		// Déplacement de la fenêtre sur la question sélectionnée
-		$("main").scrollTop(scroll);
+		// Fonctionnalité réalisée si l'élément doit être sélectionné
+		if (typeof(force) != 'undefined' && force == true && !$(selector).hasClass("ui-state-active")) {
+			// Forçage du FOCUS sur l'élément sélectionné
+			$(selector).click();
+		} else {
+			// Récupération de la position de la question dans la fenêtre
+			var scroll = $(selector).offset().top - $("#article-main").offset().top + parseInt($("#article-main").css("margin-top"));
+			// Déplacement de la fenêtre sur la question sélectionnée
+			$("main").scrollTop(scroll);
+		}
 	}, 500);
 	// 2ème ancrage sur la question sélectionnée
 	window.location.replace(selector);

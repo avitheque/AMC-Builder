@@ -250,7 +250,7 @@ function resetTooltip(className, selector, option) {
 	if (typeof(selector) == 'undefined') {
 		selector = "." + className;
 	}
-	
+
 	// Fonctionnalité réalisée selon le nom de la classe
 	switch (className) {
 		case "tooltip":
@@ -266,7 +266,7 @@ function resetTooltip(className, selector, option) {
                 position:	{my: "left+30", at: "right center"}
             });
             break;
-		
+
 		case "tooltip-track":
 			// Activation des TOOLTIPS qui suivent la souris de l'utilisateur
 			$(selector).tooltip({
@@ -274,13 +274,13 @@ function resetTooltip(className, selector, option) {
 				position:	{my: "left+30", at: "right center"}
 			});
 			break;
-			
+
 		default:
             // Activation du TOOLTIP avec les paramètres par défaut
             $(selector).tooltip();
 			break;
 	}
-	
+
 	// Fonctionnalité réalisée une option est passée en paramètre
 	if (typeof(option) != 'undefined') {
 		// Activation de l'option du TOOLTIP
@@ -311,28 +311,28 @@ $(document).ready(function() {
 	$(".delete").tooltip({
 		position:	{my: "left+10", at: "right center"}
 	});
-	
+
 	// Activation des TOOLTIPS statiques
 	resetTooltip("tooltip");
 
     // Activation des TOOLTIPS positionnés à droite
     resetTooltip("tooltip-right");
-	
+
 	// Activation des TOOLTIPS qui suivent la souris de l'utilisateur
 	resetTooltip("tooltip-track");
-	
+
 	// Fonctionnaltié réalisée lors du clic sur un élément TOOLTIP, notamment lors de l'ouverture d'un lien vers une nouvelle fenêtre
 	$(document).on("click", "[class*=tooltip]", function(event) {
 		// Forçage de la fermeture du TOOLTIP
 		$(this).tooltip("destroy");
-		
+
 		// Récupération de la classe de l'élément
 		var string		= $(this).attr("class");
-		
+
 		// Recherche du nom du TOOLTIP personnalisé
 		var mached		= string.match("\s*(tooltip.*)\s*");
 		var className	= mached[1];
-		
+
 		// Fonctionnalité réalisée lors de la première entrée du curseur sur l'élément suivant le clic
 		$(this).one("mouseenter", function() {
 			// Fonctionnalité réalisée si la classe du TOOLTIP a été trouvé
@@ -394,7 +394,7 @@ $(document).ready(function() {
 			return false;
 		}
 	});
-	
+
 	// Fermeture du message de l'application au clic sur le bouton [X]
 	$("a.close").click(function() {
 		// Effacement progressif
@@ -454,7 +454,7 @@ $(document).ready(function() {
 		event.stopPropagation();
 
 		// Fonctionnalité réalisée si l'événement doit être annulé
-		if ($(selector).prop("disabled")) {
+		if ($(this).prop("disabled") || $(this).hasClass("disabled")) {
 			// Annulation de l'événement
 			event.preventDefault();
 			// Arrêt du traitement

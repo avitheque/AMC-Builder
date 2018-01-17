@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 96 $
- * @since		$LastChangedDate: 2017-12-29 19:03:44 +0100 (Fri, 29 Dec 2017) $
+ * @version		$LastChangedRevision: 102 $
+ * @since		$LastChangedDate: 2018-01-18 00:09:48 +0100 (Thu, 18 Jan 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -131,6 +131,15 @@ class FormulaireHelper {
 	protected	$_nOccurrenceQuestion	= -1;
 
 	/**
+	 * @brief	Identifiant de l'état de validation du formulaire.
+	 *
+	 * @li	Par défaut, le formulaire est à l'état 0.
+	 *
+	 * @var		integer
+	 */
+	protected	$_nValidationFormulaire	= 0;
+
+	/**
 	 * @brief	Constructeur de la classe.
 	 *
 	 * @param	boolean	$bReadonly		: Verrouillage de la modification des champs.
@@ -154,7 +163,11 @@ class FormulaireHelper {
 		//#########################################################################################
 
 		// Protection du formulaire contre la modification si une épreuve est en cours
-		$this->_bReadonly				= $oSessionManager->issetIndex('CONTROLE_EPREUVE_EXISTS') ? $oSessionManager->getIndex('CONTROLE_EPREUVE_EXISTS') : $bReadonly;
+		if ($oSessionManager->issetIndex('CONTROLE_EPREUVE_EXISTS') && (bool) $oSessionManager->getIndex('CONTROLE_EPREUVE_EXISTS')) {
+			$this->_bReadonly			= true;
+		} else {
+			$this->_bReadonly			= $bReadonly;
+		}
 
 		// Désactivation de certains boutons du formulaire
 		$this->_bDisable				= $this->_bReadonly ? true : $bDisable;
@@ -312,9 +325,9 @@ class FormulaireHelper {
 		}
 
 		// Niveau de validation du questionnaire
-		$nValidationFormulaire			= DataHelper::get($this->_aQCM, 'formulaire_validation',			DataHelper::DATA_TYPE_INT,		FormulaireManager::VALIDATION_DEFAUT);
+		$this->_nValidationFormulaire	= DataHelper::get($this->_aQCM, 'formulaire_validation',			DataHelper::DATA_TYPE_INT,		FormulaireManager::VALIDATION_DEFAUT);
 		if (! $this->_bReadonly) {
-			switch ($nValidationFormulaire) {
+			switch ($this->_nValidationFormulaire) {
 
 				// Validation en attente
 				case FormulaireManager::VALIDATION_ATTENTE:
@@ -402,7 +415,7 @@ class FormulaireHelper {
 																<input maxlength=" . FormulaireManager::FORMULAIRE_NOM_MAXLENGTH . " type=\"text\" id=\"idNomFormulaire\" class=\"max-width\" name=\"formulaire_titre\" value=\"" . $sNomFormulaire . "\" $sReadonly />
 																$sPencilIcon
 																<input type=\"hidden\" id=\"idFormulaire\" name=\"formulaire_id\" value=\"" . $this->_nIdFormulaire . "\" />
-																<input type=\"hidden\" id=\"validationFormulaire\" name=\"formulaire_validation\" value=\"" . $nValidationFormulaire . "\" />
+																<input type=\"hidden\" id=\"validationFormulaire\" name=\"formulaire_validation\" value=\"" . $this->_nValidationFormulaire . "\" />
 															</li>
 															<li class=\"inline-block max-width\">
 																<hr class=\"half-width\" />
@@ -515,7 +528,23 @@ class FormulaireHelper {
 			$oQuestion->buildQuestion($nQuestion, $nNbMaxReponses);
 			// Mise à jour du nombre de questions
 			$this->_nOccurrenceQuestion++;
+
+			// Fonctionnalité réalisée si le formulaire est en cours de modification
+			if (! $this->_bDisable || $this->_nValidationFormulaire <= FormulaireManager::VALIDATION_ATTENTE) {
+				// Test de la cohérence du BONUS
+				if (! $oQuestion->isValidQuestionBonus()) {
+					// Ajout d'un message d'erreur sous forme de lien vers la question
+					$this->_aError[]	= "<span class=\"tabs-link pointer\" for=\"tabs-questionnaire\" onclick=\"scrollToQuestionById('#" . $oQuestion->getCurrentQuestionId() . "', true);\">Veuillez vérifier la répartition de(s) point(s) entre les réponses de la question n°" . ($nQuestion + 1) . "</span>";
+				}
+
+				// Test de la cohérence du MALUS
+				if (! $oQuestion->isValidQuestionMalus()) {
+					// Ajout d'un message d'erreur sous forme de lien vers la question
+					$this->_aError[]	= "<span class=\"tabs-link pointer\" for=\"tabs-questionnaire\" onclick=\"scrollToQuestionById('#" . $oQuestion->getCurrentQuestionId() . "', true);\">Veuillez vérifier le nombre total de point(s) à retirer à la question n°" . ($nQuestion + 1) . " qui est supérieur au barème</span>";
+				}
+			}
 		}
+
 		// Ajout de la construction HTML au formulaire
 		$this->_html 					.= $oQuestion->renderHTML();
 
@@ -569,6 +598,12 @@ class FormulaireHelper {
 
 		// Déplacement du SCROLL vers l'occurrence de la question sélectionnée
 		ViewRender::addToJQuery("scrollToQuestionOccurrence(" . $this->_activeQuestion . ");");
+
+		// Fonctionnalité réalisée si au moins une erreur est détectée
+		if ($this->_aError) {
+			// Affichage d'un message
+			ViewRender::setMessageError("Erreur détecter dans le questionnaire", $this->_aError);
+		}
 
 		// Activation de la variable de modification du formulaire
 		if ($this->_oInstanceStorage->getData('FORMULAIRE_UPDATED')) {
