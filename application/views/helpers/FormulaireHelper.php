@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 102 $
- * @since		$LastChangedDate: 2018-01-18 00:09:48 +0100 (Thu, 18 Jan 2018) $
+ * @version		$LastChangedRevision: 104 $
+ * @since		$LastChangedDate: 2018-01-19 19:36:51 +0100 (Fri, 19 Jan 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -534,13 +534,13 @@ class FormulaireHelper {
 				// Test de la cohérence du BONUS
 				if (! $oQuestion->isValidQuestionBonus()) {
 					// Ajout d'un message d'erreur sous forme de lien vers la question
-					$this->_aError[]	= "<span class=\"tabs-link pointer\" for=\"tabs-questionnaire\" onclick=\"scrollToQuestionById('#" . $oQuestion->getCurrentQuestionId() . "', true);\">Veuillez vérifier la répartition de(s) point(s) entre les réponses de la question n°" . ($nQuestion + 1) . "</span>";
+					$this->_aError[]	= "<span class=\"tabs-link hover-bold pointer\" for=\"tabs-questionnaire\" onclick=\"scrollToQuestionById('#" . $oQuestion->getCurrentQuestionId() . "', true);\">Veuillez vérifier la répartition de(s) point(s) entre les réponses de la question n°" . ($nQuestion + 1) . "</span>";
 				}
 
 				// Test de la cohérence du MALUS
 				if (! $oQuestion->isValidQuestionMalus()) {
 					// Ajout d'un message d'erreur sous forme de lien vers la question
-					$this->_aError[]	= "<span class=\"tabs-link pointer\" for=\"tabs-questionnaire\" onclick=\"scrollToQuestionById('#" . $oQuestion->getCurrentQuestionId() . "', true);\">Veuillez vérifier le nombre total de point(s) à retirer à la question n°" . ($nQuestion + 1) . " qui est supérieur au barème</span>";
+					$this->_aError[]	= "<span class=\"tabs-link hover-bold pointer\" for=\"tabs-questionnaire\" onclick=\"scrollToQuestionById('#" . $oQuestion->getCurrentQuestionId() . "', true);\">Veuillez vérifier le nombre total de point(s) à retirer à la question n°" . ($nQuestion + 1) . " qui est supérieur au barème</span>";
 				}
 			}
 		}

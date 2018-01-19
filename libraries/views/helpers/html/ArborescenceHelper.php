@@ -80,8 +80,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 65 $
- * @since		$LastChangedDate: 2017-07-10 18:33:44 +0200 (Mon, 10 Jul 2017) $
+ * @version		$LastChangedRevision: 104 $
+ * @since		$LastChangedDate: 2018-01-19 19:36:51 +0100 (Fri, 19 Jan 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -146,7 +146,7 @@ class ArborescenceHelper {
 	 * @brief	Libellé de la RACINE.
 	 * @var		string|HTML
 	 */
-	const		RACINE_LABEL_DEFAULT	= "<span class=\"titre strong\">/</span>";
+	const		RACINE_LABEL_DEFAULT	= "<span class=\"titre strong hover-orange\">/</span>";
 	private		$_racine				= self::RACINE_LABEL_DEFAULT;
 
 	/**
@@ -664,7 +664,7 @@ class ArborescenceHelper {
 			}
 
 			// Construction du libellé
-			$sHtml		.= "		<span class=\"titre strong " . $this->_cursor . "\">" . $sLabel . "</span>";
+			$sHtml		.= "		<span class=\"titre strong hover-orange " . $this->_cursor . "\">" . $sLabel . "</span>";
 
 			// Passage au niveau suivant
 			$this->_nNiveau++;
@@ -707,7 +707,7 @@ class ArborescenceHelper {
 	public function renderHTML($aButtons = array(), $bShowRacine = true) {
 		// Ajout de la feuille de style
 		ViewRender::addToStylesheet(FW_VIEW_STYLES . "/ArborescenceHelper.css");
-			
+
 		// Fonctionnalité réalisée si la modification de l'arborescence est autorisée
 		if (!$this->_readonly) {
 			// Compression du script avec JavaScriptPacker

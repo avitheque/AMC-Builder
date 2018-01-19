@@ -4,8 +4,8 @@
  *
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 104 $
+ * @since		$LastChangedDate: 2018-01-19 19:36:51 +0100 (Fri, 19 Jan 2018) $
  */
 
 /** QUESTIONNAIRES *******************************************************************************/
@@ -26,23 +26,27 @@ dd[id^=penalite]							{
 	text-align:								right;
 }
 
-dd.valide label	,
-dd.valide input								{
+dd.valide label,
+dd.valide input,
+dd.valide input:focus						{
 	color:									green;
 	font-weight:							bold;
 }
 
-dd.valide input								{
+dd.valide input,
+dd.valide input:focus						{
 	background:								rgba(0, 255, 0, 0.2);
 }
 
 dd.sanction label,
-dd.sanction input							{
+dd.sanction input,
+dd.sanction input:focus						{
 	color:									red;
 	font-weight:							bold;
 }
 
-dd.sanction input							{
+dd.sanction input,
+dd.sanction input:focus						{
 	background:								rgba(255, 0, 0, 0.2);
 }
 

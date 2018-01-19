@@ -7,8 +7,8 @@
  *
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 72 $
- * @since		$LastChangedDate: 2017-07-29 16:54:10 +0200 (Sat, 29 Jul 2017) $
+ * @version		$LastChangedRevision: 104 $
+ * @since		$LastChangedDate: 2018-01-19 19:36:51 +0100 (Fri, 19 Jan 2018) $
  */
 
 input:not([readonly]),
@@ -61,16 +61,6 @@ input:focus,
 select:focus,
 textarea:focus										{
 	border-color:									#4297d7;
-}
-
-/* Désactivation du outline de focus sous FireFox */
-select:-moz-focusring {
-	color:											transparent;
-	text-shadow:									0 0 0 #000;
-}
-
-input:-moz-focusring {
-	color:											#000;
 }
 
 input[type=checkbox],
@@ -127,6 +117,16 @@ input[type=radio][readonly]:checked + label:before	{
 	color:											#333;
 }
 
+/* Désactivation du outline lors du focus sous FireFox */
+select:-moz-focusring {
+	color:											transparent;
+	text-shadow:									0 0 0 #000;
+}
+
+input:-moz-focusring {
+	color:											#000;
+}
+
 /*************************************************/
 
 input.date											{
@@ -177,6 +177,7 @@ textarea[disabled]:focus							{
 	color:											transparent;
 	border-color:									#C3C3C3;
 	text-shadow:									0 0 0 #000;
+	outline:										none !important;
 	cursor:											default !important;
 	user-select:									none !important;
 	-moz-user-select:								none !important;

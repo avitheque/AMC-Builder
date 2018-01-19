@@ -10,6 +10,7 @@
  */
 
 var GALLERY_MARGIN_ITEM = 10;
+var GALLERY_DRAGGABLE	= true;
 
 // Mise à jour du MODAL
 function updateGalleryHeight() {
@@ -138,6 +139,9 @@ function initGallery() {
 		helper:				"clone",
 		refreshPositions:	true,
 		zIndex:				5000,
+		start:				function(event, ui) {
+			GALLERY_DRAGGABLE = true;
+		},
 		drag:				function(event, ui) {
 			// Protection contre la propagation intempestive
 			event.stopPropagation();
@@ -155,8 +159,31 @@ function initGallery() {
 				// Modification du style pour extraire le clône de sont conteneur
 				$position = "fixed";
 			}
+			
 			// Modification du style pour extraire le clône de sont conteneur
 			ui.helper.css({position: $position, top: ui.position.top+"px", left: ui.position.left+"px", zIndex: 10000});
+
+			// Fonctionnalité réalisée lors d'un événement clavier
+			$(document).keydown(function(event) {
+				// Fonctionnalité réalisée sur la touche [Echap]
+				if (typeof(event.keyCode) != 'undefined' && event.keyCode == 27) {
+					// Protection contre la propagation intempestive
+					event.stopPropagation();
+					
+					// Désactivation du déplacement
+					GALLERY_DRAGGABLE = false;
+					
+					// Arrêt du déplacement de l'élément clôné
+					ui.helper.stop();
+					
+					// Mascage de l'élément clôné
+					ui.helper.hide();
+
+					// Annulation de l'événement
+					event.preventDefault();
+					return false;
+				}
+			});
 		}
 	});
 
@@ -167,8 +194,12 @@ function initGallery() {
 		drop:				function(event, ui) {
 			// Protection contre la propagation intempestive
 			event.stopPropagation();
-			// Ajout de l'élément
-			addItem(ui.draggable);
+			
+			// Fonctionnalité réalisée si le déplacement est autorisé
+			if (GALLERY_DRAGGABLE) {
+				// Ajout de l'élément
+				addItem(ui.draggable);
+			}
 		}
 	});
 
@@ -179,8 +210,12 @@ function initGallery() {
 		drop:				function(event, ui) {
 			// Protection contre la propagation intempestive
 			event.stopPropagation();
-			// Suppression de l'élément
-			removeItem(ui.draggable);
+
+			// Fonctionnalité réalisée si le déplacement est autorisé
+			if (GALLERY_DRAGGABLE) {
+				// Suppression de l'élément
+				removeItem(ui.draggable);
+			}
 		}
 	});
 

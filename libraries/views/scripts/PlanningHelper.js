@@ -36,6 +36,7 @@
  */
 
 var PLANNING_CURRENT_MD5		= "";
+var PLANNING_DRAGGABLE			= true;
 
 // Variable d'instance de PLANNING_HELPER
 if (typeof(PLANNING_HELPER) == 'undefined') {
@@ -264,6 +265,12 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 					helper:				"clone",
 					refreshPositions:	true,
 					zIndex:				5000,
+					start:				function(event, ui) {
+						// Protection contre la propagation intempestive
+						event.stopPropagation();
+
+						PLANNING_DRAGGABLE	= true;
+					},
 					drag:				function(event, ui) {
 						// Protection contre la propagation intempestive
 						event.stopPropagation();
@@ -277,6 +284,34 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 
 						// Modification du style pour extraire le clône de sont conteneur
 						ui.helper.css({position: $position, top: ui.position.top+"px", left: ui.position.left+"px", zIndex: 10000});
+
+						// Fonctionnalité réalisée lors d'un événement clavier
+						$(document).keydown(function(event) {
+							// Fonctionnalité réalisée sur la touche [Echap]
+							if (typeof(event.keyCode) != 'undefined' && event.keyCode == 27) {
+								// Protection contre la propagation intempestive
+								event.stopPropagation();
+								
+								// Désactivation du déplacement
+								PLANNING_DRAGGABLE	= false;
+								
+								// Arrêt du déplacement de l'élément clôné
+								ui.helper.stop();
+								
+								// Mascage de l'élément clôné
+								ui.helper.hide();
+								
+								// Nettoyage du survol
+								clearPlanning(MD5);
+								
+								// Message informant de l'action de l'utilisateur
+								$("#var-debug").text('Annulation par l\'utilisateur');
+
+								// Annulation de l'événement
+								event.preventDefault();
+								return false;
+							}
+						});
 
 						// Affichage en MODE_DEBUG de la cellule CIBLE
 						$("#var-debug").html($(this).attr("id"));
@@ -304,10 +339,10 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 						var sectionItem		= ui.helper.parents("section").attr("id").replace(MODAL_MD5_PREFIXE, "");
 
 						// Fonctionnalité réalisée si la CELLULE est compatible avec la SOURCE
-						if (sectionItem == MD5) {
+						if (PLANNING_DRAGGABLE && sectionItem == MD5) {
 							// Prévisualisation de la future position de la tâche sur le PLANNING
 							$(this).dragging(event, ui);
-						} else {
+						} else if (PLANNING_DRAGGABLE) {
 							// Message informant de l'incompatibilité de la CELLULE
 							$("#var-debug").text('Emplacement non compatible !');
 							return false;
@@ -322,14 +357,14 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 						var sectionItem		= ui.helper.parents("section").attr("id").replace(MODAL_MD5_PREFIXE, "");
 
 						// Fonctionnalité réalisée si la CELLULE est compatible avec la SOURCE
-						if (sectionItem == MD5 && ui.draggable.getUniqueId() != this.id) {
+						if (PLANNING_DRAGGABLE && sectionItem == MD5 && ui.draggable.getUniqueId() != this.id) {
 							// Ajout du clône dans la nouvelle cellule dans le PLANNING
 							addItem(MD5, ui, this);
-						} else if (sectionItem == MD5) {
+						} else if (PLANNING_DRAGGABLE && sectionItem == MD5) {
 							// Message informant que la CELLULE de destination est identique à la source
 							$("#var-debug").text('Emplacement identique !');
 							return false;
-						} else {
+						} else if (PLANNING_DRAGGABLE) {
 							// Message informant de l'incompatibilité de la CELLULE
 							$("#var-debug").text('Emplacement non compatible !');
 							return false;
@@ -344,7 +379,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 						var sectionItem		= ui.helper.parents("section").attr("id").replace(MODAL_MD5_PREFIXE, "");
 
 						// Fonctionnalité réalisée afin de limiter la fonctionnalité au PLANNING en cours
-						if (sectionItem == MD5) {
+						if (PLANNING_DRAGGABLE && sectionItem == MD5) {
 							// Nettoyage du survol
 							clearPlanning(sectionItem);
 						}
@@ -999,7 +1034,7 @@ function initPlanning(MD5) {
 			var sectionItem		= ui.helper.parents("section").attr("id").replace(MODAL_MD5_PREFIXE, "");
 
 			// Fonctionnalité réalisée si la CELLULE n'est pas compatible avec la SOURCE
-			if (sectionItem != MD5) {
+			if (!PLANNING_DRAGGABLE || sectionItem != MD5) {
 				// Message informant de l'incompatibilité de la CELLULE
 				$("#var-debug").text('Emplacement non compatible !');
 				return false;

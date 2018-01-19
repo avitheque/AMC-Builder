@@ -232,7 +232,7 @@ function scrollToQuestionById(selector, force) {
 		if (typeof(force) != 'undefined' && force == true && !$(selector).hasClass("ui-state-active")) {
 			// Forçage du FOCUS sur l'élément sélectionné
 			$(selector).click();
-		} else {
+		} else if (typeof($(selector).offset()) != 'undefined') {
 			// Récupération de la position de la question dans la fenêtre
 			var scroll = $(selector).offset().top - $("#article-main").offset().top + parseInt($("#article-main").css("margin-top"));
 			// Déplacement de la fenêtre sur la question sélectionnée

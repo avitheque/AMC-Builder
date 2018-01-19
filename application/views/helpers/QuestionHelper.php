@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 102 $
- * @since		$LastChangedDate: 2018-01-18 00:09:48 +0100 (Thu, 18 Jan 2018) $
+ * @version		$LastChangedRevision: 104 $
+ * @since		$LastChangedDate: 2018-01-19 19:36:51 +0100 (Fri, 19 Jan 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -395,7 +395,7 @@ class QuestionHelper {
 																</dt>
 																<dd class=\"valide " . $sClassReponse . "\" id=\"valeur_" . $nQuestion . "_" . $nReponse . "\">
 																	<label for=\"" . $sIdValeur . "\"><u>Valeur de la réponse :</u></label>
-																	<input maxlength=6 type=\"text\" id=\"" . $sIdValeur . "\" class=\"decimal center width-60\" name=\"reponse_valeur[" . $nQuestion . "][" . $nReponse . "]\" value=\"" . str_replace(".", ",", $fValeurReponse) . "\" $sReadonly/>
+																	<input maxlength=6 type=\"text\" id=\"" . $sIdValeur . "\" class=\"decimal center width-60\" name=\"reponse_valeur[" . $nQuestion . "][" . $nReponse . "]\" value=\"" . str_replace(".", ",", $fValeurReponse) . "\" $sDisabled/>
 																	<label for=\"" . $sIdValeur . "\">%</label>
 																</dd>
 															</dl>
@@ -406,7 +406,7 @@ class QuestionHelper {
 																</dt>
 																<dd class=\"sanction " . $sClassSanction . "\" id=\"penalite_" . $nQuestion . "_" . $nReponse . "\">
 																	<label for=\"" . $sIdPenalite . "\"><u>Nombre de point(s) à retirer :</u></label>
-																	<input maxlength=3 type=\"text\" id=\"" . $sIdPenalite . "\" class=\"decimal center width-60\" name=\"reponse_penalite[" . $nQuestion . "][" . $nReponse . "]\" value=\"" . str_replace(".", ",", $fPenaliteReponse) . "\" $sReadonly/>
+																	<input maxlength=3 type=\"text\" id=\"" . $sIdPenalite . "\" class=\"decimal center width-60\" name=\"reponse_penalite[" . $nQuestion . "][" . $nReponse . "]\" value=\"" . str_replace(".", ",", $fPenaliteReponse) . "\" $sDisabled/>
 																</dd>
 															</dl>
 														</div>
