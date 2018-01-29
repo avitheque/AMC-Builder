@@ -12,8 +12,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 101 $
- * @since		$LastChangedDate: 2018-01-13 17:07:07 +0100 (Sat, 13 Jan 2018) $
+ * @version		$LastChangedRevision: 105 $
+ * @since		$LastChangedDate: 2018-01-29 18:47:23 +0100 (Mon, 29 Jan 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -77,6 +77,7 @@ class ImportQuestionnaireManager extends ImportManager {
 	protected function formatTextToLatex($sString = null, array $aReplace = array()) {
 		// Traitement commun
 		$sString = strtr($sString, array(
+				"[moodle]"		=> null,                // Suppression de la protection des champs au format numérique
 				"\\n"			=> chr(10),
 				"\\:"			=> ":",
 				"\\="			=> "=",

@@ -10,8 +10,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 93 $
- * @since		$LastChangedDate: 2017-12-29 15:37:13 +0100 (Fri, 29 Dec 2017) $
+ * @version		$LastChangedRevision: 105 $
+ * @since		$LastChangedDate: 2018-01-29 18:47:23 +0100 (Mon, 29 Jan 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -1453,14 +1453,14 @@ class DataHelper {
 				// Conversion du contenu en texte
 				$xValue	= self::convertToText($xValue, chr(13));
 				// Renvoi de la chaîne sans les caractères spéciaux interprétés
-				return (string) strtr(preg_replace("/\s\s+/", null, nl2br($xValue)), self::$HTML_REPLACE);
+				return (string) strtr(preg_replace("/\s\s+/", chr(32), nl2br($xValue)), self::$HTML_REPLACE);
 			break;
 
 			case self::DATA_TYPE_PDF:
 				// Conversion du contenu en texte
 				$xValue	= self::convertToText($xValue, chr(13));
 				// Renvoi de la chaîne sans les caractères spéciaux interprétés
-				$sText = trim(stripslashes(strtr(preg_replace("/\s\s+/", null, $xValue), self::$PDF_REPLACE)));
+				$sText = trim(stripslashes(strtr(preg_replace("/\s\s+/", chr(32), $xValue), self::$PDF_REPLACE)));
 				return (string) $sText;
 				//return (string) utf8_decode($sText);
 			break;
@@ -1472,7 +1472,7 @@ class DataHelper {
 					return $bForceEmpty ? 'NULL' : "";
 				}
 				// Renvoi de la chaîne sans les caractères spéciaux interprétés
-				$sText = trim(stripslashes(strtr(preg_replace("/\s\s+/", null, nl2br($xValue)), self::$HTML_REPLACE)));
+				$sText = trim(stripslashes(strtr(preg_replace("/\s\s+/", chr(32), nl2br($xValue)), self::$HTML_REPLACE)));
 				return (string) strtr($sText, self::$MYSQL_REPLACE);
 			break;
 
