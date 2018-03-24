@@ -4,14 +4,39 @@
  *
  * Vue permettant de créer des éléments constituant le planning, pouvant être cliqué/glissé.
  *
+ *
+ *
+ *
+ * @li	Chaque élément HTML de la progression embarque des champs cachés renseignés via JavaScript :
+ * @code
+ * <article class="job">
+ * 		<div class="content">
+ * 			(...)
+ * 			<input type="hidden" name="tache_id[]" />
+ * 			<input type="hidden" name="tache_annee[]" />
+ * 			<input type="hidden" name="tache_mois[]" />
+ * 			<input type="hidden" name="tache_jour[]" />
+ * 			<input type="hidden" name="tache_heure[]" />
+ * 			<input type="hidden" name="tache_minute[]" />
+ * 			<input type="hidden" name="tache_duree[]" />
+ * 			<input type="hidden" name="tache_groupe[]" />
+ * 			<input type="hidden" name="tache_update[]" />
+ * 		</div>
+ * </article
+ * @endcode
+ *
+ *
+ *
+ *
+ *
  * @name		ItemHelper
  * @category	Helper
  * @package		PlanningHelper
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 81 $
- * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
+ * @version		$LastChangedRevision: 107 $
+ * @since		$LastChangedDate: 2018-03-24 13:49:48 +0100 (Sat, 24 Mar 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -42,7 +67,7 @@ class Planning_ItemHelper {
 	protected	$_title						= "Jour de la semaine";
 	protected	$_describe					= "";
 	protected	$_content					= "";
-	protected	$_id_participant			= null;
+	protected	$_groupe					= 0;
 	protected	$_participant				= array();
 	protected	$_hrefZoomIn				= "#";
 	protected	$_hrefTrash					= "#";
@@ -54,6 +79,7 @@ class Planning_ItemHelper {
 	protected	$_minute					= 0;
 	protected	$_duration					= 1;
 	protected	$_timer						= 60;
+	protected	$_update					= 0;
 
 
 	/**
@@ -343,11 +369,11 @@ class Planning_ItemHelper {
 	/**
 	 * @brief	Ajout d'un groupe de participants à la tâche
 	 *
-	 * @param	mixed	$nIdParticipant		: identidiants du groupe de participants.
+	 * @param	mixed	$nIdGroupe			: identidiants du groupe de participants.
 	 * @return	void
 	 */
-	public function setParticipant($nIdParticipant, $aListeParticipant = array()) {
-		$this->_id_participant	= $nIdParticipant;
+	public function setParticipant($nIdGroupe, $aListeParticipant = array()) {
+		$this->_groupe			= $nIdGroupe;
 		$this->_participant		= (array) $aListeParticipant;
 	}
 
@@ -358,16 +384,16 @@ class Planning_ItemHelper {
 			$this->_build		= true;
 			$this->_titleHTML	= $this->_title;
 
-			// Fonctionnalité réalisée si le bouton [poubelle] peut être affiché
-			$sTrash = "";
-			if (!empty($this->_id) && !empty($this->_hrefTrash)) {
-				$sTrash = "<a class='ui-icon ui-icon-trash' title='Retirer cet élément' href='" . $this->_hrefTrash . "'>&nbsp;</a>";
-			}
-
 			// Fonctionnalité réalisée si le bouton [zoom] peut être affiché
 			$sZoomIn = "";
 			if (!empty($this->_id) && !empty($this->_hrefZoomIn)) {
 				$sZoomIn = "<a class='ui-icon ui-icon-zoomin' title='Voir le contenu' href='" . $this->_hrefZoomIn . "' >&nbsp;</a>";
+			}
+
+			// Fonctionnalité réalisée si le bouton [poubelle] peut être affiché
+			$sTrash = "";
+			if (!empty($this->_id) && !empty($this->_hrefTrash)) {
+				$sTrash = "<a class='ui-icon ui-icon-trash' title='Retirer cet élément' href='" . $this->_hrefTrash . "'>&nbsp;</a>";
 			}
 
 			// Fonctionnalité réalisée si des participants sont présents
@@ -379,30 +405,31 @@ class Planning_ItemHelper {
 
 			// Ajout d'un élément
 			$this->_html = "<li class='item " . $this->_class . " ui-widget-content ui-corner-tr ui-draggable' align='center'>
-							<article title=\"" . $this->_titleHTML . "\" class='job padding-0' align='center'>
-								<h3 class='strong left max-width'>" . $this->_title . "</h3>
-								<div class='content center'>
-									<p class='center'>" . $this->_describe . "</p>
-									
-									<section class='planning-item-content'>" . $this->_content . "</section>
-									
-									<section class='planning-item-participant'>" . implode(" - ", $this->_participant) . "</section>
-									
-									<input type=\"hidden\" value=" . $this->_id			. " name=\"tache_id[]\">
-									<input type=\"hidden\" value=" . $this->_year		. " name=\"tache_annee[]\">
-									<input type=\"hidden\" value=" . $this->_month		. " name=\"tache_mois[]\">
-									<input type=\"hidden\" value=" . $this->_day		. " name=\"tache_jour[]\">
-									<input type=\"hidden\" value=" . $this->_hour		. " name=\"tache_heure[]\">
-									<input type=\"hidden\" value=" . $this->_minute		. " name=\"tache_minute[]\">
-									<input type=\"hidden\" value=" . $this->_duration	. " name=\"tache_duree[]\">
-									<input type=\"hidden\" value=" . $this->_id_participant . " name=\"tache_participant[]\">					
-								</div>
-							</article>
-							<section class='item-bottom'>
-								<a class='ui-icon ui-icon-pin-s draggable-item' title='Déplacer cet élément' href='#'>&nbsp;</a>
-								$sZoomIn
-								$sTrash
-							</section>
+								<article title=\"" . $this->_titleHTML . "\" class='job padding-0' align='center'>
+									<h3 class='strong left max-width'>" . $this->_title . "</h3>
+									<div class='content center'>
+										<p class='center'>" . $this->_describe . "</p>
+										
+										<section class='planning-item-content'>" . $this->_content . "</section>
+										
+										<section class='planning-item-participant'>" . implode(" - ", $this->_participant) . "</section>
+										
+										<input type=\"hidden\" value=" . $this->_id			. " name=\"tache_id[]\">
+										<input type=\"hidden\" value=" . $this->_year		. " name=\"tache_annee[]\">
+										<input type=\"hidden\" value=" . $this->_month		. " name=\"tache_mois[]\">
+										<input type=\"hidden\" value=" . $this->_day		. " name=\"tache_jour[]\">
+										<input type=\"hidden\" value=" . $this->_hour		. " name=\"tache_heure[]\">
+										<input type=\"hidden\" value=" . $this->_minute		. " name=\"tache_minute[]\">
+										<input type=\"hidden\" value=" . $this->_duration	. " name=\"tache_duree[]\">
+										<input type=\"hidden\" value=" . $this->_groupe		. " name=\"tache_groupe[]\">
+										<input type=\"hidden\" value=" . $this->_update		. " name=\"tache_update[]\">
+									</div>
+								</article>
+								<section class='item-bottom'>
+									<a class='ui-icon ui-icon-pin-s draggable-item' title='Déplacer cet élément' href='#'>&nbsp;</a>
+									$sZoomIn
+									$sTrash
+								</section>
 							</li>";
 		}
 	}

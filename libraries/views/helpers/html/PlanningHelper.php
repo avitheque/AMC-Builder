@@ -10,8 +10,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 83 $
- * @since		$LastChangedDate: 2017-12-03 12:14:06 +0100 (Sun, 03 Dec 2017) $
+ * @version		$LastChangedRevision: 107 $
+ * @since		$LastChangedDate: 2018-03-24 13:49:48 +0100 (Sat, 24 Mar 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -696,7 +696,7 @@ class PlanningHelper {
 			}
 
 			// Création d'une entête à la PROGRESSION
-			$this->planning		.= "				<td class=\"left no-wrap hidden\"><br />" . $this->_buildProgression() . "</td>";
+			$this->planning		.= "				<td class=\"left no-wrap\">" . $this->_buildProgression() . "</td>";
 
 			// Fin de la construction du BODY
 			$this->planning		.= "			</tr>
@@ -767,6 +767,11 @@ class PlanningHelper {
 										PLANNING_MD5['" . $this->_md5 . "'] = '" . $this->_md5 . "';
 										PLANNING_CELL_WIDTH['" . $this->_md5 . "'] = " . $this->_nCellWidth . ";
 									</script>";
+
+			// Fonctionnalité réalisée en MODE_DEBUG
+			if (defined('MODE_DEBUG') && (bool) MODE_DEBUG) {
+				$this->planning	.= "<button class=\"right\" id=\"button-" . $this->_md5 . "\" onclick=\"$('section#" . $this->_md5 . "').getProgression();\">Test</button>";
+			}
 
 			// Activation du planning par jQuery
 			ViewRender::addToJQuery("initPlanning('" . $this->_md5 . "');");
