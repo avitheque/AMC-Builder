@@ -10,8 +10,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 107 $
- * @since		$LastChangedDate: 2018-03-24 13:49:48 +0100 (Sat, 24 Mar 2018) $
+ * @version		$LastChangedRevision: 108 $
+ * @since		$LastChangedDate: 2018-03-24 15:30:42 +0100 (Sat, 24 Mar 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -525,7 +525,7 @@ class PlanningHelper {
 		if ($this->_planning_format == self::FORMAT_CALENDAR && $sClassName != self::PLANNING_HEADER_CLASSNAME) {
 			// Remplacement du titre
 			$sTitreJour		= $sLibelleJour[0];
-			//$nWidth			= 100;
+			//$nWidth		= 100;
 			$sClassItem		= "";
 
 			/**
@@ -557,20 +557,25 @@ class PlanningHelper {
 									<dt><h3>" . $sTitreJour . "</h3></dt>";
 
 		// Finalisation de la zone de progression
-		for ($heure = $this->_planning_debut ; $heure <= $this->_planning_fin ; $heure += $nTranche) {
+		for ($heure = $this->_planning_debut ; $heure <= $this->_planning_fin + 1 ; $heure += $nTranche) {
+			// Construction de la dernière ligne du Calendrier afin de définir la dernière plage horaire
+			if ($heure > $this->_planning_fin && !is_null($dDatePlanning)) {
+				continue;
+			}
+
 			// Détermination du crénau horaire
 			$h	= $heure%60;
 			$m	= ($heure - $heure%60) * 60;
 
 			// Fonctionnalité réalisée par défaut
-			$sClassPlanning		= $sClassDefault;
+			$sClassPlanning = $sClassDefault;
 			if ($sClassName == self::PLANNING_DEFAULT_CLASSNAME) {
 				// Coloration des zones non travaillées ou normales
-				$sClassPlanning	= in_array($h, $this->_planning_deprecated_hours)		? self::PLANNING_DEPRECATED_CLASS : $sClassPlanning;
-				$sClassPlanning	= in_array($m, $this->_planning_deprecated_hours[$h])	? self::PLANNING_DEPRECATED_CLASS : $sClassPlanning;
+				$sClassPlanning = in_array($h, $this->_planning_deprecated_hours) ? self::PLANNING_DEPRECATED_CLASS : $sClassPlanning;
+				$sClassPlanning = in_array($m, $this->_planning_deprecated_hours[$h]) ? self::PLANNING_DEPRECATED_CLASS : $sClassPlanning;
 
 				// Fonctionnalité réalisée si l'heure spécifique de la journée est non travaillée
-				$sClassPlanning	= in_array($h, $this->_planning_deprecated_days[$this->_planning_jour_id]) ? self::PLANNING_DEPRECATED_CLASS : $sClassPlanning;
+				$sClassPlanning = in_array($h, $this->_planning_deprecated_days[$this->_planning_jour_id]) ? self::PLANNING_DEPRECATED_CLASS : $sClassPlanning;
 
 				// Fonctionnalité réalisée en cas de rendu sous forme de CALENDAR
 				if ($this->_planning_format == self::FORMAT_CALENDAR) {
@@ -579,14 +584,14 @@ class PlanningHelper {
 			}
 
 			// Construction de la cellule horaire
-			$sTimeIndex		= sprintf('%02d:%02d', $h, $m);
+			$sTimeIndex = sprintf('%02d:%02d', $h, $m);
 			/**
-			 * @todo	DECOUPAGE HORAIRE - MINUTE
-			 * $sPlanningHTML	.= "<dd id=\"planning-" . $IdProgression . "-" . $h . "-" . $m . "\" class=\"planning " . $sClassPlanning . " " . $sClassItem . "\">
+			 * @todo    DECOUPAGE HORAIRE - MINUTE
+			 * $sPlanningHTML    .= "<dd id=\"planning-" . $IdProgression . "-" . $h . "-" . $m . "\" class=\"planning " . $sClassPlanning . " " . $sClassItem . "\">
 			 */
-			$oItemElement	= DataHelper::get($this->_aItems[$IdProgression], $sTimeIndex, DataHelper::DATA_TYPE_ANY, null);
-			$sClassSet		= null;
-			$sItemHTML		= null;
+			$oItemElement = DataHelper::get($this->_aItems[$IdProgression], $sTimeIndex, DataHelper::DATA_TYPE_ANY, null);
+			$sClassSet    = null;
+			$sItemHTML    = null;
 
 			// Extraction des éléments `Y`, `m` et `d`
 			preg_match("@^([0-9]+)\-([0-9]+)\-([0-9]+)$@", $IdProgression, $aMatched);
