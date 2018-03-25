@@ -10,8 +10,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 105 $
- * @since		$LastChangedDate: 2018-01-29 18:47:23 +0100 (Mon, 29 Jan 2018) $
+ * @version		$LastChangedRevision: 109 $
+ * @since		$LastChangedDate: 2018-03-25 13:15:01 +0200 (Sun, 25 Mar 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -19,35 +19,45 @@
  */
 class DataHelper {
 
-	const DEFAULT_TIMEZONE		= "Europe/Paris";
+	const	DEFAULT_TIMEZONE			= "Europe/Paris";
 
-	const ARRAY_SEPARATOR		= ",";
+	const	ARRAY_SEPARATOR				= ",";
 
-	const DATA_TYPE_NONE		= -1;			# Type non pris en compte
-	const DATA_TYPE_ANY			= 0;			# Type quelconque, pris tel quel
-	const DATA_TYPE_BOOL		= 1;			# Type Booléen
-	const DATA_TYPE_MYBOOL		= 2;			# Type Booléen au format MySQL		(TINYINT 0/1)
-	const DATA_TYPE_INT			= 3;			# Type Entier
-	const DATA_TYPE_INT_ABS		= 4;			# Type Entier en valeur absolue		(SIGNED)
-	const DATA_TYPE_FLT			= 5;			# Type Float au format FR avec séparateur décimal [,]
-	const DATA_TYPE_FLT_ABS		= 6;			# Type Float en valeur absolue au format FR avec séparateur décimal [,]
-	const DATA_TYPE_MYFLT		= 7;			# Type Float au format MySQL avec séparateur décimal [.]
-	const DATA_TYPE_MYFLT_ABS	= 8;			# Type Float en valeur absolue au format MySQL avec séparateur décimal [.]
-	const DATA_TYPE_ARRAY		= 9;			# Type Array
-	const DATA_TYPE_MYARRAY		= 10;			# Type Array au format MySQL [item1|item2|item3]
-	const DATA_TYPE_MYARRAY_NUM	= 11;			# Type Array au format MySQL [item1|item2|item3] mais uniquement avec des valeurs numériques
-	const DATA_TYPE_STR			= 12;			# Type Chaîne
-	const DATA_TYPE_NAME		= 13;			# Type nom (que des lettres, lettres accentuées, espace, tiret, apostrophe)
-	const DATA_TYPE_CLASSID		= 14;			# Type identifiant de classe (que des lettre, pas d'espace)
-	const DATA_TYPE_TXT			= 15;			# Type Texte pouvant être vide par défaut
-	const DATA_TYPE_MYTXT		= 16;			# Type Texte au format MySQL
-	const DATA_TYPE_HTML		= 17;			# Type Texte au format HTML
-	const DATA_TYPE_LATEX		= 18;			# Type Texte au format LaTeX
-	const DATA_TYPE_DATE		= 19;			# Type Date au format FR	[d/m/Y]
-	const DATA_TYPE_MYDATE		= 20;			# Type Date au format MySQL	[Y-m-d]
-	const DATA_TYPE_TIME		= 21;			# Type Time au format FR	[H:i]
-	const DATA_TYPE_DATETIME	= 22;			# Type Date-Time sous MySQL [Y-m-d H:i:s]
-	const DATA_TYPE_PDF			= 23;			# Type texte PDF
+	const	DATA_TYPE_NONE				= -1;			# Type non pris en compte
+	const	DATA_TYPE_ANY				= 0;			# Type quelconque, pris tel quel
+	const	DATA_TYPE_BOOL				= 1;			# Type Booléen
+	const	DATA_TYPE_MYBOOL			= 2;			# Type Booléen au format MySQL		(TINYINT 0/1)
+	const	DATA_TYPE_INT				= 3;			# Type Entier
+	const	DATA_TYPE_INT_ABS			= 4;			# Type Entier en valeur absolue		(SIGNED)
+	const	DATA_TYPE_FLT				= 5;			# Type Float au format FR avec séparateur décimal [,]
+	const	DATA_TYPE_FLT_ABS			= 6;			# Type Float en valeur absolue au format FR avec séparateur décimal [,]
+	const	DATA_TYPE_MYFLT				= 7;			# Type Float au format MySQL avec séparateur décimal [.]
+	const	DATA_TYPE_MYFLT_ABS			= 8;			# Type Float en valeur absolue au format MySQL avec séparateur décimal [.]
+	const	DATA_TYPE_ARRAY				= 9;			# Type Array
+	const	DATA_TYPE_MYARRAY			= 10;			# Type Array au format MySQL [item1|item2|item3]
+	const	DATA_TYPE_MYARRAY_NUM		= 11;			# Type Array au format MySQL [item1|item2|item3] mais uniquement avec des valeurs numériques
+	const	DATA_TYPE_STR				= 12;			# Type Chaîne
+	const	DATA_TYPE_NAME				= 13;			# Type nom (que des lettres, lettres accentuées, espace, tiret, apostrophe)
+	const	DATA_TYPE_CLASSID			= 14;			# Type identifiant de classe (que des lettre, pas d'espace)
+	const	DATA_TYPE_TXT				= 15;			# Type Texte pouvant être vide par défaut
+	const	DATA_TYPE_MYTXT				= 16;			# Type Texte au format MySQL
+	const	DATA_TYPE_HTML				= 17;			# Type Texte au format HTML
+	const	DATA_TYPE_LATEX				= 18;			# Type Texte au format LaTeX
+	const	DATA_TYPE_DATE				= 19;			# Type Date au format FR	[d/m/Y]
+	const	DATA_TYPE_MYDATE			= 20;			# Type Date au format MySQL	[Y-m-d]
+	const	DATA_TYPE_TIME				= 21;			# Type Time au format FR	[H:i]
+	const	DATA_TYPE_DATETIME			= 22;			# Type Date-Time sous MySQL [Y-m-d H:i:s]
+	const	DATA_TYPE_PDF				= 23;			# Type texte PDF
+
+	const	ONCE						= 0;
+	const	SHORT						= 1;
+	const	UPPER						= 2;
+	const	LOWER						= 3;
+
+	static public $LIBELLE_MOIS_ONCE	= array("ONCE", "J.", "F.", "Ms.", "A.", "Mi.", "Jn.", "Jt.", "A.", "S.", "O.", "N.", "D.");
+	static public $LIBELLE_MOIS_SHORT	= array("SHORT", "JAN", "FÉV", "MAR", "AVR", "MAI", "JUN", "JUL", "AOÛ", "SEP", "OCT", "NOV", "DÉC");
+	static public $LIBELLE_MOIS_LOWER	= array("LOWER", "janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre");
+	static public $LIBELLE_MOIS_UPPER	= array("UPPER", "JANVIER", "FÉVRIER", "MARS", "AVRIL", "MAI", "JUIN", "JUILLET", "AOÛT", "SEPTEMBRE", "OCTOBRE", "NOVEMBRE", "DÉCEMBRE");
 
 	/** @brief	Vérifie le type d'une valeur
 	 *
@@ -417,6 +427,35 @@ class DataHelper {
 
 		// Renvoi du résultat
 		return $fTime;
+	}
+
+	/**
+	 * @brief	Récupère le libellé du MOIS.
+	 *
+	 * @param	integer		$nIdMois		: numéro du mois.
+	 * @param	integer		$iType			: indice du type de format.
+	 * @return	string.
+	 */
+	public static function getLibelleMois($nIdMois, $iType = self::SHORT) {
+		$sLibelle = null;
+		switch ($iType) {
+			case self::LOWER:
+				$sLibelle = self::$LIBELLE_MOIS_LOWER[(int) $nIdMois];
+				break;
+
+			case self::ONCE:
+				$sLibelle = self::$LIBELLE_MOIS_ONCE[(int) $nIdMois];
+				break;
+
+			case self::UPPER:
+				$sLibelle = self::$LIBELLE_MOIS_UPPER[(int) $nIdMois];
+				break;
+
+			default:
+				$sLibelle = self::$LIBELLE_MOIS_SHORT[(int) $nIdMois];
+				break;
+		}
+		return $sLibelle;
 	}
 
 	/**
@@ -1538,11 +1577,11 @@ class DataHelper {
 		return $aInput;
 	}
 
-	const SQL_TYPE_UNDEFINED	= 0;			# Type non reconnu
-	const SQL_TYPE_SELECT		= 1;			# Type SELECT
-	const SQL_TYPE_INSERT		= 2;			# Type INSERT
-	const SQL_TYPE_UPDATE		= 3;			# Type UPDATE
-	const SQL_TYPE_DELETE		= 4;			# Type DELETE
+	const	SQL_TYPE_UNDEFINED			= 0;			# Type non reconnu
+	const	SQL_TYPE_SELECT				= 1;			# Type SELECT
+	const	SQL_TYPE_INSERT				= 2;			# Type INSERT
+	const	SQL_TYPE_UPDATE				= 3;			# Type UPDATE
+	const	SQL_TYPE_DELETE				= 4;			# Type DELETE
 
 	/**
 	 * @brief	Récupère le type d'une requête SQL

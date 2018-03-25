@@ -10,8 +10,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 108 $
- * @since		$LastChangedDate: 2018-03-24 15:30:42 +0100 (Sat, 24 Mar 2018) $
+ * @version		$LastChangedRevision: 110 $
+ * @since		$LastChangedDate: 2018-03-25 13:15:28 +0200 (Sun, 25 Mar 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -504,12 +504,6 @@ class PlanningHelper {
 			$this->_planning_jour_id	= date("N", $dDatePlanning);
 			$sLibelleJour				= $this->_planning_semaine[$this->_planning_jour_id];
 			$sLibelleDate				= date('d/m/Y', $dDatePlanning);
-
-			// Libellé du jour
-			$sTitreJour			= strtoupper($sLibelleJour) . " " . $sLibelleDate;
-			if ($this->_planning_format == self::FORMAT_CALENDAR) {
-				$sTitreJour		= $this->_planning_semaine_court[$this->_planning_jour_id];
-			}
 		}
 
 		// Découpage du volume horaire
@@ -523,18 +517,12 @@ class PlanningHelper {
 
 		// Fonctionnalité réalisée pour un affichage sous forme de CALENDRIER
 		if ($this->_planning_format == self::FORMAT_CALENDAR && $sClassName != self::PLANNING_HEADER_CLASSNAME) {
-			// Remplacement du titre
-			$sTitreJour		= $sLibelleJour[0];
-			//$nWidth		= 100;
+			// Réinitialisation de la classe de la tâche
 			$sClassItem		= "";
 
-			/**
 			// Calcul de la largeur de chaque volume horaire
-			//$fDayWidth		= number_format(self::PLANNING_WIDTH_RATIO / $this->_planning_duree, 2);
-			 */
 			$fDayWidth		= number_format(self::PLANNING_WIDTH_RATIO / $this->_planning_duree, 2);
 			$fWidthItem		= ($fDayWidth <= 1) ? 0.5 : intval($fDayWidth);
-			//$sDiaryStyle	= "style=\"width: " . $fDayWidth * 10 . "%\"";
 		}
 
 		// Mise en place d'une classe CSS relative à la dimention des éléments du PLANNING
@@ -547,14 +535,17 @@ class PlanningHelper {
 		$sClassDefault		= in_array($this->_planning_jour_id, $this->_planning_deprecated_days)	? self::PLANNING_DEPRECATED_CLASS	: $sClassDefault;
 
 		// Libellé du jour
-		$sTitreJour			= strtoupper($sLibelleJour) . " " . $sLibelleDate;
+		$sTitreJour			= "<h3>" . strtoupper($sLibelleJour) . " " . $sLibelleDate . "</h3>";
 		if ($this->_planning_format == self::FORMAT_CALENDAR) {
-			$sTitreJour		= $this->_planning_semaine_court[$this->_planning_jour_id];
+			$sTitreJour		= "<h5>" . date('d', $dDatePlanning) . "</h5>";
+			$sTitreJour		.= "<h5>" . $this->_planning_semaine_court[$this->_planning_jour_id] . "</h5>";
 		}
 
 		// Construction du planning du jour
 		$sPlanningHTML		= "<dl class=\"" . $sClassName . "\" title=\"" . strtoupper($sLibelleJour) . " " . $sLibelleDate . "\" $sDiaryStyle>
-									<dt><h3>" . $sTitreJour . "</h3></dt>";
+									<dt>
+										" . $sTitreJour . "
+									</dt>";
 
 		// Finalisation de la zone de progression
 		for ($heure = $this->_planning_debut ; $heure <= $this->_planning_fin + 1 ; $heure += $nTranche) {
@@ -571,8 +562,8 @@ class PlanningHelper {
 			$sClassPlanning = $sClassDefault;
 			if ($sClassName == self::PLANNING_DEFAULT_CLASSNAME) {
 				// Coloration des zones non travaillées ou normales
-				$sClassPlanning = in_array($h, $this->_planning_deprecated_hours) ? self::PLANNING_DEPRECATED_CLASS : $sClassPlanning;
-				$sClassPlanning = in_array($m, $this->_planning_deprecated_hours[$h]) ? self::PLANNING_DEPRECATED_CLASS : $sClassPlanning;
+				$sClassPlanning = in_array($h, $this->_planning_deprecated_hours)		? self::PLANNING_DEPRECATED_CLASS : $sClassPlanning;
+				$sClassPlanning = in_array($m, $this->_planning_deprecated_hours[$h])	? self::PLANNING_DEPRECATED_CLASS : $sClassPlanning;
 
 				// Fonctionnalité réalisée si l'heure spécifique de la journée est non travaillée
 				$sClassPlanning = in_array($h, $this->_planning_deprecated_days[$this->_planning_jour_id]) ? self::PLANNING_DEPRECATED_CLASS : $sClassPlanning;
@@ -673,26 +664,61 @@ class PlanningHelper {
 	 */
 	private function _getProgressionTable() {
 			// Calcul de la largeur de chaque volume horaire
-			$fDayWidth			= number_format(self::PLANNING_WIDTH_RATIO / $this->_planning_duree, 2);
-			$sDiaryStyle		= "style=\"width: " . $fDayWidth . "%\"";
+			$fDayWidth				= number_format(self::PLANNING_WIDTH_RATIO / $this->_planning_duree, 2);
+			$sDiaryStyle			= "style=\"width: " . $fDayWidth . "%\"";
 
 			// Construction du HEAD
-			$this->planning		.= "	<table class=\"max-width\" cellspacing=0 cellpadding=0>
+			$this->planning			.= "<table class=\"max-width\" cellspacing=0 cellpadding=0>
 											<tbody>
 												<tr>";
-			foreach ($this->_semaine as $nIdSemaine => $aProgressionHTML) {
+
+			// Fonctionnalité réalisée uniquement pour le Calendrier
+			if ($this->_planning_format == self::FORMAT_CALENDAR) {
+				$debut				= mktime(0,0,0,$this->_planning_mois,$this->_planning_jour,$this->_planning_annee);
+				$fin				= $debut + (($this->_planning_duree) * 3600 * 24);
+				$nIdMois			= (int) $this->_planning_mois;
+				$nCount				= 0;
+				while ($debut <= $fin) {
+					// Fonctionnalité réalisée à chaque changement de MOIS
+					if ($nIdMois != (int) date('m', $debut) || $debut >= $fin) {
+						// Initialisation des éléments du MOIS
+						$nDiff		= $debut < $fin	? 1 : 0;
+						$iType		= $nCount <= 3	? DataHelper::SHORT	: DataHelper::UPPER;
+						$sTitre		= DataHelper::getLibelleMois((int) date('m', $debut) - $nDiff, $iType);
+						$sTitre		= $nCount < 6	? $sTitre	: $sTitre . " " . date('Y', $debut);
+						$sTitre		= $nCount > 1	? $sTitre	: "";
+
+						// Construction du numéro de SEMAINE
+						$this->planning .= "		<th id=\"month-$nIdMois\" class=\"center horizontal no-wrap ui-widget-content\" colspan=\"" . $nCount . "\">
+														<h5 class=\"left absolute margin-left-5\">$sTitre</h5>&nbsp;
+													</th>";
+
+						// Récupération du mois
+						$nIdMois	= (int) date('m', $debut);
+						$nCount		= 0;
+					}
+					$nCount			+= 1;
+					$debut			+= 3600 * 24;
+				}
+				// Fin du HEAD
+				$this->planning 	.= "		</tr>";
+				$this->planning		.= "		<tr>";
+			}
+
+			// Contruction du numéro de semaine
+			foreach ($this->_semaine as $nIdSemaine => $aProgressionSemaine) {
 				// Initialisation des éléments de la SEMAINE
-				$sTitre			= $this->_planning_format == self::FORMAT_PROGRESSION	? "Semaine $nIdSemaine"	: $nIdSemaine;
-				$sClassTitre	= $this->_planning_format == self::FORMAT_PROGRESSION	? "vertical"			: "horizontal";
+				$sTitre				= $this->_planning_format == self::FORMAT_PROGRESSION	? "Semaine $nIdSemaine"	: $nIdSemaine;
+				$sClassTitre		= $this->_planning_format == self::FORMAT_PROGRESSION	? "vertical"			: "horizontal";
 
 				// Construction du numéro de SEMAINE
-				$this->planning	.= "				<th class=\"week-$nIdSemaine center $sClassTitre no-wrap ui-widget-content\" colspan=\"" . count($aProgressionHTML) . "\">$sTitre</th>";
+				$this->planning		.= "			<th class=\"week-$nIdSemaine center $sClassTitre no-wrap ui-widget-content\" colspan=\"" . count($aProgressionSemaine) . "\">$sTitre</th>";
 			}
 			// Fin du HEAD
-			$this->planning		.= "			</tr>";
+			$this->planning			.= "		</tr>";
 
 			// Construction du BODY
-			$this->planning		.= "			<tr>";
+			$this->planning			.= "		<tr>";
 			foreach ($this->_semaine as $nIdSemaine => $aProgressionSemaine) {
 				// Construction de la progression avec la SEMAINE
 				foreach ($aProgressionSemaine as $nIdJour => $sProgressionHTML) {
@@ -701,10 +727,10 @@ class PlanningHelper {
 			}
 
 			// Création d'une entête à la PROGRESSION
-			$this->planning		.= "				<td class=\"left no-wrap\">" . $this->_buildProgression() . "</td>";
+			$this->planning			.= "			<td class=\"left no-wrap\">" . $this->_buildProgression() . "</td>";
 
 			// Fin de la construction du BODY
-			$this->planning		.= "			</tr>
+			$this->planning			.= "		</tr>
 											</tbody>
 										</table>";
 	}

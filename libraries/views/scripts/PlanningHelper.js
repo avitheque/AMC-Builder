@@ -404,26 +404,32 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 				$(this).mouseenter(function(event) {
 					if ($(this).parents("section").is(".calendar")) {
 						var $aItem		= $(this).attr("id").split("-");
-						var $heure		= $aItem[4];
 
 						// Ajout d'un indicateur de survol
 						$(this).parents("dl").addClass("hover");
 
 						// Affichage de l'heure positionnée en entête de tableau
-						if (! $("dd[id^=planning-0-0-0-" + $heure + "] h4.ui-widget-header", "section#" + MD5).hasClass("visible")) {
-							$("dd[id^=planning-0-0-0-" + $heure + "] h4.ui-widget-header", "section#" + MD5).addClass("visible");
+						if (! $("dd[id^=planning-0-0-0-" + $aItem[4] + "] h4.ui-widget-header", "section#" + MD5).hasClass("visible")) {
+							$("dd[id^=planning-0-0-0-" + $aItem[4] + "] h4.ui-widget-header", "section#" + MD5).addClass("visible");
+						}
+
+						// Mise en surbrillance du MOIS
+						if (! $("th[id^=month-" + $aItem[2] + "]", "section#" + MD5).hasClass("hover")) {
+							$("th[id^=month-" + $aItem[2] + "]", "section#" + MD5).addClass("hover");
 						}
 					}
 				}).mouseleave(function(event) {
 					if ($(this).parents("section").is(".calendar")) {
 						var $aItem		= $(this).attr("id").split("-");
-						var $heure		= $aItem[4];
 
 						// Suppression de l'indicateur de survol
 						$(this).parents("dl").removeClass("hover");
 
 						// Masquage de l'heure positionnée en entête de tableau
 						$("dd[id^=planning-0-0-0-] h4.visible", "section#" + MD5).removeClass("visible");
+
+						// Suppression de la surbrillance du MOIS
+						$("th[id^=month-].hover", "section#" + MD5).removeClass("hover");
 					}
 				});
 
@@ -1110,7 +1116,7 @@ function initPlanning(MD5) {
 		// Protection contre la propagation intempestive
 		event.stopPropagation();
 
-		var role = $(this).attr("role");
+		var role    = $(this).attr("role");
 		$("th." + role,		"section#" + MD5).addClass("hover");
 	}).mouseleave(function(event) {
 		// Protection contre la propagation intempestive
