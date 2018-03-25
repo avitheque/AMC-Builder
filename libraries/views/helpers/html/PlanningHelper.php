@@ -10,8 +10,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 110 $
- * @since		$LastChangedDate: 2018-03-25 13:15:28 +0200 (Sun, 25 Mar 2018) $
+ * @version		$LastChangedRevision: 111 $
+ * @since		$LastChangedDate: 2018-03-25 14:37:49 +0200 (Sun, 25 Mar 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -663,76 +663,80 @@ class PlanningHelper {
 	 * @return	void
 	 */
 	private function _getProgressionTable() {
-			// Calcul de la largeur de chaque volume horaire
-			$fDayWidth				= number_format(self::PLANNING_WIDTH_RATIO / $this->_planning_duree, 2);
-			$sDiaryStyle			= "style=\"width: " . $fDayWidth . "%\"";
+		// Calcul de la largeur de chaque volume horaire
+		$fDayWidth				= number_format(self::PLANNING_WIDTH_RATIO / $this->_planning_duree, 2);
+		$sDiaryStyle			= "style=\"width: " . $fDayWidth . "%\"";
 
-			// Construction du HEAD
-			$this->planning			.= "<table class=\"max-width\" cellspacing=0 cellpadding=0>
-											<tbody>
-												<tr>";
+		$sHead					= "";
+		$sBody					= "";
+		$sFoot					= "";
 
-			// Fonctionnalité réalisée uniquement pour le Calendrier
-			if ($this->_planning_format == self::FORMAT_CALENDAR) {
-				$debut				= mktime(0,0,0,$this->_planning_mois,$this->_planning_jour,$this->_planning_annee);
-				$fin				= $debut + (($this->_planning_duree) * 3600 * 24);
-				$nIdMois			= (int) $this->_planning_mois;
-				$nCount				= 0;
-				while ($debut <= $fin) {
-					// Fonctionnalité réalisée à chaque changement de MOIS
-					if ($nIdMois != (int) date('m', $debut) || $debut >= $fin) {
-						// Initialisation des éléments du MOIS
-						$nDiff		= $debut < $fin	? 1 : 0;
-						$iType		= $nCount <= 3	? DataHelper::SHORT	: DataHelper::UPPER;
-						$sTitre		= DataHelper::getLibelleMois((int) date('m', $debut) - $nDiff, $iType);
-						$sTitre		= $nCount < 6	? $sTitre	: $sTitre . " " . date('Y', $debut);
-						$sTitre		= $nCount > 1	? $sTitre	: "";
+		// Fonctionnalité réalisée uniquement pour le Calendrier
+		if ($this->_planning_format == self::FORMAT_CALENDAR) {
+			$dDebut				= mktime(0, 0, 0, $this->_planning_mois, $this->_planning_jour, $this->_planning_annee);
+			$dFin				= $dDebut + (($this->_planning_duree) * 3600 * 24);
+			$nIdMois			= (int) $this->_planning_mois;
+			$nCount				= 0;
+			while ($dDebut <= $dFin) {
+				// Fonctionnalité réalisée à chaque changement de MOIS
+				if ($nIdMois != (int) date('m', $dDebut) || $dDebut >= $dFin) {
+					// Initialisation des éléments du MOIS
+					$nDiff		= $dDebut < $dFin	? 1 : 0;
+					$iType		= $nCount <= 3	? DataHelper::SHORT	: DataHelper::UPPER;
+					$sTitre		= DataHelper::getLibelleMois((int) date('m', $dDebut) - $nDiff, $iType);
+					$sTitre		= $nCount < 6	? $sTitre	: $sTitre . " " . date('Y', $dDebut);
+					$sTitre		= $nCount > 1	? $sTitre	: "";
 
-						// Construction du numéro de SEMAINE
-						$this->planning .= "		<th id=\"month-$nIdMois\" class=\"center horizontal no-wrap ui-widget-content\" colspan=\"" . $nCount . "\">
-														<h5 class=\"left absolute margin-left-5\">$sTitre</h5>&nbsp;
-													</th>";
+					// Construction du nom du MOIS
+					$sHead		.= "			<th id=\"month-$nIdMois\" class=\"center horizontal no-wrap ui-widget-content\" colspan=\"" . $nCount . "\">
+													<h5 class=\"left absolute margin-left-5\">$sTitre</h5>&nbsp;
+												</th>";
 
-						// Récupération du mois
-						$nIdMois	= (int) date('m', $debut);
-						$nCount		= 0;
-					}
-					$nCount			+= 1;
-					$debut			+= 3600 * 24;
+					// Récupération du mois
+					$nIdMois	= (int) date('m', $dDebut);
+					$nCount		= 0;
 				}
-				// Fin du HEAD
-				$this->planning 	.= "		</tr>";
-				$this->planning		.= "		<tr>";
-			}
-
-			// Contruction du numéro de semaine
-			foreach ($this->_semaine as $nIdSemaine => $aProgressionSemaine) {
-				// Initialisation des éléments de la SEMAINE
-				$sTitre				= $this->_planning_format == self::FORMAT_PROGRESSION	? "Semaine $nIdSemaine"	: $nIdSemaine;
-				$sClassTitre		= $this->_planning_format == self::FORMAT_PROGRESSION	? "vertical"			: "horizontal";
-
-				// Construction du numéro de SEMAINE
-				$this->planning		.= "			<th class=\"week-$nIdSemaine center $sClassTitre no-wrap ui-widget-content\" colspan=\"" . count($aProgressionSemaine) . "\">$sTitre</th>";
+				$nCount			+= 1;
+				$dDebut			+= 3600 * 24;
 			}
 			// Fin du HEAD
-			$this->planning			.= "		</tr>";
+			$sHead		 		.= "		</tr>";
+			$sHead				.= "		<tr>";
 
-			// Construction du BODY
-			$this->planning			.= "		<tr>";
-			foreach ($this->_semaine as $nIdSemaine => $aProgressionSemaine) {
-				// Construction de la progression avec la SEMAINE
-				foreach ($aProgressionSemaine as $nIdJour => $sProgressionHTML) {
-					$this->planning	.= "			<td role=\"week-$nIdSemaine\" class=\"day-$nIdJour center\" $sDiaryStyle>" . $sProgressionHTML . "</td>";
-				}
+			// Ajout d'un pied de page au CALENDRIER
+			$sFoot				.= "			<td class=\"left no-wrap\">" . $this->_buildProgression() . "</td>";
+		}
+
+
+		// Parcours de chaque semaine
+		foreach ($this->_semaine as $nIdSemaine => $aProgressionSemaine) {
+			// Initialisation des éléments de la SEMAINE
+			$sTitre				= $this->_planning_format == self::FORMAT_PROGRESSION	? "Semaine $nIdSemaine"	: $nIdSemaine;
+			$sClassTitre		= $this->_planning_format == self::FORMAT_PROGRESSION	? "vertical"			: "horizontal";
+
+			// Construction du numéro de SEMAINE
+			$sHead				.= "			<th class=\"week-$nIdSemaine center $sClassTitre no-wrap ui-widget-content\" colspan=\"" . count($aProgressionSemaine) . "\">$sTitre</th>";
+
+			// Construction de la progression avec la SEMAINE
+			foreach ($aProgressionSemaine as $nIdJour => $sProgressionHTML) {
+				$sBody			.= "			<td role=\"week-$nIdSemaine\" class=\"day-$nIdJour center\" $sDiaryStyle>" . $sProgressionHTML . "</td>";
 			}
+		}
 
-			// Création d'une entête à la PROGRESSION
-			$this->planning			.= "			<td class=\"left no-wrap\">" . $this->_buildProgression() . "</td>";
+		// Construction du HEAD
+		$this->planning			.= "<table class=\"max-width\" cellspacing=0 cellpadding=0>
+										<tbody>
+											<tr>
+												" . $sHead . "
+											</tr>";
 
-			// Fin de la construction du BODY
-			$this->planning			.= "		</tr>
-											</tbody>
-										</table>";
+		// Construction du BODY
+		$this->planning			.= "		<tr>
+												" . $sBody ."
+												" . $sFoot ."
+											</tr>
+										</tbody>
+									</table>";
 	}
 
 	/**
