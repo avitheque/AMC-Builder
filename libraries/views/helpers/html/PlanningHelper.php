@@ -10,8 +10,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 111 $
- * @since		$LastChangedDate: 2018-03-25 14:37:49 +0200 (Sun, 25 Mar 2018) $
+ * @version		$LastChangedRevision: 112 $
+ * @since		$LastChangedDate: 2018-03-27 20:14:53 +0200 (Tue, 27 Mar 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -802,10 +802,11 @@ class PlanningHelper {
 										PLANNING_MD5['" . $this->_md5 . "'] = '" . $this->_md5 . "';
 										PLANNING_CELL_WIDTH['" . $this->_md5 . "'] = " . $this->_nCellWidth . ";
 									</script>";
-
+			
 			// Fonctionnalité réalisée en MODE_DEBUG
 			if (defined('MODE_DEBUG') && (bool) MODE_DEBUG) {
-				$this->planning	.= "<button class=\"right\" id=\"button-" . $this->_md5 . "\" onclick=\"$('section#" . $this->_md5 . "').getProgression();\">Test</button>";
+				$sClassStyle	= $this->_planning_format == self::FORMAT_CALENDAR ? "margin-top-10-important" : "";
+				$this->planning	.= "<button class=\"red right $sClassStyle\" id=\"button-" . $this->_md5 . "\" onclick=\"$('section#" . $this->_md5 . "').getProgression();\">Test</button>";
 			}
 
 			// Activation du planning par jQuery
