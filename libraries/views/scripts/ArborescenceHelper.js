@@ -11,6 +11,111 @@
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
  */
 
+(function(factory){
+	if (typeof define === 'function' && define.amd){
+		define(['jquery'], factory);
+	} else {
+		factory(window.jQuery);
+	}
+}(function($) {
+
+	// Mise à jour des intervalles
+	var ARBORESCENCE					= [];
+	var ARBORESCENCE_LEFT				= 0;
+	var ARBORESCENCE_RIGHT				= 0;
+	var ARBORESCENCE_COUNT				= 0;
+	var ARBORESCENCE_LEVEL				= 0;
+	$.fn.updateIntervals = function(init) {
+		if (typeof(init) == 'boolean' && init == true) {
+			ARBORESCENCE					= [];
+			ARBORESCENCE_LEFT				= 0;
+			ARBORESCENCE_RIGHT				= 0;
+			ARBORESCENCE_COUNT				= 0;
+			ARBORESCENCE_LEVEL				= 0;
+		}
+		$(this).find("ul[class*=arborescence]").each(function() {
+			ARBORESCENCE_LEFT					= ARBORESCENCE_LEFT + 1;
+			$(this).find("li[class*=branche]").children("span.titre").each(function() {
+				var item		= $(this).parent();
+				var item_id		= item.find('input[name^=item_id]').val();
+				var item_label	= item.find('input[name^=item_label]').val();
+
+				if (typeof(ARBORESCENCE[item_id]) == 'undefined') {
+					var UL_COUNT				= $(this).parent().find("ul[class*=arborescence]").length - 1;
+					var IL_COUNT				= $(this).parent().find("ul[class*=arborescence] li[class*=branche]").length - 1;
+					var DIFF					= $(this).parents("ul[class*=arborescence]").length - ARBORESCENCE_LEVEL;
+					ARBORESCENCE_LEVEL			= $(this).parents("ul[class*=arborescence]").length;
+					//console.debug("[" + ARBORESCENCE_LEVEL + "]");
+					/*
+					switch (DIFF) {
+						case -2:
+							ARBORESCENCE_LEFT	= ARBORESCENCE_RIGHT + 3;
+							break;
+
+						case -1:
+							ARBORESCENCE_LEFT	= ARBORESCENCE_LEFT + 2;
+							break;
+
+						case 0:
+							break;
+
+						default:
+							break;
+					}
+					*/
+					if (DIFF < 0) {
+						ARBORESCENCE_LEFT		= ARBORESCENCE_RIGHT - (DIFF*2);
+					} else if (DIFF == 0) {
+						ARBORESCENCE_LEFT		= ARBORESCENCE_LEFT + 1;
+					}
+
+					if ($(this).parent().find("ul[class*=arborescence] li[class*=branche]").length > 1) {
+						ARBORESCENCE_RIGHT		= ARBORESCENCE_LEFT + IL_COUNT;
+						if (UL_COUNT > 2) {
+							if (UL_COUNT%2 != 0) {
+								UL_COUNT		= UL_COUNT + 1;
+							}
+							ARBORESCENCE_RIGHT	= parseInt(ARBORESCENCE_RIGHT + (UL_COUNT / 2) - 1);
+						} else {
+							ARBORESCENCE_RIGHT	= ARBORESCENCE_RIGHT + 1;
+						}
+					} else {
+						ARBORESCENCE_RIGHT		= ARBORESCENCE_LEFT + 1;
+					}
+
+					// Bonus pour contenir des éléments imbriqués
+					if (IL_COUNT - UL_COUNT > 0) {
+						ARBORESCENCE_RIGHT		= ARBORESCENCE_RIGHT + 1;
+					}
+
+					// Bonus pour contenir des éléments imbriqués multiples
+					if (IL_COUNT == UL_COUNT && UL_COUNT > 0) {
+						ARBORESCENCE_RIGHT		= ARBORESCENCE_RIGHT + parseInt(UL_COUNT/2);
+					}
+
+					ARBORESCENCE[item_id]		= {};
+					ARBORESCENCE[item_id].label	= item_label;
+					ARBORESCENCE[item_id].left	= ARBORESCENCE_LEFT;
+					ARBORESCENCE[item_id].right	= ARBORESCENCE_RIGHT;
+					//console.debug(item_label + " : " + ARBORESCENCE_LEFT + " / " + ARBORESCENCE_RIGHT);
+					console.debug("[" + ARBORESCENCE_LEVEL + "] : " + UL_COUNT + " (" + IL_COUNT + ")");
+					console.debug(item_label + " : " + ARBORESCENCE_LEFT + " / " + ARBORESCENCE_RIGHT + " -> " + (IL_COUNT - UL_COUNT));
+					console.debug(" ");
+
+					if ($(this).find("li[class*=branche]").children("ul.arborescence")) {
+						ARBORESCENCE_LEFT		= ARBORESCENCE_LEFT + 1;
+						$(this).updateIntervals();
+					}
+				}
+			});
+		});
+		return ARBORESCENCE;
+	};
+
+}));
+
+//=================================================================================================
+
 // Initialisation de la variable de déplacement
 var ARBORESCENCE_DROPPABLE_VALID	= true;
 
@@ -63,12 +168,12 @@ function initSortable() {
 				$(this).addClass("hover").parent("li").addClass("hover");
 
 				// Récupération des intervalles du conteneur
-				var borne_gauche	= typeof($(this).parent("li").find("input[name^=borne_gauche]").val()) != 'undefined' ? $(this).parent("li").find("input[name^=borne_gauche]").val() : $(this).parent("input[name^=borne_gauche]").val();
-				var borne_droite	= typeof($(this).parent("li").find("input[name^=borne_droite]").val()) != 'undefined' ? $(this).parent("li").find("input[name^=borne_droite]").val() : $(this).parent("input[name^=borne_droite]").val();
+				var borne_gauche	= typeof($(this).parent("li").find("input[name^=item_left]").val()) != 'undefined' ? $(this).parent("li").find("input[name^=item_left]").val() : $(this).parent("input[name^=item_left]").val();
+				var borne_droite	= typeof($(this).parent("li").find("input[name^=item_right]").val()) != 'undefined' ? $(this).parent("li").find("input[name^=item_right]").val() : $(this).parent("input[name^=item_right]").val();
 
 				// Récupération des intervalles de l'élément à déplacer
-				var helper_gauche	= typeof($(ui.helper).find("input[name^=borne_gauche]").val()) != 'undefined' ? $(ui.helper).find("input[name^=borne_gauche]").val() : $(ui.helper).parent("li").find("input[name^=borne_gauche]").val();
-				var helper_droite	= typeof($(ui.helper).find("input[name^=borne_droite]").val()) != 'undefined' ? $(ui.helper).find("input[name^=borne_droite]").val() : $(ui.helper).parent("li").find("input[name^=borne_droite]").val();
+				var helper_gauche	= typeof($(ui.helper).find("input[name^=item_left]").val()) != 'undefined' ? $(ui.helper).find("input[name^=item_left]").val() : $(ui.helper).parent("li").find("input[name^=item_left]").val();
+				var helper_droite	= typeof($(ui.helper).find("input[name^=item_right]").val()) != 'undefined' ? $(ui.helper).find("input[name^=item_right]").val() : $(ui.helper).parent("li").find("input[name^=item_right]").val();
 
 				// Cas où le déplacement est valide
 				var cas_A			= parseInt(helper_gauche) > parseInt(borne_droite);
@@ -149,8 +254,8 @@ function initSortable() {
 				// Initialisation suite au changement
 				initSortable();
 
-				/** @TODO	Mise à jour des intervalles */
-
+				//	Mise à jour des intervalles
+				$(this).parents("section.racine").updateIntervals(true);
 			},
 			stop:				function(event, ui) {
 				// Protection contre la propagation intempestive
@@ -182,3 +287,4 @@ $(document).ready(function() {
 	initSortable();
 
 });
+

@@ -80,8 +80,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 104 $
- * @since		$LastChangedDate: 2018-01-19 19:36:51 +0100 (Fri, 19 Jan 2018) $
+ * @version		$LastChangedRevision: 114 $
+ * @since		$LastChangedDate: 2018-03-31 09:07:32 +0200 (Sat, 31 Mar 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -646,16 +646,16 @@ class ArborescenceHelper {
 		}
 
 		// Construction de l'arborescence
-		$sHtml			.= "<ul class=\"arborescence\" id=\"niveau-" . $this->_nNiveau . "\">";
+		$sHtml			.= "<ul class=\"arborescence\">";
 
 		// Parcours de l'arborescence
-		foreach ($aListeItems as $aEntity) {
+		foreach ($aListeItems as $nOccurrence => $aEntity) {
 			// Compteur suivant
 			$this->_nCompteur++;
 
 			// Initialisation de la borne GAUCHE
 			$nCurrentBorneGauche		= ++$this->_nBorneGauche;
-			$sHtml		.= "	<li class=\"branche\" id=\"item-" . $this->_nCompteur . "\">";
+			$sHtml		.= "	<li class=\"branche\">";
 
 			// Ajout du libellé
 			$sLabel		= $aEntity['label'];
@@ -675,8 +675,8 @@ class ArborescenceHelper {
 				$sUnderHtml	.= $this->_buildArborescence($aEntity['items'], $aButtons);
 			} else {
 				// Construction d'une sous-arborescence vide
-				$sUnderHtml	.= "<ul class=\"arborescence\" id=\"niveau-" . $this->_nNiveau . "\">
-								<li class=\"branche empty\" id=\"item-" . $this->_nCompteur . "\">
+				$sUnderHtml	.= "<ul class=\"arborescence\">
+								<li class=\"branche empty\">
 									<span>&nbsp;</span>
 								</li>
 							</ul>";
@@ -686,8 +686,10 @@ class ArborescenceHelper {
 
 			// Calcul des bornes suivantes
 			$nCurrentBorneDroite	= ++$this->_nBorneGauche;
-			$sHtml		.= "		<input type=\"hidden\" name=\"borne_gauche[]\" value=\"" . $nCurrentBorneGauche . "\" />
-									<input type=\"hidden\" name=\"borne_droite[]\" value=\"" . $nCurrentBorneDroite . "\" />
+			$sHtml		.= "		<input type=\"hidden\" name=\"item_id[]\" value=\"" . $aEntity['id'] . "\" />
+									<input type=\"hidden\" name=\"item_label[]\" value=\"" . $aEntity['label'] . "\" />
+									<input type=\"hidden\" name=\"item_left[]\" value=\"" . $nCurrentBorneGauche . "\" />
+									<input type=\"hidden\" name=\"item_right[]\" value=\"" . $nCurrentBorneDroite . "\" />
 									" . $sUnderHtml . "
 								</li>";
 		}
