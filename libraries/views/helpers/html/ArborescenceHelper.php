@@ -80,8 +80,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 114 $
- * @since		$LastChangedDate: 2018-03-31 09:07:32 +0200 (Sat, 31 Mar 2018) $
+ * @version		$LastChangedRevision: 115 $
+ * @since		$LastChangedDate: 2018-03-31 14:27:07 +0200 (Sat, 31 Mar 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -719,7 +719,12 @@ class ArborescenceHelper {
 		// Initialisation du contenu HTML
 		$sHTML		= "<section class=\"racine padding-left-20\">";
 		$sHTML		.= $this->_buildArborescence($this->_aItems, $aButtons, $bShowRacine);
-		$sHTML		.= "</section>";
+		$sHTML		.= "</section>
+						<script type='text/javascript'>
+							// Fonctionnalité de déclaration si les éléments n'existent pas
+							if (typeof(ARBORESCENCE_DEBUG) == 'undefined')	{ var ARBORESCENCE_DEBUG = " . ((bool) MODE_DEBUG ? "true" : "false") . "; }
+						</script>";
+
 
 		// Renvoi du code HTML
 		return $sHTML;

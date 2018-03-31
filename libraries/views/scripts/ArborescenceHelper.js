@@ -45,24 +45,8 @@
 					var IL_COUNT				= $(this).parent().find("ul[class*=arborescence] li[class*=branche]").length - 1;
 					var DIFF					= $(this).parents("ul[class*=arborescence]").length - ARBORESCENCE_LEVEL;
 					ARBORESCENCE_LEVEL			= $(this).parents("ul[class*=arborescence]").length;
-					//console.debug("[" + ARBORESCENCE_LEVEL + "]");
-					/*
-					switch (DIFF) {
-						case -2:
-							ARBORESCENCE_LEFT	= ARBORESCENCE_RIGHT + 3;
-							break;
 
-						case -1:
-							ARBORESCENCE_LEFT	= ARBORESCENCE_LEFT + 2;
-							break;
-
-						case 0:
-							break;
-
-						default:
-							break;
-					}
-					*/
+					// Fonctionnalité réalisée lorsqu'un changement d'arborescence est détecté
 					if (DIFF < 0) {
 						ARBORESCENCE_LEFT		= ARBORESCENCE_RIGHT - (DIFF*2);
 					} else if (DIFF == 0) {
@@ -97,10 +81,13 @@
 					ARBORESCENCE[item_id].label	= item_label;
 					ARBORESCENCE[item_id].left	= ARBORESCENCE_LEFT;
 					ARBORESCENCE[item_id].right	= ARBORESCENCE_RIGHT;
-					//console.debug(item_label + " : " + ARBORESCENCE_LEFT + " / " + ARBORESCENCE_RIGHT);
-					console.debug("[" + ARBORESCENCE_LEVEL + "] : " + UL_COUNT + " (" + IL_COUNT + ")");
-					console.debug(item_label + " : " + ARBORESCENCE_LEFT + " / " + ARBORESCENCE_RIGHT + " -> " + (IL_COUNT - UL_COUNT));
-					console.debug(" ");
+
+					// Fonctionnalité réalisée si le MODE_DEBUG est actif sur `ARBORESCENCE_HELPER`
+					if (typeof(ARBORESCENCE_DEBUG) == 'boolean' && ARBORESCENCE_DEBUG) {
+						console.debug("[" + ARBORESCENCE_LEVEL + "] : " + UL_COUNT + " (" + IL_COUNT + ")");
+						console.debug(item_label + " : " + ARBORESCENCE_LEFT + " / " + ARBORESCENCE_RIGHT + " -> " + (IL_COUNT - UL_COUNT));
+						console.debug(" ");
+					}
 
 					if ($(this).find("li[class*=branche]").children("ul.arborescence")) {
 						ARBORESCENCE_LEFT		= ARBORESCENCE_LEFT + 1;
