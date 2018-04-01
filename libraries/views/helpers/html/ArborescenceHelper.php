@@ -80,8 +80,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 115 $
- * @since		$LastChangedDate: 2018-03-31 14:27:07 +0200 (Sat, 31 Mar 2018) $
+ * @version		$LastChangedRevision: 116 $
+ * @since		$LastChangedDate: 2018-04-01 13:10:23 +0200 (Sun, 01 Apr 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -690,6 +690,7 @@ class ArborescenceHelper {
 									<input type=\"hidden\" name=\"item_label[]\" value=\"" . $aEntity['label'] . "\" />
 									<input type=\"hidden\" name=\"item_left[]\" value=\"" . $nCurrentBorneGauche . "\" />
 									<input type=\"hidden\" name=\"item_right[]\" value=\"" . $nCurrentBorneDroite . "\" />
+									<input type=\"hidden\" name=\"item_changed[]\" value=\"0\" />
 									" . $sUnderHtml . "
 								</li>";
 		}
