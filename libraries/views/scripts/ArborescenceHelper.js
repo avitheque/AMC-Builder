@@ -23,6 +23,7 @@
 	var ARBORESCENCE									= [];
 	var ARBORESCENCE_LEFT								= 0;
 	var ARBORESCENCE_RIGHT								= 0;
+	var ARBORESCENCE_MIN								= 0;
 	var ARBORESCENCE_MAX								= [];
 	var ARBORESCENCE_LEVEL								= 0;
 	var ARBORESCENCE_NODE								= 0;
@@ -37,6 +38,7 @@
 			ARBORESCENCE								= [];
 			ARBORESCENCE_LEFT							= 0;
 			ARBORESCENCE_RIGHT							= 0;
+			ARBORESCENCE_MIN							= 0;
 			ARBORESCENCE_MAX							= [];
 			ARBORESCENCE_LEVEL							= 0;
 			ARBORESCENCE_NODE							= 0;
@@ -45,7 +47,7 @@
 		$(this).find("ul[class*=arborescence]").each(function() {
 			// Initialisation du noeud
 			if (typeof(ARBORESCENCE_MAX[ARBORESCENCE_NODE]) == 'undefined') {
-				ARBORESCENCE_MAX[ARBORESCENCE_NODE]						= ARBORESCENCE_RIGHT;
+				ARBORESCENCE_MAX[ARBORESCENCE_NODE]					= ARBORESCENCE_RIGHT;
 			}
 			ARBORESCENCE_LEFT					= ARBORESCENCE_LEFT + 1;
 			$(this).find("li[class*=branche]").children("span.titre").each(function() {
@@ -54,44 +56,52 @@
 				var item_label							= item.find('input[name^=item_label]').val();
 
 				if (typeof(ARBORESCENCE[item_id]) == 'undefined') {
-					var UL_COUNT						= $(this).parent().find("ul[class*=arborescence]").length - 1;
-					var UL_CHILDREN_COUNT				= item.children("ul.arborescence").length - 1;
-					var IL_COUNT						= $(this).parent().find("ul[class*=arborescence] li[class*=branche]").length - 1;
-					var IL_CHILDREN_COUNT				= item.children("ul.arborescence").find("li[class*=branche]").length - 1;
-					var DIFF							= $(this).parents("ul[class*=arborescence]").length - ARBORESCENCE_LEVEL;
-					ARBORESCENCE_LEVEL					= $(this).parents("ul[class*=arborescence]").length;
-
-					// Initialisation de la BORNE MAX du noeud précédent s'il n'existe pas encore
-					if (typeof(ARBORESCENCE_MAX[ARBORESCENCE_NODE - DIFF]) == 'undefined') {
-						ARBORESCENCE_MAX[ARBORESCENCE_NODE - DIFF]		= ARBORESCENCE_RIGHT;
-					}
+					var UL_COUNT = $(this).parent().find("ul[class*=arborescence]").length - 1;
+					var UL_CHILDREN_COUNT = item.children("ul.arborescence").length - 1;
+					var IL_COUNT = $(this).parent().find("ul[class*=arborescence] li[class*=branche]").length - 1;
+					var IL_CHILDREN_COUNT = item.children("ul.arborescence").find("li[class*=branche]").length - 1;
+					var DIFF = $(this).parents("ul[class*=arborescence]").length - ARBORESCENCE_LEVEL;
+					ARBORESCENCE_LEVEL = $(this).parents("ul[class*=arborescence]").length;
 
 					// Fonctionnalité réalisée lorsqu'un changement d'arborescence est détecté
-					if (DIFF < 0) {
+					if (DIFF < 0 && ARBORESCENCE_LEVEL == 1) {
 						// Récupération de la BORNE MAX du noeud précédent
-						ARBORESCENCE_LEFT				= ARBORESCENCE_MAX[ARBORESCENCE_NODE - DIFF] - DIFF + 1;
-						ARBORESCENCE_DEBUG				= "(niveau inférieur)";
+						ARBORESCENCE_LEFT				= ARBORESCENCE_MAX[ARBORESCENCE_LEVEL] + 1;
+						// Réinitialisation de l'ensemble des BORNE MAX de l'arborescence
+						ARBORESCENCE_MAX							= [];
+						ARBORESCENCE_MAX[ARBORESCENCE_LEVEL]		= ARBORESCENCE_LEFT + 1;
+						ARBORESCENCE_DEBUG				= "(retour au niveau principal :";
+					} else if (DIFF < 0) {
+						// Récupération de la BORNE MAX du noeud précédent
+						ARBORESCENCE_LEFT				= ARBORESCENCE_MAX[ARBORESCENCE_LEVEL + 1] + 1;
+						ARBORESCENCE_DEBUG				= "(déplacement au niveau inférieur :";
 					} else if (DIFF == 0) {
+						// Récupération de la BORNE DROITE précédente
 						ARBORESCENCE_LEFT				= ARBORESCENCE_RIGHT + 1;
-						ARBORESCENCE_DEBUG				= "(niveau courant)";
+						ARBORESCENCE_DEBUG				= "(pas de changement de niveau :";
 					} else if (DIFF > 0) {
+						// Initialisation du nouveau noeud
 						ARBORESCENCE_NODE				= ARBORESCENCE_NODE + 1;
-						ARBORESCENCE_MAX[ARBORESCENCE_NODE]				= ARBORESCENCE_RIGHT;
-						ARBORESCENCE_DEBUG				= "(niveau supérieur)";
+						ARBORESCENCE_MAX[ARBORESCENCE_LEVEL]		= ARBORESCENCE_RIGHT;
+						ARBORESCENCE_DEBUG				= "(déplacement au niveau supérieur :";
 					}
 
 					// Calcul de la borne DROITE
-					ARBORESCENCE_RIGHT					= ARBORESCENCE_LEFT + 1;
-					if (UL_COUNT > 0) {
+					ARBORESCENCE_RIGHT = ARBORESCENCE_LEFT + 1;
+					if (UL_COUNT > 0 || UL_CHILDREN_COUNT > 0 || IL_COUNT > 0 || IL_CHILDREN_COUNT > 0) {
 						ARBORESCENCE_RIGHT				= ARBORESCENCE_RIGHT + UL_COUNT * 2;
-						ARBORESCENCE_RIGHT	 			= ARBORESCENCE_RIGHT + parseInt(UL_COUNT / IL_COUNT);
+						ARBORESCENCE_RIGHT	 			= ARBORESCENCE_RIGHT + parseInt((UL_COUNT / IL_COUNT) - 0.5);
 						ARBORESCENCE_RIGHT				= ARBORESCENCE_RIGHT + UL_CHILDREN_COUNT * 2;
-						ARBORESCENCE_RIGHT				= ARBORESCENCE_RIGHT + parseInt(UL_CHILDREN_COUNT / IL_CHILDREN_COUNT);
+						ARBORESCENCE_RIGHT				= ARBORESCENCE_RIGHT + parseInt((UL_CHILDREN_COUNT / IL_CHILDREN_COUNT) - 0.5);
 					}
 
+					// Enregistrement de la BORNE MIN du prochain noeud
+					ARBORESCENCE_MIN					= ARBORESCENCE_LEFT + 1;
+
 					// Enregistrement de la BORNE MAX du noeud
-					if (ARBORESCENCE_RIGHT > ARBORESCENCE_MAX[ARBORESCENCE_NODE]) {
-						ARBORESCENCE_MAX[ARBORESCENCE_NODE]				= ARBORESCENCE_RIGHT;
+					if (ARBORESCENCE_RIGHT > ARBORESCENCE_MAX[ARBORESCENCE_LEVEL]) {
+						ARBORESCENCE_MAX[ARBORESCENCE_LEVEL]		= ARBORESCENCE_RIGHT;
+						ARBORESCENCE_MAX[ARBORESCENCE_LEVEL + 1]	= ARBORESCENCE_RIGHT + 2;
 					}
 
 					ARBORESCENCE[item_id]				= {};
@@ -119,12 +129,12 @@
 					}
 
 					// Fonctionnalité réalisée si le MODE_DEBUG est actif sur `ARBORESCENCE_HELPER`
-					if (typeof(ARBORESCENCE_DEBUG) == 'boolean' && ARBORESCENCE_DEBUG) {
-						console.debug(DIFF, ARBORESCENCE_DEBUG);
+					//if (typeof(ARBORESCENCE_DEBUG) == 'boolean' && ARBORESCENCE_DEBUG) {
+						console.debug(DIFF, ARBORESCENCE_DEBUG, ARBORESCENCE_MAX[ARBORESCENCE_LEVEL], "MAX)");
 						console.debug("[" + ARBORESCENCE_LEVEL + "] : UL = " + UL_COUNT + " / LI = " + IL_COUNT);
 						console.debug("label \"" + item_label + "\" -> [" + ARBORESCENCE_LEFT + " ; " + ARBORESCENCE_RIGHT + "]");
 						console.debug("-------------------------------------------------------------");
-					}
+					//}
 
 					if ($(this).find("li[class*=branche]").children("ul.arborescence")) {
 						ARBORESCENCE_LEFT				= ARBORESCENCE_LEFT + 1;
