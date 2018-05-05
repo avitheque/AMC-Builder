@@ -35,8 +35,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 107 $
- * @since		$LastChangedDate: 2018-03-24 13:49:48 +0100 (Sat, 24 Mar 2018) $
+ * @version		$LastChangedRevision: 119 $
+ * @since		$LastChangedDate: 2018-05-05 13:46:10 +0200 (Sat, 05 May 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -48,10 +48,17 @@ class Planning_ItemHelper {
 	 * Constante de construction de la liste des éléments du formulaire de recherche.
 	 * @var		string
 	 */
-	const		TYPE_SELECT					= "select";
+	const		TYPE_SELECT				= "select";
 
-	const		ITEM_FORMAT					= 'item-%s';
-	const		PLANNING_FORMAT				= 'planning-%d40-%d20-%d20-%d20';
+	const		ID_PLANNING_FORMAT		= 'planning-%d-%d-%d-%d';
+	const		ID_ITEM_FORMAT			= 'item-%s';
+	
+	const		PATTERN_PRINCIPAL		= "@\>(.*)\<@";
+	const		FORMAT_PRINCIPAL		= "<B>%s</B>";
+	const		FORMAT_SECONDAIRE		= "%s";
+	
+	const		TYPE_PRINCIPAL			= 'principal';
+	const		TYPE_SECONDAIRE			= 'secondaire';
 
 	/**
 	 * Singleton de l'instance des échanges entre contrôleurs.
@@ -63,30 +70,41 @@ class Planning_ItemHelper {
 	 * @brief	Nom du panel.
 	 * @var		string
 	 */
-	protected	$_id						= null;
-	protected	$_title						= "Jour de la semaine";
-	protected	$_describe					= "";
-	protected	$_content					= "";
-	protected	$_groupe					= 0;
-	protected	$_participant				= array();
-	protected	$_hrefZoomIn				= "#";
-	protected	$_hrefTrash					= "#";
-	protected	$_class						= "";
-	protected	$_year						= 0;
-	protected	$_month						= 0;
-	protected	$_day						= 0;
-	protected	$_hour						= 0;
-	protected	$_minute					= 0;
-	protected	$_duration					= 1;
-	protected	$_timer						= 60;
-	protected	$_update					= 0;
+	protected	$_id					= null;
+	public		$_title					= "Jour de la semaine";
+	public		$_describe				= "";
+	public		$_content				= "";
+	public		$_groupe				= 0;
+	public		$_participant			= array();
+	
+	protected	$_hrefZoomIn			= "#";
+	protected	$_hrefTrash				= "#";
+	protected	$_class					= "";
+	protected	$_year					= 0;
+	protected	$_month					= 0;
+	protected	$_day					= 0;
+	protected	$_hour					= 0;
+	protected	$_minute				= 0;
+	protected	$_duration				= 1;
+	protected	$_timer					= 60;
+	protected	$_update				= 0;
 
+	/**
+	 * @brief	Liste des noms de champs de test.
+	 * @var		array
+	 */
+	public static $LIST_ITEM_LABEL		= array(
+		1 => "_title",
+		2 => "_describe",
+		3 => "_content",
+		4 => "_groupe"
+	);
 
 	/**
 	 * @brief	Indicateur de construction.
 	 * @var		bool
 	 */
-	private		$_build						= false;
+	private		$_build					= false;
 
 	/**
 	 * @brief	Constructeur de la classe
@@ -105,16 +123,19 @@ class Planning_ItemHelper {
 	 *
 	 * @param	mixed	$xId				: (optionnel) Identifiant de l'élément, NULL si aucun.
 	 * @param	string	$sTitle				: Titre de l'élément.
-	 * @param	string	$sDescribe			: (optionnel) Texte d'information relatif à la tâche.
+	 * @param	string	$sDescribe			: (optionnel) Texte d'information relatif à l'élément.
 	 * @param	string	$sContentHTML		: (optionnel) Contenu HTML à ajouter en plus de la descrition.
 	 * @param	string	$sClass				: (optionnel) Classe CSS affecté à l'élément.
 	 * @return	void
 	 */
 	public function __construct($xId = null, $sTitle, $sDescribe = "", $sContentHTML = "", $sClass = "") {
-		$this->_id			= $xId;
-		$this->_title		= $sTitle;
-		$this->_describe	= $sDescribe;
-		$this->_content		= $sContentHTML;
+		// Initialisation des paramètres
+		$this->_id						= $xId;
+		$this->_title					= trim($sTitle);
+		$this->_describe				= trim($sDescribe);
+		$this->_content					= $sContentHTML;
+		
+		// Initialisation de la classe CSS
 		$this->setClass($sClass);
 	}
 
@@ -203,13 +224,76 @@ class Planning_ItemHelper {
 	}
 
 	/**
+	 * @brief	Récupération du titre de l'élément
+	 * @return	string
+	 */
+	public function getTitle() {
+		return $this->_title;
+	}
+
+	/**
+	 * @brief	Récupération de la description de l'élément
+	 * @return	string
+	 */
+	public function getDescribe() {
+		return $this->_describe;
+	}
+
+	/**
+	 * @brief	Récupération du groupe de participants à l'élément
+	 * @return	array
+	 */
+	public function getGroupe() {
+		return $this->_groupe;
+	}
+
+	/**
+	 * @brief	Récupération de la liste des participants à l'élément
+	 * 
+	 * @param	string	$iType				: (optionnel) type de(s) participant(s) parmi les constantes `TYPE_PRINCIPAL` ou `TYPE_SECONDAIRE`.
+	 * @return	array
+	 */
+	public function getParticipant($iType = null) {
+		// Initialisation des éléments de liste
+		$aPrincipal						= array();
+		$aSecondaire					= array();
+		
+		// Parcours de la liste des participants
+		foreach ($this->_participant as $sLabel) {
+			if (preg_match(self::PATTERN_PRINCIPAL, $sLabel, $aMatched)) {
+				$aPrincipal[]			= trim($aMatched[1]);
+			} else {
+				$aSecondaire[]			= trim($sLabel);
+			}
+		}
+		
+		// Traitement selon le type de liste
+		switch ($iType) {
+			case self::TYPE_PRINCIPAL:
+				$aListe					= $aPrincipal;
+				break;
+
+			case self::TYPE_SECONDAIRE:
+				$aListe					= $aSecondaire;
+				break;
+			
+			default:
+				$aListe					= array_merge($aPrincipal, $aSecondaire);
+				break;
+		}
+		
+		// Renvoi de la liste
+		return $aListe;
+	}
+
+	/**
 	 * @brief	Initialisation de la classe CSS de l'élément
 	 *
 	 * @param	string	$sClass				: nom de la classe CSS.
 	 * @return	void
 	 */
 	public function setClass($sClass) {
-		$this->_class		= trim($sClass);
+		$this->_class					= trim($sClass);
 	}
 
 	/**
@@ -219,7 +303,7 @@ class Planning_ItemHelper {
 	 * @return	void
 	 */
 	public function addClass($sClass) {
-		$this->_class		= empty($this->_class) ? $sClass : $this->_class . " " . trim($sClass);
+		$this->_class					= empty($this->_class) ? $sClass : $this->_class . " " . trim($sClass);
 	}
 
 	/**
@@ -229,8 +313,8 @@ class Planning_ItemHelper {
 	 * @return	void
 	 */
 	public function setHrefAction($sAction = "#", $sFormat = "%s?id=%s") {
-		$this->_hrefAction	= $sAction;
-		$this->_hrefFormat	= $sFormat;
+		$this->_hrefAction				= $sAction;
+		$this->_hrefFormat				= $sFormat;
 	}
 
 	/**
@@ -240,7 +324,7 @@ class Planning_ItemHelper {
 	 * @return	void
 	 */
 	public function setHrefZoomIn($sHrefZoomIn = "/planning/zoom?id=%s") {
-		$this->_hrefZoomIn	= $sHrefZoomIn;
+		$this->_hrefZoomIn				= $sHrefZoomIn;
 	}
 
 	/**
@@ -250,7 +334,7 @@ class Planning_ItemHelper {
 	 * @return	void
 	 */
 	public function setHrefTrash($sHrefTrash = "/planning/trash?id=%s") {
-		$this->_hrefTrash	= $sHrefTrash;
+		$this->_hrefTrash				= $sHrefTrash;
 	}
 
 	/**
@@ -260,11 +344,11 @@ class Planning_ItemHelper {
 	 * @return	void
 	 */
 	public function setTimeStamp($dTimeStamp) {
-		$this->_year		= date("Y", $dTimeStamp);
-		$this->_month		= date("m", $dTimeStamp);
-		$this->_day			= date("d", $dTimeStamp);
-		$this->_hour		= date("H", $dTimeStamp);
-		$this->_minute		= date("i", $dTimeStamp);
+		$this->_year					= date("Y", $dTimeStamp);
+		$this->_month					= date("m", $dTimeStamp);
+		$this->_day						= date("d", $dTimeStamp);
+		$this->_hour					= date("H", $dTimeStamp);
+		$this->_minute					= date("i", $dTimeStamp);
 	}
 
 	/**
@@ -300,10 +384,15 @@ class Planning_ItemHelper {
 	 */
 	public function setDate($dDate) {
 		// Forçage du format de la dans au format MySQL [Y-m-d]
-		$dDateMySQL			= DataHelper::dateFrToMy($dDate);
+		$dDateMySQL						= DataHelper::dateFrToMy($dDate);
 
 		// Extraction des paramètres de la DATE
-		list($this->_year, $this->_month, $this->_day)	= explode("-", $dDateMySQL);
+		list($nYear, $nMonth, $nDay)	= explode("-", $dDateMySQL);
+		
+		// Initialisation des valeurs
+		$this->setYear($nYear);
+		$this->setMonth($nMonth);
+		$this->setDay($nDay);
 	}
 
 	/**
@@ -313,7 +402,7 @@ class Planning_ItemHelper {
 	 * @return	void
 	 */
 	public function setYear($nYear) {
-		$this->_year		= $nYear;
+		$this->_year					= intval($nYear);
 	}
 
 	/**
@@ -323,7 +412,7 @@ class Planning_ItemHelper {
 	 * @return	void
 	 */
 	public function setMonth($nMonth) {
-		$this->_month		= $nMonth;
+		$this->_month					= intval($nMonth);
 	}
 
 	/**
@@ -333,7 +422,7 @@ class Planning_ItemHelper {
 	 * @return	void
 	 */
 	public function setDay($nDay) {
-		$this->_day			= $nDay;
+		$this->_day						= intval($nDay);
 	}
 
 	/**
@@ -343,7 +432,7 @@ class Planning_ItemHelper {
 	 * @return	void
 	 */
 	public function setHour($nHour) {
-		$this->_hour		= $nHour;
+		$this->_hour					= intval($nHour);
 	}
 
 	/**
@@ -353,36 +442,67 @@ class Planning_ItemHelper {
 	 * @return	void
 	 */
 	public function setMinute($nMinute) {
-		$this->_minute		= $nMinute;
+		$this->_minute					= intval($nMinute);
 	}
 
 	/**
 	 * @brief	Initialisation de la valeur de la durée de l'élément
 	 *
-	 * @param	integer	$nTime				: valeur de la durée en minutes.
+	 * @param	integer	$nDuration			: valeur de la durée en minutes.
 	 * @return	void
 	 */
-	public function setDuration($nTime) {
-		$this->_duration	= $nTime;
+	public function setDuration($nDuration) {
+		$this->_duration				= intval($nDuration);
 	}
 
 	/**
-	 * @brief	Ajout d'un groupe de participants à la tâche
+	 * @brief	Initialisation de la valeur de l'heure de l'élément
 	 *
-	 * @param	mixed	$nIdGroupe			: identidiants du groupe de participants.
+	 * @param	string	$sFullTime			: chaîne de caractères représentant l'heure avec les minutes.
+	 * @param	char	$cSeparator			: caractère de séparation entre les heures et les minutes.
 	 * @return	void
 	 */
-	public function setParticipant($nIdGroupe, $aListeParticipant = array()) {
-		$this->_groupe			= $nIdGroupe;
-		$this->_participant		= (array) $aListeParticipant;
+	public function setFullTime($sFullTime, $cSeparator = ":") {
+		// Extraction des paramètres de l'HEURE
+		list($nHour, $nMinute)			= explode($cSeparator, $sFullTime);
+		
+		// Initialisation des valeurs
+		$this->setHour($nHour);
+		$this->setMinute($nMinute);
+	}
+
+	/**
+	 * @brief	Ajout d'un groupe de participants à l'élément
+	 *
+	 * @param	mixed	$nIdGroupe			: identidiants du groupe de participants.
+	 * @param	array	$aListeParticipant	: liste des participants.
+	 * @param	string	$iType				: (optionnel) type de(s) participant(s) parmi les constantes `TYPE_PRINCIPAL` ou `TYPE_SECONDAIRE`.
+	 * @return	void
+	 */
+	public function setParticipant($nIdGroupe, $aListeParticipant = array(), $iType = null) {
+		$this->_groupe					= $nIdGroupe;
+		
+		// Fonctionnalité réalisée si le type de participant est TYPE_PRINCIPAL
+		if ($iType == self::TYPE_PRINCIPAL) {
+			// Initialisation de la liste de(s) participant(s)
+			$this->_participant			= array();
+			
+			// Parcours de l'ensemble des participants
+			foreach ((array) $aListeParticipant as $sParticipant) {
+				$this->_participant[]	= sprintf(self::FORMAT_PRINCIPAL, trim($sParticipant));
+			}
+		} else {
+			// Initialisation de la liste de(s) participant(s)
+			$this->_participant			= (array) $aListeParticipant;
+		}
 	}
 
 	public function _buildHTML($bDeletable = true) {
 		// Fonctionnalité réalisée si la construction n'a pas été réalisée
 		if (! $this->_build) {
 			// Enregistrement du rendu
-			$this->_build		= true;
-			$this->_titleHTML	= $this->_title;
+			$this->_build				= true;
+			$this->_titleHTML			= $this->_title;
 
 			// Fonctionnalité réalisée si le bouton [zoom] peut être affiché
 			$sZoomIn = "";
@@ -397,12 +517,12 @@ class Planning_ItemHelper {
 			}
 
 			// Fonctionnalité réalisée si des participants sont présents
-			if (!empty($this->_participant)) {
+			if (DataHelper::isValidArray($this->_participant, null, true)) {
 				foreach ($this->_participant as $sNomHTML) {
 					$this->_titleHTML .= "\n\t└─ " . DataHelper::extractContentFromHTML($sNomHTML);
 				}
 			}
-
+			
 			// Ajout d'un élément
 			$this->_html = "<li class='item " . $this->_class . " ui-widget-content ui-corner-tr ui-draggable' align='center'>
 								<article title=\"" . $this->_titleHTML . "\" class='job padding-0' align='center'>
@@ -412,7 +532,10 @@ class Planning_ItemHelper {
 										
 										<section class='planning-item-content'>" . $this->_content . "</section>
 										
-										<section class='planning-item-participant'>" . implode(" - ", $this->_participant) . "</section>
+										<ul class='planning-item-participant'>
+											<li class='principal'>" . implode(" - ", $this->getParticipant(self::TYPE_PRINCIPAL)) . "</li>
+											<li class='secondaire'>" . implode(" - ", $this->getParticipant(self::TYPE_SECONDAIRE)) . "</li>
+										</ul>
 										
 										<input type=\"hidden\" value=" . $this->_id			. " name=\"tache_id[]\">
 										<input type=\"hidden\" value=" . $this->_year		. " name=\"tache_annee[]\">

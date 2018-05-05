@@ -2,142 +2,139 @@
 /**
  * @brief	Helper de création d'un planning.
  *
- * Vue étendue du formulaire permettant d'ajouter des éléments par cliqué/glissé.
- *
  * @name		PlanningHelper
  * @category	Helper
  * @package		View
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 111 $
- * @since		$LastChangedDate: 2018-03-25 14:37:49 +0200 (Sun, 25 Mar 2018) $
+ * @version		$LastChangedRevision: 119 $
+ * @since		$LastChangedDate: 2018-05-05 13:46:10 +0200 (Sat, 05 May 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
  */
-class PlanningHelper {
+abstract class PlanningHelper {
 
 	/**
 	 * Constante de construction de la liste des identifiants à exclure du résultat.
 	 * @var		char
 	 */
-	const		EXCLUDE_SEPARATOR			= ",";
+	const		EXCLUDE_SEPARATOR					= ",";
 
 	/**
 	 * Constante de construction de la liste des jours et heures non travaillées.
 	 * @var		char
 	 */
-	const		DEPRECATED_LIST_SEPARATOR	= ",";
-	const		DEPRECATED_ITEM_SEPARATOR	= "-";
-
-	/**
-	 * Construction de l'interface graphique
-	 * var		PLANNING_DEFAULT_FORMAT		: type visuel de rendu parmis [calendrier, progression]
-	 */
-	const		FORMAT_CALENDAR				= "calendar";
-	const		FORMAT_PROGRESSION			= "progression";
-	const		PLANNING_DEFAULT_CLASSNAME	= "diary";
-	const		PLANNING_HOLIDAY_CLASSNAME	= "diary holiday";
-	const		PLANNING_HEADER_CLASSNAME	= "header";
-
-	const 		PLANNING_VALID_CLASS		= "ui-widget-content ui-state-default";
-	const 		PLANNING_DEPRECATED_CLASS	= "ui-widget-content ui-state-disabled";
-	const		PLANNING_WIDTH_RATIO		= 99;
-	const		PLANNING_DEFAULT_FORMAT		= self::FORMAT_CALENDAR;
-
+	const		DEPRECATED_LIST_SEPARATOR			= ",";
+	const		DEPRECATED_ITEM_SEPARATOR			= "-";
+	
+	const		PLANNING_HEPHEMERIDE				= 86400;
+	
 	/**
 	 * Constante de construction de la liste des éléments du formulaire de recherche.
 	 * @var		string
 	 */
-	const		TYPE_SELECT					= "select";
+	const		TYPE_SELECT							= "select";
 
 	/**
 	 * Singleton de l'instance des échanges entre contrôleurs.
 	 * @var		InstanceStorage
 	 */
-	private		$_oInstanceStorage			= null;
+	protected	$_oInstanceStorage					= null;
 
 	/**
 	 * @brief	Nom du panel.
 	 * @var		string
 	 */
-	private		$_title						= "Jour de la semaine";
+	protected	$_title								= "Jour de la semaine";
 
 	/**
 	 * @brief	Formulaire PHP.
 	 * @var		array
 	 */
-	private		$_aForm						= array();
+	protected	$_aForm								= array();
 
 	/**
 	 * @brief	Message de résultat non trouvé.
 	 * @var		string
 	 */
-	private		$_empty						= "Aucun résultat n'a été trouvé...";
+	protected	$_empty								= "Aucun résultat n'a été trouvé...";
 
 	/**
 	 * @brief	Conteneur HTML de l'élément SOURCE.
 	 * @var		string
 	 */
-	protected	$item						= "";
+	protected	$item								= "";
 
 	/**
 	 * @brief	Conteneur HTML du panneau CIBLE.
 	 * @var		string
 	 */
-	private		$_semaine					= array();
-	protected	$planning					= "";
+	protected	$_semaine							= array();
+	protected	$planning							= "";
 
 	/**
 	 * @brief	Indicateur de construction.
 	 * @var		bool
 	 */
-	private		$_build						= false;
+	protected	$_build								= false;
 
 	/**
 	 * @brief	Liste des éléments sous forme de collection.
 	 * @var		array
 	 */
-	private		$_aItems					= array();
+	protected	$_aItems							= array();
 
 	/**
 	 * @brief	Liste des identifiants à exclure de la collection.
 	 * @var		array
 	 */
-	private		$_exclude					= array();
+	protected	$_exclude							= array();
 
 	/**
 	 * @brief	Constantes des paramètres de construction de PlanningHelper.
 	 * @var		integer|string
 	 */
-	const		PLANNING_DAYS				= 7;
-	const		PLANNING_HOUR_START			= 8;
-	const		PLANNING_HOUR_END			= 18;
-	const		PLANNING_DEPRECATED_DAYS	= "6-7";			// Jour(s) de la semaine non travaillé(s) [1-7] : 1 pour Lundi à 7 pour Dimanche
-	const		PLANNING_DEPRECATED_HOURS	= "0-8,13,18-23";	// Heure(s) non travaillée(s)
-	const		PLANNING_TIMER_SIZE			= 60;				// Taille d'un bloc en minutes
-	const		PLANNING_MAX_WIDTH			= 90;				// Ratio de l'affichage en %
-	private		$_planning_format			= self::PLANNING_DEFAULT_FORMAT;
-	private		$_planning_annee			= 1970;
-	private		$_planning_mois				= 1;
-	private		$_planning_jour				= 1;
-	private		$_planning_jour_id			= 1;
-	private		$_planning_jour_width		= 100;
-	private		$_planning_duree			= self::PLANNING_DAYS;
-	private		$_planning_debut			= self::PLANNING_HOUR_START;
-	private		$_planning_fin				= self::PLANNING_HOUR_END;
-	private		$_planning_timer_size		= self::PLANNING_TIMER_SIZE;
-	private		$_planning_deprecated_days	= self::PLANNING_DEPRECATED_DAYS;
-	private		$_planning_deprecated_hours	= self::PLANNING_DEPRECATED_HOURS;
-	private		$_planning_deprecated_dates	= array();
+	const		PLANNING_DAYS						= 7;
+	const		PLANNING_HOUR_START					= 8;
+	const		PLANNING_HOUR_MIDI					= 13;
+	const		PLANNING_HOUR_END					= 18;
+	const		PLANNING_DEPRECATED_DAYS			= "6-7";			// Jour(s) de la semaine non travaillé(s) [1-7] : 1 pour Lundi à 7 pour Dimanche
+	const		PLANNING_DEPRECATED_HOURS			= "0-8,13,18-23";	// Heure(s) non travaillée(s)
+	const		PLANNING_TIMER_SIZE					= 60;				// Taille d'un bloc en minutes
+	const		PLANNING_MAX_WIDTH					= 90;				// Ratio de l'affichage en %
+	const		PLANNING_DATE_FORMAT				= "d/m/o";
+	const		PLANNING_WEEK_FORMAT				= "W";
+	const		PLANNING_TIME_FORMAT				= "%02d:%02d";
+	
+	protected	$_planning_annee					= 1970;
+	protected	$_planning_mois						= 1;
+	protected	$_timestamp_debut					= 0;
+	protected	$_timestamp_fin						= 604800;
+	protected	$_planning_jour						= 1;
+	protected	$_planning_jour_id					= 1;
+	protected	$_planning_jour_width				= 100;
+	protected	$_planning_duree					= self::PLANNING_DAYS;
+	protected	$_planning_duree_cours				= 50;
+	protected	$_planning_debut					= self::PLANNING_HOUR_START;
+	protected	$_planning_fin						= self::PLANNING_HOUR_END;
+	protected	$_planning_repas					= self::PLANNING_HOUR_MIDI;
+	protected	$_planning_repas_duree				= self::PLANNING_TIMER_SIZE;
+	protected	$_planning_repas_titre				= "REPAS";
+	protected	$_planning_minute_AM				= 0;
+	protected	$_planning_minute_PM				= 10;
+	protected	$_planning_timer_size				= self::PLANNING_TIMER_SIZE;
+	protected	$_planning_deprecated_days			= self::PLANNING_DEPRECATED_DAYS;
+	protected	$_planning_deprecated_hours			= self::PLANNING_DEPRECATED_HOURS;
+	protected	$_planning_deprecated_dates			= array();
 
 	/**
 	 * @brief	Liste des noms de jours dans la semaine.
 	 * @var		array
 	 */
-	private		$_planning_semaine			= array(
+	protected	$_liste_planning_semaine			= array(
 		1 => "Lundi",
 		2 => "Mardi",
 		3 => "Mercredi",
@@ -147,91 +144,98 @@ class PlanningHelper {
 		7 => "Dimanche"
 	);
 
-	/**
-	 * @brief	Liste des noms de jours dans la semaine au format court.
-	 * @var		array
-	 */
-	private		$_planning_semaine_court	= array(
-		1 => "L",
-		2 => "M",
-		3 => "M",
-		4 => "J",
-		5 => "V",
-		6 => "S",
-		7 => "D"
-	);
-
-	const		DEFAULT_CELL_WIDTH			= 50;
-	private		$_nCellWidth				= self::DEFAULT_CELL_WIDTH;
-
-	const		ITEM_FORMAT					= 'item-%s';
-	const		PLANNING_FORMAT				= 'planning-%d40-%d20-%d20';
-	private		$_md5						= '1234567890';
-	private		$_id_aItems					= 'item-1234567890';
-	private		$_id_planning				= 'planning-1234567890';
-
-	const		MODAL_ACTION_DEFAULT		= '/planning/tache';
-	private		$_modal						= null;
-	private		$_modal_action				= self::MODAL_ACTION_DEFAULT;
+	const		DEFAULT_CELL_WIDTH					= 50;
+	protected	$_nCellWidth						= self::DEFAULT_CELL_WIDTH;
+	protected	$_md5								= '1234567890';
 
 	/**
 	 * @brief	Constructeur de la classe
 	 *
-	 * @param	boolean	$bReadonly			: Verrouillage de la modification des champs.
-	 * @param	date	$dDateStart			: Date de début du planning [Y-m-d], possibilité de donner une date au format [jj/mm/aaaa].
-	 * @param	integer	$nNbDays			: Nombre de jours à afficher [1-7].
-	 * @param	integer	$nStartHour			: Heure de début pour chaque jour.
-	 * @param	integer	$nEndHour			: Heure de fin pour chaque jour.
-	 * @param	string	$sDeprecatedHours	: Liste d'heures non travaillées, séparées par le caractère [,].
-	 * @param	integer	$nTimerSize			: Nombre de minutes par bloc.
+	 * @param	date	$dDateStart					: Date de début du planning [Y-m-d], possibilité de donner une date au format [jj/mm/aaaa].
+	 * @param	integer	$nNbDays					: Nombre de jours à afficher [1-7].
+	 * @param	integer	$nStartHour					: Heure de début pour chaque jour.
+	 * @param	integer	$nEndHour					: Heure de fin pour chaque jour.
+	 * @param	string	$sDeprecatedHours			: Liste d'heures non travaillées, séparées par le caractère [,].
+	 * @param	integer	$nTimerSize					: Nombre de minutes par bloc.
 	 * @return	string
 	 */
 	public function __construct($dDateStart = null, $nNbDays = self::PLANNING_DAYS, $nStartHour = self::PLANNING_HOUR_START, $nEndHour = self::PLANNING_HOUR_END, $sDeprecatedHours = self::PLANNING_DEPRECATED_HOURS, $sDeprecatedDays = self::PLANNING_DEPRECATED_DAYS, $nTimerSize = self::PLANNING_TIMER_SIZE) {
 		// Récupération de l'instance du singleton InstanceStorage permettant de gérer les échanges avec le contrôleur
-		$this->_oInstanceStorage			= InstanceStorage::getInstance();
+		$this->_oInstanceStorage					= InstanceStorage::getInstance();
 
 		// Construction du MD5 à partir des paramètres d'entrée
-		$this->_md5							= md5($dDateStart . $nNbDays . $nStartHour . $nEndHour . $sDeprecatedHours . $sDeprecatedDays);
+		$this->_md5									= md5($dDateStart . $nNbDays . $nStartHour . $nEndHour . $sDeprecatedHours . $sDeprecatedDays);
 
 		// Récupération de la date de début au format MySQL [Y-m-d]
-		$sDateStart							= DataHelper::dateFrToMy($dDateStart);
-		list($annee, $mois, $jour)			= explode('-', $sDateStart);
+		$sDateStart									= DataHelper::dateFrToMy($dDateStart);
+		list($annee, $mois, $jour)					= explode('-', $sDateStart);
+		$this->_timestamp_debut						= mktime(0, 0, 0, $mois, $jour, $annee);
+		$this->_timestamp_fin						= mktime(0, 0, 0, $mois, ($jour + $nNbDays), $annee);
 
 		// Initialisation des paramètres de progression
-		$this->_planning_annee				= $annee;
-		$this->_planning_mois				= $mois;
-		$this->_planning_jour				= $jour;
+		$this->_planning_annee						= $annee;
+		$this->_planning_mois						= $mois;
+		$this->_planning_jour						= $jour;
 
 		// Initialisation des paramètres de progression
-		$this->_planning_duree				= $nNbDays;
-		$this->_planning_debut				= $nStartHour;
-		$this->_planning_fin				= $nEndHour;
-		$this->_planning_deprecated_hours	= DataHelper::getArrayFromList($sDeprecatedHours,	self::DEPRECATED_LIST_SEPARATOR,	self::DEPRECATED_ITEM_SEPARATOR);
-		$this->_planning_deprecated_days	= DataHelper::getArrayFromList($sDeprecatedDays,	self::DEPRECATED_LIST_SEPARATOR,	self::DEPRECATED_ITEM_SEPARATOR);
-		$this->_planning_timer_size			= $nTimerSize;
+		$this->_planning_duree						= $nNbDays;
+		$this->_planning_debut						= $nStartHour;
+		$this->_planning_fin						= $nEndHour;
+		$this->_planning_deprecated_hours			= DataHelper::getArrayFromList($sDeprecatedHours,	self::DEPRECATED_LIST_SEPARATOR,	self::DEPRECATED_ITEM_SEPARATOR);
+		$this->_planning_deprecated_days			= DataHelper::getArrayFromList($sDeprecatedDays,	self::DEPRECATED_LIST_SEPARATOR,	self::DEPRECATED_ITEM_SEPARATOR);
+		$this->_planning_timer_size					= $nTimerSize;
 
-		//#################################################################################################
-		// INITIALISATION DES VALEURS PAR DÉFAUT
-		//#################################################################################################
-
-		// Nom de session des données
-		$sSessionNameSpace					= $this->_oInstanceStorage->getData('SESSION_NAMESPACE');
-
-		// Données du formulaire
-		$this->_aForm						= $this->_oInstanceStorage->getData($sSessionNameSpace);
-
-		// Initialisation du conteneur
-		$this->item							= "<ul id=\"planning-item-" . $this->_md5 . "\" class=\"planning-item ui-helper-reset ui-helper-clearfix max-width\">";
+		// Découpage du volume horaire
+		$this->_volume_horaire						= $this->_planning_fin - $this->_planning_debut;
+		$this->_tranche_horaire						= $this->_planning_timer_size / 60;
 	}
 
 	/**
-	 * @brief	Ajout d'un élément HTML au PLANNING.
+	 * @brief	Ajoute une date non travaillée à la liste.
+	 *
+	 * @param	date	$dDate						: Date à ajouter à la collection.
+	 * @return	void
+	 */
+	public function addDateToDeprecated($dDate) {
+		// Fonctionnalité réalisée si la DATE est un TIMESTAMP
+		if (DataHelper::isValidNumeric($dDate)) {
+			// La DATE correspond au TIMESTAMP
+			$nTimeStamp								= $dDate;
+			// Récupération de la DATE au format [Y-m-d]
+			$dDateMySQL								= date("Y-m-d", $dDate);
+		} else {
+			// Formatage de la DATE au format [Y-m-d]
+			$dDateMySQL								= DataHelper::dateFrToMy($dDate);
+			// Extraction des éléments de la DATE
+			list($y, $m, $d)						= explode("-", $dDateMySQL);
+			// Convertion au format TIMESTAMP
+			$nTimeStamp								= mktime(0, 0, 0, $m, $d, $y);
+		}
+		$this->_planning_deprecated_dates[$nTimeStamp] = $dDateMySQL;
+	}
+
+	/**
+	 * @brief	Test deux éléments du PLANNING.
 	 *
 	 * @li	Exploitation de Planning_ItemHelper.
 	 *
-	 * @param	object	$oItem				: Instance de Planning_ItemHelper.
-	 * @return	void
+	 * @param	object	$oItemA						: Instance de Planning_ItemHelper.
+	 * @param	object	$oItemB						: Instance de Planning_ItemHelper.
+	 * @return	boolean
 	 */
+	private function _isItemIdentiqual(Planning_ItemHelper $oItemA, Planning_ItemHelper $oItemB) {
+		// Initialisation du résultat
+		$bValide									= true;
+		// Parcours de la listes des champs identifiants deux éléments
+		foreach (Planning_ItemHelper::$LIST_ITEM_LABEL as $sLabel) {
+			// Fonctionnalité réalisée si les éléments diffèrent
+			if ($oItemA->$sLabel != $oItemB->$sLabel) {
+				$bValide							= false;
+			}
+		}
+		// Renvoi du résultat
+		return $bValide;
+	}
 
 	/**
 	 * @brief	Ajout d'un élément.
@@ -255,10 +259,14 @@ class PlanningHelper {
 	 * 		ViewRender::addToMain($oPanning->renderHTML());
 	 * @endcode
 	 *
-	 * @param	object	$oItem				: Entrée du planning sous forme d'instance de Planning_ItemHelper.
+	 * @param	object	$oItem						: Entrée du planning sous forme d'instance de Planning_ItemHelper.
 	 * @return	void
 	 */
 	public function addItem(Planning_ItemHelper $oItem) {
+		// Récupération du titre
+		$sTitre										= $oItem->getTitle();
+		$nDuration									= $oItem->getDuration();
+		
 		// Initalisation de l'identifiant de l'entrée à partir des paramètres de la DATE
 		$sDateMySQL									= $oItem->getDate("Y-m-d");
 		$sTimeMySQL									= $oItem->getTime("H:i");
@@ -267,630 +275,64 @@ class PlanningHelper {
 		if (!array_key_exists($sDateMySQL, $this->_aItems)) {
 			// Initialisation de la collection
 			$this->_aItems[$sDateMySQL]				= array();
+		} else {
+			$nHour									= $oItem->getTime("H");
+			$nDuration								= $oItem->getDuration();
+			while ($nHour > $this->_planning_debut) {
+				$nHour--;
+				
+				//array_key_exists($sTimeBeforeMySQL, $this->_aItems[$sDateMySQL])) {
+				$sTimeBeforeMySQL					= sprintf("%02d:%02d", $nHour, $oItem->getTime("i"));
+				
+				// Fonctionnalité réalisée si la nouvelle cellule est la continuité du cours précédent
+				if (array_key_exists($sTimeBeforeMySQL, $this->_aItems[$sDateMySQL])) {
+					$oItemBefore					= $this->_aItems[$sDateMySQL][$sTimeBeforeMySQL];
+					
+					$sTitreBefore					= $oItemBefore->getTitle();
+					$sDurationBefore				= $oItemBefore->getDuration();
+					
+					// La tâche est identique
+					if ($this->_isItemIdentiqual($oItem, $oItemBefore)) {
+						// Suppression de l'élément précédent
+						unset($this->_aItems[$sDateMySQL][$sTimeMySQL]);
+						
+						// Mise à jour de la durée
+						$nDuration					+= $oItemBefore->getDuration();
+						$oItem->setDuration($nDuration);
+						
+						// Mise à jour de l'heure de début
+						$sTimeMySQL					= $sTimeBeforeMySQL;
+						$oItem->setFullTime($sTimeMySQL);
+					}
+				} elseif ($nHour == $this->_planning_repas) {
+					// Pause médianne
+					break;
+				}
+			}
 		}
 
 		// Ajout de l'élément à la collection
 		$this->_aItems[$sDateMySQL][$sTimeMySQL]	= $oItem;
 	}
-
-	/**
-	 * @brief	Initialisation de la largeur d'une cellule de plannification
-	 *
-	 * @param	integer	$nWidth				: Largeur en pixels.
-	 * @return	string
-	 */
-	public function setCellWidth($nWidth = self::DEFAULT_CELL_WIDTH) {
-		$this->_nCellWidth = $nWidth;
-	}
-
-	/**
-	 * @brief	Initialisation du titre du panneau.
-	 *
-	 * @param	string	$sTitle				: titre du panneau.
-	 * @return	void
-	 */
-	public function setTitre($sTitle = null) {
-		$this->_title	= $sTitle;
-	}
-
+	
 	/**
 	 * @brief	Initialisation du message de résultat vide.
 	 *
-	 * @param	string	$sEmptyMessage		: texte à afficher si aucun résultat n'est trouvé.
+	 * @param	string	$sEmptyMessage				: texte à afficher si aucun résultat n'est trouvé.
 	 * @return	void
 	 */
 	public function setEmpty($sEmptyMessage = null) {
-		$this->_empty	= $sEmptyMessage;
+		$this->_empty								= $sEmptyMessage;
 	}
 
 	/**
 	 * @brief	Initialisation de la liste des identifiants à exclure.
 	 *
-	 * @param	array	$aListExcludeId		: Tableau contenant l'ensemble des identifiants à ne pas prendre en compte.
+	 * @param	array	$aListExcludeId				: Tableau contenant l'ensemble des identifiants à ne pas prendre en compte.
 	 * @return	void
 	 */
 	public function setExcludeByListId($aListExcludeId = array()) {
-		$this->_exclude = $aListExcludeId;
+		$this->_exclude								= $aListExcludeId;
 	}
-
-	/**
-	 * @brief	Ajoute une date non travaillée à la liste.
-	 *
-	 * @param	date	$dDate				: Date à ajouter à la collection.
-	 * @return	void
-	 */
-	public function addDateToDeprecated($dDate) {
-		// Fonctionnalité réalisée si la DATE est un TIMESTAMP
-		if (DataHelper::isValidNumeric($dDate)) {
-			// La DATE correspond au TIMESTAMP
-			$nTimeStamp = $dDate;
-			// Récupération de la DATE au format [Y-m-d]
-			$dDateMySQL	= date("Y-m-d", $dDate);
-		} else {
-			// Formatage de la DATE au format [Y-m-d]
-			$dDateMySQL = DataHelper::dateFrToMy($dDate);
-			// Extraction des éléments de la DATE
-			list($y, $m, $d) = explode("-", $dDateMySQL);
-			// Convertion au format TIMESTAMP
-			$nTimeStamp = mktime(0, 0, 0, $m, $d, $y);
-		}
-		$this->_planning_deprecated_dates[$nTimeStamp] = $dDateMySQL;
-	}
-
-	public function setModalAction($url) {
-		$this->_modal_action = $url;
-	}
-
-	public function setPlanningRender($sFormat = self::PLANNING_DEFAULT_FORMAT) {
-		$this->_planning_format = $sFormat;
-	}
-
-	/**
-	 * @brief	Construction du formulaire de recherche
-	 *
-	 * @li	La(Les) liste(s) des champs SELECT transite(nt) dans les paramètres de l'instance InstanceStorage.
-	 * @li	Un champ caché [exclude] permet de lister les identifiants à ne pas récupérer.
-	 *
-	 * @param	string	$sAction			: action du formulaire.
-	 * @param	array	$aSearchItems		: tableau BIDIMENTIONNEL contenant les éléments du moteur de recherche.
-	 * 	Chaque entrée possède les éléments suivants :
-	 * 		- string	'default'			: valeur par défaut du champ HTML ;
-	 * 		- string	'index'				: occurence de l'élément (exploité dans le cas d'un champ SELECT) ;
-	 * 		- string	'label'				: libellé du champ HTML ;
-	 * 		- string	'type'				: type de champ HTML.
-	 * 		- string	'value'				: valeur du champ HTML.
-	 * @return	void
-	 */
-	private function _buildSearchForm($sAction, $aSearchItems = array()) {
-		// Initialisation du formulaire de recherche
-		$sSearch	= "<form action=\"" . $sAction . "\" method=\"post\" name=\"planning-" . $this->_md5 . "\" id=\"search-planning-" . $this->_md5 . "\" class=\"no-wrap blue max-width\">
-						<br />
-						<fieldset>
-							<legend>Propriétés de l'élément</legend>
-							<ul class=\"margin-H-10p\">";
-
-		// Initialisation des paramètres exploités par AJAX
-		$aDataAJAX	= array();
-
-		// Parcours de l'ensemble des listes du formulaire
-		foreach ((array) $aSearchItems as $sName => $aItem) {
-			// Initialisation des paramètres des champs
-			$sId			= "id_" . $sName;
-			$sLabel			= isset($aItem['label'])	? $aItem['label']				: "";
-			$sIndex			= isset($aItem['index'])	? $aItem['index']				: 0;
-			$sType			= isset($aItem['type'])		? strtolower($aItem['type'])	: InputHelper::TYPE_TEXT;
-			$sValue			= isset($aItem['value'])	? strtolower($aItem['value'])	: InputHelper::TYPE_TEXT;
-
-			if (isset($aItem['default'])) {
-				// Récupération du champ de référence du formulaire pour la valeur par défaut
-				$sDefault		= isset($aItem['default']) ? $aItem['default'] : null;
-
-				// Détermination de la valeur par défaut d'après le champ du formulaire de référence
-				$sValue			= DataHelper::get($this->_aForm, $sDefault, DataHelper::DATA_TYPE_TXT, $sValue);
-			}
-
-			// Construction de l'ensemble HTML
-			$sSearch		.= "<li>";
-
-			// Traitement selon le type de l'élément HTML
-			switch ($sType) {
-
-				case self::TYPE_SELECT:
-					// Construction de la liste des options du champ SELECT
-					$sOptions	= HtmlHelper::buildListOptions($this->_oInstanceStorage->getData($sIndex), $sValue, '-');
-
-					// Ajout du champ SELECT
-					$sSearch	.= "<label for=\"" . $sId . "\" class=\"strong width-150-min width-30p\">" . $sLabel . "</label>";
-					$sSearch	.= "<select id=\"" . $sId . "\" name=\"" . $sName . "\" class=\"width-50p\">" . $sOptions . "</select>";
-					break;
-
-				default:
-					// Construction du champ INPUT
-					$oInput		= new InputHelper($sName, $sValue, $sType, "width-50p right");
-					$oInput->addLabel($sLabel, "strong left width-150-min width-30p");
-					$oInput->setId($sId);
-
-					// Ajout du champ INPUT
-					$sSearch	.= $oInput->renderHTML();
-					break;
-			}
-
-			// Ajout de l'entrée pour les options AJAX
-			if ($sType == InputHelper::TYPE_CHECKBOX) {
-				// Renvoi un bouléen si le champ est coché
-				$aDataAJAX[$sId]	= $sName . ': $("#' . $sId . '", "#search-planning-' . $this->_md5 . '").is(":checked")';
-			} else {
-				// Renvoi la valeur du champ
-				$aDataAJAX[$sId]	= $sName . ': $("#' . $sId . '", "#search-planning-' . $this->_md5 . '").val()';
-			}
-
-			// Finalisation
-			$sSearch		.= "</li>";
-		}
-
-		// Ajout de la liste des identifiants exclus dans une entrée cachée qui sera exploitée par AJAX
-		$sSearch	.= "<input type=\"hidden\" name=\"exclude-" . $this->_md5 . "\" value=\"" . implode(self::EXCLUDE_SEPARATOR, $this->_exclude) . "\" />";
-
-		// Ajout de l'entrée cachée aux options AJAX
-		$aDataAJAX[]= 'exclude: $("input[name=exclude-' . $this->_md5 . ']").val()';
-
-		// Finalisation du formulaire
-		$sSearch			.= "</ul>
-								<br />
-								<hr class=\"blue half-width\"/>
-								<div class=\"margin-20\">
-									<button type=\"reset\" id=\"reset-item-" . $this->_md5 . "\" class=\"left no-margin red\">Annuler</button>
-									<button type=\"button\" id=\"search-item-" . $this->_md5 . "\" class=\"right no-margin blue\">Rechercher</button>
-								</div>
-							</fieldset>
-						</form>";
-
-		// Ajout du script d'ouverture
-		$sJQuery = '// Action sur le bouton [Rechercher] du MODAL
-					$("button#search-item-' . $this->_md5 . '").on("click", function() {
-						// Affichage de la bibliothèque
-						$.ajax({
-							async:		false,
-							type:		"POST",
-							dataType:	"HTML",
-							url:		"' . $this->_modal_action . '",
-							data:		{' . implode(",", $aDataAJAX) . '},
-							success:	function(html) {
-								// Chargement du contenu trouvé
-								$("ul#planning-item-' . $this->_md5 . '").html(html);
-						
-								// Adaptation de la zone de recherche selon le résultat
-								updateModalHeight("' . $this->_md5 . '");
-							},
-							complete:	function() {
-								// Initialisation de la fonctionnalité de planification
-								initPlanning("' . $this->_md5 . '");
-						
-								// Adaptation de la zone de recherche selon le résultat
-								updateModalHeight("' . $this->_md5 . '");
-							}
-						});
-					});
-					
-					// Action sur le bouton [Annuler] de la Gallerie
-					$("button#reset-item-' . $this->_md5 . '").on("click", function() {
-						// Suppression du contenu
-						$("ul#planning-item-' . $this->_md5 . '").html("");
-						
-						// Adaptation de la zone de recherche selon le résultat
-						updateModalHeight("' . $this->_md5 . '");
-					});';
-
-		// Compression du script avec JavaScriptPacker
-		ViewRender::addToJQuery($sJQuery);
-
-		// Renvoi du contenu HTML
-		return $sSearch;
-	}
-
-	/**
-	 * @brief	Construction de la progression du jour.
-	 *
-	 * @param	string	$sClassName			: nom de la classe de la progression.
-	 * @param	string	$IdProgression		: identifiant unique de la progression.
-	 * @param	date	$dDatePlanning		: date de la progression.
-	 */
-	private function _buildProgression($sClassName = self::PLANNING_HEADER_CLASSNAME, $IdProgression = 0, $dDatePlanning = null) {
-		$sLibelleJour				= "";
-		$sLibelleDate				= "";
-		$sTitreJour					= "";
-		if (!is_null($dDatePlanning)) {
-			// Extraction des informations de la progression à partir de la DATE
-			$this->_planning_jour_id	= date("N", $dDatePlanning);
-			$sLibelleJour				= $this->_planning_semaine[$this->_planning_jour_id];
-			$sLibelleDate				= date('d/m/Y', $dDatePlanning);
-		}
-
-		// Découpage du volume horaire
-		$nTranche			= $this->_planning_timer_size / 60;
-		$nWidth				= intval($this->_planning_jour_width * $nTranche);
-		$fWidthItem			= $nWidth - 1.5;
-		$sClassItem			= "width-" . $nWidth . "p";
-
-		// Initialisation de la classe CSS pour chaque tranche horaire
-		$sDiaryStyle		= "";
-
-		// Fonctionnalité réalisée pour un affichage sous forme de CALENDRIER
-		if ($this->_planning_format == self::FORMAT_CALENDAR && $sClassName != self::PLANNING_HEADER_CLASSNAME) {
-			// Réinitialisation de la classe de la tâche
-			$sClassItem		= "";
-
-			// Calcul de la largeur de chaque volume horaire
-			$fDayWidth		= number_format(self::PLANNING_WIDTH_RATIO / $this->_planning_duree, 2);
-			$fWidthItem		= ($fDayWidth <= 1) ? 0.5 : intval($fDayWidth);
-		}
-
-		// Mise en place d'une classe CSS relative à la dimention des éléments du PLANNING
-		$sClassWidthItem			= "width-" . str_replace(".", "-", $fWidthItem) . "p";
-
-		// Affectation de la CLASSE selon si le jour est férié
-		$sClassDefault		= in_array($IdProgression, $this->_planning_deprecated_dates)			? self::PLANNING_DEPRECATED_CLASS	: self::PLANNING_VALID_CLASS;
-
-		// Modification de la classe CSS du jour selon s'il n'est pas travaillé
-		$sClassDefault		= in_array($this->_planning_jour_id, $this->_planning_deprecated_days)	? self::PLANNING_DEPRECATED_CLASS	: $sClassDefault;
-
-		// Libellé du jour
-		$sTitreJour			= "<h3>" . strtoupper($sLibelleJour) . " " . $sLibelleDate . "</h3>";
-		if ($this->_planning_format == self::FORMAT_CALENDAR) {
-			$sTitreJour		= "<h5>" . date('d', $dDatePlanning) . "</h5>";
-			$sTitreJour		.= "<h5>" . $this->_planning_semaine_court[$this->_planning_jour_id] . "</h5>";
-		}
-
-		// Construction du planning du jour
-		$sPlanningHTML		= "<dl class=\"" . $sClassName . "\" title=\"" . strtoupper($sLibelleJour) . " " . $sLibelleDate . "\" $sDiaryStyle>
-									<dt>
-										" . $sTitreJour . "
-									</dt>";
-
-		// Finalisation de la zone de progression
-		for ($heure = $this->_planning_debut ; $heure <= $this->_planning_fin + 1 ; $heure += $nTranche) {
-			// Construction de la dernière ligne du Calendrier afin de définir la dernière plage horaire
-			if ($heure > $this->_planning_fin && !is_null($dDatePlanning)) {
-				continue;
-			}
-
-			// Détermination du crénau horaire
-			$h	= $heure%60;
-			$m	= ($heure - $heure%60) * 60;
-
-			// Fonctionnalité réalisée par défaut
-			$sClassPlanning = $sClassDefault;
-			if ($sClassName == self::PLANNING_DEFAULT_CLASSNAME) {
-				// Coloration des zones non travaillées ou normales
-				$sClassPlanning = in_array($h, $this->_planning_deprecated_hours)		? self::PLANNING_DEPRECATED_CLASS : $sClassPlanning;
-				$sClassPlanning = in_array($m, $this->_planning_deprecated_hours[$h])	? self::PLANNING_DEPRECATED_CLASS : $sClassPlanning;
-
-				// Fonctionnalité réalisée si l'heure spécifique de la journée est non travaillée
-				$sClassPlanning = in_array($h, $this->_planning_deprecated_days[$this->_planning_jour_id]) ? self::PLANNING_DEPRECATED_CLASS : $sClassPlanning;
-
-				// Fonctionnalité réalisée en cas de rendu sous forme de CALENDAR
-				if ($this->_planning_format == self::FORMAT_CALENDAR) {
-					$sClassPlanning .= " static";
-				}
-			}
-
-			// Construction de la cellule horaire
-			$sTimeIndex = sprintf('%02d:%02d', $h, $m);
-			/**
-			 * @todo    DECOUPAGE HORAIRE - MINUTE
-			 * $sPlanningHTML    .= "<dd id=\"planning-" . $IdProgression . "-" . $h . "-" . $m . "\" class=\"planning " . $sClassPlanning . " " . $sClassItem . "\">
-			 */
-			$oItemElement = DataHelper::get($this->_aItems[$IdProgression], $sTimeIndex, DataHelper::DATA_TYPE_ANY, null);
-			$sClassSet    = null;
-			$sItemHTML    = null;
-
-			// Extraction des éléments `Y`, `m` et `d`
-			preg_match("@^([0-9]+)\-([0-9]+)\-([0-9]+)$@", $IdProgression, $aMatched);
-			// Initialisation de l'identifiant de la CELLULE à partir de l'identifiant de la PROGRESSION sous forme `planning-Y-m-d-H` sans la caractère [0] de début
-			$sIdItemElement	= sprintf("planning-%d-%d-%d-%d", $aMatched[1], $aMatched[2], $aMatched[3], $h);
-
-			// Fonctionnalité réalisée si un élément du PLANNING est présent
-			if ($oItemElement instanceof Planning_ItemHelper) {
-				// La classe porte l'identifiant de la tâche
-				$sClassSet	= $sIdItemElement . " set";
-				$oItemElement->addClass($sClassWidthItem);
-				$sItemHTML	= $oItemElement->renderHTML();
-			}
-
-			// Construction de la CELLULE
-			$sPlanningHTML	.= "<dd id=\"" . $sIdItemElement . "\" class=\"planning " . $sClassPlanning . " " . $sClassSet . " " . $sClassItem . "\">
-									<h4 class=\"ui-widget-header\">" . $sTimeIndex . "</h4>
-									<ul class=\"planning-item ui-helper-reset ui-helper-clearfix\">
-										" . $sItemHTML . "
-									</ul>
-								</dd>";
-		}
-
-		// Finalitation du planning du jour
-		$sPlanningHTML		.= "</dl>";
-
-		// Renvoi du code HTML
-		return $sPlanningHTML;
-	}
-
-	/**
-	 * @brief	Construction de la progression
-	 *
-	 * @li	Ajout de la progression à la semaine.
-	 *
-	 * @param	string	$IdProgression		: identifiant de la CELLULE.
-	 * @return	void
-	 */
-	private function _buildProgressionByWeek($IdProgression) {
-		// Récupération de l'dentifiant du jour
-		list($annee, $mois, $jour)				= explode('-', $IdProgression);
-
-		// Extraction de la date du jour à partir de l'identifiant
-		$dDatePlanning							= mktime(0, 0, 0, $mois, $jour, $annee);
-
-		// Calcul de la largeur de chaque volume horaire
-		$this->_planning_jour_width				= intval(self::PLANNING_MAX_WIDTH / ($this->_planning_fin - $this->_planning_debut));
-
-		// Détermination du nombre de jours dans le même identifiant de semaine
-		$nIdSemaine								= date('W', $dDatePlanning);
-		$nIdJour								= date("N", $dDatePlanning);
-
-		// Affectation de la CLASSE selon si le jour est férié
-		$sClassName								= in_array($IdProgression, $this->_planning_deprecated_dates) ? self::PLANNING_HOLIDAY_CLASSNAME : self::PLANNING_DEFAULT_CLASSNAME;
-
-		// Construction du planning du jour
-		$this->_semaine[$nIdSemaine][$nIdJour]	= $this->_buildProgression($sClassName, $IdProgression, $dDatePlanning);
-	}
-
-	/**
-	 * @brief	Construction du planning sous forme de PROGRESSION horizontale.
-	 *
-	 * @param	string		$sFormat		: format de construction.
-	 * @return	void
-	 */
-	private function _getProgressionStandard($sFormat = "%s") {
-		foreach ($this->_semaine as $nIdSemaine => $aProgressionHTML) {
-			// Construction de la progression avec la SEMAINE
-			foreach ($aProgressionHTML as $sHTML) {
-				$this->planning	.= sprintf($sFormat, $sHTML);
-			}
-		}
-	}
-
-	/**
-	 * @brief	Construction du planning sous forme de TABLEAU.
-	 *
-	 * @return	void
-	 */
-	private function _getProgressionTable() {
-		// Calcul de la largeur de chaque volume horaire
-		$fDayWidth				= number_format(self::PLANNING_WIDTH_RATIO / $this->_planning_duree, 2);
-		$sDiaryStyle			= "style=\"width: " . $fDayWidth . "%\"";
-
-		$sHead					= "";
-		$sBody					= "";
-		$sFoot					= "";
-
-		// Fonctionnalité réalisée uniquement pour le Calendrier
-		if ($this->_planning_format == self::FORMAT_CALENDAR) {
-			$dDebut				= mktime(0, 0, 0, $this->_planning_mois, $this->_planning_jour, $this->_planning_annee);
-			$dFin				= $dDebut + (($this->_planning_duree) * 3600 * 24);
-			$nIdMois			= (int) $this->_planning_mois;
-			$nCount				= 0;
-			while ($dDebut <= $dFin) {
-				// Fonctionnalité réalisée à chaque changement de MOIS
-				if ($nIdMois != (int) date('m', $dDebut) || $dDebut >= $dFin) {
-					// Initialisation des éléments du MOIS
-					$nDiff		= $dDebut < $dFin	? 1 : 0;
-					$iType		= $nCount <= 3	? DataHelper::SHORT	: DataHelper::UPPER;
-					$sTitre		= DataHelper::getLibelleMois((int) date('m', $dDebut) - $nDiff, $iType);
-					$sTitre		= $nCount < 6	? $sTitre	: $sTitre . " " . date('Y', $dDebut);
-					$sTitre		= $nCount > 1	? $sTitre	: "";
-
-					// Construction du nom du MOIS
-					$sHead		.= "			<th id=\"month-$nIdMois\" class=\"center horizontal no-wrap ui-widget-content\" colspan=\"" . $nCount . "\">
-													<h5 class=\"left absolute margin-left-5\">$sTitre</h5>&nbsp;
-												</th>";
-
-					// Récupération du mois
-					$nIdMois	= (int) date('m', $dDebut);
-					$nCount		= 0;
-				}
-				$nCount			+= 1;
-				$dDebut			+= 3600 * 24;
-			}
-			// Fin du HEAD
-			$sHead		 		.= "		</tr>";
-			$sHead				.= "		<tr>";
-
-			// Ajout d'un pied de page au CALENDRIER
-			$sFoot				.= "			<td class=\"left no-wrap\">" . $this->_buildProgression() . "</td>";
-		}
-
-
-		// Parcours de chaque semaine
-		foreach ($this->_semaine as $nIdSemaine => $aProgressionSemaine) {
-			// Initialisation des éléments de la SEMAINE
-			$sTitre				= $this->_planning_format == self::FORMAT_PROGRESSION	? "Semaine $nIdSemaine"	: $nIdSemaine;
-			$sClassTitre		= $this->_planning_format == self::FORMAT_PROGRESSION	? "vertical"			: "horizontal";
-
-			// Construction du numéro de SEMAINE
-			$sHead				.= "			<th class=\"week-$nIdSemaine center $sClassTitre no-wrap ui-widget-content\" colspan=\"" . count($aProgressionSemaine) . "\">$sTitre</th>";
-
-			// Construction de la progression avec la SEMAINE
-			foreach ($aProgressionSemaine as $nIdJour => $sProgressionHTML) {
-				$sBody			.= "			<td role=\"week-$nIdSemaine\" class=\"day-$nIdJour center\" $sDiaryStyle>" . $sProgressionHTML . "</td>";
-			}
-		}
-
-		// Construction du HEAD
-		$this->planning			.= "<table class=\"max-width\" cellspacing=0 cellpadding=0>
-										<tbody>
-											<tr>
-												" . $sHead . "
-											</tr>";
-
-		// Construction du BODY
-		$this->planning			.= "		<tr>
-												" . $sBody ."
-												" . $sFoot ."
-											</tr>
-										</tbody>
-									</table>";
-	}
-
-	/**
-	 * @brief	Construction des éléments HTML
-	 *
-	 * @return	string
-	 */
-	private function _buildHTML() {
-		// Fonctionnalité réalisée si la construction n'a pas été réalisée
-		if (! $this->_build) {
-			// Enregistrement du rendu
-			$this->_build		= true;
-
-			// Fonctionnalité si plusieurs éléments sont récupérés
-			if (!empty($this->_empty)) {
-				// Aucun élément n'a été trouvé
-				$this->item		.= sprintf("<h3 class=\"strong center margin-top-25 padding-bottom-25\">%s</h3>", $this->_empty);
-			}
-
-			// Finalisation du panneau
-			$this->item			.= "</ul>";
-
-			// Ajout de la CLASSE JavaScript à la page
-			ViewRender::addToScripts(FW_VIEW_SCRIPTS . "/Planning/Item.class.js");
-			ViewRender::addToScripts(FW_VIEW_SCRIPTS . "/Planning/Helper.class.js");
-
-			// Ajout du JavaScript à la page
-			ViewRender::addToScripts(FW_VIEW_SCRIPTS . "/PlanningHelper.js");
-
-			// Ajout de la feuille de style
-			ViewRender::addToStylesheet(FW_VIEW_STYLES . "/PlanningHelper.css");
-
-			// Initialisation de la liste des jours de la semaine
-			for ($i = 0 ; $i < $this->_planning_duree; $i++) {
-				// Identifiant du jour de la semaine sous la forme [Y-m-d]
-				$IdProgression	= date('Y-m-d', mktime(0, 0, 0, $this->_planning_mois, ($this->_planning_jour + $i), $this->_planning_annee));
-
-				// Récupération de la progression selon l'identifiant du jour
-				$this->_buildProgressionByWeek($IdProgression);
-			}
-
-			// Construction de chaque zone de progression selon l'identifiant du jour
-			$this->planning		= "<section id=\"" . $this->_md5 . "\" class=\"planningHelper $this->_planning_format week center max-width no-wrap\">";
-
-			// Fonctionnalité réalisée si le format à afficher est au format CALENDAR
-			if ($this->_planning_format == self::FORMAT_CALENDAR) {
-				// Construction de la progression sous forme de TABLEAU
-				$this->_getProgressionTable();
-			} else {
-				// Construction de la progression
-				$this->_getProgressionStandard();
-			}
-
-			// Finalisation de la zone de progression
-			$this->planning		.= "</section>
-									<script type='text/javascript'>
-										// Fonctionnalité de déclaration si les éléments n'existent pas
-										if (typeof(PLANNING_DEBUG) == 'undefined')			{ var PLANNING_DEBUG = " . ((bool) MODE_DEBUG ? "true" : "false") . "; }
-										if (typeof(PLANNING_MD5) == 'undefined')			{ var PLANNING_MD5 = []; }
-										if (typeof(PLANNING_CELL_WIDTH) == 'undefined')		{ var PLANNING_CELL_WIDTH = []; }
-					
-										// Chargement des valeurs des éléments
-										PLANNING_MD5['" . $this->_md5 . "'] = '" . $this->_md5 . "';
-										PLANNING_CELL_WIDTH['" . $this->_md5 . "'] = " . $this->_nCellWidth . ";
-									</script>";
-			
-			// Fonctionnalité réalisée en MODE_DEBUG
-			if (defined('MODE_DEBUG') && (bool) MODE_DEBUG) {
-				$sClassStyle	= $this->_planning_format == self::FORMAT_CALENDAR ? "margin-top-10-important" : "";
-				$this->planning	.= "<button class=\"red right $sClassStyle\" id=\"button-" . $this->_md5 . "\" onclick=\"$('section#" . $this->_md5 . "').getProgression();\">Test</button>";
-			}
-
-			// Activation du planning par jQuery
-			ViewRender::addToJQuery("initPlanning('" . $this->_md5 . "');");
-		}
-	}
-
-	/**
-	 * @brief	Rendu du MODAL
-	 *
-	 * Ajout du MODAL directement dans VIEW_BODY
-	 * @li	Possibilité d'ajouter un moteur de recherche par un tableau de paramètres.
-	 * @see PlanningHelper::_buildSearchForm($sAction, $aSearchItems)
-	 *
-	 * @param	string	$sAction			: URL du moteur de recherche.
-	 * @param	array	$aSearchItems		: tableau contenant les éléments du moteur de recherche.
-	 * @return	void
-	 */
-	private function _buildModal($sAction = self::MODAL_ACTION_DEFAULT, $aSearchItems = array()) {
-		$oModal = new ModalHelper("modal-item-" . $this->_md5);
-		$oModal->addClassName("overflow-hidden");
-		$oModal->setTitle("Édition d'un élément");
-		$oModal->setResizable(true);
-		$oModal->setModal(false);
-		$oModal->setDimensions(495);
-		$oModal->setForm(false);
-		$oModal->setPosition("center", "left top", "window");
-		$oModal->linkContent("<section id=\"search-content-" . $this->_md5 . "\" class=\"modal-search $this->_planning_format\">" . $this->getItem() . "</section>");
-
-		// Ajout d'un champ caché relatif à l'identifiant
-		$aSearchItems['item_id'] = array(
-			'type'	=> 'hidden'
-		);
-
-		// Ajout d'un champ relatif à la durée
-		$aSearchItems['item_duree'] = array(
-			'type'	=> 'number',
-			'label'	=> 'Durée',
-			'value'	=> 1
-		);
-
-		// Fonctionnalité réalisée si l'action du formulaire est précisé
-		if (!empty($sAction)) {
-			$oModal->linkContent($this->_buildSearchForm($sAction, $aSearchItems));
-		}
-		ViewRender::addToBody($oModal->renderHTML());
-	}
-
-	/**
-	 * @brief	Rendu final de l'élément SOURCE
-	 * @return	string
-	 */
-	public function getItem() {
-		// Construction des éléments si ce n'est pas déjà fait
-		$this->_buildHTML();
-		// Renvoi de l'élément
-		return $this->item;
-	}
-
-	/**
-	 * @brief	Rendu final du conteneur CIBLE
-	 * @return	string
-	 */
-	public function getPlanning() {
-		// Construction des éléments si ce n'est pas déjà fait
-		$this->_buildHTML();
-		// Renvoi du conteneur
-		return $this->planning;
-	}
-
-	/**
-	 * @brief	Rendu final de l'élément sous forme de MODAL
-	 *
-	 * @li	Possibilité d'ajouter un moteur de recherche.
-	 * @param	string	$sAction			: URL du moteur de recherche.
-	 * @param	array	$aSearchItems		: tableau contenant les éléments du moteur de recherche.
-	 * @return	string
-	 */
-	public function renderHTML($sAction = self::MODAL_ACTION_DEFAULT, $aSearchItems = array()) {
-		// Ajout des ressources au Dialog
-		$this->_buildModal($sAction, $aSearchItems);
-
-		// Renvoi du conteneur
-		return $this->getPlanning();
-	}
-
+	
 }

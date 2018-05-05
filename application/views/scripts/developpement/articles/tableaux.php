@@ -14,7 +14,7 @@ global $sArticle;
 // Présentation du style CSS affecté aux tableaux
 $sArticle .= "	<fieldset class='padding-H-20'>
 					<legend>Style de tableau par défaut avec la classe CSS <strong class='red italic'>.table</strong></legend>
-					<table class='table'>
+					<table class='table margin-auto'>
 						<thead>
 							<tr>
 								<th>Titre A</th>
@@ -91,7 +91,7 @@ $sArticle .= "	<fieldset class='padding-H-20'>
 					<div id='hidden-tableau' class='code padding-20 hidden'>
 						<button onClick='$(\"#hidden-tableau\").addClass(\"hidden\");$(\"#visible-tableau\").removeClass(\"hidden\");''>Masquer le code</button><br />
 						<br/>
-						<strong class='blue'>&lt;table class=<span class='texte'>\"table\"</span>&gt;<br />
+						<strong class='blue'>&lt;table class=<span class='texte'>\"table margin-auto\"</span>&gt;<br />
 						<ul>
 							<li>&lt;thead&gt;
 								<ul>&lt;tr&gt;

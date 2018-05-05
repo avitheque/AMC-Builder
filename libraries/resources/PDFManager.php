@@ -13,8 +13,8 @@ require_once FW_HELPERS . "/fpdf/fpdf.php";
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 24 $
- * @since		$LastChangedDate: 2017-04-30 20:38:39 +0200 (dim., 30 avr. 2017) $
+ * @version		$LastChangedRevision: 119 $
+ * @since		$LastChangedDate: 2018-05-05 13:46:10 +0200 (Sat, 05 May 2018) $
  * @see			{ROOT_PATH}/libraries/helpers/fpdf.php
  * 
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
@@ -23,9 +23,9 @@ require_once FW_HELPERS . "/fpdf/fpdf.php";
  */
 class PDFManager extends FPDF {
 
-	protected $_filename					= "document";
-	protected $_contentType					= "application/pdf";
-	protected $_extension					= "pdf";
+	protected	$_filename					= "document";
+	protected	$_contentType				= "application/pdf";
+	protected	$_extension					= "pdf";
 
 	// ============================================================================================
 	//	@todo CONSTANTES DE FPDF
@@ -72,6 +72,12 @@ class PDFManager extends FPDF {
 	const		DEFAULT_FONT_FAMILY			= self::FONT_ARIAL;
 	const		DEFAULT_FONT_SIZE			= 10;
 	const		DEFAULT_FONT_STYLE			= self::STYLE_DEFAULT;
+	const		DEFAULT_FONT_COLOR			= "0,0,0";
+	
+	protected	$_default_font_family		= self::DEFAULT_FONT_FAMILY;
+	protected	$_default_font_size			= self::DEFAULT_FONT_SIZE;
+	protected	$_default_font_style		= self::DEFAULT_FONT_STYLE;
+	protected	$_default_font_color		= self::DEFAULT_FONT_COLOR;
 
 	const		DEFAULT_LINE_HEIGHT			= 10;
 	const		DEFAULT_LINE_START			= 0;
@@ -145,8 +151,8 @@ class PDFManager extends FPDF {
 		if ($this->decodeUtf8) {
 			$sFilename						= utf8_decode($sFilename);
 		}
-
-		$this->_filename					= strtr($sFilename, array(" " => "_"));
+		// Formatage du nom du fichier
+		$this->_filename					= DataHelper::convertToString($sFilename, DataHelper::DATA_TYPE_FILE);
 	}
 
 	/**
@@ -172,6 +178,71 @@ class PDFManager extends FPDF {
 	//=============================================================================================
 	//	@todo	INITIALISATION DES PARAMÈTRES DU DOCUMENT
 	//=============================================================================================
+	
+	/**
+	 * @brief	Initialisation de la couleur du TEXT par défault du document.
+	 *
+	 * @return	void
+	 */
+	public function setFontColor($nR, $nG = null, $nB = null) {
+		// Fonctionnalité réalisée si le premier argument est un tableau
+		if (DataHelper::isValidArray($nR)) {
+			// Manipulation de l'argument
+			$aParams			= $nR;
+			$nR					= isset($aParams[0])	? (int) $aParams[0]		: null;
+			$nG					= isset($aParams[1])	? (int) $aParams[1]		: null;
+			$nB					= isset($aParams[2])	? (int) $aParams[2]		: null;
+		} elseif (!DataHelper::isValidNumeric($nR) && is_null($nG) && is_null($nB)) {
+			// Extraction du code couleur depuis le premier paramètre
+			list($nR, $nG, $nB) = DataHelper::extractColorFromString($nR);
+		} elseif (DataHelper::isValidNumeric($nR)) {
+			// Typage du premier argument
+			$nR					= (int) $nR;
+		}
+		
+		// Initialisation du paramètre GREEN à partir de RED
+		if (is_null($nG)) {
+			$nG					= (int) $nR;
+		}
+		
+		// Initialisation du paramètre BLUE à partir de GREEN
+		if (is_null($nB)) {
+			$nB					= (int) $nG;
+		}
+		
+		// Inititialisation de la couleur du FONT
+		$this->setTextColor($nR, $nG, $nB);
+	}
+	
+	/**
+	 * @brief	Réinitialisation du FONT par défault du document.
+	 *
+	 * @return	void
+	 */
+	public function resetFontDefault() {
+		// Initialisation du FONT
+		$this->setFont($this->_default_font_family, $this->_default_font_size, $this->_default_font_style);
+		// Initialisation de la couleur du TEXT
+		$this->setFontColor($this->_default_font_color);
+	}
+	
+	/**
+	 * @brief	Initialisation du FONT par défault du document.
+	 *
+	 * @param	string	$sFontFamily
+	 * @param	string	$sFontStyle
+	 * @param	string	$sFontSize
+	 * @param	mixed	$sFontColor
+	 * @return	void
+	 */
+	public function setFontDefault($sFontFamily = self::DEFAULT_FONT_FAMILY, $sFontStyle = self::DEFAULT_FONT_STYLE, $sFontSize = self::DEFAULT_FONT_SIZE, $sFontColor = self::DEFAULT_FONT_COLOR) {
+		// Fonctionnalité réalisée si aucune page n'est présente
+		$this->_default_font_family	= $sFontFamily;
+		$this->_default_font_style	= $sFontStyle;
+		$this->_default_font_size	= $sFontSize;
+		$this->_default_font_color	= $sFontColor;
+		$this->resetFontDefault();
+	}
 
 	/**
 	 * @brief	Initialisation du titre dans l'entête de la page.
@@ -647,6 +718,9 @@ class PDFManager extends FPDF {
 			// Désactivation des entêtes et pieds de pages
 			$this->_showHeader				= false;
 			$this->_showFooter				= false;
+			
+			// Réinitialisation de la couleur de texte par défaut
+			$this->setTextColor(0, 0, 0);
 
 			// Ajout d'une nouvelle page
 			$this->addPage(self::ORIENTATION_P, self::PAGE_A4, 0);
@@ -660,6 +734,9 @@ class PDFManager extends FPDF {
 			$this->testMargesPosition();
 			$this->testMiddlePosition();
 		}
+		
+		// Remplacement des caractères spéciaux
+		$sFileName = DataHelper::convertToString(trim($dest), DataHelper::DATA_TYPE_FILE);
 
 		// Rendu du document PDF
 		return parent::output($dest, $name, $isUTF8);
@@ -668,31 +745,6 @@ class PDFManager extends FPDF {
 	//=============================================================================================
 	//	@todo	CRÉATION DES ÉLÉMENTS
 	//=============================================================================================
-
-	/**
-	 * @brief	Ajout d'une ligne dans la page.
-	 *
-	 * @param 	numeric	$nCountLine
-	 * @param 	boolean	$bPositionY
-	 * @return	void
-	 */
-	public function addLine($nCountLine = 1, $bPositionY = false) {
-		// Ajout automatique de la première page
-		$this->autoPageStart();
-
-		// Ajout du nombre de ligne
-		$this->CurLine += $this->iLine * $nCountLine;
-
-		// Fonctionnalité de mise à jour de la position en haut de page
-		if ($this->CurLine > $this->getPageHeight()) {
-			$this->CurLine					= $this->getTopMargin();
-		}
-
-		// Fonctionnalité de mise à jour de la position du tableau
-		if ($bPositionY) {
-			$this->setY($this->CurLine);
-		}
-	}
 
 	/**
 	 * @brief	Ajout d'une cellule dans la page.
@@ -718,6 +770,40 @@ class PDFManager extends FPDF {
 
 		// Création d'une cellule permettant de gérer la largeur de page
 		$this->multiCell($nWidth, $nHigth, $sText, $nTableBorder, $sAlign, $bTableFill);
+	}
+
+	/**
+	 * @brief	Ajout d'une ligne dans la page.
+	 *
+	 * @param 	numeric	$nCountLine
+	 * @param 	boolean	$bPositionY
+	 * @param 	integer	$nX
+	 * @return	void
+	 */
+	public function addLine($nCountLine = 1, $bPositionY = false, $nX = null) {
+		// Ajout automatique de la première page
+		$this->autoPageStart();
+
+		// Ajout du nombre de ligne
+		$this->CurLine += $this->iLine * $nCountLine;
+		for ($nCount = 0 ; $nCount <= $nCountLine ; $nCount++) {
+			$this->addCell(0, 0);
+		}
+
+		// Fonctionnalité de mise à jour de la position en haut de page
+		if ($this->CurLine > $this->getPageHeight()) {
+			$this->CurLine					= $this->getTopMargin();
+		}
+		
+		// Fonctionnalité de mise à jour de la position de la ligne
+		if ($bPositionY) {
+			$this->setY($this->CurLine);
+		}
+		
+		// Fonctionnalité réalisée si la position LEFT est passée en argument
+		if (! is_null($nX)) {
+			$this->setX($nX);
+		}
 	}
 
 	/**

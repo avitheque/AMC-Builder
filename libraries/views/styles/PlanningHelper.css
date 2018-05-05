@@ -11,103 +11,109 @@
 @CHARSET "UTF-8";
 
 /* SOURCE / CIBLE - SUPPORT DES ÉLÉMENTS */
-.diary													{ margin: 5px 0 20px; }
-.planning												{ display: inline-block; min-height: 96px; padding: 3px 0 5px; overflow: hidden; overflow-y: auto; }
-.planning-item											{ float: left; display: block; overflow: auto; }
-.planning-item.custom-state-active						{ background: #FBEC88; border: solid 1px #FAD42E; }
-.planning-item li										{ float: left; padding: 4px; text-align: center; white-space: nowrap; }
-.planning-item li h5									{ margin: 0 0 0.4em; cursor: move; }
-.planning-item li a										{ float: left; }
-.planning-item li a.ui-icon-trash						{ position: absolute; left: 0; bottom: 0; }
-.planning-item li a.ui-icon-zoomin						{ position: absolute; right: 0; bottom: 0; }
-.planning-item li.conflict,
-.planning-item li.error									{ background: red !important; }
-.planning-item li article								{ border-radius: 0; }
-.planning-item li .ui-icon								{ border: 1px solid transparent; border-radius: 5px; color: transparent; }
-.planning-item li .ui-icon:hover						{ background-color: yellow; border-color: orange; }
-
-.planning-item-content									{ font-size: 7px; }
-.planning-item-participant								{ font-size: 7px; }
-
+.diary															{ margin: 5px 0 20px; }
+.planning														{ display: inline-block; min-height: 96px; padding: 3px 0 5px; overflow: hidden; overflow-y: auto; }
+.planning-item													{ float: left; display: block; overflow: auto; }
+.planning-item.custom-state-active								{ background: #FBEC88; border: solid 1px #FAD42E; }
+.planning-item li.item											{ float: left; padding: 4px; text-align: center; white-space: nowrap; }
+.planning-item li.item h5										{ margin: 0 0 0.4em; cursor: move; }
+.planning-item li.item.conflict,
+.planning-item li.item.error									{ background: red !important; }
+.planning-item li.item article									{ border-radius: 0; }
+.planning-item li.item a.ui-icon								{ border: 1px solid transparent; border-radius: 5px; color: transparent; }
+.planning-item li.item a.ui-icon:hover							{ background-color: yellow; border-color: orange; }
+.planning-item li.item a.ui-icon-pin-s							{ margin: 0px; }
+.planning-item li.item a.ui-icon-trash							{ position: absolute; left: 0; bottom: 0; }
+.planning-item li.item a.ui-icon-zoomin							{ position: absolute; right: 0; bottom: 0; }
 
 /* ITEM - MINIATURES */
-article.job												{ min-height: 50px; overflow: hidden; }
-article.job h3											{ font-size: 14px; }
-article.job p											{ font-size: 10px; height: 38px; width: 100%; margin: 0; padding: 0; text-align: center; }
-section.item-bottom										{ display: inline-flex; text-align: center; min-width: 10px; }
-.planning:not(.modal-search) section.item-bottom		{ display: none; }
+article.job														{ min-height: 50px; overflow: hidden; }
+article.job h3													{ font-size: 14px; }
+article.job p													{ font-size: 10px; height: 38px; width: 100%; margin: 0; padding: 0; text-align: center; }
+section.item-bottom												{ display: inline-flex; text-align: center; min-width: 10px; }
+.planning:not(.modal-search) section.item-bottom				{ display: none; }
 
 
 /* CIBLE - RENDU SOUS FORME DE PROGRESSION */
-.progression li											{ white-space: nowrap; min-height: 70px; }
-.progression h4											{ line-height: 20px; margin: 0; text-align: left; }
-.progression h4 .ui-icon								{ float: left; }
-.progression li.item:hover section.item-bottom			{ display: inline-flex; text-align: center; }
+.progression li.item											{ white-space: nowrap; min-height: 70px; }
+.progression h4													{ line-height: 20px; margin: 0; text-align: left; }
+.progression h4 .ui-icon										{ float: left; }
+.progression li.item:hover section.item-bottom					{ display: inline-flex; text-align: center; }
 
 
 /* CIBLE - RENDU SOUS FORME DE CALENDRIER */
-.calendar												{ display: inline-flex; }
-.calendar .diary										{ display: table; float: left; }
-.calendar .diary dt										{ padding-top: 2px; margin-bottom: 2px; }
-.calendar .diary h3										{ font-weight: normal; }
-.calendar .planning-item								{ min-height: 20px; }
-.calendar .planning										{ display: list-item; min-height: 0; height: 22px; width: 100%; margin: 0; padding: 0; border: 1px solid #c5dbec; }
-.calendar .planning ul									{ border: none; }
-.calendar .planning h4									{ display: none; }
-.calendar li.item										{ height: 20px; padding: 0; maring: 0; }
-.calendar li.item .job									{ min-height: 20px; }
-.calendar li.item .content								{ display: none; }
-.calendar li.item .ui-icon								{ position: static; bottom: 0; float: left; display: none; }
-.calendar li.item:hover section.item-bottom				{ display: inline-block; text-align: center; }
+.calendar														{ display: inline-flex; }
+.calendar .diary												{ display: table; float: left; }
+.calendar .diary dt												{ padding-top: 2px; margin-bottom: 2px; }
+.calendar .diary h3												{ font-weight: normal; }
+.calendar .planning-item										{ min-height: 15px; }
+.calendar .planning												{ display: list-item; min-height: 0; height: 22px; width: 100%; margin: 0; padding: 0; border: 1px solid #c5dbec; }
+.calendar .planning ul											{ border: none; }
+.calendar .planning h4											{ display: none; }
+.calendar li.item												{ height: 20px; padding: 0; maring: 0; }
+.calendar li.item .job											{ min-height: 20px; }
+.calendar li.item .content										{ display: none; }
+.calendar li.item .ui-icon										{ position: static; bottom: 0; float: left; display: none; }
+.calendar:not(.modal-search) li.item:hover section.item-bottom	{ display: inline-block; text-align: left; height: 55px; }
+.calendar:not(.modal-search) li.item a.ui-icon					{ position: absolute; left: 0; }
+.calendar:not(.modal-search) li.item a.ui-icon-pin-s			{ bottom: 42px; }
+.calendar:not(.modal-search) li.item a.ui-icon-zoomin			{ bottom: 21; }
+.calendar:not(.modal-search) li.item a.ui-icon-trash			{ bottom: 0px; }
 
-.calendar .header										{ position: absolute; left: 5px; padding-top: 30px; border: none; width: 80px; }
-.calendar .header dt									{ display: none; }
-.calendar .header .planning h4.visible					{ display: block; }
-.calendar .header .planning								{ background: transparent; border-color: transparent; }
+.calendar .header												{ position: absolute; left: 5px; padding-top: 30px; border: none; width: 80px; }
+.calendar .header dt											{ display: none; }
+.calendar .header .planning h4.visible							{ display: block; }
+.calendar .header .planning										{ background: transparent; border-color: transparent; }
 
 
 /* CIBLE - Apparence des cellules selon leur état */
-.holiday .planning										{ background: #3C75BF; border-color: #3C75BF; }
-.planning.set											{ background: #446693; border-color: #446693; opacity: 1; }
-.planning.hover											{ background: orange !important; opacity: 1; border-color: transparent; }
+.holiday .planning												{ background: #3C75BF; border-color: #3C75BF; }
+.planning.set													{ background: #446693; border-color: #446693; opacity: 1; }
+.planning.hover													{ background: orange !important; opacity: 1; border-color: transparent; }
 .planning.conflict,
 .planning.error,
 .holiday .planning.set,
-.planning.conflict li,
-.planning.error li										{ background: red !important; border-color: red !important; }
+.planning.conflict li.item,
+.planning.error li.item											{ background: red !important; border-color: red !important; }
 
 
 /* OUT - Apparence de l'élément hors d'une période valide */
 .planning.ui-state-disabled.set,
-.planning.ui-state-disabled.hover						{ background: #F900FF !important; border-color: #F900FF !important; }
+.planning.ui-state-disabled.hover								{ background: #F900FF !important; border-color: #F900FF !important; }
 
 
 /* PROGRESSION UNIQUEMENT */
-main .planning-item li.item								{ position: absolute; }
+main .planning-item li.item										{ position: absolute; }
 
 
 /* CIBLE - Intéractivité avec l'utilisateur */
-dl.hover												{ background: white; color: orange; z-index: 10; }
-dl.hover dt	 											{ font-weight: bold; }
-dl.hover dd.planning:not(.set)					 	 	{ border-top-color: transparent; border-right: 0; border-bottom-color: transparent; border-left: 0; }
-dl.hover dd.planning:not(.ui-state-disabled):not(.set)	{ background: rgba(0, 255, 0, 0.3); }
+dl.hover														{ background: white; color: orange; z-index: 10; }
+dl.hover dt	 													{ font-weight: bold; }
+dl.hover dd.planning:not(.set)					 	 			{ border-top-color: transparent; border-right: 0; border-bottom-color: transparent; border-left: 0; }
+dl.hover dd.planning:not(.ui-state-disabled):not(.set)			{ background: rgba(0, 255, 0, 0.3); }
 
-.planning:hover h4										{ text-shadow: 0 0 2px orange; }
+.planning:hover h4												{ text-shadow: 0 0 2px orange; }
 a.ui-draggable-handle:active,
-a.ui-icon-pin-w											{ cursor: move !important; }
+a.ui-icon-pin-w													{ cursor: move !important; }
 
 
 /* SOURCE / CIBLE - Apparence de l'élément au format TABLEAU */
-.calendar table th										{ background: #c5dbec; color: #2e6e9e; border: 1px solid #3c75bf; margin: 0; padding: 0; }
-.calendar table th.hover								{ background: white; color: orange; border: 1px solid orange; z-index: 10; }
-.calendar table td										{ margin: 0; padding: 0; }
-.calendar table td.day-7								{ padding-right: 5px; }
-.calendar table td dl									{ width: 100%; margin: 0; padding: 0; }
-
+.calendar table th												{ background: #c5dbec; color: #2e6e9e; border: 1px solid #3c75bf; margin: 0; padding: 0; }
+.calendar table th.hover										{ background: white; color: orange; border: 1px solid orange; z-index: 10; }
+.calendar table td												{ margin: 0; padding: 0; }
+.calendar table td.day-7										{ padding-right: 5px; }
+.calendar table td dl											{ width: 100%; margin: 0; padding: 0; }
 
 
 /* SOURCE / CIBLE - Apparence de l'élément au format CALENDRIER */
 section[id^=search-content-] li.item,
-.calendar li.item:hover									{ height: auto; z-index: 50; min-width: 34px; }
+.calendar li.item:hover											{ height: auto; z-index: 50; min-width: 34px; }
 section[id^=search-content-] li.item .ui-icon,
-.calendar li.item:hover .ui-icon						{ display: inline; }
+.calendar li.item:hover .ui-icon								{ display: inline; }
+
+
+/* PARTICIPANTS - Apparence des personnels associés à la TÂCHE */
+.planning-item-content,
+.planning-item-participant										{ white-space: normal; font-size: 8px; margin: 0; padding: 0; font-variant: all-small-caps; }
+.planning-item-participant .principal							{ margin-top: 5px; font-variant: normal; line-height: 7px; }
+.planning-item-participant .secondaire							{ position: relative; top: -5px; }

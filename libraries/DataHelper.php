@@ -10,8 +10,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 109 $
- * @since		$LastChangedDate: 2018-03-25 13:15:01 +0200 (Sun, 25 Mar 2018) $
+ * @version		$LastChangedRevision: 119 $
+ * @since		$LastChangedDate: 2018-05-05 13:46:10 +0200 (Sat, 05 May 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -23,6 +23,11 @@ class DataHelper {
 
 	const	ARRAY_SEPARATOR				= ",";
 
+	const	COLOR_BLACK					= "0,0,0";
+	const	COLOR_BLUE					= "0,0,255";
+	const	COLOR_GREEN					= "0,255,0";
+	const	COLOR_RED					= "255,0,0";
+	
 	const	DATA_TYPE_NONE				= -1;			# Type non pris en compte
 	const	DATA_TYPE_ANY				= 0;			# Type quelconque, pris tel quel
 	const	DATA_TYPE_BOOL				= 1;			# Type Booléen
@@ -39,15 +44,16 @@ class DataHelper {
 	const	DATA_TYPE_STR				= 12;			# Type Chaîne
 	const	DATA_TYPE_NAME				= 13;			# Type nom (que des lettres, lettres accentuées, espace, tiret, apostrophe)
 	const	DATA_TYPE_CLASSID			= 14;			# Type identifiant de classe (que des lettre, pas d'espace)
-	const	DATA_TYPE_TXT				= 15;			# Type Texte pouvant être vide par défaut
-	const	DATA_TYPE_MYTXT				= 16;			# Type Texte au format MySQL
-	const	DATA_TYPE_HTML				= 17;			# Type Texte au format HTML
-	const	DATA_TYPE_LATEX				= 18;			# Type Texte au format LaTeX
-	const	DATA_TYPE_DATE				= 19;			# Type Date au format FR	[d/m/Y]
-	const	DATA_TYPE_MYDATE			= 20;			# Type Date au format MySQL	[Y-m-d]
-	const	DATA_TYPE_TIME				= 21;			# Type Time au format FR	[H:i]
-	const	DATA_TYPE_DATETIME			= 22;			# Type Date-Time sous MySQL [Y-m-d H:i:s]
-	const	DATA_TYPE_PDF				= 23;			# Type texte PDF
+	const	DATA_TYPE_FILE				= 15;			# Type nom de fichier (que des lettre, pas d'espace)
+	const	DATA_TYPE_TXT				= 16;			# Type Texte pouvant être vide par défaut
+	const	DATA_TYPE_MYTXT				= 17;			# Type Texte au format MySQL
+	const	DATA_TYPE_HTML				= 18;			# Type Texte au format HTML
+	const	DATA_TYPE_LATEX				= 19;			# Type Texte au format LaTeX
+	const	DATA_TYPE_DATE				= 20;			# Type Date au format FR	[d/m/Y]
+	const	DATA_TYPE_MYDATE			= 21;			# Type Date au format MySQL	[Y-m-d]
+	const	DATA_TYPE_TIME				= 22;			# Type Time au format FR	[H:i]
+	const	DATA_TYPE_DATETIME			= 23;			# Type Date-Time sous MySQL [Y-m-d H:i:s]
+	const	DATA_TYPE_PDF				= 24;			# Type texte PDF
 
 	const	ONCE						= 0;
 	const	SHORT						= 1;
@@ -109,7 +115,7 @@ class DataHelper {
 	 * @param	integer		$nCount			: (facultatif) contrainte du nombre d'occurence(s) attendu.
 	 * @return	bool renvoie TRUE si l'élément comporte au moins une occurence par défaut.
 	 */
-	static function isValidArray($aArray, $nCount = null) {
+	static function isValidArray($aArray, $nCount = null, $bNotEmpty = null) {
 		// Initialisation du résultat
 		$bValide = false;
 		if (!is_null($aArray) && (is_array($aArray) || is_object($aArray)) && count($aArray) > 0) {
@@ -120,6 +126,11 @@ class DataHelper {
 			} else {
 				// Fonctionnalité réalisée si le tableau n'est pas vide
 				$bValide = count($aArray) >= 1;
+			}
+			
+			// Test de la validité d'au moins une entrée
+			if (!is_null($bNotEmpty) && $bNotEmpty && $bValide && count($aArray) >= 1) {
+				$bValide = !empty($aArray[0]);
 			}
 		}
 		// Renvoi du résultat
@@ -459,6 +470,23 @@ class DataHelper {
 	}
 
 	/**
+	 * @brief	Remplacement des caractères spéciaux par leur équivalent ASCII
+	 *
+	 * @li		Tableau exploité via la méthode PHP @strtr().
+	 * @var		array
+	 */
+	public static $FILE_REPLACE	= array(
+		" "			=> "_",
+		"&#10;"		=> "_",
+		"?"			=> "_",
+		"*"			=> "_",
+		"/"			=> "_",
+		"\n"		=> '_',
+		"\t"		=> '_',
+		"\\"		=> '_'
+	);
+
+	/**
 	 * @brief	Remplacement des caractères HTML
 	 *
 	 * @li	Tableau exploité via la méthode PHP @strtr().
@@ -754,6 +782,11 @@ class DataHelper {
 					$sText = self::dateTimeMyToFr($sInput);
 					break;
 
+				// Formatage en nom de fichier
+				case self::DATA_TYPE_FILE:
+					$sText = strtr($sInput, self::$FILE_REPLACE);
+					break;
+
 				// Formatage en chaîne de caractères
 				case self::DATA_TYPE_STR:
 					$sText = strtr($sInput, self::$STR_REPLACE);
@@ -874,7 +907,7 @@ class DataHelper {
 	 * @author	durandcedric
 	 */
 	static function convertStringToArray($sSeparator, $sText) {
-	    // Extraction du contenu sous forme de tableau
+		// Extraction du contenu sous forme de tableau
 		$aResultat = explode($sSeparator, $sText);
 
 		// Fonctionnalité réalisée si le résultat est vide
@@ -1140,6 +1173,25 @@ class DataHelper {
 		}
 		// Renvoi du résultat
 		return $aResultat;
+	}
+
+	/**
+	 * @brief	Extraction d'un ensemble R/G/B à partir d'une chaîne de caractères.
+	 *
+	 * @li		Tout caractère, autre que numérique, peut faire office de séparateur de groupe.
+	 *
+	 * @param	string	$sString			: chaîne de caractères porteuse des informations R/G/B du type `255*255*255`.
+	 * @return	array
+	 */
+	static function extractColorFromString($sString = self::COLOR_BLACK) {
+		// Extraction des groupes de couleur R/G/B
+		if (preg_match("@^([0-9]{1,3})[^0-9]*([0-9]{1,3})*[^0-9]*([0-9]{1,3})*$@", trim($sString), $aMatched)) {
+			$nR			= isset($aMatched[1])	? (int) $aMatched[1]	: null;
+			$nG			= isset($aMatched[2])	? (int) $aMatched[2]	: null;
+			$nB			= isset($aMatched[3])	? (int) $aMatched[3]	: null;
+		}
+		// Renvoi des paramètres R/G/B sous forme de tableau
+		return array($nR, $nG, $nB);
 	}
 
 	/**

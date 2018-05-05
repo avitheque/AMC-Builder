@@ -8,8 +8,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 81 $
- * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
+ * @version		$LastChangedRevision: 119 $
+ * @since		$LastChangedDate: 2018-05-05 13:46:10 +0200 (Sat, 05 May 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -39,11 +39,33 @@ class ViewRender {
 	static private		$_renderer		= true;
 
 	/**
-	 * @brief	Activation|Désactivation du rendu de la vue.
+	 * @brief	Activation|Désactivation du rendu de la vue HTML.
 	 * @return	void
 	 */
 	static function	setNoRenderer($bStatus = false) {
 		self::$_renderer = !$bStatus;
+	}
+
+	/**
+	 * @brief	Activation du rendu de la vue sous forme d'un document autre que HTML.
+	 * 
+	 * @param	string	$sFileName		: nom du document.
+	 * @param	string	$sContentType	: format du document.
+	 * @param	string	$sCharset		: encodage du document.
+	 * @return	void
+	 */
+	static function setRenderDocument($sFileName = "document", $sContentType = "text/plain", $sCharset = "utf-8") {
+		// Désactivation du mode de rendu par défaut
+		self::setNoRenderer(true);
+
+		// Modification de l'entête afin de désactiver le CACHE
+		header("Cache-Control: no-cache, must-revalidate");
+		header("Cache-Control: post-check=0,pre-check=0");
+		header("Cache-Control: max-age=0");
+		header("Pragma: no-cache");
+		header("Expires: 0");
+		header("Content-Type:\"" . trim($sContentType) . "\"; charset=" . trim($sCharset));
+		header("Content-Disposition: attachment; filename=\"" . trim($sFileName) . "\"");
 	}
 
 	/**

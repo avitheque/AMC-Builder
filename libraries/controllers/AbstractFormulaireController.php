@@ -20,14 +20,19 @@
  * @subpackage	Libraries
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 81 $
- * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
+ * @version		$LastChangedRevision: 119 $
+ * @since		$LastChangedDate: 2018-05-05 13:46:10 +0200 (Sat, 05 May 2018) $
  * 
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
  */
 abstract class AbstractFormulaireController extends AbstractAuthenticateController {
+
+	const	ACTION_ANNULER					= "annuler";
+	const	ACTION_ENREGISTRER				= "enregistrer";
+	const	ACTION_MODIFIER 				= "modifier";
+	const	ACTION_SUPPRIMER 				= "supprimer";
 
 	/**
 	 * @brief	Données du formulaire sous forme de tableau.
