@@ -1,0 +1,43 @@
+<?php
+/**
+ * @brief	Exemple
+ *
+ * Vue permettant l'affichage un exemple de PLANNING au format PDF.
+ * User: durandcedric
+ * Date: 06/05/18
+ * Time: 12:43
+ *
+ * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ */
+
+// Initialisation de l'objet PlanningPDFHelper sur une semaine de 5 jours à compter du 02/01/2017
+$oPlanningPDF = new PlanningPDFHelper(date("2017-01-02"), 5, 8, 19, 13, 1);
+// Nom de la formation
+$oPlanningPDF->setFormationName("EXEMPLE");
+// Titre du signataire du document
+$oPlanningPDF->setSignataireTitre("M. Martin DUPONT,");
+// Fonction du signataire du document
+$oPlanningPDF->setSignataireFonction("responsable de la progression.");
+// Date de la signature du document
+$oPlanningPDF->setSignataireDate("2016-12-22");
+// Information en bas du document
+$oPlanningPDF->setLegend("Toute modification fera l'objet d'un nouveau document.");
+
+// Création d'une entrée sur le PLANNING
+$oItem_2017_01_02_09		= new Planning_ItemHelper(1, "Administration", "Remise des documents");
+// Attribution de la date et l'heure de l'événement
+$oItem_2017_01_02_09->setDateTime("02/01/2017 09:00");
+// Attribution de la durée de l'événement
+$oItem_2017_01_02_09->setDuration(4);
+// Ajout d'un participant PRINCIPAL à l'événement
+$oItem_2017_01_02_09->setParticipant(1, "Jhon DOE", Planning_ItemHelper::TYPE_PRINCIPAL);
+// Ajout de l'entrée au PLANNING
+$oPlanningPDF->addItem($oItem_2017_01_02_09);
+
+// Construction de la page du document après avoir ajouté tous les éléments
+$oPlanningPDF->buildProgressionPage();
+
+// Rendu final sous forme de document PDF
+print $oPlanningPDF->renderPDF("Exemple de progression PDF");

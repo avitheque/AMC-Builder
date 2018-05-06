@@ -35,6 +35,7 @@ class PlanningController extends AbstractFormulaireController {
 		parent::__construct(__CLASS__, 'PLANNING', LoginInterface::$LIST_CHAMPS_FORM);
 		ViewRender::setNoRenderer(true);
 	}
+
 	/**
 	 * @brief	Action par défaut du contrôleur.
 	 */
@@ -115,4 +116,10 @@ class PlanningController extends AbstractFormulaireController {
 		// Transmission des attibuts du formulaire MODAL du PLANNING à la vue
 		$this->addToData('item_duree', $this->getParam('item_duree'));
 	}
+
+	/**
+	 * @brief	Action d'affichage d'un Planning au format PDF.
+	 */
+	public function exempleAction() {}
+
 }

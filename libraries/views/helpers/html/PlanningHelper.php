@@ -29,7 +29,11 @@ abstract class PlanningHelper {
 	 */
 	const		DEPRECATED_LIST_SEPARATOR			= ",";
 	const		DEPRECATED_ITEM_SEPARATOR			= "-";
-	
+
+	/**
+	 * Constante de construction des jours du planning.
+	 * @var		char
+	 */
 	const		PLANNING_HEPHEMERIDE				= 86400;
 	
 	/**
@@ -48,7 +52,7 @@ abstract class PlanningHelper {
 	 * @brief	Nom du panel.
 	 * @var		string
 	 */
-	protected	$_title								= "Jour de la semaine";
+	protected	$_title								= "Planning de la semaine";
 
 	/**
 	 * @brief	Formulaire PHP.
@@ -99,10 +103,7 @@ abstract class PlanningHelper {
 	 */
 	const		PLANNING_DAYS						= 7;
 	const		PLANNING_HOUR_START					= 8;
-	const		PLANNING_HOUR_MIDI					= 13;
 	const		PLANNING_HOUR_END					= 18;
-	const		PLANNING_DEPRECATED_DAYS			= "6-7";			// Jour(s) de la semaine non travaillé(s) [1-7] : 1 pour Lundi à 7 pour Dimanche
-	const		PLANNING_DEPRECATED_HOURS			= "0-8,13,18-23";	// Heure(s) non travaillée(s)
 	const		PLANNING_TIMER_SIZE					= 60;				// Taille d'un bloc en minutes
 	const		PLANNING_MAX_WIDTH					= 90;				// Ratio de l'affichage en %
 	const		PLANNING_DATE_FORMAT				= "d/m/o";
@@ -120,14 +121,7 @@ abstract class PlanningHelper {
 	protected	$_planning_duree_cours				= 50;
 	protected	$_planning_debut					= self::PLANNING_HOUR_START;
 	protected	$_planning_fin						= self::PLANNING_HOUR_END;
-	protected	$_planning_repas					= self::PLANNING_HOUR_MIDI;
-	protected	$_planning_repas_duree				= self::PLANNING_TIMER_SIZE;
-	protected	$_planning_repas_titre				= "REPAS";
-	protected	$_planning_minute_AM				= 0;
-	protected	$_planning_minute_PM				= 10;
 	protected	$_planning_timer_size				= self::PLANNING_TIMER_SIZE;
-	protected	$_planning_deprecated_days			= self::PLANNING_DEPRECATED_DAYS;
-	protected	$_planning_deprecated_hours			= self::PLANNING_DEPRECATED_HOURS;
 	protected	$_planning_deprecated_dates			= array();
 
 	/**
@@ -155,16 +149,14 @@ abstract class PlanningHelper {
 	 * @param	integer	$nNbDays					: Nombre de jours à afficher [1-7].
 	 * @param	integer	$nStartHour					: Heure de début pour chaque jour.
 	 * @param	integer	$nEndHour					: Heure de fin pour chaque jour.
-	 * @param	string	$sDeprecatedHours			: Liste d'heures non travaillées, séparées par le caractère [,].
-	 * @param	integer	$nTimerSize					: Nombre de minutes par bloc.
 	 * @return	string
 	 */
-	public function __construct($dDateStart = null, $nNbDays = self::PLANNING_DAYS, $nStartHour = self::PLANNING_HOUR_START, $nEndHour = self::PLANNING_HOUR_END, $sDeprecatedHours = self::PLANNING_DEPRECATED_HOURS, $sDeprecatedDays = self::PLANNING_DEPRECATED_DAYS, $nTimerSize = self::PLANNING_TIMER_SIZE) {
+	public function __construct($dDateStart = null, $nNbDays = self::PLANNING_DAYS, $nStartHour = self::PLANNING_HOUR_START, $nEndHour = self::PLANNING_HOUR_END) {
 		// Récupération de l'instance du singleton InstanceStorage permettant de gérer les échanges avec le contrôleur
 		$this->_oInstanceStorage					= InstanceStorage::getInstance();
 
 		// Construction du MD5 à partir des paramètres d'entrée
-		$this->_md5									= md5($dDateStart . $nNbDays . $nStartHour . $nEndHour . $sDeprecatedHours . $sDeprecatedDays);
+		$this->_md5									= md5($dDateStart . $nNbDays . $nStartHour . $nEndHour . time());
 
 		// Récupération de la date de début au format MySQL [Y-m-d]
 		$sDateStart									= DataHelper::dateFrToMy($dDateStart);
@@ -181,9 +173,6 @@ abstract class PlanningHelper {
 		$this->_planning_duree						= $nNbDays;
 		$this->_planning_debut						= $nStartHour;
 		$this->_planning_fin						= $nEndHour;
-		$this->_planning_deprecated_hours			= DataHelper::getArrayFromList($sDeprecatedHours,	self::DEPRECATED_LIST_SEPARATOR,	self::DEPRECATED_ITEM_SEPARATOR);
-		$this->_planning_deprecated_days			= DataHelper::getArrayFromList($sDeprecatedDays,	self::DEPRECATED_LIST_SEPARATOR,	self::DEPRECATED_ITEM_SEPARATOR);
-		$this->_planning_timer_size					= $nTimerSize;
 
 		// Découpage du volume horaire
 		$this->_volume_horaire						= $this->_planning_fin - $this->_planning_debut;

@@ -22,26 +22,31 @@ class PlanningHTMLHelper extends PlanningHelper {
 	/**
 	 * Construction de l'interface graphique HTML
 	 *
-	 * @li		PLANNING_DEFAULT_FORMAT				: type visuel de rendu parmis [calendrier, progression]
+	 * @li		PLANNING_DEFAULT_FORMAT			: type visuel de rendu parmis [calendrier, progression]
 	 * var		string
 	 */
-	const		FORMAT_CALENDAR						= "calendar";
-	const		FORMAT_PROGRESSION					= "progression";
-	const		PLANNING_DEFAULT_FORMAT				= self::FORMAT_CALENDAR;
-	
-	const		PLANNING_DEFAULT_CLASSNAME			= "diary";
-	const		PLANNING_HOLIDAY_CLASSNAME			= "diary holiday";
-	const		PLANNING_HEADER_CLASSNAME			= "header";
-	
-	const 		PLANNING_VALID_CLASS				= "ui-widget-content ui-state-default";
-	const 		PLANNING_DEPRECATED_CLASS			= "ui-widget-content ui-state-disabled";
-	const		PLANNING_WIDTH_RATIO				= 99;
+	const		FORMAT_CALENDAR					= "calendar";
+	const		FORMAT_PROGRESSION				= "progression";
+	const		PLANNING_DEFAULT_FORMAT			= self::FORMAT_CALENDAR;
 
-	const		MODAL_ACTION_DEFAULT				= '/planning/tache';
-	private		$_modal								= null;
-	private		$_modal_action						= self::MODAL_ACTION_DEFAULT;
+	const		PLANNING_DEPRECATED_DAYS		= "6-7";			// Jour(s) de la semaine non travaillé(s) [1-7] : 1 pour Lundi à 7 pour Dimanche
+	const		PLANNING_DEPRECATED_HOURS		= "0-8,13,18-23";	// Heure(s) non travaillée(s)
+
+	const		PLANNING_DEFAULT_CLASSNAME		= "diary";
+	const		PLANNING_HOLIDAY_CLASSNAME		= "diary holiday";
+	const		PLANNING_HEADER_CLASSNAME		= "header";
 	
-	protected	$_planning_format					= self::PLANNING_DEFAULT_FORMAT;
+	const 		PLANNING_VALID_CLASS			= "ui-widget-content ui-state-default";
+	const 		PLANNING_DEPRECATED_CLASS		= "ui-widget-content ui-state-disabled";
+	const		PLANNING_WIDTH_RATIO			= 99;
+
+	const		MODAL_ACTION_DEFAULT			= '/planning/tache';
+	private		$_modal							= null;
+	private		$_modal_action					= self::MODAL_ACTION_DEFAULT;
+
+	protected	$_planning_deprecated_days		= self::PLANNING_DEPRECATED_DAYS;
+	protected	$_planning_deprecated_hours		= self::PLANNING_DEPRECATED_HOURS;
+	protected	$_planning_format				= self::PLANNING_DEFAULT_FORMAT;
 
 	/**
 	 * @brief	Constructeur de la classe
@@ -51,12 +56,17 @@ class PlanningHTMLHelper extends PlanningHelper {
 	 * @param	integer	$nStartHour				: Heure de début pour chaque jour.
 	 * @param	integer	$nEndHour				: Heure de fin pour chaque jour.
 	 * @param	string	$sDeprecatedHours		: Liste d'heures non travaillées, séparées par le caractère [,].
-	 * @param	integer	$nTimerSize				: Nombre de minutes par bloc.
+	 * @param	integer	$nTimerSize				: Nombre de minutes par bloc, 60 par défaut.
 	 * @return	string
 	 */
 	public function __construct($dDateStart = null, $nNbDays = PlanningHelper::PLANNING_DAYS, $nStartHour = PlanningHelper::PLANNING_HOUR_START, $nEndHour = PlanningHelper::PLANNING_HOUR_END, $sDeprecatedHours = PlanningHelper::PLANNING_DEPRECATED_HOURS, $sDeprecatedDays = PlanningHelper::PLANNING_DEPRECATED_DAYS, $nTimerSize = PlanningHelper::PLANNING_TIMER_SIZE) {
 		// Construction du PARENT
-		parent::__construct($dDateStart, $nNbDays, $nStartHour, $nEndHour, $sDeprecatedHours, $sDeprecatedDays, $nTimerSize);
+		parent::__construct($dDateStart, $nNbDays, $nStartHour, $nEndHour);
+
+		// Initialisation des paramètres du planning
+		$this->_planning_deprecated_hours		= DataHelper::getArrayFromList($sDeprecatedHours,	self::DEPRECATED_LIST_SEPARATOR,	self::DEPRECATED_ITEM_SEPARATOR);
+		$this->_planning_deprecated_days		= DataHelper::getArrayFromList($sDeprecatedDays,	self::DEPRECATED_LIST_SEPARATOR,	self::DEPRECATED_ITEM_SEPARATOR);
+		$this->_planning_timer_size				= $nTimerSize;
 		
 		// Nom de session des données
 		$sSessionNameSpace						= $this->_oInstanceStorage->getData('SESSION_NAMESPACE');
@@ -298,9 +308,9 @@ class PlanningHTMLHelper extends PlanningHelper {
 													</dt>";
 
 		// Finalisation de la zone de progression
-		for ($heure = $this->_planning_debut ; $heure <= $this->_planning_fin + 1 ; $heure += $this->_tranche_horaire) {
+		for ($heure = $this->_planning_debut ; $heure <= $this->_planning_fin ; $heure += $this->_tranche_horaire) {
 			// Construction de la dernière ligne du Calendrier afin de définir la dernière plage horaire
-			if ($heure > $this->_planning_fin && !is_null($dDatePlanning)) {
+			if ($heure >= $this->_planning_fin && !is_null($dDatePlanning)) {
 				continue;
 			}
 

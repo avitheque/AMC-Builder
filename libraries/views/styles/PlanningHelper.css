@@ -60,7 +60,7 @@ section.item-bottom												{ display: inline-flex; text-align: center; min-w
 .calendar:not(.modal-search) li.item a.ui-icon-zoomin			{ bottom: 21; }
 .calendar:not(.modal-search) li.item a.ui-icon-trash			{ bottom: 0px; }
 
-.calendar .header												{ position: absolute; left: 5px; padding-top: 30px; border: none; width: 80px; }
+.calendar .header												{ position: absolute; left: 5px; padding-top: 10px; border: none; width: 80px; }
 .calendar .header dt											{ display: none; }
 .calendar .header .planning h4.visible							{ display: block; }
 .calendar .header .planning										{ background: transparent; border-color: transparent; }
@@ -117,3 +117,9 @@ section[id^=search-content-] li.item .ui-icon,
 .planning-item-participant										{ white-space: normal; font-size: 8px; margin: 0; padding: 0; font-variant: all-small-caps; }
 .planning-item-participant .principal							{ margin-top: 5px; font-variant: normal; line-height: 7px; }
 .planning-item-participant .secondaire							{ position: relative; top: -5px; }
+
+
+/* MODAL - Affichage de la progression */
+#panning-viewer,
+#panning-viewer .planning-item-participant						{ font-size: 12px; font-variant: normal; line-height: 12px;  }
+#panning-viewer .planning-item-participant .principal			{ font-weight: bold; }

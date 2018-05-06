@@ -20,48 +20,15 @@
 class PlanningPDFHelper extends PlanningHelper {
 
 	/**
-	 * Constante de construction de la liste des identifiants à exclure du résultat.
-	 * @var		char
-	 */
-	const		EXCLUDE_SEPARATOR				= ",";
-
-	/**
-	 * Constante de construction de la liste des jours et heures non travaillées.
-	 * @var		char
-	 */
-	const		DEPRECATED_LIST_SEPARATOR		= ",";
-	const		DEPRECATED_ITEM_SEPARATOR		= "-";
-
-	/**
-	 * Construction de l'interface graphique HTML
-	 * 
-	 * @li		PLANNING_DEFAULT_FORMAT			: type visuel de rendu parmis [calendrier, progression]
-	 * var		string
-	 */
-	const		FORMAT_CALENDAR					= "calendar";
-	const		FORMAT_PROGRESSION				= "progression";
-	const		PLANNING_DEFAULT_FORMAT			= self::FORMAT_CALENDAR;
-	
-	const		PLANNING_DEFAULT_CLASSNAME		= "diary";
-	const		PLANNING_HOLIDAY_CLASSNAME		= "diary holiday";
-	const		PLANNING_HEADER_CLASSNAME		= "header";
-
-	const 		PLANNING_VALID_CLASS			= "ui-widget-content ui-state-default";
-	const 		PLANNING_DEPRECATED_CLASS		= "ui-widget-content ui-state-disabled";
-	const		PLANNING_WIDTH_RATIO			= 99;
-	
-	const		PLANNING_HEPHEMERIDE			= 86400;
-
-	/**
 	 * Construction de l'interface graphique PDF
 	 * var		string
 	 */
-	const		PDF_LIBELLE_CENTRE				= "CENTRE DE FORMATION AUX SYSTEMES D'INFORMATION ET DE COMMUNICATION DE LA GENDARMERIE";
+	const		PDF_LIBELLE_CENTRE				= "CENTRE DE FORMATION";
 	const		PDF_FORMAT_TITRE				= "Emploi du temps du stage de formation : %s";
 	const		PDF_FORMAT_SEMAINE				= "Semaine %d (du %s au %s)";
 	const		PDF_FORMAT_SIGNATURE			= "ORIGINAL SIGNÉ LE %s";
 	const		PDF_FORMAT_MODIFICATION			= "MODIFIÉ LE %s";
-	const		PDF_LIBELLE_BAS_PAGE			= "En position de service, les personnels non positionnés à la progression restent à la disposition de leurs chefs de section respectifs";
+	const		PDF_LIBELLE_LEGEND				= "Informations de bas de page.";
 	
 	const		PDF_PROGRESSION_CELL_HEIGHT		= 30;
 	const		PDF_PROGRESSION_CELL_MARGIN		= 2;
@@ -72,9 +39,22 @@ class PlanningPDFHelper extends PlanningHelper {
 	
 	const		PDF_INTERLINE_TITRE_SIZE		= 15;
 	const		PDF_INTERLINE_PARTICIPANT_SIZE	= 3;
+
+	/**
+	 * Construction de l'interface graphique PDF
+	 * var		integer
+	 */
+	const		PLANNING_REPAS_HEURE				= 13;
+	const		PLANNING_REPAS_DUREE			= 1;
 	
 	protected	$_planning_cell_width			= 5;
 	protected	$_planning_cell_height			= self::PDF_PROGRESSION_CELL_HEIGHT;
+
+	protected	$_planning_repas_heure			= self::PLANNING_REPAS_HEURE;
+	protected	$_planning_repas_duree			= self::PLANNING_REPAS_DUREE;
+	protected	$_planning_repas_titre			= "REPAS";
+	protected	$_planning_minute_AM			= 0;
+	protected	$_planning_minute_PM			= 10;
 
 	/**
 	 * @brief	instance PDFManager du planning.
@@ -83,10 +63,16 @@ class PlanningPDFHelper extends PlanningHelper {
 	protected	$_document						= null;
 
 	/**
-	 * @brief	Titre du document.
+	 * @brief	Nom de la formation.
 	 * @var		string
 	 */
-	protected	$_document_title				= "Emploi du temps";
+	protected	$_formation_name				= "NOM DU STAGE";
+
+	/**
+	 * @brief	Notification de bas de page.
+	 * @var		string
+	 */
+	protected	$_legende						= self::PDF_LIBELLE_LEGEND;
 	
 	/**
 	 * @brief	Titre de la signature.
@@ -98,19 +84,19 @@ class PlanningPDFHelper extends PlanningHelper {
 	 * @brief	Fonction de la signature.
 	 * @var		string
 	 */
-	protected	$_signataire_fonction			= "commandant du Centre.";
+	protected	$_signataire_fonction			= "chef de Centre.";
 	
 	/**
 	 * @brief	Date de la signature.
 	 * @var		string
 	 */
-	protected	$_signataire_date				= "DD/MM/YYYY";
+	protected	$_signataire_date				= null;
 	
 	/**
 	 * @brief	Dernière modification.
 	 * @var		string
 	 */
-	protected	$_modification_date				= "DD/MM/YYYY";
+	protected	$_modification_date				= null;
 
 	/**
 	 * @brief	Constructeur de la classe
@@ -119,17 +105,17 @@ class PlanningPDFHelper extends PlanningHelper {
 	 * @param	integer	$nNbDays				: Nombre de jours à afficher [1-7].
 	 * @param	integer	$nStartHour				: Heure de début pour chaque jour.
 	 * @param	integer	$nEndHour				: Heure de fin pour chaque jour.
-	 * @param	string	$sDeprecatedHours		: Liste d'heures non travaillées, séparées par le caractère [,].
-	 * @param	integer	$nTimerSize				: Nombre de minutes par bloc.
+	 * @param	integer	$nRepasHeure			: Heure de repas de chaque jour.
+	 * @param	integer	$nRepasDuree			: Durée du repas en heure(s).
 	 * @return	string
 	 */
-	public function __construct($dDateStart = null, $nNbDays = self::PLANNING_DAYS, $nStartHour = self::PLANNING_HOUR_START, $nEndHour = self::PLANNING_HOUR_END, $sDeprecatedHours = self::PLANNING_DEPRECATED_HOURS, $sDeprecatedDays = self::PLANNING_DEPRECATED_DAYS, $nTimerSize = self::PLANNING_TIMER_SIZE) {
+	public function __construct($dDateStart = null, $nNbDays = self::PLANNING_DAYS, $nStartHour = self::PLANNING_HOUR_START, $nEndHour = self::PLANNING_HOUR_END, $nRepasHeure = self::PLANNING_REPAS_HEURE, $nRepasDuree = self::PLANNING_REPAS_DUREE) {
 		// Construction du PARENT
-		parent::__construct($dDateStart, $nNbDays, $nStartHour, $nEndHour, $sDeprecatedHours, $sDeprecatedDays, $nTimerSize);
-		
-		// Désactivation du rendu HTML
-		ViewRender::setNoRenderer(true);
-		
+		parent::__construct($dDateStart, $nNbDays, $nStartHour, $nEndHour);
+
+		// Périodes de restauration
+		$this->setRestaurationParams($nRepasHeure, $nRepasDuree);
+
 		// Construction du document PDF
 		$this->_document						= new PDFManager(PDFManager::ORIENTATION_L);
 
@@ -148,6 +134,21 @@ class PlanningPDFHelper extends PlanningHelper {
 	}
 
 	/**
+	 * @brief	Initialisation de la pause méridienne.
+	 *
+	 * @param	string	$nRepasHeure			: Heure de la pause méridienne.
+	 * @param	integer	$nRepasDuree			: Durée de la pause méridienne (en heure).
+	 * @param	string	$sTitle					: Titre de la colonne.
+	 * @return	void
+	 */
+	public function setRestaurationParams($nRepasHeure = self::PLANNING_REPAS_HEURE, $nRepasDuree = self::PLANNING_DUREE_REPAS, $sTitle = "REPAS") {
+		// Initialisation de l'heure du repas
+		$this->_planning_repas_heure			= $nRepasHeure;
+		$this->_planning_repas_duree			= $nRepasDuree;
+		$this->_planning_repas_title			= $sTitle;
+	}
+
+	/**
 	 * @brief	Initialisation du titre du panneau.
 	 *
 	 * @param	string	$sTitle					: titre du panneau.
@@ -158,13 +159,13 @@ class PlanningPDFHelper extends PlanningHelper {
 	}
 
 	/**
-	 * @brief	Initialisation du titre du panneau.
+	 * @brief	Initialisation du nom de la formation.
 	 *
-	 * @param	string	$sTitle					: titre du panneau.
+	 * @param	string	$sName					: nom de la formation.
 	 * @return	void
 	 */
-	public function setDocumentTitre($sTitle = null) {
-		$this->_document_title					= $sTitle;
+	public function setFormationName($sName = null) {
+		$this->_formation_name					= $sName;
 	}
 
 	/**
@@ -220,7 +221,17 @@ class PlanningPDFHelper extends PlanningHelper {
 	}
 
 	/**
-	 * @brief	Construction du document PDF
+	 * @brief	Initialisation de la légende du document.
+	 *
+	 * @param	string	$sText					: texte à afficher en bas de page.
+	 * @return	void
+	 */
+	public function setLegend($sText = null) {
+		$this->_legende							= DataHelper::convertToText($sText);
+	}
+
+	/**
+	 * @brief	Génération des élément du document PDF
 	 *
 	 * @return	string
 	 */
@@ -228,14 +239,18 @@ class PlanningPDFHelper extends PlanningHelper {
 		if (!$this->_build) {
 			// Construction de la plage horaire
 			$this->_build						= true;
+
 			// Mise à jour du volume horaire pour prendre en compte la pause méridienne
-			$this->_volume_horaire				+= $this->_planning_repas_duree > 10 ? intval($this->_planning_repas_duree/$this->_planning_timer_size) : $this->_planning_repas_duree;
+			$this->_volume_horaire				-= $this->_planning_repas_duree - self::PLANNING_REPAS_DUREE;
+
 			// Détermination de la largeur d'une cellule
 			$this->_planning_cell_width			= ($this->_document->getLineWidth() / $this->_volume_horaire);
 		}
 
 		// Découpage du volume horaire
 		$nColonne								= 0;
+		$nDecalageDebut							= 0;
+		$nDecalageFin							= 0;
 		$nMinuteDebut							= $this->_planning_minute_AM;
 		$nMinuteFin								= $this->_planning_duree_cours;
 		$nDocumentTop							= $this->_document->getY();
@@ -243,7 +258,7 @@ class PlanningPDFHelper extends PlanningHelper {
 		$nPositionLeft							= $nDocumentLeft;
 		
 		// Parcours de chaque plage horaire
-		for ($heure = $this->_planning_debut ; $heure <= $this->_planning_fin ; $heure += $this->_tranche_horaire) {
+		for ($heure = $this->_planning_debut ; $heure < $this->_planning_fin ; $heure += $this->_tranche_horaire) {
 			// Positionnement de la cellule d'entête
 			$nPositionTop						= $nDocumentTop;
 			$nPositionLeft						= $this->_document->getLeftMargin() + ($this->_planning_cell_width * $nColonne);
@@ -254,24 +269,27 @@ class PlanningPDFHelper extends PlanningHelper {
 			$this->_document->setFontStyle(PDFManager::STYLE_BOLD);
 			
 			// Titre de l'entête
-			$sHeadTitle							= sprintf(self::PLANNING_TIME_FORMAT, $heure, $nMinuteDebut) . " - " . sprintf(self::PLANNING_TIME_FORMAT, $heure, $nMinuteFin);
-			
+			$sHeadTitle							= sprintf(self::PLANNING_TIME_FORMAT, $heure + $nDecalageDebut, $nMinuteDebut) . " - " . sprintf(self::PLANNING_TIME_FORMAT, $heure + $nDecalageFin, $nMinuteFin);
+
+
 			// Fonctionnalié réalisée si l'heure actuelle correspond à la pause méridienne
-			if ($heure == $this->_planning_repas) {
+			if ($heure == $this->_planning_repas_heure) {
 				// Modification du titre
-				$sHeadTitle = $this->_planning_repas_titre;
+				$sHeadTitle						= $this->_planning_repas_titre;
 				$nMinuteDebut					+= $this->_planning_minute_PM;
 				$nMinuteFin						+= $this->_planning_minute_PM;
 				// Recalcul des minutes de DEBUT
 				if ($nMinuteDebut >= 60) {
+					$nDecalageDebut				= 1;
 					$nMinuteDebut				= 0;
 				}
 				// Recalcul des minutes de FIN
 				if ($nMinuteFin >= 60) {
+					$nDecalageFin				= 1;
 					$nMinuteFin					= 0;
 				}
 			}
-			
+
 			// Création de l'entête du planning
 			$this->_document->setFillColor(200, 200, 200);
 			$this->_document->cell($this->_planning_cell_width, 5, $sHeadTitle, 1, 0, PDFManager::ALIGN_CENTER, true);
@@ -297,7 +315,7 @@ class PlanningPDFHelper extends PlanningHelper {
 				$this->_document->setFillColor(255);
 
 				// Fonctionnalité réalisée pour l'heure du repas
-				if ($heure == $this->_planning_repas) {
+				if ($heure == $this->_planning_repas_heure) {
 					// Extraction des informations de la progression à partir de la DATE
 					$this->_planning_jour_id	= date("N", $timestamp);
 					// Initialisation du libellé du jour
@@ -373,6 +391,11 @@ class PlanningPDFHelper extends PlanningHelper {
 				// Passage à la cellule suivante
 				$nPositionTop					+= $this->_planning_cell_height;
 			}
+
+			// Fonctionnalité réalisée pour l'heure du repas
+			if ($heure == $this->_planning_repas_heure) {
+				$heure							+= $this->_planning_repas_duree - self::PLANNING_REPAS_DUREE;
+			}
 			
 			// Passage à la colonne suivante
 			$nColonne++;
@@ -381,9 +404,11 @@ class PlanningPDFHelper extends PlanningHelper {
 
 	/**
 	 * @brief	Création de la progression PDF.
+     *
+     * @li		Méthode exploitée après avoir ajouter tous les éléments à la progression.
 	 * @return	string
 	 */
-	public function buildProgression() {
+	public function buildProgressionPage() {
 		// ########################################################################################
 		// INITIALISATION DE LA PAGE DU DOCUMENT
 		// ########################################################################################
@@ -404,7 +429,7 @@ class PlanningPDFHelper extends PlanningHelper {
 		
 		// Libellé du STAGE
 		$this->_document->setCurrentLine($nTopPosition + 6);
-		$this->_document->title(sprintf(self::PDF_FORMAT_TITRE, $this->_document_title), 12);
+		$this->_document->title(sprintf(self::PDF_FORMAT_TITRE, $this->_formation_name), 12);
 		
 		// Libellé de la SEMAINE
 		$this->_document->setCurrentLine($nTopPosition + 12);
@@ -427,7 +452,7 @@ class PlanningPDFHelper extends PlanningHelper {
 		
 		// Libellé de bas de page
 		$this->_document->setXY(5, $nBottomPosition);
-		$this->_document->addCell(120, 3, nl2br(self::PDF_LIBELLE_BAS_PAGE), null, PDFManager::ALIGN_LEFT);
+		$this->_document->addCell(120, 3, nl2br($this->_legende), null, PDFManager::ALIGN_LEFT);
 		
 		// Signature de la progression
 		$this->_document->setXY(180, $nBottomPosition);
@@ -459,6 +484,9 @@ class PlanningPDFHelper extends PlanningHelper {
 		// ########################################################################################
 		// GÉNÉRATION DU DOCUMENT
 		// ########################################################################################
+
+		// Désactivation du rendu HTML
+		ViewRender::setNoRenderer(true);
 		
 		// Renvoi du document au format HTML
 		return $this->_document->output($sFileName, 'D', $bDecodeUtf8);
