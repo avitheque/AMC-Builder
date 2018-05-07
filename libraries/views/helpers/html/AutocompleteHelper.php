@@ -8,8 +8,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 93 $
- * @since		$LastChangedDate: 2017-12-29 15:37:13 +0100 (Fri, 29 Dec 2017) $
+ * @version		$LastChangedRevision: 119 $
+ * @since		$LastChangedDate: 2018-05-05 13:46:10 +0200 (Sat, 05 May 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -41,7 +41,7 @@ class AutocompleteHelper extends InputHelper {
 		$sValue = DataHelper::convertToString($xValue, DataHelper::DATA_TYPE_STR);
 
 		// Fonctionnalité réalisée si la saisie est stricte
-		if ($bStrict && DataHelper::isValidArray($aListe) && !empty($sValue)) {
+		if ($bStrict && DataHelper::isValidArray($aListe, null, true)) {
 			// Recherche si le libellé existe
 			$aKeys	= array_keys($aListe, $sValue, $bStrict);
 			$nKey	= DataHelper::get($aKeys, 0);

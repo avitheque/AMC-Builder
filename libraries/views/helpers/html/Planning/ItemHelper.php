@@ -35,8 +35,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 119 $
- * @since		$LastChangedDate: 2018-05-05 13:46:10 +0200 (Sat, 05 May 2018) $
+ * @version		$LastChangedRevision: 120 $
+ * @since		$LastChangedDate: 2018-05-07 21:15:40 +0200 (Mon, 07 May 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -86,6 +86,7 @@ class Planning_ItemHelper {
 	protected	$_hour					= 0;
 	protected	$_minute				= 0;
 	protected	$_duration				= 1;
+	protected	$_compteur				= null;
 	protected	$_timer					= 60;
 	protected	$_update				= 0;
 
@@ -224,11 +225,31 @@ class Planning_ItemHelper {
 	}
 
 	/**
+	 * @brief	Récupération du compteur de fin de séance de l'élément
+	 * @return	integer
+	 */
+	public function getCompteur() {
+		return $this->_compteur;
+	}
+
+	/**
 	 * @brief	Récupération du titre de l'élément
 	 * @return	string
 	 */
 	public function getTitle() {
-		return $this->_title;
+		$sTitre							= $this->_title;
+		// Fonctionnalité réalisée si un compteur de fin de séance est présent
+		if (!is_null($this->_compteur)) {
+			// Initialisation du compteur de début de séance
+			$nDebut						= $this->_compteur - $this->getDuration() + 1;
+			
+			// Initialisation du compteur de fin de séance
+			$nFin						= $this->_compteur;
+			
+			// Construction du titre avec le compteur de séance
+			$sTitre						= sprintf("%s [%d-%d]", $sTitre, $nDebut, $nFin);
+		}
+		return $sTitre;
 	}
 
 	/**
@@ -453,6 +474,16 @@ class Planning_ItemHelper {
 	 */
 	public function setDuration($nDuration) {
 		$this->_duration				= intval($nDuration);
+	}
+
+	/**
+	 * @brief	Initialisation du compteur horaire de l'élément
+	 *
+	 * @param	integer	$nCompteur			: numéro du volume horaire.
+	 * @return	void
+	 */
+	public function setCompteur($nCompteur = null) {
+		$this->_compteur				= $nCompteur;
 	}
 
 	/**

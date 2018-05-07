@@ -8,8 +8,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 119 $
- * @since		$LastChangedDate: 2018-05-05 13:46:10 +0200 (Sat, 05 May 2018) $
+ * @version		$LastChangedRevision: 120 $
+ * @since		$LastChangedDate: 2018-05-07 21:15:40 +0200 (Mon, 07 May 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -32,9 +32,11 @@ abstract class PlanningHelper {
 
 	/**
 	 * Constante de construction des jours du planning.
-	 * @var		char
+	 * @var		integer
 	 */
 	const		PLANNING_HEPHEMERIDE				= 86400;
+	const		PLANNING_REPAS_HEURE				= 13;
+	const		PLANNING_REPAS_DUREE				= 1;
 	
 	/**
 	 * Constante de construction de la liste des éléments du formulaire de recherche.
@@ -120,6 +122,8 @@ abstract class PlanningHelper {
 	protected	$_planning_duree					= self::PLANNING_DAYS;
 	protected	$_planning_duree_cours				= 50;
 	protected	$_planning_debut					= self::PLANNING_HOUR_START;
+	protected	$_planning_repas_heure				= self::PLANNING_REPAS_HEURE;
+	protected	$_planning_repas_duree				= self::PLANNING_REPAS_DUREE;
 	protected	$_planning_fin						= self::PLANNING_HOUR_END;
 	protected	$_planning_timer_size				= self::PLANNING_TIMER_SIZE;
 	protected	$_planning_deprecated_dates			= array();
@@ -293,8 +297,8 @@ abstract class PlanningHelper {
 						$sTimeMySQL					= $sTimeBeforeMySQL;
 						$oItem->setFullTime($sTimeMySQL);
 					}
-				} elseif ($nHour == $this->_planning_repas) {
-					// Pause médianne
+				} elseif ($nHour == $this->_planning_repas_heure) {
+					// Pause méridienne
 					break;
 				}
 			}

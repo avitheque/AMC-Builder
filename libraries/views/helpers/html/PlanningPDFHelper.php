@@ -10,8 +10,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 111 $
- * @since		$LastChangedDate: 2018-03-25 14:37:49 +0200 (Sun, 25 Mar 2018) $
+ * @version		$LastChangedRevision: 120 $
+ * @since		$LastChangedDate: 2018-05-07 21:15:40 +0200 (Mon, 07 May 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -20,7 +20,7 @@
 class PlanningPDFHelper extends PlanningHelper {
 
 	/**
-	 * Construction de l'interface graphique PDF
+	 * Constantes faisant office de variables par défaut lors de la création du PDF
 	 * var		string
 	 */
 	const		PDF_LIBELLE_CENTRE				= "CENTRE DE FORMATION";
@@ -29,7 +29,11 @@ class PlanningPDFHelper extends PlanningHelper {
 	const		PDF_FORMAT_SIGNATURE			= "ORIGINAL SIGNÉ LE %s";
 	const		PDF_FORMAT_MODIFICATION			= "MODIFIÉ LE %s";
 	const		PDF_LIBELLE_LEGEND				= "Informations de bas de page.";
-	
+
+	/**
+	 * Constantes de l'interface graphique PDF
+	 * var		string
+	 */
 	const		PDF_PROGRESSION_CELL_HEIGHT		= 30;
 	const		PDF_PROGRESSION_CELL_MARGIN		= 2;
 	
@@ -44,23 +48,33 @@ class PlanningPDFHelper extends PlanningHelper {
 	 * Construction de l'interface graphique PDF
 	 * var		integer
 	 */
-	const		PLANNING_REPAS_HEURE				= 13;
-	const		PLANNING_REPAS_DUREE			= 1;
-	
 	protected	$_planning_cell_width			= 5;
 	protected	$_planning_cell_height			= self::PDF_PROGRESSION_CELL_HEIGHT;
 
-	protected	$_planning_repas_heure			= self::PLANNING_REPAS_HEURE;
-	protected	$_planning_repas_duree			= self::PLANNING_REPAS_DUREE;
+	/**
+	 * Nommage de la pause méridienne
+	 * var		string
+	 */
 	protected	$_planning_repas_titre			= "REPAS";
+	
+	/**
+	 * Paramètres de la pause méridienne
+	 * var		integer
+	 */
 	protected	$_planning_minute_AM			= 0;
 	protected	$_planning_minute_PM			= 10;
 
 	/**
-	 * @brief	instance PDFManager du planning.
+	 * @brief	Instance PDFManager du planning.
 	 * @var		PDFManager
 	 */
 	protected	$_document						= null;
+
+	/**
+	 * @brief	Entête du document portant le nom du Centre.
+	 * @var		string
+	 */
+	protected	$_header						= self::PDF_LIBELLE_CENTRE;
 
 	/**
 	 * @brief	Nom de la formation.
@@ -149,13 +163,13 @@ class PlanningPDFHelper extends PlanningHelper {
 	}
 
 	/**
-	 * @brief	Initialisation du titre du panneau.
+	 * @brief	Initialisation de l'entête du document.
 	 *
-	 * @param	string	$sTitle					: titre du panneau.
+	 * @param	string	$sText					: entête du document.
 	 * @return	void
 	 */
-	public function setTitre($sTitle = null) {
-		$this->_title							= $sTitle;
+	public function setHeader($sText = null) {
+		$this->_header							= DataHelper::convertToText($sText);
 	}
 
 	/**
@@ -165,7 +179,7 @@ class PlanningPDFHelper extends PlanningHelper {
 	 * @return	void
 	 */
 	public function setFormationName($sName = null) {
-		$this->_formation_name					= $sName;
+		$this->_formation_name					= DataHelper::convertToString($sName);
 	}
 
 	/**
@@ -175,7 +189,7 @@ class PlanningPDFHelper extends PlanningHelper {
 	 * @return	void
 	 */
 	public function setSignataireTitre($sTitre = null) {
-		$this->_signataire_titre				= $sTitre;
+		$this->_signataire_titre				= DataHelper::convertToString($sTitre);
 	}
 
 	/**
@@ -185,7 +199,7 @@ class PlanningPDFHelper extends PlanningHelper {
 	 * @return	void
 	 */
 	public function setSignataireFonction($sFonction = null) {
-		$this->_signataire_fonction				= $sFonction;
+		$this->_signataire_fonction				= DataHelper::convertToString($sFonction);
 	}
 
 	/**
@@ -201,7 +215,7 @@ class PlanningPDFHelper extends PlanningHelper {
 		if (DataHelper::isValidDate($sDate)) {
 			$sString							= sprintf(self::PDF_FORMAT_SIGNATURE, $sDate);
 		}
-		$this->_signataire_date					= $sString;
+		$this->_signataire_date					= DataHelper::convertToString($sString);
 	}
 
 	/**
@@ -217,7 +231,7 @@ class PlanningPDFHelper extends PlanningHelper {
 		if (DataHelper::isValidDate($sDate)) {
 			$sString							= sprintf(self::PDF_FORMAT_MODIFICATION, $sDate);
 		}
-		$this->_modification_date				= $sString;
+		$this->_modification_date				= DataHelper::convertToString($sString);
 	}
 
 	/**
@@ -233,7 +247,8 @@ class PlanningPDFHelper extends PlanningHelper {
 	/**
 	 * @brief	Génération des élément du document PDF
 	 *
-	 * @return	string
+     * @li		Méthode privée permettant de construire la progression dans le document PDF.
+	 * @return	void
 	 */
 	private function _buildProgressionPDF() {
 		if (!$this->_build) {
@@ -270,7 +285,6 @@ class PlanningPDFHelper extends PlanningHelper {
 			
 			// Titre de l'entête
 			$sHeadTitle							= sprintf(self::PLANNING_TIME_FORMAT, $heure + $nDecalageDebut, $nMinuteDebut) . " - " . sprintf(self::PLANNING_TIME_FORMAT, $heure + $nDecalageFin, $nMinuteFin);
-
 
 			// Fonctionnalié réalisée si l'heure actuelle correspond à la pause méridienne
 			if ($heure == $this->_planning_repas_heure) {
@@ -421,8 +435,9 @@ class PlanningPDFHelper extends PlanningHelper {
 		
 		// Entête du CENTRE
 		$this->_document->setXY(5, 5);
+		$this->_document->setFontStyle(PDFManager::STYLE_DEFAULT);
+		$this->_document->addCell(102, 3, nl2br($this->_header), null, PDFManager::ALIGN_CENTER);
 		$this->_document->resetFontDefault();
-		$this->_document->addCell(102, 3, nl2br(self::PDF_LIBELLE_CENTRE), null, PDFManager::ALIGN_CENTER);
 		
 		// Initialisation de la position de bas de page
 		$nTopPosition							= 13;
@@ -478,18 +493,19 @@ class PlanningPDFHelper extends PlanningHelper {
 
 	/**
 	 * @brief	Rendu final de l'élément sous forme PDF.
-	 * @return	string
+	 * 
+	 * @param	string	$sFilename
+	 * @return	PDFManager::render()
 	 */
-	public function renderPDF($sFileName = null, $bDecodeUtf8 = false) {
-		// ########################################################################################
-		// GÉNÉRATION DU DOCUMENT
-		// ########################################################################################
-
+	public function renderPDF($sFileName = null) {
 		// Désactivation du rendu HTML
 		ViewRender::setNoRenderer(true);
 		
-		// Renvoi du document au format HTML
-		return $this->_document->output($sFileName, 'D', $bDecodeUtf8);
+		// Nommage du document PDF
+		$this->_document->setFilename($sFileName);
+		
+		// Génération du document au format PDF
+		return $this->_document->render();
 	}
 	
 }

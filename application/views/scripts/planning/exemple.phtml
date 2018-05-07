@@ -13,7 +13,9 @@
  */
 
 // Initialisation de l'objet PlanningPDFHelper sur une semaine de 5 jours à compter du 02/01/2017
-$oPlanningPDF = new PlanningPDFHelper(date("2017-01-02"), 5, 8, 19, 13, 1);
+$oPlanningPDF			= new PlanningPDFHelper("2017-01-02", 5, 8, 19, 13, 1);
+// Entête de la formation avec le nom du Centre
+$oPlanningPDF->setHeader("CENTRE DE FORMATION UNTEL");
 // Nom de la formation
 $oPlanningPDF->setFormationName("EXEMPLE");
 // Titre du signataire du document
@@ -26,7 +28,7 @@ $oPlanningPDF->setSignataireDate("2016-12-22");
 $oPlanningPDF->setLegend("Toute modification fera l'objet d'un nouveau document.");
 
 // Création d'une entrée sur le PLANNING
-$oItem_2017_01_02_09		= new Planning_ItemHelper(1, "Administration", "Remise des documents");
+$oItem_2017_01_02_09	= new Planning_ItemHelper(1, "Administration", "Remise des documents");
 // Attribution de la date et l'heure de l'événement
 $oItem_2017_01_02_09->setDateTime("02/01/2017 09:00");
 // Attribution de la durée de l'événement
@@ -40,4 +42,4 @@ $oPlanningPDF->addItem($oItem_2017_01_02_09);
 $oPlanningPDF->buildProgressionPage();
 
 // Rendu final sous forme de document PDF
-print $oPlanningPDF->renderPDF("Exemple de progression PDF");
+print $oPlanningPDF->renderPDF("Exemple de progression au format PDF");

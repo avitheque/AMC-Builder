@@ -13,8 +13,8 @@ require_once FW_HELPERS . "/fpdf/fpdf.php";
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 119 $
- * @since		$LastChangedDate: 2018-05-05 13:46:10 +0200 (Sat, 05 May 2018) $
+ * @version		$LastChangedRevision: 120 $
+ * @since		$LastChangedDate: 2018-05-07 21:15:40 +0200 (Mon, 07 May 2018) $
  * @see			{ROOT_PATH}/libraries/helpers/fpdf.php
  * 
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
@@ -137,6 +137,18 @@ class PDFManager extends FPDF {
 		$this->setBottomMargin(self::DEFAULT_MARGIN_BOTTOM);
 
 		// Initialisation de l'encodage
+		$this->decodeUtf8					= $bDecodeUTF8;
+	}
+
+	/**
+	 * @brief	Initialisation du paramètre de décodage UTF-8
+	 *
+	 * @li		Initialisation du décodage automatique des caractères UTF-8.
+	 * @param	boolean	$bDecodeUTF8
+	 * @return	void
+	 */
+	public function setDecodeUTF8($bDecodeUTF8 = true) {
+		// Décodage des caractères UTF-8
 		$this->decodeUtf8					= $bDecodeUTF8;
 	}
 

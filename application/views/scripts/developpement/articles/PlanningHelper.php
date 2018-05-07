@@ -129,13 +129,15 @@ $sArticle	.= "<fieldset class='padding-H-20'>
 				<fieldset class='padding-H-20'>
 					<legend>Exploitation de l'objet <span class='strong italic'>PlanningPDFHelper</span> permettant de créer une progression au format PDF</legend>
 					<p class=\"center\">
-						<a href='/planning/exemple' class=\"button green\" target=\"_blank\">Exemple de planning au format PDF</a>
+						<a href='/planning/exemple' class=\"button green\" target=\"_blank\">Exemple de progression au format PDF</a>
 					</p>
 					<p id='hidden-PlanningPDF' class='code padding-20 hidden'>
 						<button onClick='$(\"#hidden-PlanningPDF\").addClass(\"hidden\");$(\"#visible-PlanningPDF\").removeClass(\"hidden\");'>Masquer le code</button><br />
 						<br/>
 						<span class='commentaire'>// Initialisation de l'objet PlanningPDFHelper sur une semaine de 5 jours à compter du 02/01/2017</span><br/>
-						<span class='variable'>\$oPlanningPDF</span> = <span class='native'>new</span> PlanningPDFHelper(<span class='texte pointer hover-bold' title=\"Date de début au format [Y-m-d]\">\"2017-01-02\"</span>, <span class='nombre pointer hover-bold' title=\"Nombre de jours à afficher\">5</span>, <span class='nombre pointer hover-bold' title=\"Heure de début de chaque jour de la semaine\">8</span>, <span class='nombre pointer hover-bold' title=\"Heure de fin de chaque jour de la semaine\">19</span>, <span class='nombre pointer hover-bold' title=\"Heure du repas\">13</span>, <span class='nombre pointer hover-bold' title=\"Durée du repas\">1</span>);<br/>
+						<span class='variable'>\$oPlanningPDF</span> = <span class='native'>new</span> PlanningPDFHelper(<span class='texte pointer hover-bold' title=\"Date de début au format [Y-m-d]\">\"2017-01-02\"</span>, <span class='nombre pointer hover-bold' title=\"Nombre de jours à afficher\">5</span>, <span class='nombre pointer hover-bold' title=\"Heure de début de chaque jour de la semaine\">8</span>, <span class='nombre pointer hover-bold' title=\"Heure de fin de chaque jour de la semaine\">19</span>, <span class='nombre pointer hover-bold' title=\"Heure de la pause méridienne\">13</span>, <span class='nombre pointer hover-bold' title=\"Durée de la pause méridienne en heure(s)\">1</span>);<br/>
+						<span class='commentaire'>// Entête de la progression avec le nom du Centre</span><br/>
+						<span class='variable'>\$oPlanningPDF</span>->setHeader(<span class='texte pointer hover-bold' title=\"Nom du centre de formation\">\"CENTRE DE FORMATION UNTEL\"</span>);<br/>
 						<span class='commentaire'>// Nom de la formation</span><br/>
 						<span class='variable'>\$oPlanningPDF</span>->setFormationName(<span class='texte pointer hover-bold' title=\"Nom donnée à la formation\">\"EXEMPLE\"</span>);<br/>
 						<span class='commentaire'>// Titre du signataire du document</span><br/>
@@ -162,7 +164,7 @@ $sArticle	.= "<fieldset class='padding-H-20'>
 						<span class='variable'>\$oPlanningPDF</span>->buildProgressionPage();<br/>
 						<br />
 						<span class='commentaire'>// Rendu final sous forme de document PDF</span><br/>
-						<span class='native'>print</span> <span class='variable'>\$oPlanningPDF</span>->renderPDF(<span class='texte pointer hover-bold' title=\"Nom du fichier généré\">\"Exemple de progression PDF\");
+						<span class='native'>print</span> <span class='variable'>\$oPlanningPDF</span>->renderPDF(<span class='texte pointer hover-bold' title=\"Nom du fichier généré\">\"Exemple de progression au format PDF\");
 					</p>
 					<p id='visible-PlanningPDF' class='code padding-H-20 transparent'>
 						<button onClick='$(\"#visible-PlanningPDF\").addClass(\"hidden\");$(\"#hidden-PlanningPDF\").removeClass(\"hidden\");'>Voir le code</button>

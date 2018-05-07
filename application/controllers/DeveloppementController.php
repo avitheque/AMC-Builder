@@ -12,7 +12,7 @@
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
  * @version		$LastChangedRevision: 15 $
- * @since		$LastChangedDate: 2017-04-29 21:33:00 +0200 (sam., 29 avr. 2017) $
+ * @since		$LastChangedDate: 2017-04-29 21:33:00 +0200 (Sat, 29 Apr 2017) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)

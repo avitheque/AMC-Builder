@@ -57,7 +57,7 @@ section.item-bottom												{ display: inline-flex; text-align: center; min-w
 .calendar:not(.modal-search) li.item:hover section.item-bottom	{ display: inline-block; text-align: left; height: 55px; }
 .calendar:not(.modal-search) li.item a.ui-icon					{ position: absolute; left: 0; }
 .calendar:not(.modal-search) li.item a.ui-icon-pin-s			{ bottom: 42px; }
-.calendar:not(.modal-search) li.item a.ui-icon-zoomin			{ bottom: 21; }
+.calendar:not(.modal-search) li.item a.ui-icon-zoomin			{ bottom: 21px; }
 .calendar:not(.modal-search) li.item a.ui-icon-trash			{ bottom: 0px; }
 
 .calendar .header												{ position: absolute; left: 5px; padding-top: 10px; border: none; width: 80px; }

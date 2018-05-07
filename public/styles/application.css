@@ -7,48 +7,63 @@
  *
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 120 $
+ * @since		$LastChangedDate: 2018-05-07 21:15:40 +0200 (Mon, 07 May 2018) $
  */
 
 /** INFOS APPLICATION ****************************************************************************/
 
-div#application								{
-	position:								absolute;
-	height:									44px;
-	width:									auto;
-	float:									left;
-	z-index:								50;
+div#application									{
+	position:									absolute;
+	height:										44px;
+	width:										auto;
+	float:										left;
+	z-index:									50;
 }
 
-div#application img#app_logo				{
-	height:									43px;
+div#application:hover							{
+	width:										100%;
 }
 
-div#application ul#app_infos				{
-	display:								none;
+div#application img#favicon						{
+	height:										43px;
 }
 
-div#application:hover ul#app_infos			{
-	display:								block;
+div#application ul#app_infos					{
+	position:									absolute;
+	display:									none;
+	list-style:									none;
+	width:										0;
 }
 
-div#application span#app_name				{
-	vertical-align:							top;
-	line-height:							20px;
-	font-size:								20px;
-	color:									#220979;
-	margin:									5px;
+div#application a#app_logo:hover + ul#app_infos	{
+	display:									contents;
+	width:										100%;
 }
 
-div#application span#app_version			{
-	vertical-align:							top;
-	line-height:							10px;
-	font-size:								10px;
-	color:									#197435;
-	margin:									5px;
+div#application li#app_name						{
+	vertical-align:								top;
+	line-height:								15px;
+	font-size:									20px;
+	color:										#220979;
+	margin:										5px;
 }
 
-div#application:active span#app_name		{
-	color:									#0082ff;
+div#application li#app_version,
+div#application li#library_version				{
+	vertical-align:								top;
+	line-height:								10px;
+	font-size:									10px;
+	color:										#197435;
+	margin:										5px;
+}
+
+div#application li#library_version				{
+	position:									absolute;
+	right:										0;
+	color:										#220979;
+}
+
+div#application:active li#app_name				{
+	color:										#0082ff;
 }

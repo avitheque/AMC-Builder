@@ -13,8 +13,8 @@
 	 * @subpackage	Application
 	 * @author		durandcedric@avitheque.net
 	 * @update		$LastChangedBy: durandcedric $
-	 * @version		$LastChangedRevision: 101 $
-	 * @since		$LastChangedDate: 2018-01-13 17:07:07 +0100 (Sat, 13 Jan 2018) $
+	 * @version		$LastChangedRevision: 120 $
+	 * @since		$LastChangedDate: 2018-05-07 21:15:40 +0200 (Mon, 07 May 2018) $
 	 *
 	 * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
 	 * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -77,7 +77,6 @@
 			 * APPLICATION
 			 */
 			defined('APP_NAME')						||	define('APP_NAME',							DataHelper::get($aApplication,	'name'));
-			defined('APP_VERSION')					||	define('APP_VERSION',						DataHelper::get($aApplication,	'version'));
 			defined('MODE_DEBUG')					||	define('MODE_DEBUG',						DataHelper::get($aApplication,	'mode_debug',				DataHelper::DATA_TYPE_BOOL));
 			defined('MODE_DEMO')					||	define('MODE_DEMO',							DataHelper::get($aApplication,	'mode_demo',				DataHelper::DATA_TYPE_BOOL));
 			defined('MODE_SUBSTITUTE_USER')			||	define('MODE_SUBSTITUTE_USER',				DataHelper::get($aApplication,	'mode_substitute_user',		DataHelper::DATA_TYPE_BOOL));
@@ -151,7 +150,17 @@
 			defined('LDAP_HOST')					||	define('LDAP_HOST',							DataHelper::get($aLDAP,			'host'));
 			defined('LDAP_PORT')					||	define('LDAP_PORT',							DataHelper::get($aLDAP,			'port',						DataHelper::DATA_TYPE_INT));
 			defined('LDAP_DN')						||	define('LDAP_DN',							DataHelper::get($aLDAP,			'dn'));
-			
+
+			/**
+			 * VERSIONNAGE DE L'APPLICATION
+			 */
+			require_once CONFIGS . '/version.php';
+
+			/**
+			 * VERSIONNAGE DE LA LIBRAIRIE
+			 */
+			require_once LIBRARY . '/version.php';
+
 			/**
 			 * VUE
 			 */

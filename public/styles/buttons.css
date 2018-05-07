@@ -7,8 +7,8 @@
  *
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 67 $
- * @since		$LastChangedDate: 2017-07-19 00:09:56 +0200 (Wed, 19 Jul 2017) $
+ * @version		$LastChangedRevision: 120 $
+ * @since		$LastChangedDate: 2018-05-07 21:15:40 +0200 (Mon, 07 May 2018) $
  */
 
 /** STANDARD *************************************************************************************/
@@ -142,6 +142,7 @@ div.group-button			{
 	width:					50%;
 	height:					30px;
 	text-align:				center;
+	z-index:				1000;
 }
 
 div.group-button button,

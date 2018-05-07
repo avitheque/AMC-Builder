@@ -8,8 +8,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 69 $
- * @since		$LastChangedDate: 2017-07-23 03:02:54 +0200 (Sun, 23 Jul 2017) $
+ * @version		$LastChangedRevision: 120 $
+ * @since		$LastChangedDate: 2018-05-07 21:15:40 +0200 (Mon, 07 May 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -87,14 +87,15 @@ if (defined('MODE_DEBUG') && (bool) MODE_DEBUG) {
 		<?php ViewRender::linkFileContent('head.php'); ?>
 	</head>
 	<body>
-		<div id="application" class="margin-0 auto-width">
-			<a href="/index" class="text">
-				<img id="app_logo" src="/images/logo.png" alt="<?php print APP_NAME; ?>" />
-				<ul id="app_infos">
-					<li><span id="app_name" class="strong italic"><?php print APP_NAME; ?></span></li>
-					<li><span id="app_version" class="strong italic">Version <?php print APP_VERSION; ?></span></li>
-				</ul>
+		<div id="application" class="margin-0 max-width">
+			<a id="app_logo" href="/index" class="text">
+				<img id="favicon" src="/images/logo.png" alt="<?php print APP_NAME; ?>" />
 			</a>
+			<ul id="app_infos">
+				<li id="app_name" class="strong italic"><?php print APP_NAME; ?></li>
+				<li id="library_version" class="strong italic">#<?php print LIBRARY_VERSION; ?></li>
+				<li id="app_version" class="strong italic">Version <?php print APP_VERSION; ?></li>
+			</ul>
 		</div>
 		<?php ViewRender::linkFileContent('header.php'); ?>
 
