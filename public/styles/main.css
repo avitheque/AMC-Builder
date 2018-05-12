@@ -17,8 +17,8 @@
  *
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 104 $
- * @since		$LastChangedDate: 2018-01-19 19:36:51 +0100 (Fri, 19 Jan 2018) $
+ * @version		$LastChangedRevision: 121 $
+ * @since		$LastChangedDate: 2018-05-11 19:11:34 +0200 (Fri, 11 May 2018) $
  */
 
 /** GLOBAL ***************************************************************************************/
@@ -355,6 +355,8 @@ p.code							{ overflow-x:			auto;						border:				1px solid #4297d7; }
 .hover-orange:hover				{ color:				#e17009; }
 .red,
 .hover-red:hover				{ color:				red; }
+.white,
+.hover-red:hover				{ color:				white; }
 
 .transparent,
 .hover-transparent:hover		{ background:			transparent !important;		border-color:		transparent !important; }

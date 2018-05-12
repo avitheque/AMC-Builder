@@ -121,5 +121,6 @@ section[id^=search-content-] li.item .ui-icon,
 
 /* MODAL - Affichage de la progression */
 #panning-viewer,
-#panning-viewer .planning-item-participant						{ font-size: 12px; font-variant: normal; line-height: 12px;  }
-#panning-viewer .planning-item-participant .principal			{ font-weight: bold; }
+#panning-viewer .planning-item-participant						{ font-size: 15px; font-variant: normal; }
+#panning-viewer .planning-item-participant .principal			{ font-weight: bold; line-height: 20px; }
+#panning-viewer .planning-item-participant .secondaire			{ position: inherit; line-height: 12px; }

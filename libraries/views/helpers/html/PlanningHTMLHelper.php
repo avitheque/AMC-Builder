@@ -10,8 +10,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 120 $
- * @since		$LastChangedDate: 2018-05-07 21:15:40 +0200 (Mon, 07 May 2018) $
+ * @version		$LastChangedRevision: 121 $
+ * @since		$LastChangedDate: 2018-05-11 19:11:34 +0200 (Fri, 11 May 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -565,7 +565,7 @@ class PlanningHTMLHelper extends PlanningHelper {
 			// Fonctionnalité réalisée en MODE_DEBUG
 			if (defined('MODE_DEBUG') && (bool) MODE_DEBUG) {
 				$sClassStyle					= $this->_planning_format == self::FORMAT_CALENDAR ? "margin-top-10-important" : "";
-				$this->planning					.= "<button class=\"red right $sClassStyle\" id=\"button-" . $this->_md5 . "\" onclick=\"$('section#" . $this->_md5 . "').getProgression();\">Test</button>";
+				$this->planning					.= "<button type=\"button\" class=\"red right $sClassStyle\" id=\"button-" . $this->_md5 . "\" onclick=\"$('section#" . $this->_md5 . "').getProgression();\">Test</button>";
 			}
 
 			// Activation du planning par jQuery

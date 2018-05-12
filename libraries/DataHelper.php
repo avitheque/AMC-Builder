@@ -10,8 +10,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 119 $
- * @since		$LastChangedDate: 2018-05-05 13:46:10 +0200 (Sat, 05 May 2018) $
+ * @version		$LastChangedRevision: 121 $
+ * @since		$LastChangedDate: 2018-05-11 19:11:34 +0200 (Fri, 11 May 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -476,6 +476,7 @@ class DataHelper {
 	 * @var		array
 	 */
 	public static $FILE_REPLACE	= array(
+		"__"		=> "_",
 		" "			=> "_",
 		"&#10;"		=> "_",
 		"?"			=> "_",
