@@ -22,7 +22,7 @@
 .planning-item li.item article									{ border-radius: 0; }
 .planning-item li.item a.ui-icon								{ position: relative; bottom: 0; background-color: white; border: 1px solid #c5dbec; border-radius: 5px; color: transparent; }
 .planning-item li.item a.ui-icon:hover							{ background-color: yellow; border-color: orange; }
-.planning-item li.item a.ui-icon-pin-s							{ bottom: -6px; margin: 0px; }
+.planning-item li.item a.ui-icon-pin-s							{ bottom: -5px; margin: 0px; }
 .planning-item li.item a.ui-icon-trash							{ position: absolute; left: 0; }
 .planning-item li.item a.ui-icon-zoomin							{ position: absolute; right: 0; }
 
@@ -95,7 +95,7 @@ dl.hover dd.planning:not(.ui-state-disabled):not(.set)			{ background: rgba(0, 2
 
 .planning:hover h4												{ text-shadow: 0 0 2px orange; }
 a.ui-draggable-handle:active,
-a.ui-icon-pin-w													{ cursor: move !important; }
+a.ui-icon-pin-w													{ background-color: yellow !important; border-color: orange !important; cursor: move !important; }
 
 
 /* SOURCE / CIBLE - Apparence de l'élément au format TABLEAU */
