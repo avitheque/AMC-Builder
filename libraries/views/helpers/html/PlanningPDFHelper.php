@@ -10,8 +10,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 121 $
- * @since		$LastChangedDate: 2018-05-11 19:11:34 +0200 (Fri, 11 May 2018) $
+ * @version		$LastChangedRevision: 122 $
+ * @since		$LastChangedDate: 2018-05-16 19:39:10 +0200 (Wed, 16 May 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -43,6 +43,13 @@ class PlanningPDFHelper extends PlanningHelper {
 	
 	const		PDF_INTERLINE_TITRE_SIZE		= 15;
 	const		PDF_INTERLINE_PARTICIPANT_SIZE	= 3;
+	
+	/**
+	 * Constantes de redimentionnement de la taille du texte
+	 * @var		float
+	 */
+	const		PDF_INTERVAL_FACTEUR_RESIZE		= 1.3;
+	const		PDF_INTERVAL_FACTEUR_MULTIPLE	= 0.7;
 
 	/**
 	 * Construction de l'interface graphique PDF
@@ -367,7 +374,13 @@ class PlanningPDFHelper extends PlanningHelper {
 					// Fonctionnalité réalisée si une tâche est présente dans le créneau horaire
 					if (is_object($oItem)) {
 						// Couleur de fond de la tâche
-						$this->_document->setFillColor(255);
+						if ($oItem->hasConflict()) {
+							// Couleur de fond du document JAUNE
+							$this->_document->setFillColor(243, 247, 129);
+						} else {
+							// Couleur de fond du document BLANCHE
+							$this->_document->setFillColor(255);
+						}
 					
 						// Récupération de la position de la cellule
 						$nPositionX				= $this->_document->getX();
@@ -405,17 +418,17 @@ class PlanningPDFHelper extends PlanningHelper {
 						
 						// Fonctionnalité réalisée si le TITRE est plus grand que la CELLULE
 						$nDecalage				= 0;
-						if (intval($fTestText) < intval($fTestCell)) {
-							$nLineHeight		= self::PDF_INTERLINE_TITRE_SIZE * 0.7;
-						} else {
-							$nLineHeight		= (self::PDF_INTERLINE_TITRE_SIZE - 2) / str_word_count($oItem->getTitle());
-							$nDecalage			= $this->_document->getFontSize();
-						}
+						$nLineHeight			= self::PDF_INTERLINE_TITRE_SIZE * 0.7;
 						
-						// Fonctionnalité réalisée si la taille de FONT est trop grande
-						if ($nLineHeight < 1) {
+						// Modification de la taille de ligne si le texte dépasse la taille de CELLULE
+						if (intval($fTestText) / intval($fTestCell) >= self::PDF_INTERVAL_FACTEUR_RESIZE) {
+							// Taille du texte réduite
 							$this->_document->setFontSize(6);
+							$nLineHeight		= self::PDF_INTERLINE_TITRE_SIZE / str_word_count($oItem->getTitle());
 							$nDecalage			= $this->_document->getFontSize();
+						} else {
+							// Taille du texte normale
+							$nLineHeight		= self::PDF_INTERLINE_TITRE_SIZE * self::PDF_INTERVAL_FACTEUR_MULTIPLE;
 						}
 						
 						// Ajout du nom de la TÂCHE

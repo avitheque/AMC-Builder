@@ -10,8 +10,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 121 $
- * @since		$LastChangedDate: 2018-05-11 19:11:34 +0200 (Fri, 11 May 2018) $
+ * @version		$LastChangedRevision: 122 $
+ * @since		$LastChangedDate: 2018-05-16 19:39:10 +0200 (Wed, 16 May 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -350,7 +350,7 @@ class DataHelper {
 	 * @return	chaîne de caractères représentant la date, au format FR.
 	 */
 	public static function dateTimeFrToMy($sDateTime, $sFormat = "Y-m-d H:i:s") {
-		if (preg_match('@^([0-9]+)\/([0-9]+)\/([0-9]+)\s([0-9]+):([0-9]+):*([0-9]*)@', $sDateTime, $aMatches)) {
+		if (preg_match('@^([0-9]+)\/([0-9]+)\/([0-9]+)\s*([0-9]+)*:*([0-9]+)*:*([0-9]*)*@', $sDateTime, $aMatches)) {
 			return date($sFormat, mktime((int) $aMatches[4], (int) $aMatches[5], (int) $aMatches[6], (int) $aMatches[2], (int) $aMatches[1], (int) $aMatches[3]));
 		} else {
 			// Le paramètre est déjà au bon format
@@ -368,12 +368,28 @@ class DataHelper {
 	 * @return	chaîne de caractères représentant la date, au format FR.
 	 */
 	public static function dateTimeMyToFr($sDateTime, $sFormat = "d/m/Y H:i:s") {
-		if (preg_match('@^([0-9]+)\-([0-9]+)\-([0-9]+)\s([0-9]+):([0-9]+):*([0-9]*)@', $sDateTime, $aMatches)) {
+		if (preg_match('@^([0-9]+)\-([0-9]+)\-([0-9]+)\s*([0-9]+)*:*([0-9]+)*:*([0-9]*)*@', $sDateTime, $aMatches)) {
 			return date($sFormat, mktime((int) $aMatches[4], (int) $aMatches[5], (int) $aMatches[6], (int) $aMatches[2], (int) $aMatches[3], (int) $aMatches[1]));
 		} else {
 			// Le paramètre est déjà au bon format
 			return	$sDateTime;
 		}
+	}
+
+	/** @brief	Converti une DATE MySQL en TIMESTAMP
+	 *
+	 * @todo	ATTENTION au passage au 2032-12-31...
+	 *
+	 * La fonction transforme une DATE au format [YYYY-MM-DD H:i:s] en TIMESTAMP
+	 * @param	date		$sDateTime		: chaîne de caractères formant une date Y-m-d H:i:s.
+	 * @return	integer
+	 */
+	public static function dateTimeMyToTimestamp($sDateTime) {
+		// Extraction des éléments de la DATE
+		$aParams = self::extractParamsFromDateTime($sDateTime);
+	
+		// Renvoi le TIMESTAMP
+		return mktime($aParams['H'], $aParams['i'], $aParams['s'], $aParams['m'], $aParams['d'], $aParams['Y']);
 	}
 
 	/** @brief	Converti un TIMESTAMP au format MySQL
@@ -387,7 +403,7 @@ class DataHelper {
 	 */
 	public static function timesampToMyDatetime($nTimeStamp = null, $sFormat = "Y-m-d H:i:s") {
 		// Fonctionnalité réalisée si le paramètre est vide
-		if (!DataHelper::isValidNumeric($nTimeStamp, false)) {
+		if (!self::isValidNumeric($nTimeStamp, false)) {
 			$nTimeStamp = mktime(0, 0, 0, 0, 0, 0);
 		}
 		// Renvoi du résultat
@@ -1176,6 +1192,32 @@ class DataHelper {
 		return $aResultat;
 	}
 
+	/** @brief	Récupère les paramètre d'une DATE
+	 *
+	 * @todo	ATTENTION au passage au 2032-12-31...
+	 *
+	 * La fonction transforme une DATE au format [YYYY-MM-DD H:i:s] en TIMESTAMP
+	 * @param	date		$sDateTime		: chaîne de caractères représentant une DATE ou un DATETIME.
+	 * @return	array(Y, m, d, H, i, s)
+	 */
+	public static function extractParamsFromDateTime($sDateTime) {
+		// Forçage de la conversion au format [YYYY-MM-DD H:i:s]
+		$dDateTime = self::dateTimeFrToMy($sDateTime);
+
+		// Extraction des éléments de la DATE
+		preg_match('@^([0-9]+)\-([0-9]+)\-([0-9]+)\s*([0-9]+)*:*([0-9]+)*:*([0-9]*)*@', $dDateTime, $aMatches);
+		
+		// Extraction des éléments de la DATE
+		return array(
+			'Y' => self::get($aMatches, 1, self::DATA_TYPE_INT, 0),
+			'm' => self::get($aMatches, 2, self::DATA_TYPE_INT, 0),
+			'd' => self::get($aMatches, 3, self::DATA_TYPE_INT, 0),
+			'H' => self::get($aMatches, 4, self::DATA_TYPE_INT, 0),
+			'i' => self::get($aMatches, 5, self::DATA_TYPE_INT, 0),
+			's' => self::get($aMatches, 6, self::DATA_TYPE_INT, 0)
+		);
+	}
+
 	/**
 	 * @brief	Extraction d'un ensemble R/G/B à partir d'une chaîne de caractères.
 	 *
@@ -1381,7 +1423,7 @@ class DataHelper {
 	 * @param	bool		$bForceEmpty	: (optionnel) Force la valeur par défaut si le contenu est vide : "", '', 0, NULL
 	 * @return	array|date|string|float|integer|boolean
 	 */
-	public static function get($xInput, $sIndex = null, $iType = DataHelper::DATA_TYPE_ANY, $xDefault = null, $bForceEmpty = false) {
+	public static function get($xInput, $sIndex = null, $iType = self::DATA_TYPE_ANY, $xDefault = null, $bForceEmpty = false) {
 		$xValue = null;
 
 		// Vérification de la présence de entrée
@@ -1906,7 +1948,7 @@ class DataHelper {
 					// Récupération des paramètres de l'exception
 					$sTextParams = "";
 					if (method_exists($oException, 'getParams') && $aParams = $oException->getParams()) {
-						if (DataHelper::isValidArray($aParams)) {
+						if (self::isValidArray($aParams)) {
 							foreach ($aParams as $sValue) {
 								$sTextParams .= '<ul>' . $sValue . '</ul>';
 							}
@@ -1918,7 +1960,7 @@ class DataHelper {
 					// Récupération de l'action du contrôleur ayant l'exception
 					$sTextExtras = "";
 					if (method_exists($oException, 'getExtra') && $aExtras = $oException->getExtra()) {
-						if (DataHelper::isValidArray($aExtras)) {
+						if (self::isValidArray($aExtras)) {
 							foreach ($aExtras as $sValue) {
 								$sTextExtras .= '<ul>' . $sValue . '</ul>';
 							}
@@ -1955,7 +1997,7 @@ class DataHelper {
 		$sContent				= $aArray;
 
 		// Fonctionnalité réalisée si le paramètre est un tableau
-		if (DataHelper::isValidArray($aArray)) {
+		if (self::isValidArray($aArray)) {
 			// Récupération du nombre d'éléments
 			$nCount				= count($aArray);
 
@@ -1978,7 +2020,7 @@ class DataHelper {
 				// Initialisation du format pour la clé par défaut
 				$sKeyFormat		= "<span class=\"texte\">'%s'</span>";
 				// Fonctionnalité réalisée si la clé est au format numérique
-				if (DataHelper::isValidNumeric($sKey)) {
+				if (self::isValidNumeric($sKey)) {
 					$sKeyFormat	= "<span class=\"nombre\">%d</span>";
 				}
 
@@ -1992,11 +2034,11 @@ class DataHelper {
 			// Le contenu représente un mot clé PHP
 			$sContentFormat		= "<span class=\"native\">%s</span>";
 			$sContent			= strtolower($aArray);
-		} elseif (DataHelper::isValidBoolean($aArray)) {
+		} elseif (self::isValidBoolean($aArray)) {
 			// Le contenu représente un bouléen
 			$sContentFormat		= "<span class=\"native\">%s</span>";
 			$sContent			= $aArray ? "true" : "false";
-		} elseif (DataHelper::isValidNumeric($aArray)) {
+		} elseif (self::isValidNumeric($aArray)) {
 			// Le contenu représente un nombre
 			$sContentFormat		= "<span class=\"nombre\">%d</span>";
 		}

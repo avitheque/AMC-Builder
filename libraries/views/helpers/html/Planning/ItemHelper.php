@@ -35,8 +35,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 120 $
- * @since		$LastChangedDate: 2018-05-07 21:15:40 +0200 (Mon, 07 May 2018) $
+ * @version		$LastChangedRevision: 122 $
+ * @since		$LastChangedDate: 2018-05-16 19:39:10 +0200 (Wed, 16 May 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -60,6 +60,9 @@ class Planning_ItemHelper {
 	const		TYPE_PRINCIPAL			= 'principal';
 	const		TYPE_SECONDAIRE			= 'secondaire';
 
+	const		PANEL_CONFLICT_CSS		= 'panel-conflict';
+	const		ITEM_CONFLICT_CSS		= 'item-conflict';
+
 	/**
 	 * Singleton de l'instance des échanges entre contrôleurs.
 	 * @var		InstanceStorage
@@ -72,10 +75,16 @@ class Planning_ItemHelper {
 	 */
 	protected	$_id					= null;
 	public		$_title					= "Jour de la semaine";
-	public		$_describe				= "";
+
 	public		$_content				= "";
+	
+	public		$_location				= 0;
+	public		$_describe				= "";
+	public		$_conflit_location		= false;
+	
 	public		$_groupe				= 0;
 	public		$_participant			= array();
+	public		$_conflit_participant	= false;
 	
 	protected	$_hrefZoomIn			= "#";
 	protected	$_hrefTrash				= "#";
@@ -261,6 +270,14 @@ class Planning_ItemHelper {
 	}
 
 	/**
+	 * @brief	Récupération de la localisation de l'élément
+	 * @return	string
+	 */
+	public function getLocation() {
+		return $this->_location;
+	}
+
+	/**
 	 * @brief	Récupération du groupe de participants à l'élément
 	 * @return	array
 	 */
@@ -379,22 +396,17 @@ class Planning_ItemHelper {
 	 * @return	void
 	 */
 	public function setDateTime($dDateTime) {
-		// Forçage du format de la dans au format MySQL [Y-m-d H:i:s]
-		$dDateTimeMySQL					= DataHelper::dateTimeFrToMy($dDateTime);
-
-		// Séparation des parties DATE / TIME
-		list($dDateMySQL, $dTimeMySQL)	= explode(" ", $dDateTimeMySQL);
-
+		// Extraction des arguments de la dans au format MySQL [Y-m-d H:i:s]
+		$aDateParams					= DataHelper::extractParamsFromDateTime($dDateTime);
+		
 		// Extraction des paramètres de la DATE
-		$aDateItems						= explode("-", $dDateMySQL);
-		$this->_year					= DataHelper::get($aDateItems, 0, DataHelper::DATA_TYPE_INT);
-		$this->_month					= DataHelper::get($aDateItems, 1, DataHelper::DATA_TYPE_INT);
-		$this->_day						= DataHelper::get($aDateItems, 2, DataHelper::DATA_TYPE_INT);
-
+		$this->_year					= $aDateParams['Y'];
+		$this->_month					= $aDateParams['m'];
+		$this->_day						= $aDateParams['d'];
+		
 		// Extraction des paramètres du TIME
-		$aTimeItems						= explode(":", $dTimeMySQL);
-		$this->_hour					= DataHelper::get($aTimeItems, 0, DataHelper::DATA_TYPE_INT);
-		$this->_minute					= DataHelper::get($aTimeItems, 1, DataHelper::DATA_TYPE_INT);
+		$this->_hour					= $aDateParams['H'];
+		$this->_minute					= $aDateParams['i'];
 	}
 
 	/**
@@ -503,6 +515,18 @@ class Planning_ItemHelper {
 	}
 
 	/**
+	 * @brief	Ajout d'un groupe de locale à l'élément
+	 *
+	 * @param	mixed	$nIdLocation		: identidiants du groupe du local.
+	 * @param	string	$sDescribe			: description du local.
+	 * @return	void
+	 */
+	public function setLocation($nIdLocation, $sDescribe = null) {
+		$this->_location				= $nIdLocation;
+		$this->_describe				= $sDescribe;
+	}
+
+	/**
 	 * @brief	Ajout d'un groupe de participants à l'élément
 	 *
 	 * @param	mixed	$nIdGroupe			: identidiants du groupe de participants.
@@ -526,6 +550,50 @@ class Planning_ItemHelper {
 			// Initialisation de la liste de(s) participant(s)
 			$this->_participant			= (array) $aListeParticipant;
 		}
+	}
+
+	/**
+	 * @brief	Récupère l'indicateur de conflit sur la localisation.
+	 * @void	boolean
+	 */
+	public function hasConflictLocation() {
+		return $this->_conflit_location;
+	}
+
+	/**
+	 * @brief	Active l'indicateur de conflit sur la localisation.
+	 *
+	 * @param	boolean	$bBoolean			: active l'indicateur de conflit.
+	 * @return	void
+	 */
+	public function setConflictLocation($bBoolean) {
+		$this->_conflit_location		= $bBoolean;
+	}
+
+	/**
+	 * @brief	Récupère l'indicateur de conflit sur les participants.
+	 * @void	boolean
+	 */
+	public function hasConflictParticipant() {
+		return $this->_conflit_participant;
+	}
+	
+	/**
+	 * @brief	Active l'indicateur de conflit sur les participants.
+	 * 
+	 * @param	boolean	$bBoolean			: active l'indicateur de conflit.
+	 * @return	void
+	 */
+	public function setConflictParticipant($bBoolean) {
+		$this->_conflit_participant		= $bBoolean;
+	}
+
+	/**
+	 * @brief	Récupère l'indicateur de conflit sur la localisation ou les participants.
+	 * @void	boolean
+	 */
+	public function hasConflict() {
+		return $this->_conflit_location || $this->_conflit_participant;
 	}
 
 	public function _buildHTML($bDeletable = true) {
@@ -553,17 +621,26 @@ class Planning_ItemHelper {
 					$this->_titleHTML .= "\n\t└─ " . DataHelper::extractContentFromHTML($sNomHTML);
 				}
 			}
+
+			// Indicateur de conflit sur la cellule
+			$sPanelClass				= $this->hasConflict()			? self::PANEL_CONFLICT_CSS	: null;
+			
+			// Indicateur de conflit sur les descriptions (SALLES)
+			$sConflictLocation			= $this->_conflit_location		? self::ITEM_CONFLICT_CSS	: null;
+
+			// Indicateur de conflit sur les participants
+			$sConflictParticipant		= $this->_conflit_participant	? self::ITEM_CONFLICT_CSS	: null;
 			
 			// Ajout d'un élément
-			$this->_html = "<li class='item " . $this->_class . " ui-widget-content ui-corner-tr ui-draggable' align='center'>
+			$this->_html = "<li class='item $sPanelClass " . $this->_class . " ui-widget-content ui-corner-tr ui-draggable' align='center'>
 								<article title=\"" . $this->_titleHTML . "\" class='job padding-0' align='center'>
 									<h3 class='strong left max-width'>" . $this->_title . "</h3>
 									<div class='content center'>
-										<p class='center'>" . $this->_describe . "</p>
+										<p class='planning-item-location center $sConflictLocation'>" . $this->_describe . "</p>
 										
 										<section class='planning-item-content'>" . $this->_content . "</section>
 										
-										<ul class='planning-item-participant'>
+										<ul class='planning-item-participant $sConflictParticipant'>
 											<li class='principal'>" . implode(" - ", $this->getParticipant(self::TYPE_PRINCIPAL)) . "</li>
 											<li class='secondaire'>" . implode(" - ", $this->getParticipant(self::TYPE_SECONDAIRE)) . "</li>
 										</ul>

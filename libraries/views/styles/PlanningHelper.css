@@ -20,18 +20,19 @@
 .planning-item li.item.conflict,
 .planning-item li.item.error									{ background: red !important; }
 .planning-item li.item article									{ border-radius: 0; }
-.planning-item li.item a.ui-icon								{ border: 1px solid transparent; border-radius: 5px; color: transparent; }
+.planning-item li.item a.ui-icon								{ position: relative; bottom: 0; background-color: white; border: 1px solid #c5dbec; border-radius: 5px; color: transparent; }
 .planning-item li.item a.ui-icon:hover							{ background-color: yellow; border-color: orange; }
-.planning-item li.item a.ui-icon-pin-s							{ margin: 0px; }
-.planning-item li.item a.ui-icon-trash							{ position: absolute; left: 0; bottom: 0; }
-.planning-item li.item a.ui-icon-zoomin							{ position: absolute; right: 0; bottom: 0; }
+.planning-item li.item a.ui-icon-pin-s							{ bottom: -6px; margin: 0px; }
+.planning-item li.item a.ui-icon-trash							{ position: absolute; left: 0; }
+.planning-item li.item a.ui-icon-zoomin							{ position: absolute; right: 0; }
 
 /* ITEM - MINIATURES */
 article.job														{ min-height: 50px; overflow: hidden; }
 article.job h3													{ font-size: 14px; }
-article.job p													{ font-size: 10px; height: 38px; width: 100%; margin: 0; padding: 0; text-align: center; }
+article.job p													{ font-size: 10px; height: 40px; width: 100%; margin: 0; padding: 0; text-align: center; }
 section.item-bottom												{ display: inline-flex; text-align: center; min-width: 10px; }
 .planning:not(.modal-search) section.item-bottom				{ display: none; }
+.planning.modal-search li.item a.ui-icon						{ position: inherit; }
 
 
 /* CIBLE - RENDU SOUS FORME DE PROGRESSION */
@@ -107,9 +108,9 @@ a.ui-icon-pin-w													{ cursor: move !important; }
 
 /* SOURCE / CIBLE - Apparence de l'élément au format CALENDRIER */
 section[id^=search-content-] li.item,
-.calendar li.item:hover											{ height: auto; z-index: 50; min-width: 34px; }
+.calendar li.item:hover											{ height: auto; z-index: 50; min-width: 34px; padding: 5px; }
 section[id^=search-content-] li.item .ui-icon,
-.calendar li.item:hover .ui-icon								{ display: inline; }
+.calendar li.item:hover .ui-icon								{ display: inline; border-color: transparent; }
 
 
 /* PARTICIPANTS - Apparence des personnels associés à la TÂCHE */
@@ -117,6 +118,13 @@ section[id^=search-content-] li.item .ui-icon,
 .planning-item-participant										{ white-space: normal; font-size: 8px; margin: 0; padding: 0; font-variant: all-small-caps; }
 .planning-item-participant .principal							{ margin-top: 5px; font-variant: normal; line-height: 7px; }
 .planning-item-participant .secondaire							{ position: relative; top: -5px; }
+
+
+
+/* CONFLIT - Affichage d'un conflit sur la progression */
+.planning-item .panel-conflict									{ background: #c5dbec; }
+.planning-item .item-conflict,
+.planning-item-participant .item-conflict						{ color: red; }
 
 
 /* MODAL - Affichage de la progression */
