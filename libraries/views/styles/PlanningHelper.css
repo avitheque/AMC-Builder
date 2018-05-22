@@ -10,33 +10,35 @@
  */
 @CHARSET "UTF-8";
 
+
 /* SOURCE / CIBLE - SUPPORT DES ÉLÉMENTS */
 .diary															{ margin: 5px 0 20px; }
 .planning														{ display: inline-block; min-height: 96px; padding: 3px 0 5px; overflow: hidden; overflow-y: auto; }
-.planning-item													{ float: left; display: block; overflow: auto; }
+.planning-item													{ display: block; overflow: auto; }
 .planning-item.custom-state-active								{ background: #FBEC88; border: solid 1px #FAD42E; }
 .planning-item li.item											{ float: left; padding: 4px; text-align: center; white-space: nowrap; }
 .planning-item li.item h5										{ margin: 0 0 0.4em; cursor: move; }
 .planning-item li.item.conflict,
 .planning-item li.item.error									{ background: red !important; }
 .planning-item li.item article									{ border-radius: 0; }
+.planning-item li.item .content									{ height: 45px; }
 .planning-item li.item a.ui-icon								{ position: relative; bottom: 0; background-color: white; border: 1px solid #c5dbec; border-radius: 5px; color: transparent; }
 .planning-item li.item a.ui-icon:hover							{ background-color: yellow; border-color: orange; }
 .planning-item li.item a.ui-icon-pin-s							{ bottom: -5px; margin: 0px; }
 .planning-item li.item a.ui-icon-trash							{ position: absolute; left: 0; }
 .planning-item li.item a.ui-icon-zoomin							{ position: absolute; right: 0; }
 
+
 /* ITEM - MINIATURES */
 article.job														{ min-height: 50px; overflow: hidden; }
 article.job h3													{ font-size: 14px; }
-article.job p													{ font-size: 10px; height: 40px; width: 100%; margin: 0; padding: 0; text-align: center; }
+article.job p													{ height: 15px; width: 100%; margin: 25px 0 10px; padding: 0; font-size: 10px; line-height: 10px; vertical-align: middle; text-align: center; }
 section.item-bottom												{ display: inline-flex; text-align: center; min-width: 10px; }
 .planning:not(.modal-search) section.item-bottom				{ display: none; }
-.planning.modal-search li.item a.ui-icon						{ position: inherit; }
 
 
 /* CIBLE - RENDU SOUS FORME DE PROGRESSION */
-.progression li.item											{ white-space: nowrap; min-height: 70px; }
+.progression li.item											{ white-space: nowrap; }
 .progression h4													{ line-height: 20px; margin: 0; text-align: left; }
 .progression h4 .ui-icon										{ float: left; }
 .progression li.item:hover section.item-bottom					{ display: inline-flex; text-align: center; }
@@ -55,10 +57,10 @@ section.item-bottom												{ display: inline-flex; text-align: center; min-w
 .calendar li.item .job											{ min-height: 20px; }
 .calendar li.item .content										{ display: none; }
 .calendar li.item .ui-icon										{ position: static; bottom: 0; float: left; display: none; }
-.calendar:not(.modal-search) li.item:hover section.item-bottom	{ display: inline-block; text-align: left; height: 55px; }
+.calendar:not(.modal-search) li.item:hover section.item-bottom	{ display: inline-block; text-align: left; height: 45px; }
 .calendar:not(.modal-search) li.item a.ui-icon					{ position: absolute; left: 0; }
-.calendar:not(.modal-search) li.item a.ui-icon-pin-s			{ bottom: 42px; }
-.calendar:not(.modal-search) li.item a.ui-icon-zoomin			{ bottom: 21px; }
+.calendar:not(.modal-search) li.item a.ui-icon-pin-s			{ bottom: 38px; }
+.calendar:not(.modal-search) li.item a.ui-icon-zoomin			{ bottom: 18px; }
 .calendar:not(.modal-search) li.item a.ui-icon-trash			{ bottom: 0px; }
 
 .calendar .header												{ position: absolute; left: 5px; padding-top: 10px; border: none; width: 80px; }
@@ -87,6 +89,10 @@ section.item-bottom												{ display: inline-flex; text-align: center; min-w
 main .planning-item li.item										{ position: absolute; }
 
 
+/* ZONE DE RECHERCHE UNIQUEMENT */
+section.modal-search li.item .content							{ height: auto; }
+
+
 /* CIBLE - Intéractivité avec l'utilisateur */
 dl.hover														{ background: white; color: orange; z-index: 10; }
 dl.hover dt	 													{ font-weight: bold; }
@@ -113,12 +119,13 @@ section[id^=search-content-] li.item .ui-icon,
 .calendar li.item:hover .ui-icon								{ display: inline; border-color: transparent; }
 
 
-/* PARTICIPANTS - Apparence des personnels associés à la TÂCHE */
-.planning-item-content,
-.planning-item-participant										{ white-space: normal; font-size: 8px; margin: 0; padding: 0; font-variant: all-small-caps; }
-.planning-item-participant .principal							{ margin-top: 5px; font-variant: normal; line-height: 7px; }
-.planning-item-participant .secondaire							{ position: relative; top: -5px; }
+/* CONTENU - Apparence du contenu de la TÂCHE */
+.planning-item-participant										{ white-space: normal; font-size: 8px; margin: 0; padding: 0; font-variant: all-small-caps; line-height: 7px; }
 
+
+/* PARTICIPANTS - Apparence des personnels associés à la TÂCHE */
+.planning-item-participant .principal							{ margin-top: 5px; font-variant: normal; line-height: 10px; font-weight: bold; }
+.planning-item-participant .secondaire							{ position: relative; line-height: 7px; }
 
 
 /* CONFLIT - Affichage d'un conflit sur la progression */

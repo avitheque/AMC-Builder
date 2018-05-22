@@ -10,8 +10,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 122 $
- * @since		$LastChangedDate: 2018-05-16 19:39:10 +0200 (Wed, 16 May 2018) $
+ * @version		$LastChangedRevision: 126 $
+ * @since		$LastChangedDate: 2018-05-22 19:53:26 +0200 (Tue, 22 May 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -659,6 +659,7 @@ class DataHelper {
 		"&#150;"	=> "-",
 		"&#8211;"	=> "-",
 		"&#8212;"	=> "-",
+		"&nbsp;"	=> " ",
 		"œ"			=> "oe",
 	);
 
@@ -774,20 +775,20 @@ class DataHelper {
 	 * @li	Convertion des dates [Y-m-d] au format [d/m/Y]
 	 *
 	 * @param	mixed		$xInput			: Élément d'entrée, peut être du texte ou un tableau de chaînes de caractères.
-	 * @param	string		$sFormat		: Expression du formatage à réaliser.
+	 * @param	string		$iFormat		: Expression du formatage à réaliser, possibilité d'utiliser un pattern sprintf().
 	 * @return	string
 	 */
-	public static function convertToString($xInput = null, $sFormat = self::DATA_TYPE_STR) {
+	public static function convertToString($xInput = null, $iFormat = self::DATA_TYPE_STR) {
 		// Extraction du contenu sous forme de texte
 		$sInput = self::convertToText($xInput, chr(32));
 
 		// Formatage du texte
-		if (!is_null($sFormat) && preg_match("@\%[0-9bcdeEfFgGosuxX]+@", $sFormat)) {
+		if (!is_null($iFormat) && preg_match("@\%[0-9bcdeEfFgGosuxX]+@", $iFormat)) {
 			// Formatage selon le format exploité par la méthode PHP sprintf()
-			$sText = sprintf($sFormat, $sInput);
+			$sText = sprintf($iFormat, $sInput);
 		} else {
 			// Formatage selon le type
-			switch ($sFormat) {
+			switch ($iFormat) {
 
 				// Formatage en date FR du type [d/m/Y]
 				case self::DATA_TYPE_DATE:
@@ -799,12 +800,22 @@ class DataHelper {
 					$sText = self::dateTimeMyToFr($sInput);
 					break;
 
-				// Formatage en nom de fichier
+				// Formatage en chaîne de caractères compatible au nom de fichier
 				case self::DATA_TYPE_FILE:
 					$sText = strtr($sInput, self::$FILE_REPLACE);
 					break;
 
-				// Formatage en chaîne de caractères
+				// Formatage en chaîne de caractères compatible HTML
+				case self::DATA_TYPE_HTML:
+					$sText = strtr($sInput, self::$HTML_REPLACE);
+					break;
+
+				// Formatage en chaîne de caractères compatible PDF
+				case self::DATA_TYPE_PDF:
+					$sText = strtr($sInput, self::$PDF_REPLACE);
+					break;
+
+				// Formatage en chaîne de caractères standard
 				case self::DATA_TYPE_STR:
 					$sText = strtr($sInput, self::$STR_REPLACE);
 					break;

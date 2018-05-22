@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 120 $
- * @since		$LastChangedDate: 2018-05-07 21:15:40 +0200 (Mon, 07 May 2018) $
+ * @version		$LastChangedRevision: 126 $
+ * @since		$LastChangedDate: 2018-05-22 19:53:26 +0200 (Tue, 22 May 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -52,62 +52,77 @@ class PlanningController extends AbstractFormulaireController {
 		 *	array(
 		 *		'planning_id'		=> null,
 		 *		'tache_id'			=> "A",
-		 *		'tache_titre'		=> "Élément A",
-		 *		'tache_texte'		=> "Appuyez sur le bouton [zoom] afin de voir le détail...",
+		 *		'tache_title'		=> "Élément A",
+		 *		'tache_location'	=> 1,
+		 *		'tache_describe'	=> "Description de la tâche...",
+		 *		'tache_groupe'		=> 1,
 		 *		'tache_participant'	=> "Personne 1, Personne 2, Personne 3",
 		 *		'tache_annee'		=> null,
 		 *		'tache_mois'		=> null,
 		 *		'tache_jour'		=> null,
-		 *		'tache_duree'		=> $nDuree,
+		 *		'tache_duree'		=> 1,
+		 *		'tache_update'		=> 0
 		 *	);
 		 * @encode
 		 */
 		// MOCK : Simulation des éléments récupérés par la base de données
 		$aMock = array(
-			array(
-				'planning_id'		=> null,
-				'tache_id'			=> "A",								// Identifiant de la tâche en base de données
-				'tache_titre'		=> "Élément A",						// Titre de la tâche
-				'tache_texte'		=> "Description de la tâche...",
-				'tache_participant'	=> null,
-				'tache_annee'		=> null,
-				'tache_mois'		=> null,
-				'tache_jour'		=> null,
-				'tache_duree'		=> null
+				array(
+						'planning_id'		=> null,
+						'tache_id'			=> "A",								// Identifiant de la tâche en base de données
+						'tache_title'		=> "Élément A",						// Titre de la tâche
+						'tache_location'	=> 1,
+						'tache_describe'	=> "Description de la tâche...",
+						'tache_groupe'		=> 1,
+						'tache_participant'	=> array("<B>John DOE</B>"),		// Participant PRINCIPAL
+						'tache_annee'		=> null,
+						'tache_mois'		=> null,
+						'tache_jour'		=> null,
+						'tache_duree'		=> null,
+						'tache_update'		=> 0
 				),
-			array(
-				'planning_id'		=> null,
-				'tache_id'			=> "B",								// Identifiant de la tâche en base de données
-				'tache_titre'		=> "Élément B",						// Titre de la tâche
-				'tache_texte'		=> "Description de la tâche...",
-				'tache_participant'	=> null,
-				'tache_annee'		=> null,
-				'tache_mois'		=> null,
-				'tache_jour'		=> null,
-				'tache_duree'		=> null
-			),
-			array(
-				'planning_id'		=> null,
-				'tache_id'			=> "C",								// Identifiant de la tâche en base de données
-				'tache_titre'		=> "Élément C",						// Titre de la tâche
-				'tache_texte'		=> "Description de la tâche...",
-				'tache_participant'	=> null,
-				'tache_annee'		=> null,
-				'tache_mois'		=> null,
-				'tache_jour'		=> null,
-				'tache_duree'		=> null
-			),
-			array(
-				'planning_id'		=> null,
-				'tache_id'			=> "D",								// Identifiant de la tâche en base de données
-				'tache_titre'		=> "Élément D",						// Titre de la tâche
-				'tache_texte'		=> "Description de la tâche...",
-				'tache_participant'	=> null,
-				'tache_annee'		=> null,
-				'tache_mois'		=> null,
-				'tache_jour'		=> null,
-				'tache_duree'		=> null
-			)
+				array(
+						'planning_id'		=> null,
+						'tache_id'			=> "B",								// Identifiant de la tâche en base de données
+						'tache_title'		=> "Élément B",						// Titre de la tâche
+						'tache_location'	=> 1,
+						'tache_describe'	=> "Description de la tâche...",
+						'tache_groupe'		=> 1,
+						'tache_participant'	=> array("<B>John DOE</B>"),		// Participant PRINCIPAL
+						'tache_annee'		=> null,
+						'tache_mois'		=> null,
+						'tache_jour'		=> null,
+						'tache_duree'		=> null,
+						'tache_update'		=> 0
+				),
+				array(
+						'planning_id'		=> null,
+						'tache_id'			=> "C",								// Identifiant de la tâche en base de données
+						'tache_title'		=> "Élément C",						// Titre de la tâche
+						'tache_location'	=> 1,
+						'tache_describe'	=> "Description de la tâche...",
+						'tache_groupe'		=> 1,
+						'tache_participant'	=> array("<B>John DOE</B>"),		// Participant PRINCIPAL
+						'tache_annee'		=> null,
+						'tache_mois'		=> null,
+						'tache_jour'		=> null,
+						'tache_duree'		=> null,
+						'tache_update'		=> 0
+				),
+				array(
+						'planning_id'		=> null,
+						'tache_id'			=> "D",								// Identifiant de la tâche en base de données
+						'tache_title'		=> "Élément D",						// Titre de la tâche
+						'tache_location'	=> 1,
+						'tache_describe'	=> "Description de la tâche...",
+						'tache_groupe'		=> 1,
+						'tache_participant'	=> array("<B>John DOE</B>"),		// Participant PRINCIPAL
+						'tache_annee'		=> null,
+						'tache_mois'		=> null,
+						'tache_jour'		=> null,
+						'tache_duree'		=> null,
+						'tache_update'		=> 0
+				)
 		);
 
 		// Transmission de la liste des tâches à la vue

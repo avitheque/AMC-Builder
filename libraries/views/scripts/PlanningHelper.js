@@ -696,23 +696,50 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 
 		// Récupération de l'identifiant unique selon les attributs de la tâche
 		var uniqueId					= $(this).getUniqueId();
+		var idRegExpPannel				= new RegExp('planning\-[0-9]+\-[0-9]+\-[0-9]+\-[0-9]+');
+		
+		// Fonctionnalité réalisée si l'élément est valide
+		if (idRegExpPannel.test(uniqueId)) {
+			// Tâche
+			var planningItem			= $("dd[class*=" + uniqueId + "]", "section#" + MD5).find("ul.planning-item");
+			var tacheItem				= $("dd[class*=" + uniqueId + "]", "section#" + MD5).find("li.item");
+			
+			// Fonctionnalité réalisée si plusieurs éléments sont présents dans la même cellule
+			if (tacheItem.length > 1) {
+				// Recherche des éléments à supprimer
+				tacheItem.each(function() {
+					var annee	= parseInt($(this).find("input[name^=tache_annee]").val());		// année de la tâche
+					var mois	= parseInt($(this).find("input[name^=tache_mois]").val());		// mois de la tâche
+					var jour	= parseInt($(this).find("input[name^=tache_jour]").val());		// jour de la tâche
+					var heure	= parseInt($(this).find("input[name^=tache_heure]").val());		// heure de la tâche
+				
+					// Fonctionnalité réalisée si la tâche correspond à celle devant être supprimée
+					if (uniqueId == "planning-" + annee + "-" + mois + "-" + jour + "-" + heure) {
+						// Suppression du contenu
+						$(this).remove();
+					}
+				});
+			} else {
+				// Purge du contenu de la CELLULE
+				planningItem.html("");
+			}
 
-		// Réinitialisation de l'affichage de la cellule
-		$("dd[class*=" + uniqueId + "]", "section#" + MD5)
-			.removeClass("set")
-			.removeClass(uniqueId)
-			.find("ul.planning-item").html("");
-
-		// Supprime l'élément sélectionné
-		$(this).fadeOut(function() {
-			$(this).find("a.ui-icon-trash").each(function() {
-				$(this).remove();
+			// Réinitialisation de l'affichage de la cellule
+			$("dd[class*=" + uniqueId + "]", "section#" + MD5)
+				.removeClass(uniqueId)
+				.removeClass("set");
+	
+			// Supprime l'élément sélectionné
+			$(this).fadeOut(function() {
+				$(this).find("a.ui-icon-trash").each(function() {
+					$(this).remove();
+				});
 			});
-		});
-
-		// Mise à jour de l'instance du PLANNING ***************************************************
-		if (typeof(PLANNING[MD5]) != 'undefined') {
-			PLANNING[MD5].remove($(this), true);
+	
+			// Mise à jour de l'instance du PLANNING ***************************************************
+			if (typeof(PLANNING[MD5]) != 'undefined') {
+				PLANNING[MD5].remove($(this), true);
+			}
 		}
 	};
 
@@ -732,6 +759,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 				'heure':				parseInt($(this).find("input[name^=tache_heure]").val()),	// heure de la tâche
 				'minute':				parseInt($(this).find("input[name^=tache_minute]").val()),	// minute de la tâche
 				'duree':				parseInt($(this).find("input[name^=tache_duree]").val()),	// durée de la tâche
+				'location':				$(this).find("input[name^=tache_location]").val(),			// identifiant de la localisation
 				'groupe':				$(this).find("input[name^=tache_groupe]").val(),			// identifiant du groupe des participants affecté à la tâche
 				'update':				parseInt($(this).find("input[name^=tache_update]").val())	// indicateur de modification de la tâche
 			});

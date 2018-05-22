@@ -10,8 +10,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 122 $
- * @since		$LastChangedDate: 2018-05-16 19:39:10 +0200 (Wed, 16 May 2018) $
+ * @version		$LastChangedRevision: 126 $
+ * @since		$LastChangedDate: 2018-05-22 19:53:26 +0200 (Tue, 22 May 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -397,8 +397,6 @@ class PlanningPDFHelper extends PlanningHelper {
 						$nPositionDescription	= $nPositionTop + self::PDF_POSITION_DESCRIBE;
 						$nPositionParticipant	= $nPositionTop + self::PDF_POSITION_PARTICIPANT;
 						
-						$aParticipants			= $oItem->getParticipant();
-						
 						// Construction de la cellule avec la description
 						$this->_document->setFontSize(8);
 						$this->_document->setFontStyle(PDFManager::STYLE_DEFAULT);
@@ -445,12 +443,12 @@ class PlanningPDFHelper extends PlanningHelper {
 						$this->_document->setXY($nPositionX, $nPositionParticipant);
 						$this->_document->resetFontDefault();
 						$this->_document->setFontStyle(PDFManager::STYLE_BOLD);
-						$this->_document->addCell($nCellWidth, self::PDF_INTERLINE_PARTICIPANT_SIZE, implode(" - ", $oItem->getParticipant(Planning_ItemHelper::TYPE_PRINCIPAL)), null, PDFManager::ALIGN_CENTER);
+						$this->_document->addCell($nCellWidth, self::PDF_INTERLINE_PARTICIPANT_SIZE, implode(" - ", $oItem->getParticipant(Planning_ItemHelper::TYPE_PRINCIPAL, DataHelper::DATA_TYPE_PDF)), null, PDFManager::ALIGN_CENTER);
 
 						// Ajout des participants SECONDAIRE
 						$this->_document->setX($nPositionX);
 						$this->_document->setFontStyle(PDFManager::STYLE_DEFAULT);
-						$this->_document->addCell($nCellWidth, self::PDF_INTERLINE_PARTICIPANT_SIZE, nl2br(implode(" - ", $oItem->getParticipant(Planning_ItemHelper::TYPE_SECONDAIRE))), null, PDFManager::ALIGN_CENTER);
+						$this->_document->addCell($nCellWidth, self::PDF_INTERLINE_PARTICIPANT_SIZE, nl2br(implode(" - ", $oItem->getParticipant(Planning_ItemHelper::TYPE_SECONDAIRE, DataHelper::DATA_TYPE_PDF))), null, PDFManager::ALIGN_CENTER);
 					} elseif (!$aBackground[$dNow] && $heure >= $aStart[$dNow]) {
 						// Récupération de la progression si elle existe
 						$oItem					= @$this->_aItems[$dNow][sprintf('%02d:%02d', $aStart[$dNow], 0)];

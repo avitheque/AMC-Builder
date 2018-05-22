@@ -35,8 +35,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 122 $
- * @since		$LastChangedDate: 2018-05-16 19:39:10 +0200 (Wed, 16 May 2018) $
+ * @version		$LastChangedRevision: 126 $
+ * @since		$LastChangedDate: 2018-05-22 19:53:26 +0200 (Tue, 22 May 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -289,9 +289,10 @@ class Planning_ItemHelper {
 	 * @brief	Récupération de la liste des participants à l'élément
 	 * 
 	 * @param	string	$iType				: (optionnel) type de(s) participant(s) parmi les constantes `TYPE_PRINCIPAL` ou `TYPE_SECONDAIRE`.
+	 * @param	string	$iFormat			: (optionnel) type de format définit dans la classe DataHelper.
 	 * @return	array
 	 */
-	public function getParticipant($iType = null) {
+	public function getParticipant($iType = null, $iFormat = DataHelper::DATA_TYPE_STR) {
 		// Initialisation des éléments de liste
 		$aPrincipal						= array();
 		$aSecondaire					= array();
@@ -299,9 +300,9 @@ class Planning_ItemHelper {
 		// Parcours de la liste des participants
 		foreach ($this->_participant as $sLabel) {
 			if (preg_match(self::PATTERN_PRINCIPAL, $sLabel, $aMatched)) {
-				$aPrincipal[]			= trim($aMatched[1]);
+				$aPrincipal[]			= DataHelper::convertToString($aMatched[1], $iFormat);
 			} else {
-				$aSecondaire[]			= trim($sLabel);
+				$aSecondaire[]			= DataHelper::convertToString($sLabel, $iFormat);
 			}
 		}
 		
@@ -527,6 +528,16 @@ class Planning_ItemHelper {
 	}
 
 	/**
+	 * @brief	Ajout d'un status d'état à l'élément
+	 *
+	 * @param	boolean	$bUpdate			: valeur du status de modification.
+	 * @return	void
+	 */
+	public function setUpdateStatus($bStatus = false) {
+		$this->_update					= (int) $bStatus;
+	}
+
+	/**
 	 * @brief	Ajout d'un groupe de participants à l'élément
 	 *
 	 * @param	mixed	$nIdGroupe			: identidiants du groupe de participants.
@@ -621,7 +632,7 @@ class Planning_ItemHelper {
 					$this->_titleHTML .= "\n\t└─ " . DataHelper::extractContentFromHTML($sNomHTML);
 				}
 			}
-
+			
 			// Indicateur de conflit sur la cellule
 			$sPanelClass				= $this->hasConflict()			? self::PANEL_CONFLICT_CSS	: null;
 			
@@ -636,15 +647,12 @@ class Planning_ItemHelper {
 								<article title=\"" . $this->_titleHTML . "\" class='job padding-0' align='center'>
 									<h3 class='strong left max-width'>" . $this->_title . "</h3>
 									<div class='content center'>
-										<p class='planning-item-location center $sConflictLocation'>" . $this->_describe . "</p>
-										
+										<p class='planning-item-describe center $sConflictLocation'>" . $this->_describe . "</p>
 										<section class='planning-item-content'>" . $this->_content . "</section>
-										
 										<ul class='planning-item-participant $sConflictParticipant'>
 											<li class='principal'>" . implode(" - ", $this->getParticipant(self::TYPE_PRINCIPAL)) . "</li>
 											<li class='secondaire'>" . implode(" - ", $this->getParticipant(self::TYPE_SECONDAIRE)) . "</li>
 										</ul>
-										
 										<input type=\"hidden\" value=" . $this->_id			. " name=\"tache_id[]\">
 										<input type=\"hidden\" value=" . $this->_year		. " name=\"tache_annee[]\">
 										<input type=\"hidden\" value=" . $this->_month		. " name=\"tache_mois[]\">
@@ -652,6 +660,7 @@ class Planning_ItemHelper {
 										<input type=\"hidden\" value=" . $this->_hour		. " name=\"tache_heure[]\">
 										<input type=\"hidden\" value=" . $this->_minute		. " name=\"tache_minute[]\">
 										<input type=\"hidden\" value=" . $this->_duration	. " name=\"tache_duree[]\">
+										<input type=\"hidden\" value=" . $this->_location	. " name=\"tache_location[]\">
 										<input type=\"hidden\" value=" . $this->_groupe		. " name=\"tache_groupe[]\">
 										<input type=\"hidden\" value=" . $this->_update		. " name=\"tache_update[]\">
 									</div>
