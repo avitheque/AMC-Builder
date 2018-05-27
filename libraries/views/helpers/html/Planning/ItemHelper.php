@@ -19,6 +19,8 @@
  * 			<input type="hidden" name="tache_heure[]" />
  * 			<input type="hidden" name="tache_minute[]" />
  * 			<input type="hidden" name="tache_duree[]" />
+ * 			<input type="hidden" name="tache_matter[]" />
+ * 			<input type="hidden" name="tache_location[]" />
  * 			<input type="hidden" name="tache_groupe[]" />
  * 			<input type="hidden" name="tache_update[]" />
  * 		</div>
@@ -35,8 +37,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 126 $
- * @since		$LastChangedDate: 2018-05-22 19:53:26 +0200 (Tue, 22 May 2018) $
+ * @version		$LastChangedRevision: 128 $
+ * @since		$LastChangedDate: 2018-05-25 18:39:45 +0200 (Fri, 25 May 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -74,21 +76,19 @@ class Planning_ItemHelper {
 	 * @var		string
 	 */
 	protected	$_id					= null;
-	public		$_title					= "Jour de la semaine";
+	public		$_title					= "Nom de la matière";
+	public		$_matter				= 0;
 
 	public		$_content				= "";
-	
-	public		$_location				= 0;
+
 	public		$_describe				= "";
+	public		$_location				= 0;
 	public		$_conflit_location		= false;
 	
 	public		$_groupe				= 0;
 	public		$_participant			= array();
 	public		$_conflit_participant	= false;
 	
-	protected	$_hrefZoomIn			= "#";
-	protected	$_hrefTrash				= "#";
-	protected	$_class					= "";
 	protected	$_year					= 0;
 	protected	$_month					= 0;
 	protected	$_day					= 0;
@@ -96,16 +96,21 @@ class Planning_ItemHelper {
 	protected	$_minute				= 0;
 	protected	$_duration				= 1;
 	protected	$_compteur				= null;
-	protected	$_timer					= 60;
 	protected	$_update				= 0;
+
+	protected	$_timer					= 60;
+
+	protected	$_hrefZoomIn			= "#";
+	protected	$_hrefTrash				= "#";
+	protected	$_class					= "";
 
 	/**
 	 * @brief	Liste des noms de champs de test.
 	 * @var		array
 	 */
 	public static $LIST_ITEM_LABEL		= array(
-		1 => "_title",
-		2 => "_describe",
+		1 => "_matter",
+		2 => "_location",
 		3 => "_content",
 		4 => "_groupe"
 	);
@@ -132,13 +137,13 @@ class Planning_ItemHelper {
 	 * @endcode
 	 *
 	 * @param	mixed	$xId				: (optionnel) Identifiant de l'élément, NULL si aucun.
-	 * @param	string	$sTitle				: Titre de l'élément.
+	 * @param	string	$sTitle				: (optionnel) Titre de l'élément.
 	 * @param	string	$sDescribe			: (optionnel) Texte d'information relatif à l'élément.
 	 * @param	string	$sContentHTML		: (optionnel) Contenu HTML à ajouter en plus de la descrition.
 	 * @param	string	$sClass				: (optionnel) Classe CSS affecté à l'élément.
 	 * @return	void
 	 */
-	public function __construct($xId = null, $sTitle, $sDescribe = "", $sContentHTML = "", $sClass = "") {
+	public function __construct($xId = null, $sTitle = "", $sDescribe = "", $sContentHTML = "", $sClass = "") {
 		// Initialisation des paramètres
 		$this->_id						= $xId;
 		$this->_title					= trim($sTitle);
@@ -271,15 +276,23 @@ class Planning_ItemHelper {
 
 	/**
 	 * @brief	Récupération de la localisation de l'élément
-	 * @return	string
+	 * @return	integer
 	 */
 	public function getLocation() {
 		return $this->_location;
 	}
 
 	/**
+	 * @brief	Récupération de la matière de l'élément
+	 * @return	integer
+	 */
+	public function getMatter() {
+		return $this->_matter;
+	}
+
+	/**
 	 * @brief	Récupération du groupe de participants à l'élément
-	 * @return	array
+	 * @return	integer
 	 */
 	public function getGroupe() {
 		return $this->_groupe;
@@ -516,15 +529,32 @@ class Planning_ItemHelper {
 	}
 
 	/**
-	 * @brief	Ajout d'un groupe de locale à l'élément
+	 * @brief	Attribution d'une matière à l'élément
 	 *
-	 * @param	mixed	$nIdLocation		: identidiants du groupe du local.
-	 * @param	string	$sDescribe			: description du local.
+	 * @param	integer	$nIdMatter			: identidiants de la matière.
+	 * @param	string	$sLibelle			: description de la matière.
+	 * @param	integer	$nCompteur			: (optionnel) compteur de la matière.
 	 * @return	void
 	 */
-	public function setLocation($nIdLocation, $sDescribe = null) {
-		$this->_location				= $nIdLocation;
-		$this->_describe				= $sDescribe;
+	public function setMatter($nIdMatter, $sLibelle = null, $nCompteur = null) {
+		$this->_matter					= intval($nIdMatter);
+		$this->_title					= $sLibelle;
+		// Fonctionnalité réalisée si un compteur est passé en paramètre
+		if (!is_null($nCompteur)) {
+			$this->_compteur			= $nCompteur;
+		}
+	}
+
+	/**
+	 * @brief	Attribution d'une localisation à l'élément
+	 *
+	 * @param	integer	$nIdLocation		: identidiants du groupe du local.
+	 * @param	string	$sLibelle			: description du local.
+	 * @return	void
+	 */
+	public function setLocation($nIdLocation, $sLibelle = null) {
+		$this->_location				= intval($nIdLocation);
+		$this->_describe				= $sLibelle;
 	}
 
 	/**
@@ -660,6 +690,7 @@ class Planning_ItemHelper {
 										<input type=\"hidden\" value=" . $this->_hour		. " name=\"tache_heure[]\">
 										<input type=\"hidden\" value=" . $this->_minute		. " name=\"tache_minute[]\">
 										<input type=\"hidden\" value=" . $this->_duration	. " name=\"tache_duree[]\">
+										<input type=\"hidden\" value=" . $this->_matter		. " name=\"tache_matter[]\">
 										<input type=\"hidden\" value=" . $this->_location	. " name=\"tache_location[]\">
 										<input type=\"hidden\" value=" . $this->_groupe		. " name=\"tache_groupe[]\">
 										<input type=\"hidden\" value=" . $this->_update		. " name=\"tache_update[]\">
