@@ -13,7 +13,7 @@
 global $sArticle;
 // Initialisation de l'objet PlanningHTMLHelper sur une semaine de 7 jours à compter du 02/01/2017
 // Remarque : ici la semaine se termine le vendredi à 16:00
-$oPlanningProgression = new PlanningHTMLHelper("2017-01-02", 7, 8, 19, "8,13,18", "5:16-23,6,7", 60);
+$oPlanningProgression	= new PlanningHTMLHelper("2017-01-02", 7, 8, 19, "8,13,18", "5:16-23,6,7", 60);
 // Rendu du planning sous forme de progression
 $oPlanningProgression->setPlanningRender(PlanningHTMLHelper::FORMAT_PROGRESSION);
 // Ajout d'un jour férié : ici il ne sera pas visible !
@@ -22,13 +22,17 @@ $oPlanningProgression->addDateToDeprecated("2017-01-01");
 $oPlanningProgression->setModalAction("/planning/tache");
 
 // Création d'une entrée sur le PLANNING
-$oItem_2017_01_02_09		= new Planning_ItemHelper(1, "Administration", "Remise des documents");
-// Attribution de la durée de l'événement
+$oItem_2017_01_02_09	= new Planning_ItemHelper(129);
+// Attribution de la durée à l'événement
 $oItem_2017_01_02_09->setDuration(4);
-// Attribution de la date et l'heure de l'événement
+// Attribution de la date et l'heure à l'événement
 $oItem_2017_01_02_09->setDateTime("2017-01-02 09:00");
-// Ajout d'un participant PRINCIPAL à l'événement
-$oItem_2017_01_02_09->setParticipant(1, "John DOE", Planning_ItemHelper::TYPE_PRINCIPAL);
+// Attribution de la matière à l'événement
+$oItem_2017_01_02_09->setMatter(1234, "Administration");
+// Attribution du lieu où se déroule l'événement
+$oItem_2017_01_02_09->setLocation(1111, "Amphithéatre PRINCIPAL");
+// Attribution d'un participant PRINCIPAL à l'événement
+$oItem_2017_01_02_09->setTeam(7, "John DOE", Planning_ItemHelper::TYPE_PRINCIPAL);
 // Ajout de l'entrée au PLANNING
 $oPlanningProgression->addItem($oItem_2017_01_02_09);
 
@@ -43,20 +47,24 @@ $sArticle	.= "<fieldset class='padding-H-20'>
 						<span class='commentaire'>// Remarque : ici la semaine se termine le vendredi à 16:00</span><br/>
 						<span class='variable'>\$oPlanningProgression</span> = <span class='native'>new</span> PlanningHTMLHelper(<span class='texte pointer hover-bold' title=\"Date de début au format [Y-m-d]\">\"2017-01-02\"</span>, <span class='nombre pointer hover-bold' title=\"Nombre de jours à afficher\">7</span>, <span class='nombre pointer hover-bold' title=\"Heure de début de chaque jour de la semaine\">8</span>, <span class='nombre pointer hover-bold' title=\"Heure de fin de chaque jour de la semaine\">19</span>, <span class='texte pointer hover-bold' title=\"Liste des heures non travaillées\">\"8,13,18\"</span>, <span class='texte pointer hover-bold' title=\"Liste des identifiants de jours non travaillés\n1 = Lundi ;\n2 = Mardi ;\n3 = Mercredi ;\n4 = Jeudi ;\n5 = Vendredi ;\n6 = Samedi ;\n7 = Dimanche\">\"5:16-23,6-7\"</span>, <span class='nombre pointer hover-bold' title=\"Taille d'un bloc en minutes\">60</span>);<br/>
 						<span class='commentaire'>// Rendu du planning sous forme de progression</span><br/>
-						<span class='variable'>\$oPlanningProgression</span>->setPlanningRender(PlanningHTMLHelper::<span class='methode italic'>FORMAT_PROGRESSION</span>);<br/>
+						<span class='variable'>\$oPlanningProgression</span>->setPlanningRender(<span class='pointer hover-bold' title=\"Constante de la classe PlanningHTMLHelper\n&nbsp;&rarr; permet de définir le rendu sous forme de progression\">PlanningHTMLHelper::<span class='methode pointer italic'>FORMAT_PROGRESSION</span></span>);<br/>
 						<span class='commentaire'>// Ajout d'un jour férié : ici il ne sera pas visible !</span><br/>
 						<span class='variable'>\$oPlanningProgression</span>->addDateToDeprecated(<span class='texte pointer hover-bold' title=\"Date du jour à enregistrer comme non travaillé au format [Y-m-d]\">\"2017-01-01\"</span>);<br/>
 						<span class='commentaire'>// Chemin du moteur de recherche des tâches : bouton [Rechercher] du MODAL</span><br/>
 						<span class='variable'>\$oPlanningProgression</span>->setModalAction(<span class='texte pointer hover-bold' title=\"URL exploitée par le formulaire de recherche\">\"/planning/tache\"</span>);<br/>
 						<br />
 						<span class='commentaire'>// Création d'une entrée sur le PLANNING</span><br/>
-						<span class='variable'>\$oItem_2017_01_02_09</span> = <span class='native'>new</span> Planning_ItemHelper(<span class='nombre pointer hover-bold' title=\"Identifiant de la tâche\">1</span>, <span class='texte pointer hover-bold' title=\"Titre de la tâche\">\"Administration\"</span>, <span class='texte pointer hover-bold' title=\"Description de la tâche\">\"Remise des documents\"</span>);<br/>
-						<span class='commentaire'>// Attribution de la date et l'heure de l'événement</span><br/>
+						<span class='variable'>\$oItem_2017_01_02_09</span> = <span class='native'>new</span> Planning_ItemHelper(<span class='nombre pointer hover-bold' title=\"Identifiant de la tâche\">129</span>);<br/>
+						<span class='commentaire'>// Attribution de la date et l'heure à l'événement</span><br/>
 						<span class='variable'>\$oItem_2017_01_02_09</span>->setDateTime(<span class='texte pointer hover-bold' title=\"Enregistrement de la date et l'heure de la tâche au format [Y-m-d H:i]\">\"2017-01-02 09:00\"</span>);<br/>
-						<span class='commentaire'>// Attribution de la durée de l'événement</span><br/>
+						<span class='commentaire'>// Attribution de la durée à l'événement</span><br/>
 						<span class='variable'>\$oItem_2017_01_02_09</span>->setDuration(<span class='nombre pointer hover-bold' title=\"Renseignement de la durée de l'événement (1 par défaut)\">4</span>);<br/>
-						<span class='commentaire'>// Ajout d'un participant PRINCIPAL à l'événement</span><br/>
-						<span class='variable'>\$oItem_2017_01_02_09</span>->setParticipant(<span class='nombre pointer hover-bold' title=\"Identifiant du groupe associé à la liste des participants\">1</span>, <span class='texte pointer hover-bold' title=\"Nom du participant\">\"John DOE\"</span>, Planning_ItemHelper::<span class='methode italic'>TYPE_PRINCIPAL</span>);<br/>
+						<span class='commentaire'>// Attribution de la matière à l'événement</span><br/>
+						<span class='variable'>\$oItem_2017_01_02_09</span>->setMatter(<span class='nombre pointer hover-bold' title=\"Identifiant associé à la matière\">1234</span>, <span class='texte pointer hover-bold' title=\"Titre de la matière\">\"Administration\"</span>);<br/>
+						<span class='commentaire'>// Attribution du lieu où se déroule l'événement</span><br/>
+						<span class='variable'>\$oItem_2017_01_02_09</span>->setLocation(<span class='nombre pointer hover-bold' title=\"Identifiant associé au lieu\">1111</span>, <span class='texte pointer hover-bold' title=\"Libellé du lieu\">\"Amphithéatre PRINCIPAL\"</span>);<br/>
+						<span class='commentaire'>// Attribution d'un participant PRINCIPAL à l'événement</span><br/>
+						<span class='variable'>\$oItem_2017_01_02_09</span>->setTeam(<span class='nombre pointer hover-bold' title=\"Identifiant du groupe associé à la liste des participants\">7</span>, <span class='texte pointer hover-bold' title=\"Nom du participant\">\"John DOE\"</span>, <span class='pointer hover-bold' title=\"Constante de la classe Planning_ItemHelper\n&nbsp;&rarr; permet de définir le type de participant principal\">Planning_ItemHelper::<span class='methode pointer italic'>TYPE_PRINCIPAL</span></span>);<br/>
 						<span class='commentaire'>// Ajout de l'entrée au PLANNING</span><br/>
 						<span class='variable'>\$oPlanningProgression</span>->addItem(<span class='variable pointer hover-bold' title=\"Instance de Planning_ItemHelper\">\$oItem_2017_01_02_09</span>);<br/>
 						<br />
@@ -71,7 +79,7 @@ $sArticle	.= "<fieldset class='padding-H-20'>
 
 // Initialisation de l'objet PlanningHTMLHelper sur 60 jours à compter du 01/01/2017
 // Remarque : ici les semaines se terminent toutes le vendredi à 16:00
-$oPlanningCalendar = new PlanningHTMLHelper("01/01/2017", 60, 8, 19, "0-8,13,18-23", "5:16-23,6-7", 60);
+$oPlanningCalendar		= new PlanningHTMLHelper("01/01/2017", 60, 8, 19, "0-8,13,18-23", "5:16-23,6-7", 60);
 // Rendu du planning sous forme de calendrier
 $oPlanningCalendar->setPlanningRender(PlanningHTMLHelper::FORMAT_CALENDAR);
 // Ajout d'un jour férié : ici il sera visible !
@@ -80,13 +88,17 @@ $oPlanningCalendar->addDateToDeprecated("01/01/2017");
 $oPlanningCalendar->setModalAction("/planning/tache");
 
 // Création d'une entrée sur le PLANNING
-$oItem_2017_01_02_09		= new Planning_ItemHelper(1, "Administration", "Remise des documents");
-// Attribution de la date et l'heure de l'événement
-$oItem_2017_01_02_09->setDateTime("02/01/2017 09:00");
-// Attribution de la durée de l'événement
+$oItem_2017_01_02_09	= new Planning_ItemHelper(129);
+// Attribution de la durée à l'événement
 $oItem_2017_01_02_09->setDuration(4);
-// Ajout d'un participant PRINCIPAL à l'événement
-$oItem_2017_01_02_09->setParticipant(1, "John DOE", Planning_ItemHelper::TYPE_PRINCIPAL);
+// Attribution de la date et l'heure à l'événement
+$oItem_2017_01_02_09->setDateTime("2017-01-02 09:00");
+// Attribution de la matière à l'événement
+$oItem_2017_01_02_09->setMatter(1234, "Administration");
+// Attribution du lieu où se déroule l'événement
+$oItem_2017_01_02_09->setLocation(1111, "Amphithéatre PRINCIPAL");
+// Attribution d'un participant PRINCIPAL à l'événement
+$oItem_2017_01_02_09->setTeam(7, "John DOE", Planning_ItemHelper::TYPE_PRINCIPAL);
 // Ajout de l'entrée au PLANNING
 $oPlanningCalendar->addItem($oItem_2017_01_02_09);
 
@@ -101,20 +113,24 @@ $sArticle	.= "<fieldset class='padding-H-20'>
 						<span class='commentaire'>// Remarque : ici les semaines se terminent toutes le vendredi à 16:00</span><br/>
 						<span class='variable'>\$oPlanningCalendar</span> = <span class='native'>new</span> PlanningHTMLHelper(<span class='texte pointer hover-bold' title=\"Date de début au format [d/m/Y]\">\"01/01/2017\"</span>, <span class='nombre pointer hover-bold' title=\"Nombre de jours à afficher\">60</span>, <span class='nombre pointer hover-bold' title=\"Heure de début de chaque jour de la semaine\">8</span>, <span class='nombre pointer hover-bold' title=\"Heure de fin de chaque jour de la semaine\">19</span>, <span class='texte pointer hover-bold' title=\"Liste des heures non travaillées\">\"0-8,13,18-23\"</span>, <span class='texte pointer hover-bold' title=\"Liste des identifiants de jours non travaillés\n1 = Lundi ;\n2 = Mardi ;\n3 = Mercredi ;\n4 = Jeudi ;\n5 = Vendredi ;\n6 = Samedi ;\n7 = Dimanche\">\"5:16-23,6-7\"</span>, <span class='nombre pointer hover-bold' title=\"Taille d'un bloc en minutes\">60</span>);<br/>
 						<span class='commentaire'>// Rendu du planning sous forme de calendrier</span><br/>
-						<span class='variable'>\$oPlanningCalendar</span>->setPlanningRender(PlanningHTMLHelper::<span class='methode italic'>FORMAT_CALENDAR</span>);<br/>
+						<span class='variable'>\$oPlanningCalendar</span>->setPlanningRender(<span class='pointer hover-bold' title=\"Constante de la classe PlanningHTMLHelper\n&nbsp;&rarr; permet de définir le rendu sous forme de calendrier\">PlanningHTMLHelper::<span class='methode pointer italic'>FORMAT_CALENDAR</span></span>);<br/>
 						<span class='commentaire'>// Ajout d'un jour férié : ici il sera visible !</span><br/>
 						<span class='variable'>\$oPlanningCalendar</span>->addDateToDeprecated(<span class='texte pointer hover-bold' title=\"Date du jour à enregistrer comme non travaillé au format [d/m/Y]\">\"01/01/2017\"</span>);<br/>
 						<span class='commentaire'>// Chemin du moteur de recherche des tâches : bouton [Rechercher] du MODAL</span><br/>
 						<span class='variable'>\$oPlanningCalendar</span>->setModalAction(<span class='texte pointer hover-bold' title=\"URL exploitée par le formulaire de recherche\">\"/planning/tache\"</span>);<br/>
 						<br />
 						<span class='commentaire'>// Création d'une entrée sur le PLANNING</span><br/>
-						<span class='variable'>\$oItem_2017_01_02_09</span> = <span class='native'>new</span> Planning_ItemHelper(<span class='nombre pointer hover-bold' title=\"Identifiant de la tâche\">1</span>, <span class='texte pointer hover-bold' title=\"Titre de la tâche\">\"Administration\"</span>, <span class='texte pointer hover-bold' title=\"Description de la tâche\">\"Remise des documents\"</span>);<br/>
-						<span class='commentaire'>// Attribution de la date et l'heure de l'événement</span><br/>
-						<span class='variable'>\$oItem_2017_01_02_09</span>->setDateTime(<span class='texte pointer hover-bold' title=\"Enregistrement de la date et l'heure de la tâche au format [d/m/Y H:i]\">\"02/01/2017 09:00\"</span>);<br/>
-						<span class='commentaire'>// Attribution de la durée de l'événement</span><br/>
+						<span class='variable'>\$oItem_2017_01_02_09</span> = <span class='native'>new</span> Planning_ItemHelper(<span class='nombre pointer hover-bold' title=\"Identifiant de la tâche\">129</span>);<br/>
+						<span class='commentaire'>// Attribution de la date et l'heure à l'événement</span><br/>
+						<span class='variable'>\$oItem_2017_01_02_09</span>->setDateTime(<span class='texte pointer hover-bold' title=\"Enregistrement de la date et l'heure de la tâche au format [Y-m-d H:i]\">\"2017-01-02 09:00\"</span>);<br/>
+						<span class='commentaire'>// Attribution de la durée à l'événement</span><br/>
 						<span class='variable'>\$oItem_2017_01_02_09</span>->setDuration(<span class='nombre pointer hover-bold' title=\"Renseignement de la durée de l'événement (1 par défaut)\">4</span>);<br/>
-						<span class='commentaire'>// Ajout d'un participant PRINCIPAL à l'événement</span><br/>
-						<span class='variable'>\$oItem_2017_01_02_09</span>->setParticipant(<span class='nombre pointer hover-bold' title=\"Identifiant du groupe associé à la liste des participants\">1</span>, <span class='texte pointer hover-bold' title=\"Nom du participant\">\"John DOE\"</span>, Planning_ItemHelper::<span class='methode italic'>TYPE_PRINCIPAL</span>);<br/>
+						<span class='commentaire'>// Attribution de la matière à l'événement</span><br/>
+						<span class='variable'>\$oItem_2017_01_02_09</span>->setMatter(<span class='nombre pointer hover-bold' title=\"Identifiant associé à matière\">1234</span>, <span class='texte pointer hover-bold' title=\"Titre de la matière\">\"Administration\"</span>);<br/>
+						<span class='commentaire'>// Attribution du lieu où se déroule l'événement</span><br/>
+						<span class='variable'>\$oItem_2017_01_02_09</span>->setLocation(<span class='nombre pointer hover-bold' title=\"Identifiant associé au lieu\">1111</span>, <span class='texte pointer hover-bold' title=\"Libellé du lieu\">\"Amphithéatre PRINCIPAL\"</span>);<br/>
+						<span class='commentaire'>// Attribution d'un participant PRINCIPAL à l'événement</span><br/>
+						<span class='variable'>\$oItem_2017_01_02_09</span>->setTeam(<span class='nombre pointer hover-bold' title=\"Identifiant du groupe associé à la liste des participants\">7</span>, <span class='texte pointer hover-bold' title=\"Nom du participant\">\"John DOE\"</span>, <span class='pointer hover-bold' title=\"Constante de la classe Planning_ItemHelper\n&nbsp;&rarr; permet de définir le type de participant principal\">Planning_ItemHelper::<span class='methode pointer italic'>TYPE_PRINCIPAL</span></span>);<br/>
 						<span class='commentaire'>// Ajout de l'entrée au PLANNING</span><br/>
 						<span class='variable'>\$oPlanningCalendar</span>->addItem(<span class='variable pointer hover-bold' title=\"Instance de Planning_ItemHelper\">\$oItem_2017_01_02_09</span>);<br/>
 						<br />
@@ -150,13 +166,17 @@ $sArticle	.= "<fieldset class='padding-H-20'>
 						<span class='variable'>\$oPlanningPDF</span>->setLegend(<span class='texte pointer hover-bold' title=\"Texte affiché en dessous de la progression\">\"Toute modification fera l'objet d'un nouveau document.\"</span>);<br/>
 						<br />
 						<span class='commentaire'>// Création d'une entrée sur le PLANNING</span><br/>
-						<span class='variable'>\$oItem_2017_01_02_09</span> = <span class='native'>new</span> Planning_ItemHelper(<span class='nombre pointer hover-bold' title=\"Identifiant de la tâche\">1</span>, <span class='texte pointer hover-bold' title=\"Titre de la tâche\">\"Administration\"</span>, <span class='texte pointer hover-bold' title=\"Description de la tâche\">\"Remise des documents\"</span>);<br/>
-						<span class='commentaire'>// Attribution de la date et l'heure de l'événement</span><br/>
+						<span class='variable'>\$oItem_2017_01_02_09</span> = <span class='native'>new</span> Planning_ItemHelper(<span class='nombre pointer hover-bold' title=\"Identifiant de la tâche\">129</span>);<br/>
+						<span class='commentaire'>// Attribution de la date et l'heure à l'événement</span><br/>
 						<span class='variable'>\$oItem_2017_01_02_09</span>->setDateTime(<span class='texte pointer hover-bold' title=\"Enregistrement de la date et l'heure de la tâche au format [Y-m-d H:i]\">\"2017-01-02 09:00\"</span>);<br/>
-						<span class='commentaire'>// Attribution de la durée de l'événement</span><br/>
+						<span class='commentaire'>// Attribution de la durée à l'événement</span><br/>
 						<span class='variable'>\$oItem_2017_01_02_09</span>->setDuration(<span class='nombre pointer hover-bold' title=\"Renseignement de la durée de l'événement (1 par défaut)\">4</span>);<br/>
-						<span class='commentaire'>// Ajout d'un participant PRINCIPAL à l'événement</span><br/>
-						<span class='variable'>\$oItem_2017_01_02_09</span>->setParticipant(<span class='nombre pointer hover-bold' title=\"Identifiant du groupe associé à la liste des participants\">1</span>, <span class='texte pointer hover-bold' title=\"Nom du participant\">\"John DOE\"</span>, Planning_ItemHelper::<span class='methode italic'>TYPE_PRINCIPAL</span>);<br/>
+						<span class='commentaire'>// Attribution de la matière à l'événement</span><br/>
+						<span class='variable'>\$oItem_2017_01_02_09</span>->setMatter(<span class='nombre pointer hover-bold' title=\"Identifiant associé à la matière\">1234</span>, <span class='texte pointer hover-bold' title=\"Titre de la matière\">\"Administration\"</span>);<br/>
+						<span class='commentaire'>// Attribution du lieu où se déroule l'événement</span><br/>
+						<span class='variable'>\$oItem_2017_01_02_09</span>->setLocation(<span class='nombre pointer hover-bold' title=\"Identifiant associé au lieu\">1111</span>, <span class='texte pointer hover-bold' title=\"Libellé du lieu\">\"Amphithéatre PRINCIPAL\"</span>);<br/>
+						<span class='commentaire'>// Attribution d'un participant PRINCIPAL à l'événement</span><br/>
+						<span class='variable'>\$oItem_2017_01_02_09</span>->setTeam(<span class='nombre pointer hover-bold' title=\"Identifiant du groupe associé à la liste des participants\">7</span>, <span class='texte pointer hover-bold' title=\"Nom du participant\">\"John DOE\"</span>, <span class='pointer hover-bold' title=\"Constante de la classe Planning_ItemHelper\n&nbsp;&rarr; permet de définir le type de participant principal\">Planning_ItemHelper::<span class='methode pointer italic'>TYPE_PRINCIPAL</span></span>);<br/>
 						<span class='commentaire'>// Ajout de l'entrée au PLANNING</span><br/>
 						<span class='variable'>\$oPlanningPDF</span>->addItem(<span class='variable pointer hover-bold' title=\"Instance de Planning_ItemHelper\">\$oItem_2017_01_02_09</span>);<br/>
 						<br />

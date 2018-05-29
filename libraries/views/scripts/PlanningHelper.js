@@ -1,8 +1,8 @@
 /**
  * JavaScript relatif à la classe PlanningHelper.
- *
+ * 
  * Les premiers éléments d'initialisation du JavaScript sont chargés par PHP dans PlanningHelper.
- *
+ * 
  * @li	Les CELLULES du PLANNING sont identifiées par un nom unique de type `planning-Y-m-d-h`
  * @code
  * 	<dl class="diary">
@@ -14,18 +14,21 @@
  * 		</dd>
  * 	</dl>
  * @endcode
- *
+ * 
  * @li	Variables injectées par PHP via la classe PlanningHelper
  * @code
  * 	globale	PLANNING_DEBUG		: boolean
  * 	globale	PLANNING_MD5		: array
  *	globale PLANNING_CELL_WIDTH	: array
  * @endcode
- *
- * @li	Variables déclarées dans `main.js`
+ * 
+ * @li		Manipulation de la VARIABLE GLOBALE JavaScript `FW_FORM_UPDATE`
+ * @see		ViewRender::setFormUpdateStatus(boolean);
+ * @see		/public/scripts/main.js;
  * @code
- * 	globale	MODIFICATION		: boolean
+ * 		var	FW_FORM_UPDATE	= false;
  * @endcode
+ * 
  * User: durandcedric
  * Date: 25/09/16
  * Time: 11:43
@@ -47,8 +50,8 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 	// Constantes de gestion du PLANNING
 	var PLANNING_MD5_PREFIXE	= "planning-item-";
 	var PLANNING_ITEM_REGEXP	= /^planning-[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}-[0-9]+$/;
-	var PLANNING_ITEM_ATTRIBUTE	= ["tache_annee", "tache_mois", "tache_jour", "tache_heure"];
-	var PLANNING_ITEM_IGNORE	= ["tache_groupe", "tache_duree"];
+	var PLANNING_ITEM_ATTRIBUTE	= ["task_year", "task_month", "task_day", "task_hour"];
+	var PLANNING_ITEM_IGNORE	= ["task_matterId", "task_locationId", "task_teamId", "task_duration"];
 	var PLANNING_MOUSEHOVER		= false;
 	var PLANNING_ERROR			= false;
 	var PLANNING_HELPER			= new Array();
@@ -84,7 +87,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 			uniqueId.push($(this).find("input[name^=" + PLANNING_ITEM_ATTRIBUTE[$i] + "]").val());
 		}
 
-		// Formatage sous forme de chaîne de caractères `planning-{tache_annee}-{tache_mois}-{tache_jour}-{tache_heure}`
+		// Formatage sous forme de chaîne de caractères `planning-{task_year}-{task_month}-{task_day}-{task_hour}`
 		return uniqueId.join("-");
 	};
 
@@ -119,7 +122,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 
 			// Indicateur sur l'ensemble de la période
 			var $aItem = $(this).attr("id").split("-");
-			var $duree = ui.helper.find("input[name^=tache_duree]").val();
+			var $duree = ui.helper.find("input[name^=task_duration]").val();
 
 			// Suppression de la coloration erronée de la cellule par défaut
 			$("dd[class*=planning].conflict", "section#" + MD5).removeClass("conflict");
@@ -456,7 +459,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 						}
 
 						// Actualisation des éléments du planning
-						setPlanningItemAttribute('tache_duree', $(this).val(), MD5);
+						setPlanningItemAttribute('task_duration', $(this).val(), MD5);
 
 						// Actualisation de la largeur des cellules
 						updateCellWidth(false, MD5);
@@ -477,7 +480,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 		// Récupération de l'identifiant unique de la tâche
 		var origineUniqueId				= this.getUniqueId();
 		// Récupération de la valeur de l'attribut de durée d'origine
-		var origineDuree				= this.find("input[name^=tache_duree]").val();
+		var origineDuree				= this.find("input[name^=task_duration]").val();
 
 		// Fonctionnalité réalisée si la valeur de la durée de la tâche est différente
 		if (newDuree != undefined && newDuree != origineDuree) {
@@ -488,8 +491,8 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 			$("dd[class*=planning]." + origineUniqueId, "section#" + MD5).removeClass(origineUniqueId);
 
 			// Modification du champ caché de l'attribut de durée de la tâche
-			$(this).find("input[name^=tache_duree]").val(newDuree);
-			$(this).find("input[name^=tache_update]").val(PLANNING_UPDATE);
+			$(this).find("input[name^=task_duration]").val(newDuree);
+			$(this).find("input[name^=task_update]").val(PLANNING_UPDATE);
 
 			// Récupération de la nouvelle identité
 			var uniqueId				= $(this).getUniqueId();
@@ -611,7 +614,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 			// Variables temporaires de manipulation des éléments
 			var $item					= $(this);
 			var MD5						= $item.parents("section").attr("id");
-			var $dureeItem				= $item.find("input[name^=tache_duree]");
+			var $dureeItem				= $item.find("input[name^=task_duration]");
 			var dureeValue				= $dureeItem.val();
 
 			// Champs DUREE
@@ -626,7 +629,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 				}
 
 				// Actualisation du champ caché du MODAL
-				$modal.find("input[name^=tache_duree]").val($(this).val());
+				$modal.find("input[name^=task_duration]").val($(this).val());
 			});
 
 			// Affichage du MODAL après un délais
@@ -692,7 +695,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 		var MD5							= $(this).parents("section").attr("id");
 
 		// Activation de l'alerte d'enregistrement
-		MODIFICATION					= true;
+		FW_FORM_UPDATE					= true;
 
 		// Récupération de l'identifiant unique selon les attributs de la tâche
 		var uniqueId					= $(this).getUniqueId();
@@ -708,10 +711,10 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 			if (tacheItem.length > 1) {
 				// Recherche des éléments à supprimer
 				tacheItem.each(function() {
-					var annee	= parseInt($(this).find("input[name^=tache_annee]").val());		// année de la tâche
-					var mois	= parseInt($(this).find("input[name^=tache_mois]").val());		// mois de la tâche
-					var jour	= parseInt($(this).find("input[name^=tache_jour]").val());		// jour de la tâche
-					var heure	= parseInt($(this).find("input[name^=tache_heure]").val());		// heure de la tâche
+					var annee	= parseInt($(this).find("input[name^=task_year]").val());		// année de la tâche
+					var mois	= parseInt($(this).find("input[name^=task_month]").val());		// mois de la tâche
+					var jour	= parseInt($(this).find("input[name^=task_day]").val());		// jour de la tâche
+					var heure	= parseInt($(this).find("input[name^=task_hour]").val());		// heure de la tâche
 				
 					// Fonctionnalité réalisée si la tâche correspond à celle devant être supprimée
 					if (uniqueId == "planning-" + annee + "-" + mois + "-" + jour + "-" + heure) {
@@ -752,16 +755,16 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 		$("section#" + MD5).find("dd li.item").each(function() {
 			// Initialisation de l'objet au format JSON
 			item.push({
-				'id':					$(this).find("input[name^=tache_id]").val(),				// identifiant de la tâche
-				'annee':				parseInt($(this).find("input[name^=tache_annee]").val()),	// année de la tâche
-				'mois':					parseInt($(this).find("input[name^=tache_mois]").val()),	// mois de la tâche
-				'jour':					parseInt($(this).find("input[name^=tache_jour]").val()),	// jour de la tâche
-				'heure':				parseInt($(this).find("input[name^=tache_heure]").val()),	// heure de la tâche
-				'minute':				parseInt($(this).find("input[name^=tache_minute]").val()),	// minute de la tâche
-				'duree':				parseInt($(this).find("input[name^=tache_duree]").val()),	// durée de la tâche
-				'location':				$(this).find("input[name^=tache_location]").val(),			// identifiant de la localisation
-				'groupe':				$(this).find("input[name^=tache_groupe]").val(),			// identifiant du groupe des participants affecté à la tâche
-				'update':				parseInt($(this).find("input[name^=tache_update]").val())	// indicateur de modification de la tâche
+				'id':					$(this).find("input[name^=task_id]").val(),					// identifiant de la tâche
+				'year':					parseInt($(this).find("input[name^=task_year]").val()),		// année de la tâche
+				'month':				parseInt($(this).find("input[name^=task_month]").val()),	// mois de la tâche
+				'day':					parseInt($(this).find("input[name^=task_day]").val()),		// jour de la tâche
+				'hour':					parseInt($(this).find("input[name^=task_hour]").val()),		// heure de la tâche
+				'minute':				parseInt($(this).find("input[name^=task_minute]").val()),	// minute de la tâche
+				'duration':				parseInt($(this).find("input[name^=task_duration]").val()),	// durée de la tâche
+				'locationId':			$(this).find("input[name^=task_locationId]").val(),			// identifiant de la localisation
+				'teamId':				$(this).find("input[name^=task_teamId]").val(),				// identifiant du groupe des participants affecté à la tâche
+				'update':				parseInt($(this).find("input[name^=task_update]").val())	// indicateur de modification de la tâche
 			});
 		});
 		alert(JSON.stringify(item));
@@ -802,18 +805,18 @@ function addItem(MD5, $source, $destination) {
 	$content.removeClass("error");
 
 	// Activation de l'alerte d'enregistrement
-	MODIFICATION = true;
+	FW_FORM_UPDATE						= true;
 
 	// Récupération des attributs de destination contenus dans l'ID du type `planning-annee-mois-jour-heure`
-	var attributes = $($destination).attr("id").split('-');
+	var attributes						= $($destination).attr("id").split('-');
 
 	// Mise à jour des attributs de la CELLULE
-	$($content).find("input[name^=tache_annee]").val(typeof(attributes[1])	!= 'undefined' ? attributes[1] : 0);	// Valeur de l'année
-	$($content).find("input[name^=tache_mois]").val(typeof(attributes[2])	!= 'undefined' ? attributes[2] : 0);	// Valeur du mois
-	$($content).find("input[name^=tache_jour]").val(typeof(attributes[3])	!= 'undefined' ? attributes[3] : 0);	// Valeur du jours
-	$($content).find("input[name^=tache_heure]").val(typeof(attributes[4])	!= 'undefined' ? attributes[4] : 0);	// Valeur de l'heure
-	$($content).find("input[name^=tache_minute]").val(typeof(attributes[5])	!= 'undefined' ? attributes[5] : 0);	// Valeur de la minute
-	$($content).find("input[name^=tache_update]").val(PLANNING_UPDATE);												// Valeur de modification du PLANNING
+	$($content).find("input[name^=task_year]").val(typeof(attributes[1])	!= 'undefined' ? attributes[1] : 0);	// Valeur de l'année
+	$($content).find("input[name^=task_month]").val(typeof(attributes[2])	!= 'undefined' ? attributes[2] : 0);	// Valeur du mois
+	$($content).find("input[name^=task_day]").val(typeof(attributes[3])		!= 'undefined' ? attributes[3] : 0);	// Valeur du jours
+	$($content).find("input[name^=task_hour]").val(typeof(attributes[4])	!= 'undefined' ? attributes[4] : 0);	// Valeur de l'heure
+	$($content).find("input[name^=task_minute]").val(typeof(attributes[5])	!= 'undefined' ? attributes[5] : 0);	// Valeur de la minute
+	$($content).find("input[name^=task_update]").val(PLANNING_UPDATE);												// Valeur de modification du PLANNING
 
 	// Ajoute l'élément sélectionné
 	$content.fadeOut(function() {
@@ -845,7 +848,7 @@ function addItem(MD5, $source, $destination) {
 
 		// Indicateur sur l'ensemble de la période
 		var $aItem						= $($destination).attr("id").split("-");
-		var $duree						= $("input[name^=tache_duree]", $content).val();
+		var $duree						= $("input[name^=task_duration]", $content).val();
 
 		// Coloration des cellules voisines sur toute la période de la tâche
 		for (var i = 1 ; i < parseInt($duree) ; i++) {
@@ -914,7 +917,7 @@ function updateCellWidth(bResize, MD5) {
 				// Fonctionnalité réalisée pour chaque cellule
 				$("li.item", this).each(function() {
 					// Récupération de la durée contenue dans les attributs de la tâche
-					duree				= $(this).find("input[name^=tache_duree]").val();
+					duree				= $(this).find("input[name^=task_duration]").val();
 					// Modification de la durée de la tâche
 					$(this).updateDuree(duree, MD5);
 				});

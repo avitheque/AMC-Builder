@@ -21,66 +21,71 @@ $aListeElements		= $oInstanceStorage->issetData('liste_taches')	? $oInstanceStor
 // Durée par défaut
 $nDureeDefaut		= $oInstanceStorage->issetData('item_duree')	? $oInstanceStorage->getData('item_duree')		: 1;
 
-/** Construction de chaque élément disponible de la forme suivante :
+/**
+ * @brief	Construction de chaque élément disponible de la forme suivante :
  *
  * @code
  *	array(
- *		'planning_id'		=> null,
- *		'tache_id'			=> "A",
- *		'tache_title'		=> "Élément A",
- *		'tache_location'	=> 1,
- *		'tache_describe'	=> "Description de la tâche...",
- *		'tache_groupe'		=> 1,
- *		'tache_participant'	=> "Personne 1, Personne 2, Personne 3",
- *		'tache_annee'		=> null,
- *		'tache_mois'		=> null,
- *		'tache_jour'		=> null,
- *		'tache_heure'		=> null,
- *		'tache_duree'		=> 1,
- *		'tache_update'		=> 0
+ *		'task_id'			=> 1111,														// Identifiant de la tâche en base de données
+ *
+ *		'task_matter'		=> "Élément A",													// Titre de la matière affectée à la tâche
+ *		'task_matterId'		=> 1,															// Identifiant de la matière
+ *
+ *		'task_location'		=> "Localisation de la tâche...",								// Libellé de la localisation affectée à la tâche
+ *		'task_locationId'	=> 1,															// Identifiant de la localisation
+ *
+ *		'task_team'			=> array("<B>Principal</B>", "Secondaire A, "Secondaire B"),	// Liste des participants, les participants PRINCIPAUX sont contenus entre les balses <B>*</B>
+ *		'task_teamId'		=> 1,															// Identifiant de la liste des participants
+ *
+ *		'task_year'			=> null,														// \
+ *		'task_month'		=> null,														//  \
+ *		'task_day'			=> null,														//   \ L'ensemble de ces champs sont
+ *		'task_hour'			=> null,														//   / modifiés automatiquement par JS
+ *		'task_minute'		=> null,														//  /
+ *		'task_duration'		=> null,														// /
+ *
+ *		'task_update'		=> 0															// Indicateur de modification de la tâche
  *	);
  * @encode
  */
 foreach ($aListeElements as $aItem) {
-	// ID			: identifiant en base de données pour l'enregistrement
-	$nId			= DataHelper::get($aItem,	'planning_id',			DataHelper::DATA_TYPE_INT,		null);
 	// TACHE		: identifiant de la tâche en base de données (élément du planning, cours, ...)
-	$nTacheId 		= DataHelper::get($aItem,	'tache_id',				DataHelper::DATA_TYPE_INT,		null);
-	// TITRE		: titre de présentation de la tâche
-	$sTitle			= DataHelper::get($aItem,	'tache_title',			DataHelper::DATA_TYPE_STR,		null);
-	// LOCATION		: description de la tâche (éventuellement le numéro de SALLE)
-	$nIdLocation	= DataHelper::get($aItem,	'tache_location',		DataHelper::DATA_TYPE_INT,		null);
+	$nId 			= DataHelper::get($aItem,	'task_id',			DataHelper::DATA_TYPE_INT,		null);
+	// TITRE		: titre de la matière
+	$sMatter		= DataHelper::get($aItem,	'task_matter',		DataHelper::DATA_TYPE_STR,		null);
+	// MATIÈRE		: identifiant de la matière
+	$nIdMatter		= DataHelper::get($aItem,	'task_matterId',	DataHelper::DATA_TYPE_INT,		null);
 	// DESCRIPTION	: description de la tâche (éventuellement le numéro de SALLE)
-	$sDescription	= DataHelper::get($aItem,	'tache_describe',		DataHelper::DATA_TYPE_TXT,		null);
-	// GROUPE		: identifiant correspondant à la liste des personnels participants à la tâche
-	$nIdGroupe		= DataHelper::get($aItem,	'tache_groupe',			DataHelper::DATA_TYPE_INT,		null);
+	$sLocation		= DataHelper::get($aItem,	'task_location',	DataHelper::DATA_TYPE_TXT,		null);
+	// LOCATION		: localisation de la tâche (éventuellement le numéro de SALLE)
+	$nIdLocation	= DataHelper::get($aItem,	'task_locationId',	DataHelper::DATA_TYPE_INT,		null);
 	// PARTICIPANT	: liste des personnels participants à la tâche
-	$aParticipant	= DataHelper::get($aItem,	'tache_participant',	DataHelper::DATA_TYPE_ARRAY,	null);
+	$aListTeam		= DataHelper::get($aItem,	'task_team',		DataHelper::DATA_TYPE_ARRAY,	null);
+	// GROUPE		: identifiant correspondant à la liste des personnels participants à la tâche
+	$nIdTeam		= DataHelper::get($aItem,	'task_teamId',		DataHelper::DATA_TYPE_INT,		null);
 	// ANNEE		: année du PLANNING
-	$nYear			= DataHelper::get($aItem,	'tache_annee',			DataHelper::DATA_TYPE_INT,		null);
+	$nYear			= DataHelper::get($aItem,	'task_year',		DataHelper::DATA_TYPE_INT,		null);
 	// MOIS			: mois du PLANNING
-	$nMonth			= DataHelper::get($aItem,	'tache_mois',			DataHelper::DATA_TYPE_INT,		null);
+	$nMonth			= DataHelper::get($aItem,	'task_month',		DataHelper::DATA_TYPE_INT,		null);
 	// JOUR			: jour de positionnement de la tâche
-	$nDay			= DataHelper::get($aItem,	'tache_jour',			DataHelper::DATA_TYPE_INT,		null);
+	$nDay			= DataHelper::get($aItem,	'task_day',			DataHelper::DATA_TYPE_INT,		null);
 	// HEURE		: heure de début dans le JOUR
-	$nHour			= DataHelper::get($aItem,	'tache_heure',			DataHelper::DATA_TYPE_INT,		null);
+	$nHour			= DataHelper::get($aItem,	'task_hour',		DataHelper::DATA_TYPE_INT,		null);
 	// DUREE		: durée de la tâche si présente, sinon celle par défaut
-	$nDuration 		= DataHelper::get($aItem,	'tache_duree',			DataHelper::DATA_TYPE_INT,		$nDureeDefaut);
+	$nDuration 		= DataHelper::get($aItem,	'task_duration',	DataHelper::DATA_TYPE_INT,		$nDureeDefaut);
 	// UPDATE		: indicateur de modification de la tâch
-	$bUpdate 		= DataHelper::get($aItem,	'tache_update',			DataHelper::DATA_TYPE_BOOL,		false);
-
-	// Contenu HTMl de l'élément
-	$sContent		=  "<input type=\"hidden\" name=\"tache_participant[]\"	value=\"" . implode(" - ", $aParticipant) . "\" />";
+	$bUpdate 		= DataHelper::get($aItem,	'task_update',		DataHelper::DATA_TYPE_BOOL,		false);
 
 	// Création d'un nouvel élément
-	$oItem = new Planning_ItemHelper($nTacheId, $sTitle, null, $sContent);
+	$oItem = new Planning_ItemHelper($nId);
 	$oItem->setYear($nYear);							# Année à laquelle se déroule la tâche
 	$oItem->setMonth($nMonth);							# Mois auquel se déroule la tâche
 	$oItem->setDay($nDay);								# Jour auquel se déroule la tâche
 	$oItem->setHour($nHour);							# Heure de début de la tâche
 	$oItem->setDuration($nDuration);					# Durée de la tâche
-	$oItem->setLocation($nIdLocation, $sDescription);	# Localisation de la tâche
-	$oItem->setParticipant($nIdGroupe, $aParticipant);	# Liste des participants
+	$oItem->setMatter($nIdMatter, $sMatter);			# Matière de la tâche
+	$oItem->setLocation($nIdLocation, $sLocation);		# Localisation de la tâche
+	$oItem->setTeam($nIdTeam, $aListTeam);				# Liste des participants
 	$oItem->setUpdateStatus($bUpdate);					# Indicateur de modification
 	print $oItem->renderHTML();
 }

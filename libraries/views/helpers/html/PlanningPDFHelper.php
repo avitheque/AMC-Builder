@@ -10,8 +10,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 126 $
- * @since		$LastChangedDate: 2018-05-22 19:53:26 +0200 (Tue, 22 May 2018) $
+ * @version		$LastChangedRevision: 132 $
+ * @since		$LastChangedDate: 2018-05-29 23:13:23 +0200 (Tue, 29 May 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -407,7 +407,7 @@ class PlanningPDFHelper extends PlanningHelper {
 						$this->_document->setXY($nPositionX, $nPositionTitre);
 						$this->_document->setFontStyle(PDFManager::STYLE_BOLD);
 						
-						$nTextWidth				= strlen($oItem->getTitle()) * $this->_document->getFontSizePt();
+						$nTextWidth				= strlen($oItem->getMatter()) * $this->_document->getFontSizePt();
 						//$nLineHeight			= (self::PDF_INTERLINE_TITRE_SIZE - ($nTextWidth/$nCellWidth)) * 2;
 						$fWidthFactor			= $nCellWidth/$nTextWidth;
 						
@@ -422,33 +422,33 @@ class PlanningPDFHelper extends PlanningHelper {
 						if (intval($fTestText) / intval($fTestCell) >= self::PDF_INTERVAL_FACTEUR_RESIZE) {
 							// Taille du texte réduite
 							$this->_document->setFontSize(6);
-							$nLineHeight		= self::PDF_INTERLINE_TITRE_SIZE / str_word_count($oItem->getTitle());
+							$nLineHeight		= self::PDF_INTERLINE_TITRE_SIZE / str_word_count($oItem->getMatter());
 							$nDecalage			= $this->_document->getFontSize();
 						} else {
 							// Taille du texte normale
 							$nLineHeight		= self::PDF_INTERLINE_TITRE_SIZE * self::PDF_INTERVAL_FACTEUR_MULTIPLE;
 						}
 						
-						// Ajout du nom de la TÂCHE
+						// Ajout de la matière associée à la TÂCHE
 						$this->_document->setXY($nPositionX, $nPositionTop + $nDecalage + self::PDF_INTERLINE_TITRE_SIZE%($nLineHeight<1 ? 1 : intval($nLineHeight)));
-						$this->_document->addCell($nCellWidth, $this->_document->getFontSize(), nl2br($oItem->getTitle()), null, PDFManager::ALIGN_CENTER);
+						$this->_document->addCell($nCellWidth, $this->_document->getFontSize(), nl2br($oItem->getMatter()), null, PDFManager::ALIGN_CENTER);
 
-						// Ajout de la description de la TÂCHE
+						// Ajout de la localisation de la TÂCHE
 						$this->_document->setXY($nPositionX, $nPositionDescription);
 						$this->_document->setFontSize(8);
 						$this->_document->setFontStyle(PDFManager::STYLE_DEFAULT);
-						$this->_document->addCell($nCellWidth, $this->_document->getFontSize(), nl2br($oItem->getDescribe()), null, PDFManager::ALIGN_CENTER);
+						$this->_document->addCell($nCellWidth, $this->_document->getFontSize(), nl2br($oItem->getLocation()), null, PDFManager::ALIGN_CENTER);
 						
 						// Ajout des participants PRINCIPAUX
 						$this->_document->setXY($nPositionX, $nPositionParticipant);
 						$this->_document->resetFontDefault();
 						$this->_document->setFontStyle(PDFManager::STYLE_BOLD);
-						$this->_document->addCell($nCellWidth, self::PDF_INTERLINE_PARTICIPANT_SIZE, implode(" - ", $oItem->getParticipant(Planning_ItemHelper::TYPE_PRINCIPAL, DataHelper::DATA_TYPE_PDF)), null, PDFManager::ALIGN_CENTER);
+						$this->_document->addCell($nCellWidth, self::PDF_INTERLINE_PARTICIPANT_SIZE, implode(" - ", $oItem->getTeam(Planning_ItemHelper::TYPE_PRINCIPAL, DataHelper::DATA_TYPE_PDF)), null, PDFManager::ALIGN_CENTER);
 
 						// Ajout des participants SECONDAIRE
 						$this->_document->setX($nPositionX);
 						$this->_document->setFontStyle(PDFManager::STYLE_DEFAULT);
-						$this->_document->addCell($nCellWidth, self::PDF_INTERLINE_PARTICIPANT_SIZE, nl2br(implode(" - ", $oItem->getParticipant(Planning_ItemHelper::TYPE_SECONDAIRE, DataHelper::DATA_TYPE_PDF))), null, PDFManager::ALIGN_CENTER);
+						$this->_document->addCell($nCellWidth, self::PDF_INTERLINE_PARTICIPANT_SIZE, nl2br(implode(" - ", $oItem->getTeam(Planning_ItemHelper::TYPE_SECONDAIRE, DataHelper::DATA_TYPE_PDF))), null, PDFManager::ALIGN_CENTER);
 					} elseif (!$aBackground[$dNow] && $heure >= $aStart[$dNow]) {
 						// Récupération de la progression si elle existe
 						$oItem					= @$this->_aItems[$dNow][sprintf('%02d:%02d', $aStart[$dNow], 0)];

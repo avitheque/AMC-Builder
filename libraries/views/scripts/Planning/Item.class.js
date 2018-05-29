@@ -11,8 +11,8 @@ if (typeof(PLANNING_ITEM) == 'undefined') {
 	var PLANNING_ITEM_REGEXP	= /^planning-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]+$/;
 	var PLANNING_ITEM_FACTEUR	= 0.65;
 	var PLANNING_ITEM_MARGIN	= 10;
-	var PLANNING_ITEM_ATTRIBUTE	= ["tache_annee", "tache_mois", "tache_jour", "tache_heure"];
-	var PLANNING_ITEM_IGNORE	= ["tache_participant", "tache_duree"];
+	var PLANNING_ITEM_ATTRIBUTE	= ["task_year", "task_month", "task_day", "task_hour", "task_minute"];
+	var PLANNING_ITEM_IGNORE	= ["task_id", "task_duration", "task_locationId", "task_teamId"];
 }
 
 /**

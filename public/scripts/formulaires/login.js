@@ -1,8 +1,12 @@
 /**
  * JavaScript de connexion à l'application.
- *
- * @global	MODIFICATION
- * @see		main.js
+ * 
+ * @li		Manipulation de la VARIABLE GLOBALE JavaScript `FW_FORM_UPDATE`
+ * @see		ViewRender::setFormUpdateStatus(boolean);
+ * @see		/public/scripts/main.js;
+ * @code
+ * 		var	FW_FORM_UPDATE	= false;
+ * @endcode
  */
 
 // Fonctionnalité jQuery réalisée à la fin du chargement de la page dans le navigateur client

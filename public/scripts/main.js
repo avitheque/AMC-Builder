@@ -3,11 +3,29 @@
  *
  * Les variables CONTROLLER et ACTION sont initialisées dans le contrôleur abstrait de l'application.
  * @see		{ROOT_PATH}/libraries/controllers/AbscractApplicationController.php
- *
+ * 
+ * @li		Manipulation de la VARIABLE GLOBALE JavaScript `FW_FORM_UPDATE`
+ * @see		ViewRender::setFormUpdateStatus(boolean);
+ * @see		/public/scripts/main.js;
+ * @code
+ * 		var	FW_FORM_UPDATE	= false;
+ * @endcode
+ * 
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
  */
+
+/**
+ * Initialisation de l'indicateur de modification du formulaire.
+ * 
+ * Fonctionnalité réalisée si la VARIABLE GLOBALE initialisée dans le SKEL n'est pas initialisée.
+ * @see		ViewRender::setFormUpdateStatus(boolean);
+ */
+if (typeof(FW_FORM_UPDATE) == 'undefined') {
+	// Initialisation de la VARIABLE GLOBALE d'indicateur de modification du formulaire
+	var FW_FORM_UPDATE = false;
+}
 
 /**
  * Plugin jQuery permettant de déplacer le scroll sur un élément.
@@ -226,7 +244,7 @@ function waitingStatement(event) {
 	event.stopImmediatePropagation();
 
 	// Fonctionnalité réalisée si aucune modification n'a été réalisée dans le formulaire
-	if (!MODIFICATION) {
+	if (!FW_FORM_UPDATE) {
 		// Activation de l'arrière-plan de protection contre les cliqueurs intempestifs durant le chargement
 		$("div#stop-click").css({display: "block"});
 
@@ -287,9 +305,6 @@ function resetTooltip(className, selector, option) {
 		$(selector).tooltip(option);
 	}
 };
-
-// Initialisation de l'indicateur de modification du formulaire
-var MODIFICATION = false;
 
 // Fonctionnalité jQuery réalisée à la fin du chargement de la page dans le navigateur client
 $(document).ready(function() {
@@ -424,7 +439,7 @@ $(document).ready(function() {
 		var selector		= "#dialog-confirm";
 
 		// Fonctionnalité réalisée dans le cas d'une boîte de dialogue pour finalisation
-		if (!MODIFICATION && $(this).hasClass("final-confirm")) {
+		if (!FW_FORM_UPDATE && $(this).hasClass("final-confirm")) {
 			// Modification de l'URL de la boîte de dialogue
 			button_or_url	= $(this);
 
@@ -433,7 +448,7 @@ $(document).ready(function() {
 		}
 
 		// Fonctionnalité réalisée si une modification a été réalisée sur le formulaire
-		if (MODIFICATION || $(this).hasClass("force-confirm") || $(this).hasClass("final-confirm")) {
+		if (FW_FORM_UPDATE || $(this).hasClass("force-confirm") || $(this).hasClass("final-confirm")) {
 			// Demande une confirmation avant le changement de la page
 			setDialogConfirm(selector, button_or_url);
 
@@ -487,7 +502,7 @@ $(document).ready(function() {
 		var url = $(this).attr("href");
 
 		// Fonctionnalité réalisée si une modification a été réalisée sur le formulaire ou si la CLASS comporte `force-confirm`
-		if (MODIFICATION || $(this).hasClass("force-confirm")) {
+		if (FW_FORM_UPDATE || $(this).hasClass("force-confirm")) {
 			// Demande une confirmation avant le changement de la page
 			setDialogConfirm("#dialog-confirm", url);
 
@@ -509,7 +524,7 @@ $(document).ready(function() {
 
 	// Informe de la modification d'un champ du formulaire
 	$("form").on("change", "input, select, textarea", function() {
-		MODIFICATION = true;
+		FW_FORM_UPDATE = true;
 	});
 
 	// Empêhe le focus du champ via le LABEL si le champ est désactivé ou en lecture seule
@@ -527,7 +542,7 @@ $(document).ready(function() {
 	// Fonctionnalité réalisée lors de la navigation entre menus
 	$("a", "nav").click(function(event) {
 		// Fonctionnalité réalisée si une modification a été réalisée sur le formulaire
-		if (MODIFICATION) {
+		if (FW_FORM_UPDATE) {
 			// Récupération de l'URL
 			var url = $(this).attr("href");
 

@@ -14,8 +14,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 81 $
- * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
+ * @version		$LastChangedRevision: 129 $
+ * @since		$LastChangedDate: 2018-05-29 22:12:23 +0200 (Tue, 29 May 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -47,7 +47,7 @@ abstract class AbstractDataManager {
 	 */
 	public function useDatabase($sBaseName = PDO_DBNAME) {
 		// Fonctionnalité réalisée si l'instance de la base de données a changé
-		if ((bool) PDO_ACTIVE && is_object($this->oSQLConnector) && $sBaseName != $this->sDataBaseName) {
+		if ((bool) PDO_ACTIVE && is_object($this->oSQLConnector) && $sBaseName != self::$DB_NAME) {
 			unset($this->oSQLConnector);
 		}
 		// Modification du nom de la Base de données

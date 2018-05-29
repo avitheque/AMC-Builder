@@ -14,7 +14,7 @@
 
 // Initialisation de l'objet PlanningPDFHelper sur une semaine de 5 jours à compter du 02/01/2017
 $oPlanningPDF			= new PlanningPDFHelper("2017-01-02", 5, 8, 19, 13, 1);
-// Entête de la formation avec le nom du Centre
+// Entête de la progression avec le nom du Centre
 $oPlanningPDF->setHeader("CENTRE DE FORMATION UNTEL");
 // Nom de la formation
 $oPlanningPDF->setFormationName("EXEMPLE");
@@ -28,13 +28,17 @@ $oPlanningPDF->setSignataireDate("2016-12-22");
 $oPlanningPDF->setLegend("Toute modification fera l'objet d'un nouveau document.");
 
 // Création d'une entrée sur le PLANNING
-$oItem_2017_01_02_09	= new Planning_ItemHelper(1, "Administration", "Remise des documents");
-// Attribution de la date et l'heure de l'événement
-$oItem_2017_01_02_09->setDateTime("02/01/2017 09:00");
+$oItem_2017_01_02_09	= new Planning_ItemHelper(129);
 // Attribution de la durée de l'événement
 $oItem_2017_01_02_09->setDuration(4);
-// Ajout d'un participant PRINCIPAL à l'événement
-$oItem_2017_01_02_09->setParticipant(1, "Jhon DOE", Planning_ItemHelper::TYPE_PRINCIPAL);
+// Attribution de la date et l'heure de l'événement
+$oItem_2017_01_02_09->setDateTime("2017-01-02 09:00");
+// Attribution de la matière à l'événement
+$oItem_2017_01_02_09->setMatter(1234, "Administration");
+// Attribution du lieu où se déroule l'événement
+$oItem_2017_01_02_09->setLocation(1111, "Amphithéatre PRINCIPAL");
+// Attribution d'un participant PRINCIPAL à l'événement
+$oItem_2017_01_02_09->setTeam(7, "John DOE", Planning_ItemHelper::TYPE_PRINCIPAL);
 // Ajout de l'entrée au PLANNING
 $oPlanningPDF->addItem($oItem_2017_01_02_09);
 

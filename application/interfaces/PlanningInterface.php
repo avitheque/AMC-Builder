@@ -5,14 +5,14 @@
  * @li Remarque :
  * Obligation de passer par une classe parce que les constantes ne supportent pas les tableaux !!!
  *
- * @name		LoginInterface
+ * @name		PlanningInterface
  * @category	Interface
  * @package		Main
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 130 $
+ * @since		$LastChangedDate: 2018-05-29 22:21:20 +0200 (Tue, 29 May 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -30,8 +30,17 @@ abstract class PlanningInterface {
 	 */
 	static $LIST_CHAMPS_FORM	= array(
 		// TÂCHE ************************************************************* (ordre alphabétique)
-		'tache_id'		=> DataHelper::DATA_TYPE_INT,
-		'tache_duree'	=> DataHelper::DATA_TYPE_INT
+		'task_id'			=> DataHelper::DATA_TYPE_INT,
+		'task_day'			=> DataHelper::DATA_TYPE_INT,
+		'task_duration'		=> DataHelper::DATA_TYPE_INT,
+		'task_hour'			=> DataHelper::DATA_TYPE_INT,
+		'task_minute'		=> DataHelper::DATA_TYPE_INT,
+		'task_month'		=> DataHelper::DATA_TYPE_INT,
+		'task_locationId'	=> DataHelper::DATA_TYPE_INT,
+		'task_matterId'		=> DataHelper::DATA_TYPE_INT,
+		'task_teamId'		=> DataHelper::DATA_TYPE_INT,
+		'task_update'		=> DataHelper::DATA_TYPE_INT,
+		'task_year'			=> DataHelper::DATA_TYPE_INT
 	);
 
 }

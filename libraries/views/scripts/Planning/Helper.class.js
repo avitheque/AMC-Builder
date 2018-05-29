@@ -105,7 +105,7 @@ Planning = function(id) {
 			}
 			
 			// Récupération de la durée de la tâche
-			var duration	= $oItem.find("input[name^=tache_duree]").val();
+			var duration	= $oItem.find("input[name^=task_duration]").val();
 		}
 
 		try {
@@ -258,7 +258,7 @@ Planning = function(id) {
 			}
 			
 			// Récupération de la durée de la tâche en cours de déplacement
-			var duration	= $oHelper.find("input[name^=tache_duree]").val();
+			var duration	= $oHelper.find("input[name^=task_duration]").val();
 		}
 		
 		// Fonctionnalité réalisée si l'élément passé en 2nd argument est un objet

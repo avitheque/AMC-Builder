@@ -3,6 +3,13 @@
  * User: durandcedric
  * Date: 25/09/16
  * Time: 11:43
+ * 
+ * @li		Manipulation de la VARIABLE GLOBALE JavaScript `FW_FORM_UPDATE`
+ * @see		ViewRender::setFormUpdateStatus(boolean);
+ * @see		/public/scripts/main.js;
+ * @code
+ * 		var	FW_FORM_UPDATE	= false;
+ * @endcode
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -223,7 +230,7 @@ function initGallery() {
 	var $recycle_icon	= "<a href=\"#\" title=\"Retirer cet élément\" class=\"ui-icon ui-icon-trash\">Retirer</a>";
 	function addItem($content) {
 		// Activation de l'alerte d'enregistrement
-		MODIFICATION = true;
+		FW_FORM_UPDATE = true;
 
 		// Ajout de l'élément à la liste des exclus
 		pushToExclude($content);
@@ -247,7 +254,7 @@ function initGallery() {
 	var $add_icon = "<a href=\'#' title=\'Ajouter cet élément\' class=\'ui-icon ui-icon-plus\'>Ajouter</a>";
 	function removeItem($content) {
 		// Activation de l'alerte d'enregistrement
-		MODIFICATION = true;
+		FW_FORM_UPDATE = true;
 
 		// Suppression de l'élément à la liste des exclus
 		deleteFromExclude($content);

@@ -5,6 +5,25 @@
  * Vue permettant de créer des éléments constituant le planning, pouvant être cliqué/glissé.
  *
  *
+ *		'task_id'			=> 1111,										// Identifiant de la tâche en base de données
+ *
+ *		'task_matterId'		=> "Élément A",									// Titre de la matière affectée à la tâche
+ *		'task_matterIdId'		=> 1,											// Identifiant de la matière
+ *
+ *		'task_locationId'		=> "Localisation de la tâche...",				// Libellé de la localisation affectée à la tâche
+ *		'task_locationIdId'	=> 1,											// Identifiant de la localisation
+ *
+ *		'task_team'			=> array("Personne 1, Personne 2, Personne 3"),	// Liste des participants, les participants PRINCIPAUX sont entourés de la balse <B></B>
+ *		'task_teamId'		=> 1,											// Identifiant de la liste des participants
+ *
+ *		'task_year'			=> null,
+ *		'task_month'		=> null,
+ *		'task_day'			=> null,
+ *		'task_hour'			=> null,
+ *		'task_minute'		=> null,
+ *		'task_duration'		=> null,
+ *
+ *		'task_update'		=> 0											// Indicateur de modification de la tâche
  *
  *
  * @li	Chaque élément HTML de la progression embarque des champs cachés renseignés via JavaScript :
@@ -12,17 +31,17 @@
  * <article class="job">
  * 		<div class="content">
  * 			(...)
- * 			<input type="hidden" name="tache_id[]" />
- * 			<input type="hidden" name="tache_annee[]" />
- * 			<input type="hidden" name="tache_mois[]" />
- * 			<input type="hidden" name="tache_jour[]" />
- * 			<input type="hidden" name="tache_heure[]" />
- * 			<input type="hidden" name="tache_minute[]" />
- * 			<input type="hidden" name="tache_duree[]" />
- * 			<input type="hidden" name="tache_matter[]" />
- * 			<input type="hidden" name="tache_location[]" />
- * 			<input type="hidden" name="tache_groupe[]" />
- * 			<input type="hidden" name="tache_update[]" />
+ * 			<input type="hidden" name="task_id[]" />
+ * 			<input type="hidden" name="task_year[]" />
+ * 			<input type="hidden" name="task_month[]" />
+ * 			<input type="hidden" name="task_day[]" />
+ * 			<input type="hidden" name="task_hour[]" />
+ * 			<input type="hidden" name="task_minute[]" />
+ * 			<input type="hidden" name="task_duration[]" />
+ * 			<input type="hidden" name="task_matterId[]" />
+ * 			<input type="hidden" name="task_locationId[]" />
+ * 			<input type="hidden" name="task_teamId[]" />
+ * 			<input type="hidden" name="task_update[]" />
  * 		</div>
  * </article
  * @endcode
@@ -37,8 +56,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 128 $
- * @since		$LastChangedDate: 2018-05-25 18:39:45 +0200 (Fri, 25 May 2018) $
+ * @version		$LastChangedRevision: 131 $
+ * @since		$LastChangedDate: 2018-05-29 22:56:39 +0200 (Tue, 29 May 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -66,6 +85,17 @@ class Planning_ItemHelper {
 	const		ITEM_CONFLICT_CSS		= 'item-conflict';
 
 	/**
+	 * @brief	Liste des noms de variables d'instance pour tester les différences.
+	 * @var		array
+	 */
+	public static $LIST_ITEM_LABEL		= array(
+		1		=> "_content",
+		2		=> "_locationId",
+		3		=> "_matterId",
+		4		=> "_teamId"
+	);
+
+	/**
 	 * Singleton de l'instance des échanges entre contrôleurs.
 	 * @var		InstanceStorage
 	 */
@@ -76,18 +106,19 @@ class Planning_ItemHelper {
 	 * @var		string
 	 */
 	protected	$_id					= null;
-	public		$_title					= "Nom de la matière";
-	public		$_matter				= 0;
+	
+	public		$_matter				= "Libellé de la matière";
+	public		$_matterId				= 0;
 
 	public		$_content				= "";
 
-	public		$_describe				= "";
-	public		$_location				= 0;
-	public		$_conflit_location		= false;
-	
-	public		$_groupe				= 0;
-	public		$_participant			= array();
-	public		$_conflit_participant	= false;
+	public		$_location				= "-";
+	public		$_locationId			= 0;
+	public		$_conflict_location		= false;
+
+	public		$_team					= array();
+	public		$_teamId				= 0;
+	public		$_conflict_team			= false;
 	
 	protected	$_year					= 0;
 	protected	$_month					= 0;
@@ -95,7 +126,7 @@ class Planning_ItemHelper {
 	protected	$_hour					= 0;
 	protected	$_minute				= 0;
 	protected	$_duration				= 1;
-	protected	$_compteur				= null;
+	protected	$_count					= null;
 	protected	$_update				= 0;
 
 	protected	$_timer					= 60;
@@ -103,17 +134,6 @@ class Planning_ItemHelper {
 	protected	$_hrefZoomIn			= "#";
 	protected	$_hrefTrash				= "#";
 	protected	$_class					= "";
-
-	/**
-	 * @brief	Liste des noms de champs de test.
-	 * @var		array
-	 */
-	public static $LIST_ITEM_LABEL		= array(
-		1 => "_matter",
-		2 => "_location",
-		3 => "_content",
-		4 => "_groupe"
-	);
 
 	/**
 	 * @brief	Indicateur de construction.
@@ -138,17 +158,17 @@ class Planning_ItemHelper {
 	 *
 	 * @param	mixed	$xId				: (optionnel) Identifiant de l'élément, NULL si aucun.
 	 * @param	string	$sTitle				: (optionnel) Titre de l'élément.
-	 * @param	string	$sDescribe			: (optionnel) Texte d'information relatif à l'élément.
+	 * @param	string	$sDescription		: (optionnel) Texte d'information relatif à l'élément.
 	 * @param	string	$sContentHTML		: (optionnel) Contenu HTML à ajouter en plus de la descrition.
 	 * @param	string	$sClass				: (optionnel) Classe CSS affecté à l'élément.
 	 * @return	void
 	 */
-	public function __construct($xId = null, $sTitle = "", $sDescribe = "", $sContentHTML = "", $sClass = "") {
+	public function __construct($xId = null, $sTitle = "", $sDescription = "", $sContentHTML = "", $sClass = "") {
 		// Initialisation des paramètres
 		$this->_id						= $xId;
-		$this->_title					= trim($sTitle);
-		$this->_describe				= trim($sDescribe);
-		$this->_content					= $sContentHTML;
+		$this->_matter					= trim($sTitle);
+		$this->_location				= trim($sDescription);
+		$this->_content					= trim($sContentHTML);
 		
 		// Initialisation de la classe CSS
 		$this->setClass($sClass);
@@ -243,7 +263,7 @@ class Planning_ItemHelper {
 	 * @return	integer
 	 */
 	public function getCompteur() {
-		return $this->_compteur;
+		return $this->_count;
 	}
 
 	/**
@@ -251,14 +271,14 @@ class Planning_ItemHelper {
 	 * @return	string
 	 */
 	public function getTitle() {
-		$sTitre							= $this->_title;
+		$sTitre							= $this->_matter;
 		// Fonctionnalité réalisée si un compteur de fin de séance est présent
-		if (!is_null($this->_compteur)) {
+		if (!is_null($this->_count)) {
 			// Initialisation du compteur de début de séance
-			$nDebut						= $this->_compteur - $this->getDuration() + 1;
+			$nDebut						= $this->_count - $this->getDuration() + 1;
 			
 			// Initialisation du compteur de fin de séance
-			$nFin						= $this->_compteur;
+			$nFin						= $this->_count;
 			
 			// Construction du titre avec le compteur de séance
 			$sTitre						= sprintf("%s [%d-%d]", $sTitre, $nDebut, $nFin);
@@ -267,35 +287,35 @@ class Planning_ItemHelper {
 	}
 
 	/**
-	 * @brief	Récupération de la description de l'élément
+	 * @brief	Récupération du libellé de la localisation de l'élément
 	 * @return	string
-	 */
-	public function getDescribe() {
-		return $this->_describe;
-	}
-
-	/**
-	 * @brief	Récupération de la localisation de l'élément
-	 * @return	integer
 	 */
 	public function getLocation() {
 		return $this->_location;
 	}
 
 	/**
-	 * @brief	Récupération de la matière de l'élément
+	 * @brief	Récupération de l'identifiant de la localisation de l'élément
 	 * @return	integer
+	 */
+	public function getLocationId() {
+		return $this->_locationId;
+	}
+
+	/**
+	 * @brief	Récupération du libellé de la matière de l'élément
+	 * @return	string
 	 */
 	public function getMatter() {
 		return $this->_matter;
 	}
 
 	/**
-	 * @brief	Récupération du groupe de participants à l'élément
+	 * @brief	Récupération de l'identifiant de la matière de l'élément
 	 * @return	integer
 	 */
-	public function getGroupe() {
-		return $this->_groupe;
+	public function getMatterId() {
+		return $this->_matterId;
 	}
 
 	/**
@@ -305,13 +325,13 @@ class Planning_ItemHelper {
 	 * @param	string	$iFormat			: (optionnel) type de format définit dans la classe DataHelper.
 	 * @return	array
 	 */
-	public function getParticipant($iType = null, $iFormat = DataHelper::DATA_TYPE_STR) {
+	public function getTeam($iType = null, $iFormat = DataHelper::DATA_TYPE_STR) {
 		// Initialisation des éléments de liste
 		$aPrincipal						= array();
 		$aSecondaire					= array();
 		
 		// Parcours de la liste des participants
-		foreach ($this->_participant as $sLabel) {
+		foreach ($this->_team as $sLabel) {
 			if (preg_match(self::PATTERN_PRINCIPAL, $sLabel, $aMatched)) {
 				$aPrincipal[]			= DataHelper::convertToString($aMatched[1], $iFormat);
 			} else {
@@ -336,6 +356,14 @@ class Planning_ItemHelper {
 		
 		// Renvoi de la liste
 		return $aListe;
+	}
+
+	/**
+	 * @brief	Récupération de l'identifiant du groupe de participants à l'élément
+	 * @return	integer
+	 */
+	public function getTeamId() {
+		return $this->_teamId;
 	}
 
 	/**
@@ -505,11 +533,11 @@ class Planning_ItemHelper {
 	/**
 	 * @brief	Initialisation du compteur horaire de l'élément
 	 *
-	 * @param	integer	$nCompteur			: numéro du volume horaire.
+	 * @param	integer	$nCount			: numéro du volume horaire.
 	 * @return	void
 	 */
-	public function setCompteur($nCompteur = null) {
-		$this->_compteur				= $nCompteur;
+	public function setCompteur($nCount = null) {
+		$this->_count					= $nCount;
 	}
 
 	/**
@@ -531,30 +559,30 @@ class Planning_ItemHelper {
 	/**
 	 * @brief	Attribution d'une matière à l'élément
 	 *
-	 * @param	integer	$nIdMatter			: identidiants de la matière.
-	 * @param	string	$sLibelle			: description de la matière.
-	 * @param	integer	$nCompteur			: (optionnel) compteur de la matière.
+	 * @param	integer	$nId				: identidiants de la matière.
+	 * @param	string	$sLabel				: description de la matière.
+	 * @param	integer	$nCount				: (optionnel) compteur de consommation de la matière.
 	 * @return	void
 	 */
-	public function setMatter($nIdMatter, $sLibelle = null, $nCompteur = null) {
-		$this->_matter					= intval($nIdMatter);
-		$this->_title					= $sLibelle;
+	public function setMatter($nId, $sLabel = null, $nCount = null) {
+		$this->_matterId				= intval($nId);
+		$this->_matter					= $sLabel;
 		// Fonctionnalité réalisée si un compteur est passé en paramètre
-		if (!is_null($nCompteur)) {
-			$this->_compteur			= $nCompteur;
+		if (!is_null($nCount)) {
+			$this->_count				= $nCount;
 		}
 	}
 
 	/**
 	 * @brief	Attribution d'une localisation à l'élément
 	 *
-	 * @param	integer	$nIdLocation		: identidiants du groupe du local.
-	 * @param	string	$sLibelle			: description du local.
+	 * @param	integer	$nId				: identidiants du groupe du local.
+	 * @param	string	$sLabel				: description du local.
 	 * @return	void
 	 */
-	public function setLocation($nIdLocation, $sLibelle = null) {
-		$this->_location				= intval($nIdLocation);
-		$this->_describe				= $sLibelle;
+	public function setLocation($nId, $sLabel = null) {
+		$this->_locationId				= intval($nId);
+		$this->_location				= $sLabel;
 	}
 
 	/**
@@ -570,26 +598,26 @@ class Planning_ItemHelper {
 	/**
 	 * @brief	Ajout d'un groupe de participants à l'élément
 	 *
-	 * @param	mixed	$nIdGroupe			: identidiants du groupe de participants.
-	 * @param	array	$aListeParticipant	: liste des participants.
+	 * @param	mixed	$nId				: identidiants du groupe de participants.
+	 * @param	array	$aListPerson		: liste des participants.
 	 * @param	string	$iType				: (optionnel) type de(s) participant(s) parmi les constantes `TYPE_PRINCIPAL` ou `TYPE_SECONDAIRE`.
 	 * @return	void
 	 */
-	public function setParticipant($nIdGroupe, $aListeParticipant = array(), $iType = null) {
-		$this->_groupe					= $nIdGroupe;
+	public function setTeam($nId, $aListPerson = array(), $iType = null) {
+		$this->_teamId					= $nId;
 		
 		// Fonctionnalité réalisée si le type de participant est TYPE_PRINCIPAL
 		if ($iType == self::TYPE_PRINCIPAL) {
 			// Initialisation de la liste de(s) participant(s)
-			$this->_participant			= array();
+			$this->_team				= array();
 			
 			// Parcours de l'ensemble des participants
-			foreach ((array) $aListeParticipant as $sParticipant) {
-				$this->_participant[]	= sprintf(self::FORMAT_PRINCIPAL, trim($sParticipant));
+			foreach ((array) $aListPerson as $sPerson) {
+				$this->_team[]			= sprintf(self::FORMAT_PRINCIPAL, trim($sPerson));
 			}
 		} else {
 			// Initialisation de la liste de(s) participant(s)
-			$this->_participant			= (array) $aListeParticipant;
+			$this->_team				= (array) $aListPerson;
 		}
 	}
 
@@ -598,7 +626,7 @@ class Planning_ItemHelper {
 	 * @void	boolean
 	 */
 	public function hasConflictLocation() {
-		return $this->_conflit_location;
+		return $this->_conflict_location;
 	}
 
 	/**
@@ -608,15 +636,15 @@ class Planning_ItemHelper {
 	 * @return	void
 	 */
 	public function setConflictLocation($bBoolean) {
-		$this->_conflit_location		= $bBoolean;
+		$this->_conflict_location		= $bBoolean;
 	}
 
 	/**
 	 * @brief	Récupère l'indicateur de conflit sur les participants.
 	 * @void	boolean
 	 */
-	public function hasConflictParticipant() {
-		return $this->_conflit_participant;
+	public function hasConflictTeam() {
+		return $this->_conflict_team;
 	}
 	
 	/**
@@ -625,8 +653,8 @@ class Planning_ItemHelper {
 	 * @param	boolean	$bBoolean			: active l'indicateur de conflit.
 	 * @return	void
 	 */
-	public function setConflictParticipant($bBoolean) {
-		$this->_conflit_participant		= $bBoolean;
+	public function setConflictTeam($bBoolean) {
+		$this->_conflict_team			= $bBoolean;
 	}
 
 	/**
@@ -634,7 +662,7 @@ class Planning_ItemHelper {
 	 * @void	boolean
 	 */
 	public function hasConflict() {
-		return $this->_conflit_location || $this->_conflit_participant;
+		return $this->_conflict_location || $this->_conflict_team;
 	}
 
 	public function _buildHTML($bDeletable = true) {
@@ -642,7 +670,7 @@ class Planning_ItemHelper {
 		if (! $this->_build) {
 			// Enregistrement du rendu
 			$this->_build				= true;
-			$this->_titleHTML			= $this->_title;
+			$this->_matterHTML			= $this->_matter;
 
 			// Fonctionnalité réalisée si le bouton [zoom] peut être affiché
 			$sZoomIn = "";
@@ -657,43 +685,43 @@ class Planning_ItemHelper {
 			}
 
 			// Fonctionnalité réalisée si des participants sont présents
-			if (DataHelper::isValidArray($this->_participant, null, true)) {
-				foreach ($this->_participant as $sNomHTML) {
-					$this->_titleHTML .= "\n\t└─ " . DataHelper::extractContentFromHTML($sNomHTML);
+			if (DataHelper::isValidArray($this->_team, null, true)) {
+				foreach ($this->_team as $sNomHTML) {
+					$this->_matterHTML .= "\n\t└─ " . DataHelper::extractContentFromHTML($sNomHTML);
 				}
 			}
 			
 			// Indicateur de conflit sur la cellule
-			$sPanelClass				= $this->hasConflict()			? self::PANEL_CONFLICT_CSS	: null;
+			$sPanelClass				= $this->hasConflict()		? self::PANEL_CONFLICT_CSS	: null;
 			
 			// Indicateur de conflit sur les descriptions (SALLES)
-			$sConflictLocation			= $this->_conflit_location		? self::ITEM_CONFLICT_CSS	: null;
+			$sConflictLocation			= $this->_conflict_location	? self::ITEM_CONFLICT_CSS	: null;
 
 			// Indicateur de conflit sur les participants
-			$sConflictParticipant		= $this->_conflit_participant	? self::ITEM_CONFLICT_CSS	: null;
+			$sConflictTeam				= $this->_conflict_team		? self::ITEM_CONFLICT_CSS	: null;
 			
 			// Ajout d'un élément
 			$this->_html = "<li class='item $sPanelClass " . $this->_class . " ui-widget-content ui-corner-tr ui-draggable' align='center'>
-								<article title=\"" . $this->_titleHTML . "\" class='job padding-0' align='center'>
-									<h3 class='strong left max-width'>" . $this->_title . "</h3>
+								<article title=\"" . $this->_matterHTML . "\" class='job padding-0' align='center'>
+									<h3 class='strong left max-width'>" . $this->_matter . "</h3>
 									<div class='content center'>
-										<p class='planning-item-describe center $sConflictLocation'>" . $this->_describe . "</p>
+										<p class='planning-item-describe center $sConflictLocation'>" . $this->_location . "</p>
 										<section class='planning-item-content'>" . $this->_content . "</section>
-										<ul class='planning-item-participant $sConflictParticipant'>
-											<li class='principal'>" . implode(" - ", $this->getParticipant(self::TYPE_PRINCIPAL)) . "</li>
-											<li class='secondaire'>" . implode(" - ", $this->getParticipant(self::TYPE_SECONDAIRE)) . "</li>
+										<ul class='planning-item-participant $sConflictTeam'>
+											<li class='principal'>"		. implode(" - ", $this->getTeam(self::TYPE_PRINCIPAL))	. "</li>
+											<li class='secondaire'>"	. implode(" - ", $this->getTeam(self::TYPE_SECONDAIRE))	. "</li>
 										</ul>
-										<input type=\"hidden\" value=" . $this->_id			. " name=\"tache_id[]\">
-										<input type=\"hidden\" value=" . $this->_year		. " name=\"tache_annee[]\">
-										<input type=\"hidden\" value=" . $this->_month		. " name=\"tache_mois[]\">
-										<input type=\"hidden\" value=" . $this->_day		. " name=\"tache_jour[]\">
-										<input type=\"hidden\" value=" . $this->_hour		. " name=\"tache_heure[]\">
-										<input type=\"hidden\" value=" . $this->_minute		. " name=\"tache_minute[]\">
-										<input type=\"hidden\" value=" . $this->_duration	. " name=\"tache_duree[]\">
-										<input type=\"hidden\" value=" . $this->_matter		. " name=\"tache_matter[]\">
-										<input type=\"hidden\" value=" . $this->_location	. " name=\"tache_location[]\">
-										<input type=\"hidden\" value=" . $this->_groupe		. " name=\"tache_groupe[]\">
-										<input type=\"hidden\" value=" . $this->_update		. " name=\"tache_update[]\">
+										<input type=\"hidden\" value="	. $this->_id			. " name=\"task_id[]\">
+										<input type=\"hidden\" value="	. $this->_year			. " name=\"task_year[]\">
+										<input type=\"hidden\" value="	. $this->_month			. " name=\"task_month[]\">
+										<input type=\"hidden\" value="	. $this->_day			. " name=\"task_day[]\">
+										<input type=\"hidden\" value="	. $this->_hour			. " name=\"task_hour[]\">
+										<input type=\"hidden\" value="	. $this->_minute		. " name=\"task_minute[]\">
+										<input type=\"hidden\" value="	. $this->_duration		. " name=\"task_duration[]\">
+										<input type=\"hidden\" value="	. $this->_matterId		. " name=\"task_matterId[]\">
+										<input type=\"hidden\" value="	. $this->_locationId	. " name=\"task_locationId[]\">
+										<input type=\"hidden\" value="	. $this->_teamId		. " name=\"task_teamId[]\">
+										<input type=\"hidden\" value="	. $this->_update		. " name=\"task_update[]\">
 									</div>
 								</article>
 								<section class='item-bottom'>

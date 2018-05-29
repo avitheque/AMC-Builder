@@ -2,14 +2,21 @@
 /**
  * Classe permettant de générer la page HTML à partir de la structure définie dans le SKEL.
  * @see			{ROOT_PATH}/libraries/views/helpers/skel.php
+ * 
+ * @li		Manipulation de la VARIABLE GLOBALE JavaScript `FW_FORM_UPDATE`
+ * @see		ViewRender::setFormUpdateStatus(boolean);
+ * @see		/public/scripts/main.js;
+ * @code
+ * 		var	FW_FORM_UPDATE	= false;
+ * @endcode
  *
  * @name		ViewRender
  * @package		Helpers
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 119 $
- * @since		$LastChangedDate: 2018-05-05 13:46:10 +0200 (Sat, 05 May 2018) $
+ * @version		$LastChangedRevision: 129 $
+ * @since		$LastChangedDate: 2018-05-29 22:12:23 +0200 (Tue, 29 May 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -489,6 +496,21 @@ class ViewRender {
 		self::clearScripts();
 		self::clearStyles();
 		self::clearStylesheet();
+	}
+
+	//=============================================================================================
+	
+	/*
+	 * @brief	Initialisation de la VARIABLE GLOBALE JavaScript `FW_FORM_UPDATE`
+	 * @see		ViewRender::setFormUpdateStatus(boolean);
+	 * @see		/public/scripts/main.js;
+	 * @code
+	 * 		var	FW_FORM_UPDATE	= false;
+	 * @endcode
+	 */
+	static function setFormUpdateStatus($bStatus = false) {
+		// Affectation de la valeur à la variable JavaScript
+		self::addToJQuery(sprintf("FW_FORM_UPDATE = %s;", $bStatus ? "true" : "false"));
 	}
 
 	//=============================================================================================
