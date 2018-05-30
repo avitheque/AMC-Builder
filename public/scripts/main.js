@@ -149,24 +149,8 @@ function setDialogConfirm(selector, button_or_url) {
 				// Activation de l'arrière-plan de protection contre les cliqueurs intempestifs durant le chargement
 				$("div#stop-click").css({display: "block"});
 
-				// Traitement différé afin que la boîte de dialogue soit visible
-				setTimeout(function () {
-					// Traitement AJAX
-					$.ajax({
-						async:		false,
-						type:		"POST",
-						dataType:	"HTML",
-						url:		url,
-						data:		{button: button, render: "body"},
-						success:	function(response) {
-							// Fermeture du MODAL
-							$(selector).dialog('close');
-
-							// Récupération de la réponse
-							$("body").html(response);
-						}
-					});
-				}, 500);
+				// Traitement de la redirection de la page
+				window.location = url;
 			},
 			"Annuler": function () {
 				$(this).dialog('close');

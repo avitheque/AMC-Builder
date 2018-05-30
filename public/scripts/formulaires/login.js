@@ -27,7 +27,7 @@ $(document).ready(function() {
 	// Désactivation du contrôle de la saisie sur les champs
 	$("input#idLogin, input#idPassword").change(function () {
 		// Réinitialisation de l'indicateur de modification du formulaire
-		MODIFICATION = false;
+		FW_UPDATE_FORM = false;
 	});
 
 	// Fonctionnalité réalisée lors de la saisie d'une touche dans un champ

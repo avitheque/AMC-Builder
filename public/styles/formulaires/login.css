@@ -4,12 +4,12 @@
  *
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 67 $
- * @since		$LastChangedDate: 2017-07-19 00:09:56 +0200 (Wed, 19 Jul 2017) $
+ * @version		$LastChangedRevision: 133 $
+ * @since		$LastChangedDate: 2018-05-30 20:17:07 +0200 (Wed, 30 May 2018) $
  */
 
 #article-login				{
-	background:				radial-gradient(circle at 20% -120% , rgb(255, 255, 255) 70%, #777 100%) no-repeat scroll center center transparent;
+	background:				radial-gradient(circle at 20% -120%, rgb(255, 255, 255) 70%, #777 100%) no-repeat scroll center center transparent;
 	min-height:				200px;
 	width:					70%;
 	margin:					auto;

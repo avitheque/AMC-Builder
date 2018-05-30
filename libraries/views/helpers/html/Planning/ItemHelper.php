@@ -56,8 +56,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 131 $
- * @since		$LastChangedDate: 2018-05-29 22:56:39 +0200 (Tue, 29 May 2018) $
+ * @version		$LastChangedRevision: 133 $
+ * @since		$LastChangedDate: 2018-05-30 20:17:07 +0200 (Wed, 30 May 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -73,11 +73,11 @@ class Planning_ItemHelper {
 
 	const		ID_PLANNING_FORMAT		= 'planning-%d-%d-%d-%d';
 	const		ID_ITEM_FORMAT			= 'item-%s';
-	
+
 	const		PATTERN_PRINCIPAL		= "@\>(.*)\<@";
 	const		FORMAT_PRINCIPAL		= "<B>%s</B>";
 	const		FORMAT_SECONDAIRE		= "%s";
-	
+
 	const		TYPE_PRINCIPAL			= 'principal';
 	const		TYPE_SECONDAIRE			= 'secondaire';
 
@@ -106,7 +106,7 @@ class Planning_ItemHelper {
 	 * @var		string
 	 */
 	protected	$_id					= null;
-	
+
 	public		$_matter				= "Libellé de la matière";
 	public		$_matterId				= 0;
 
@@ -119,7 +119,7 @@ class Planning_ItemHelper {
 	public		$_team					= array();
 	public		$_teamId				= 0;
 	public		$_conflict_team			= false;
-	
+
 	protected	$_year					= 0;
 	protected	$_month					= 0;
 	protected	$_day					= 0;
@@ -169,7 +169,7 @@ class Planning_ItemHelper {
 		$this->_matter					= trim($sTitle);
 		$this->_location				= trim($sDescription);
 		$this->_content					= trim($sContentHTML);
-		
+
 		// Initialisation de la classe CSS
 		$this->setClass($sClass);
 	}
@@ -276,10 +276,10 @@ class Planning_ItemHelper {
 		if (!is_null($this->_count)) {
 			// Initialisation du compteur de début de séance
 			$nDebut						= $this->_count - $this->getDuration() + 1;
-			
+
 			// Initialisation du compteur de fin de séance
 			$nFin						= $this->_count;
-			
+
 			// Construction du titre avec le compteur de séance
 			$sTitre						= sprintf("%s [%d-%d]", $sTitre, $nDebut, $nFin);
 		}
@@ -320,7 +320,7 @@ class Planning_ItemHelper {
 
 	/**
 	 * @brief	Récupération de la liste des participants à l'élément
-	 * 
+	 *
 	 * @param	string	$iType				: (optionnel) type de(s) participant(s) parmi les constantes `TYPE_PRINCIPAL` ou `TYPE_SECONDAIRE`.
 	 * @param	string	$iFormat			: (optionnel) type de format définit dans la classe DataHelper.
 	 * @return	array
@@ -329,7 +329,7 @@ class Planning_ItemHelper {
 		// Initialisation des éléments de liste
 		$aPrincipal						= array();
 		$aSecondaire					= array();
-		
+
 		// Parcours de la liste des participants
 		foreach ($this->_team as $sLabel) {
 			if (preg_match(self::PATTERN_PRINCIPAL, $sLabel, $aMatched)) {
@@ -338,7 +338,7 @@ class Planning_ItemHelper {
 				$aSecondaire[]			= DataHelper::convertToString($sLabel, $iFormat);
 			}
 		}
-		
+
 		// Traitement selon le type de liste
 		switch ($iType) {
 			case self::TYPE_PRINCIPAL:
@@ -348,12 +348,12 @@ class Planning_ItemHelper {
 			case self::TYPE_SECONDAIRE:
 				$aListe					= $aSecondaire;
 				break;
-			
+
 			default:
 				$aListe					= array_merge($aPrincipal, $aSecondaire);
 				break;
 		}
-		
+
 		// Renvoi de la liste
 		return $aListe;
 	}
@@ -440,12 +440,12 @@ class Planning_ItemHelper {
 	public function setDateTime($dDateTime) {
 		// Extraction des arguments de la dans au format MySQL [Y-m-d H:i:s]
 		$aDateParams					= DataHelper::extractParamsFromDateTime($dDateTime);
-		
+
 		// Extraction des paramètres de la DATE
 		$this->_year					= $aDateParams['Y'];
 		$this->_month					= $aDateParams['m'];
 		$this->_day						= $aDateParams['d'];
-		
+
 		// Extraction des paramètres du TIME
 		$this->_hour					= $aDateParams['H'];
 		$this->_minute					= $aDateParams['i'];
@@ -463,7 +463,7 @@ class Planning_ItemHelper {
 
 		// Extraction des paramètres de la DATE
 		list($nYear, $nMonth, $nDay)	= explode("-", $dDateMySQL);
-		
+
 		// Initialisation des valeurs
 		$this->setYear($nYear);
 		$this->setMonth($nMonth);
@@ -550,7 +550,7 @@ class Planning_ItemHelper {
 	public function setFullTime($sFullTime, $cSeparator = ":") {
 		// Extraction des paramètres de l'HEURE
 		list($nHour, $nMinute)			= explode($cSeparator, $sFullTime);
-		
+
 		// Initialisation des valeurs
 		$this->setHour($nHour);
 		$this->setMinute($nMinute);
@@ -605,12 +605,12 @@ class Planning_ItemHelper {
 	 */
 	public function setTeam($nId, $aListPerson = array(), $iType = null) {
 		$this->_teamId					= $nId;
-		
+
 		// Fonctionnalité réalisée si le type de participant est TYPE_PRINCIPAL
 		if ($iType == self::TYPE_PRINCIPAL) {
 			// Initialisation de la liste de(s) participant(s)
 			$this->_team				= array();
-			
+
 			// Parcours de l'ensemble des participants
 			foreach ((array) $aListPerson as $sPerson) {
 				$this->_team[]			= sprintf(self::FORMAT_PRINCIPAL, trim($sPerson));
@@ -646,10 +646,10 @@ class Planning_ItemHelper {
 	public function hasConflictTeam() {
 		return $this->_conflict_team;
 	}
-	
+
 	/**
 	 * @brief	Active l'indicateur de conflit sur les participants.
-	 * 
+	 *
 	 * @param	boolean	$bBoolean			: active l'indicateur de conflit.
 	 * @return	void
 	 */
@@ -690,16 +690,16 @@ class Planning_ItemHelper {
 					$this->_matterHTML .= "\n\t└─ " . DataHelper::extractContentFromHTML($sNomHTML);
 				}
 			}
-			
+
 			// Indicateur de conflit sur la cellule
 			$sPanelClass				= $this->hasConflict()		? self::PANEL_CONFLICT_CSS	: null;
-			
+
 			// Indicateur de conflit sur les descriptions (SALLES)
 			$sConflictLocation			= $this->_conflict_location	? self::ITEM_CONFLICT_CSS	: null;
 
 			// Indicateur de conflit sur les participants
 			$sConflictTeam				= $this->_conflict_team		? self::ITEM_CONFLICT_CSS	: null;
-			
+
 			// Ajout d'un élément
 			$this->_html = "<li class='item $sPanelClass " . $this->_class . " ui-widget-content ui-corner-tr ui-draggable' align='center'>
 								<article title=\"" . $this->_matterHTML . "\" class='job padding-0' align='center'>
