@@ -28,6 +28,7 @@ class PlanningHTMLHelper extends PlanningHelper {
 	const		FORMAT_CALENDAR					= "calendar";
 	const		FORMAT_PROGRESSION				= "progression";
 	const		PLANNING_DEFAULT_FORMAT			= self::FORMAT_CALENDAR;
+	const		PLANNING_DEFAULT_OVERLOAD		= "...";
 
 	const		PLANNING_DEPRECATED_DAYS		= "6-7";			// Jour(s) de la semaine non travaillé(s) [1-7] : 1 pour Lundi à 7 pour Dimanche
 	const		PLANNING_DEPRECATED_HOURS		= "0-8,13,18-23";	// Heure(s) non travaillée(s)
@@ -440,16 +441,24 @@ class PlanningHTMLHelper extends PlanningHelper {
 			while ($dDebut <= $dFin) {
 				// Fonctionnalité réalisée à chaque changement de MOIS
 				if ($nIdMois != (int) date('m', $dDebut) || $dDebut >= $dFin) {
-					// Initialisation des éléments du MOIS
-					$nDiff						= $dDebut < $dFin	? 1 : 0;
-					$iType						= $nCount <= 3	? DataHelper::SHORT	: DataHelper::UPPER;
+					// Initialisation des éléments du TITRE du MOIS
+					$nDiff						= $dDebut < $dFin	? 1						: 0;
+					$iType						= $nCount <= 3		? DataHelper::SHORT		: DataHelper::UPPER;
+					$sTitreMargin				= $nCount <= 3		? "max-width center"	: "absolute margin-left-5";
+
+					// Modification du TITRE selon la taille de la CELLULE
 					$sTitre						= DataHelper::getLibelleMois((int) date('m', $dDebut) - $nDiff, $iType);
-					$sTitre						= $nCount < 6	? $sTitre	: $sTitre . " " . date('Y', $dDebut);
-					$sTitre						= $nCount > 1	? $sTitre	: "";
+					$sTitre						= $nCount < 6		? $sTitre				: $sTitre . " " . date('Y', $dDebut);
+
+					// Fonctionnalité réalisée si la place ne permet pas l'affichage du titre
+					if ($iType == DataHelper::SHORT) {
+						// Remplacement du TITRE
+						$sTitre					= self::PLANNING_DEFAULT_OVERLOAD;
+					}
 
 					// Construction du nom du MOIS
 					$sHead						.= "	<th id=\"month-$nIdMois\" class=\"center horizontal no-wrap ui-widget-content\" colspan=\"" . $nCount . "\">
-															<h5 class=\"left absolute margin-left-5\">$sTitre</h5>&nbsp;
+															<h5 class=\"left $sTitreMargin\">$sTitre</h5>&nbsp;
 														</th>";
 
 					// Récupération du mois
