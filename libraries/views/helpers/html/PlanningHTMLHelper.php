@@ -10,8 +10,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 121 $
- * @since		$LastChangedDate: 2018-05-11 19:11:34 +0200 (Fri, 11 May 2018) $
+ * @version		$LastChangedRevision: 135 $
+ * @since		$LastChangedDate: 2018-06-02 09:49:51 +0200 (Sat, 02 Jun 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -28,6 +28,7 @@ class PlanningHTMLHelper extends PlanningHelper {
 	const		FORMAT_CALENDAR					= "calendar";
 	const		FORMAT_PROGRESSION				= "progression";
 	const		PLANNING_DEFAULT_FORMAT			= self::FORMAT_CALENDAR;
+	const		PLANNING_DEFAULT_OVERLOAD		= "...";
 
 	const		PLANNING_DEPRECATED_DAYS		= "6-7";			// Jour(s) de la semaine non travaillé(s) [1-7] : 1 pour Lundi à 7 pour Dimanche
 	const		PLANNING_DEPRECATED_HOURS		= "0-8,13,18-23";	// Heure(s) non travaillée(s)
@@ -35,7 +36,7 @@ class PlanningHTMLHelper extends PlanningHelper {
 	const		PLANNING_DEFAULT_CLASSNAME		= "diary";
 	const		PLANNING_HOLIDAY_CLASSNAME		= "diary holiday";
 	const		PLANNING_HEADER_CLASSNAME		= "header";
-	
+
 	const 		PLANNING_VALID_CLASS			= "ui-widget-content ui-state-default";
 	const 		PLANNING_DEPRECATED_CLASS		= "ui-widget-content ui-state-disabled";
 	const		PLANNING_WIDTH_RATIO			= 99;
@@ -67,7 +68,7 @@ class PlanningHTMLHelper extends PlanningHelper {
 		$this->_planning_deprecated_hours		= DataHelper::getArrayFromList($sDeprecatedHours,	self::DEPRECATED_LIST_SEPARATOR,	self::DEPRECATED_ITEM_SEPARATOR);
 		$this->_planning_deprecated_days		= DataHelper::getArrayFromList($sDeprecatedDays,	self::DEPRECATED_LIST_SEPARATOR,	self::DEPRECATED_ITEM_SEPARATOR);
 		$this->_planning_timer_size				= $nTimerSize;
-		
+
 		// Nom de session des données
 		$sSessionNameSpace						= $this->_oInstanceStorage->getData('SESSION_NAMESPACE');
 		// Données du formulaire
@@ -440,16 +441,26 @@ class PlanningHTMLHelper extends PlanningHelper {
 			while ($dDebut <= $dFin) {
 				// Fonctionnalité réalisée à chaque changement de MOIS
 				if ($nIdMois != (int) date('m', $dDebut) || $dDebut >= $dFin) {
-					// Initialisation des éléments du MOIS
-					$nDiff						= $dDebut < $dFin	? 1 : 0;
-					$iType						= $nCount <= 3	? DataHelper::SHORT	: DataHelper::UPPER;
+					// Initialisation des éléments du TITRE du MOIS
+					$nDiff						= $dDebut < $dFin	? 1						: 0;
+					$iType						= $nCount <= 3		? DataHelper::SHORT		: DataHelper::UPPER;
+					$sTitreMargin				= $nCount <= 3		? "max-width center"	: "absolute margin-left-5";
+
+					// Modification du TITRE selon la taille de la CELLULE
 					$sTitre						= DataHelper::getLibelleMois((int) date('m', $dDebut) - $nDiff, $iType);
-					$sTitre						= $nCount < 6	? $sTitre	: $sTitre . " " . date('Y', $dDebut);
-					$sTitre						= $nCount > 1	? $sTitre	: "";
+					$sTitre						= $nCount < 6		? $sTitre				: $sTitre . " " . date('Y', $dDebut);
+
+					// Fonctionnalité réalisée si la place ne permet pas l'affichage du titre
+					$sTitle						= "";
+					if ($iType == DataHelper::SHORT) {
+						// Remplacement du TITRE
+						$sTitre					= self::PLANNING_DEFAULT_OVERLOAD;
+						$sTitle					= DataHelper::getLibelleMois((int) date('m', $dDebut) - $nDiff, DataHelper::UPPER) . " " . date('Y', $dDebut);
+					}
 
 					// Construction du nom du MOIS
 					$sHead						.= "	<th id=\"month-$nIdMois\" class=\"center horizontal no-wrap ui-widget-content\" colspan=\"" . $nCount . "\">
-															<h5 class=\"left absolute margin-left-5\">$sTitre</h5>&nbsp;
+															<h5 class=\"left $sTitreMargin\" title=\"$sTitle\">$sTitre</h5>&nbsp;
 														</th>";
 
 					// Récupération du mois
@@ -527,7 +538,7 @@ class PlanningHTMLHelper extends PlanningHelper {
 
 			// Ajout de la feuille de style
 			ViewRender::addToStylesheet(FW_VIEW_STYLES . "/PlanningHelper.css");
-			
+
 			// Initialisation de la liste des jours de la semaine
 			for ($i = 0 ; $i < $this->_planning_duree; $i++) {
 				// Identifiant du jour de la semaine sous la forme [Y-m-d]
@@ -561,7 +572,7 @@ class PlanningHTMLHelper extends PlanningHelper {
 														PLANNING_MD5['" . $this->_md5 . "'] = '" . $this->_md5 . "';
 														PLANNING_CELL_WIDTH['" . $this->_md5 . "'] = " . $this->_nCellWidth . ";
 													</script>";
-			
+
 			// Fonctionnalité réalisée en MODE_DEBUG
 			if (defined('MODE_DEBUG') && (bool) MODE_DEBUG) {
 				$sClassStyle					= $this->_planning_format == self::FORMAT_CALENDAR ? "margin-top-10-important" : "";
@@ -651,5 +662,5 @@ class PlanningHTMLHelper extends PlanningHelper {
 		// Renvoi du conteneur
 		return $this->getPlanning();
 	}
-	
+
 }
