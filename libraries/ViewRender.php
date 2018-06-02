@@ -15,8 +15,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 129 $
- * @since		$LastChangedDate: 2018-05-29 22:12:23 +0200 (Tue, 29 May 2018) $
+ * @version		$LastChangedRevision: 134 $
+ * @since		$LastChangedDate: 2018-06-02 08:51:35 +0200 (Sat, 02 Jun 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -34,10 +34,14 @@ class ViewRender {
 	 * Types de messages.
 	 * @var 	string
 	 */
+	const	MESSAGE_DEFAULT				= "default";
 	const	MESSAGE_ERROR				= "alert";
 	const	MESSAGE_INFO				= "info";
 	const	MESSAGE_SUCCESS				= "success";
 	const	MESSAGE_WARNING				= "warning";
+
+	const	NOTIFICATION_FADEOUT		= "slow";
+	const 	NOTIFICATION_TIMEOUT_DELAY	= 3000;
 
 	/**
 	 * Variable de classe d'activation du rendu de la vue.
@@ -82,18 +86,49 @@ class ViewRender {
 	static function render() {
 		// Récupération de l'instance de `SessionMessenger`
 		$oSessionMessenger = SessionMessenger::getInstance();
+		
+		//=========================================================================================
 
 		// Création d'un message par défaut
+		self::setMessageDefault(null, $oSessionMessenger->getMessage(self::MESSAGE_DEFAULT));
+		// Création d'un message p'information
 		self::setMessageInfo(null, $oSessionMessenger->getMessage(self::MESSAGE_INFO));
-
 		// Création des messages d'erreur
 		self::setMessageError(null, $oSessionMessenger->getMessage(self::MESSAGE_ERROR));
-
 		// Création des messages de succès
 		self::setMessageSuccess(null, $oSessionMessenger->getMessage(self::MESSAGE_SUCCESS));
-
 		// Création des messages d'avertissement
 		self::setMessageWarning(null, $oSessionMessenger->getMessage(self::MESSAGE_WARNING));
+		
+		//=========================================================================================
+
+		// Création d'une notification par défaut
+		$aNotificationDefault	= $oSessionMessenger->getNotification(self::MESSAGE_DEFAULT);
+		foreach ($aNotificationDefault as $aNotification) {
+			self::setNotificationDefault($aNotification[0], $aNotification[1], $aNotification[2]);
+		}
+		// Création d'une notification d'informatyion
+		$aNotificationInfo		= $oSessionMessenger->getNotification(self::MESSAGE_INFO);
+		foreach ($aNotificationInfo as $aNotification) {
+			self::setNotificationInfo($aNotification[0], $aNotification[1], $aNotification[2]);
+		}
+		// Création des messages d'erreur
+		$aNotificationError		= $oSessionMessenger->getNotification(self::MESSAGE_ERROR);
+		foreach ($aNotificationError as $aNotification) {
+			self::setNotificationError($aNotification[0], $aNotification[1], $aNotification[2]);
+		}
+		// Création des messages de succès
+		$aNotificationSuccess	= $oSessionMessenger->getNotification(self::MESSAGE_SUCCESS);
+		foreach ($aNotificationSuccess as $aNotification) {
+			self::setNotificationSuccess($aNotification[0], $aNotification[1], $aNotification[2]);
+		}
+		// Création des messages d'avertissement
+		$aNotificationWarning	= $oSessionMessenger->getNotification(self::MESSAGE_WARNING);
+		foreach ($aNotificationWarning as $aNotification) {
+			self::setNotificationWarning($aNotification[0], $aNotification[1], $aNotification[2]);
+		}
+
+		//=========================================================================================
 
 		// Fonctionnaliré réalisée si le rendu est actif
 		if (self::$_renderer) {
@@ -518,35 +553,64 @@ class ViewRender {
 	/**
 	 * @brief	Création d'un message.
 	 *
-	 * @li Le contenu HTML du message sera ajouté à la collection VIEW_DIALOG.
+	 * @li		Le contenu HTML du message sera ajouté à la collection VIEW_DIALOG.
+	 * @li		Le contenu HTML peut être masqué automotiquement après un délais passé en paramètre `$nTimeOut`.
 	 *
 	 * @param	string	$sTitre			: Titre du message.
 	 * @param	mixed	$xMessage		: Message à afficher, peut être une liste de plusieurs messages.
+	 * @param	string	$sClass			: Classe CSS affecté à l'élément HTML.
+	 * @param	integer	$nTimeOut		: Délais d'attente avant la suppression de la notification en millisecondes.
 	 * @return	void
 	 */
-	static function setMessageBox($sTitre = null, $xMessage = null, $sClass = "message") {
+	static function setMessageBox($sTitre = null, $xMessage = null, $sClass = "message", $nTimeOut = null, $xFadeOut = self::NOTIFICATION_FADEOUT) {
 		// Fonctionnalité réalisée si au moins un paramètre est présent
 		if (!empty($sTitre) || !empty($xMessage)) {
+			// Construction de l'identifiant unique du message
+			$sMD5				= md5(time() . $sTitre . $xMessage . $sClass);
+
 			// Création du conteneur
-			$sMessageBox = "<section class=\"" . $sClass . "\" >";
+			$sMessageBox		= "<section id=\"" . $sMD5 . "\" class=\"" . $sClass . "\" >";
 			// Ajout d'une ancre pour la fermeture du message
-			$sMessageBox .= "<a href=\"#\" class=\"margin-0 close\">x</a>";
+			$sMessageBox		.= "<a href=\"#\" class=\"margin-0 close\">x</a>";
 
 			// Ajout du titre s'il est présent
 			if (!empty($sTitre)) {
-				$sMessageBox .= "<h4 class=\"margin-V-10 margin-H-20\">$sTitre</h4>";
+				$sMessageBox	.= "<h4 class=\"margin-V-10 margin-H-20 no-wrap\">$sTitre</h4>";
 			}
 
 			// Ajout du message s'il est présent
 			if (!empty($xMessage)) {
-				$sMessageBox .= "<p class=\"margin-V-10 margin-H-20\">" . implode("<br />", (array) $xMessage) . "</p>";
+				$sMessageBox	.= "<p class=\"margin-V-10 margin-H-20\">" . implode("<br />", (array) $xMessage) . "</p>";
 			}
 
 			// Finalisation du message
-			$sMessageBox .= "</section>";
+			$sMessageBox		.= "</section>";
+
+			if (!is_null($nTimeOut)) {
+				// Programmation de la suppression du message
+				$sFormatDelay	= DataHelper::isValidNumeric($xFadeOut) ? "%d" : "\"%s\"";
+				self::addToJQuery('setTimeout(function() {
+									$("section#' . $sMD5 . '").fadeOut(' . sprintf($sFormatDelay, $xFadeOut) . ', function() {
+										// Masque à la fin
+										$(this).css({display: "none"});
+									});
+								}, ' . intval($nTimeOut) . ');');
+			}
+
 			// Ajout de l'élément au VIEW_BODY
 			self::addToDialog($sMessageBox);
 		}
+	}
+
+	/**
+	 * @brief	Création d'un message.
+	 *
+	 * @param	string	$sTitre			: Titre du message.
+	 * @param	string	$sMessage		: Message à afficher.
+	 * @return	void
+	 */
+	static function setMessageDefault($sTitre = null, $sMessage = null) {
+		self::setMessageBox($sTitre, $sMessage, $sClass = "message");
 	}
 
 	/**
@@ -593,4 +657,61 @@ class ViewRender {
 		self::setMessageBox($sTitre, $sMessage, $sClass = "message warning");
 	}
 
+	//=============================================================================================
+
+	/**
+	 * @brief	Création d'une notification d'erreur.
+	 *
+	 * @param	string	$sTitre			: Titre de notification.
+	 * @param	string	$sMessage		: Message à afficher.
+	 * @return	void
+	 */
+	static function setNotificationDefault($sTitre = null, $sMessage = null, $nTimeOut = self::NOTIFICATION_TIMEOUT_DELAY) {
+		self::setMessageBox($sTitre, $sMessage, $sClass = "notify", $nTimeOut);
+	}
+
+	/**
+	 * @brief	Création d'une notification d'erreur.
+	 *
+	 * @param	string	$sTitre			: Titre de notification.
+	 * @param	string	$sMessage		: Message à afficher.
+	 * @return	void
+	 */
+	static function setNotificationError($sTitre = null, $sMessage = null, $nTimeOut = self::NOTIFICATION_TIMEOUT_DELAY) {
+		self::setMessageBox($sTitre, $sMessage, $sClass = "notify alert", $nTimeOut);
+	}
+	
+	/**
+	 * @brief	Création d'une notification d'information.
+	 *
+	 * @param	string	$sTitre			: Titre de notification.
+	 * @param	string	$sMessage		: Message à afficher.
+	 * @return	void
+	 */
+	static function setNotificationInfo($sTitre = null, $sMessage = null, $nTimeOut = self::NOTIFICATION_TIMEOUT_DELAY) {
+		self::setMessageBox($sTitre, $sMessage, $sClass = "notify info", $nTimeOut);
+	}
+	
+	/**
+	 * @brief	Création d'une notification de succès.
+	 *
+	 * @param	string	$sTitre			: Titre de notification.
+	 * @param	string	$sMessage		: Message à afficher.
+	 * @return	void
+	 */
+	static function setNotificationSuccess($sTitre = null, $sMessage = null, $nTimeOut = self::NOTIFICATION_TIMEOUT_DELAY) {
+		self::setMessageBox($sTitre, $sMessage, $sClass = "notify success", $nTimeOut);
+	}
+	
+	/**
+	 * @brief	Création d'une notification d'avertissement.
+	 *
+	 * @param	string	$sTitre			: Titre de notification.
+	 * @param	string	$sMessage		: Message à afficher.
+	 * @return	void
+	 */
+	static function setNotificationWarning($sTitre = null, $sMessage = null, $nTimeOut = self::NOTIFICATION_TIMEOUT_DELAY) {
+		self::setMessageBox($sTitre, $sMessage, $sClass = "notify warning", $nTimeOut);
+	}
+	
 }

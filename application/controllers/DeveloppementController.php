@@ -11,8 +11,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 15 $
- * @since		$LastChangedDate: 2017-04-29 21:33:00 +0200 (Sat, 29 Apr 2017) $
+ * @version		$LastChangedRevision: 134 $
+ * @since		$LastChangedDate: 2018-06-02 08:51:35 +0200 (Sat, 02 Jun 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -68,6 +68,13 @@ class DeveloppementController extends AbstractAuthenticateController {
 		// Création d'un dernier message d'information destiné à confirmer la réalisation d'un traitement.
 		// Dans l'ordre de création, celui-ce sera affiché en PREMIER plan
 		ViewRender::setMessageSuccess("Ce message est généré depuis le contrôleur pour confirmer la réalisation d'un traitement à l'utilsateur...<span class=\"right margin-right-5\">(1/3)</span>");
+
+		// Initialisation du titre d'une notification
+		$sNotificationTitre		= "<strong>NOTIFICATION !</strong>";
+		// Initialisation du message d'ERREUR
+		$sNotificationMessage	= "Ce message de notification s'effacera dans quelques secondes...";
+		// Enregistrement d'un message en session avant la redirection
+		$this->oSessionMessenger->setNotificationDefault($sNotificationTitre, $sNotificationMessage);
 	}
 
 	/**

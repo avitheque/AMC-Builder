@@ -397,7 +397,7 @@ $(document).ready(function() {
 	// Fermeture du message de l'application au clic sur le bouton [X]
 	$("a.close").click(function() {
 		// Effacement progressif
-		$(this).parent("section.message").fadeOut("slow", function() {
+		$(this).parent("section.message, section.notify").fadeOut("slow", function() {
 			// Masque l'élément à la fin
 			$(this).css({display: "none"});
 		});

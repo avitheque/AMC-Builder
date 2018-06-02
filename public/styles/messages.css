@@ -7,8 +7,8 @@
  *
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 134 $
+ * @since		$LastChangedDate: 2018-06-02 08:51:35 +0200 (Sat, 02 Jun 2018) $
  */
 
 /** MODAL jQuery *********************************************************************************/
@@ -19,7 +19,8 @@
 
 /** MESSAGES PAR DÉFAUT **************************************************************************/
 
-section.message					{
+section.message,
+section.notify					{
 	position:					fixed;
 	top:						44px;
 	background:					rgba(179, 176, 176, 1);
@@ -30,7 +31,8 @@ section.message					{
 	z-index:					50;
 }
 
-section.message a.close			{
+section.message a.close,
+section.notify a.close			{
 	position:					relative;
 	top:						0;
 	background:					rgba(0, 0, 0, 0.5);
@@ -44,16 +46,29 @@ section.message a.close			{
 	float:						right;
 }
 
-section.message a.close:hover	{
+section.message a.close:hover,
+section.notify a.close:hover	{
 	background:					rgba(0, 0, 0, 0.7);
 	border-color:				grey;
 	color:						red;
 }
 
-section.message a.close:active	{
+section.message a.close:active,
+section.notify a.close:active	{
 	background:					rgba(255, 0, 0, 0.7);
 	border-color:				red;
 	color:						white;
+}
+
+/** NOTIFICATIONS PAR DÉFAUT *********************************************************************/
+
+section.notify					{
+	position:					fixed;
+	right:						0;
+	background:					rgba(255, 255, 255, 1);
+	color:						grey;
+	margin:						5px;
+	width:						auto;
 }
 
 /** MESSAGES D'ERREUR ****************************************************************************/
@@ -62,12 +77,18 @@ section.message.alert			{
 	border-color:				red;
 }
 /* TITRE */
-section.message.alert h4 {
+section.message.alert h4		{
 	color:						#ffeeee;
 	text-shadow:				#ff0000 2px 2px 5px;
 }
 /* TEXT */
-section.message.alert p {
+section.message.alert p			 {
+	color:						darkred;
+}
+
+/** NOTIFICATION D'ERREUR ************************************************************************/
+section.notify.alert			{
+	border-color:				red;
 	color:						darkred;
 }
 
@@ -77,12 +98,18 @@ section.message.info			{
 	border-color:				blue;
 }
 /* TITRE */
-section.message.info h4 {
+section.message.info h4			{
 	color:						darkblue;
 	text-shadow:				#74ceff 2px 2px 5px;
 }
 /* TEXT */
-section.message.info p {
+section.message.info p			{
+	color:						darkblue;
+}
+
+/** NOTIFICATION D'INFORMATION *******************************************************************/
+section.notify.info				{
+	border-color:				blue;
 	color:						darkblue;
 }
 
@@ -92,12 +119,18 @@ section.message.success			{
 	border-color:				green;
 }
 /* TITRE */
-section.message.success h4 {
+section.message.success h4		{
 	color:						green;
 	text-shadow:				#ccffbc 2px 2px 5px;
 }
 /* TEXT */
-section.message.success p {
+section.message.success p		{
+	color:						darkgreen;
+}
+
+/** NOTIFICATION DE SUCCÈS ***********************************************************************/
+section.notify.success			{
+	border-color:				green;
 	color:						darkgreen;
 }
 
@@ -107,11 +140,17 @@ section.message.warning			{
 	border-color:				yellow;
 }
 /* TITRE */
-section.message.warning h4 {
+section.message.warning h4		{
 	color:						maroon;
 	text-shadow:				#ffdd22 2px 2px 5px;
 }
 /* TEXT */
-section.message.warning p {
+section.message.warning p		{
+	color:						maroon;
+}
+
+/** NOTIFICATION D'AVERTISSEMENT *****************************************************************/
+section.notify.warning			{
+	border-color:				yellow;
 	color:						maroon;
 }
