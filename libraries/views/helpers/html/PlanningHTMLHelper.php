@@ -10,8 +10,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 135 $
- * @since		$LastChangedDate: 2018-06-02 09:49:51 +0200 (Sat, 02 Jun 2018) $
+ * @version		$LastChangedRevision: 136 $
+ * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -93,8 +93,20 @@ class PlanningHTMLHelper extends PlanningHelper {
 	 * @param	string	$url					: URL de l'action.
 	 * @return	void
 	 */
-	public function setModalAction($url) {
-		$this->_modal_action					= $url;
+	public function setModalAction($url = null) {
+		if (!empty($url)) {
+			$this->_modal_action				= $url;
+		}
+	}
+
+	/**
+	 * @brief	Ajout d'élément(s) de formulaire au MODALE.
+	 *
+	 * @param	array	$aItem					: tableau d'élément de formulaire HTML.
+	 * @return	void
+	 */
+	public function addModalSearch($aItem = array()) {
+
 	}
 
 	/**
@@ -129,7 +141,8 @@ class PlanningHTMLHelper extends PlanningHelper {
 													<br />
 													<fieldset>
 														<legend>Propriétés de l'élément</legend>
-														<ul class=\"margin-H-10p\">";
+														<div class=\"padding-bottom-20\">
+															<ul>";
 
 		// Initialisation des paramètres exploités par AJAX
 		$aDataAJAX	= array();
@@ -162,8 +175,15 @@ class PlanningHTMLHelper extends PlanningHelper {
 					$sOptions					= HtmlHelper::buildListOptions($this->_oInstanceStorage->getData($sIndex), $sValue, '-');
 
 					// Ajout du champ SELECT
-					$sSearch					.= "				<label for=\"" . $sId . "\" class=\"strong width-150-min width-30p\">" . $sLabel . "</label>";
-					$sSearch					.= "				<select id=\"" . $sId . "\" name=\"" . $sName . "\" class=\"width-50p\">" . $sOptions . "</select>";
+					$sSearch					.= "				<label for=\"" . $sId . "\" class=\"strong width-150-min left width-30p \">" . $sLabel . "</label>";
+					$sSearch					.= "				<select id=\"" . $sId . "\" name=\"" . $sName . "\" class=\"width-50p right\">" . $sOptions . "</select>";
+					break;
+
+				case self::TYPE_NUMBER:
+				case self::TYPE_TEXT:
+					// Ajout du champ SELECT
+					$sSearch					.= "				<label for=\"" . $sId . "\" class=\"strong width-150-min left width-30p \">" . $sLabel . "</label>";
+					$sSearch					.= "				<input id=\"" . $sId . "\" name=\"" . $sName . "\" type=\"" . $sType . "\" class=\"width-50p right\" value=\"" . $sValue . "\"/>";
 					break;
 
 				default:
@@ -189,20 +209,21 @@ class PlanningHTMLHelper extends PlanningHelper {
 			// Finalisation
 			$sSearch							.= "			</li>";
 		}
+		$sSearch								.= "		</ul>
+														</div>";
 
 		// Ajout de la liste des identifiants exclus dans une entrée cachée qui sera exploitée par AJAX
-		$sSearch								.= "<input type=\"hidden\" name=\"exclude-" . $this->_md5 . "\" value=\"" . implode(self::EXCLUDE_SEPARATOR, $this->_exclude) . "\" />";
+		$sSearch								.= "		<input type=\"hidden\" name=\"exclude-" . $this->_md5 . "\" value=\"" . implode(self::EXCLUDE_SEPARATOR, $this->_exclude) . "\" />";
 
 		// Ajout de l'entrée cachée aux options AJAX
 		$aDataAJAX[]							= 'exclude: $("input[name=exclude-' . $this->_md5 . ']").val()';
 
 		// Finalisation du formulaire
-		$sSearch								.= "		</ul>
-															<br />
+		$sSearch								.= "		<br />
 															<hr class=\"blue half-width\"/>
-															<div class=\"margin-20\">
-																<button type=\"reset\" id=\"reset-item-" . $this->_md5 . "\" class=\"left no-margin red\">Annuler</button>
-																<button type=\"button\" id=\"search-item-" . $this->_md5 . "\" class=\"right no-margin blue\">Rechercher</button>
+															<div class=\"margin-H-20\">
+																<button type=\"reset\" id=\"reset-item-" . $this->_md5 . "\" class=\"left red\">Annuler</button>
+																<button type=\"button\" id=\"search-item-" . $this->_md5 . "\" class=\"right blue\">Rechercher</button>
 															</div>
 														</fieldset>
 													</form>";
@@ -220,25 +241,25 @@ class PlanningHTMLHelper extends PlanningHelper {
 															success:	function(html) {
 																// Chargement du contenu trouvé
 																$("ul#planning-item-' . $this->_md5 . '").html(html);
-														
+
 																// Adaptation de la zone de recherche selon le résultat
 																updateModalHeight("' . $this->_md5 . '");
 															},
 															complete:	function() {
 																// Initialisation de la fonctionnalité de planification
 																initPlanning("' . $this->_md5 . '");
-														
+
 																// Adaptation de la zone de recherche selon le résultat
 																updateModalHeight("' . $this->_md5 . '");
 															}
 														});
 													});
-													
+
 													// Action sur le bouton [Annuler] de la Gallerie
 													$("button#reset-item-' . $this->_md5 . '").on("click", function() {
 														// Suppression du contenu
 														$("ul#planning-item-' . $this->_md5 . '").html("");
-														
+
 														// Adaptation de la zone de recherche selon le résultat
 														updateModalHeight("' . $this->_md5 . '");
 													});';
@@ -567,7 +588,7 @@ class PlanningHTMLHelper extends PlanningHelper {
 														if (typeof(PLANNING_DEBUG) == 'undefined')			{ var PLANNING_DEBUG = " . ((bool) MODE_DEBUG ? "true" : "false") . "; }
 														if (typeof(PLANNING_MD5) == 'undefined')			{ var PLANNING_MD5 = []; }
 														if (typeof(PLANNING_CELL_WIDTH) == 'undefined')		{ var PLANNING_CELL_WIDTH = []; }
-									
+
 														// Chargement des valeurs des éléments
 														PLANNING_MD5['" . $this->_md5 . "'] = '" . $this->_md5 . "';
 														PLANNING_CELL_WIDTH['" . $this->_md5 . "'] = " . $this->_nCellWidth . ";
@@ -620,6 +641,7 @@ class PlanningHTMLHelper extends PlanningHelper {
 
 		// Fonctionnalité réalisée si l'action du formulaire est précisé
 		if (!empty($sAction)) {
+			$this->setModalAction($sAction);
 			$oModal->linkContent($this->_buildSearchForm($sAction, $aSearchItems));
 		}
 		ViewRender::addToBody($oModal->renderHTML());

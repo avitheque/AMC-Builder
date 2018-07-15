@@ -26,8 +26,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 75 $
- * @since		$LastChangedDate: 2017-08-02 23:54:49 +0200 (Wed, 02 Aug 2017) $
+ * @version		$LastChangedRevision: 139 $
+ * @since		$LastChangedDate: 2018-07-14 18:20:40 +0200 (Sat, 14 Jul 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -39,51 +39,64 @@ class AclManager {
 	 * @brief	Constante de configuration du fichier ACL.
 	 * @var		string	`acl.ini` par défaut.
 	 */
-	const		FILENAME_INI			= 'acl.ini';
+	const		FILENAME_INI				= 'acl.ini';
 
 	/**
-	 * @brief	Constantes des profils.
+	 * @brief	Constantes des identifiants de profils.
 	 * @var		integer
 	 */
-	const		ID_PROFIL_UNDEFINED		= 0;
-	const		ID_PROFIL_GUEST			= 1;
-	const		ID_PROFIL_USER			= 2;
-	const		ID_PROFIL_EDITOR		= 3;
-	const		ID_PROFIL_VALIDATOR		= 4;
-	const		ID_PROFIL_ADMINISTRATOR	= 5;
-	const		ID_PROFIL_WEBMASTER		= 6;
+	const		ID_PROFIL_UNDEFINED			= 0;
+	const		ID_PROFIL_GUEST				= 1;
+	const		ID_PROFIL_USER				= 2;
+	const		ID_PROFIL_EDITOR			= 3;
+	const		ID_PROFIL_VALIDATOR			= 4;
+	const		ID_PROFIL_ADMINISTRATOR		= 5;
+	const		ID_PROFIL_WEBMASTER			= 6;
+
+    /**
+     * @brief   Constantes des libellés de profils.
+     * @var		string
+     */
+    const		LABEL_PROFIL_UNDEFINED		= null;
+    const		LABEL_PROFIL_SYSTEM			= "System";					# role = 'system'				# id_profil = 0
+    const		LABEL_PROFIL_GUEST			= "Visiteur";				# role = 'guest'				# id_profil = 1
+    const		LABEL_PROFIL_USER			= "Utilisateur";			# role = 'user'					# id_profil = 2
+    const		LABEL_PROFIL_EDITOR			= "Éditeur";				# role = 'editor'				# id_profil = 3
+    const		LABEL_PROFIL_VALIDATOR		= "Valideur";				# role = 'validator'			# id_profil = 4
+    const		LABEL_PROFIL_ADMINISTRATOR	= "Administrateur";			# role = 'administrator'		# id_profil = 5
+    const		LABEL_PROFIL_WEBMASTER		= "Webmaster";				# role = 'webmaster'			# id_profil = 6
 
 	/**
-	 * @brief	const	antes des rôles.
+	 * @brief	Constantes des rôles.
 	 * @var		string
 	 */
-	const		ROLE_DEFAULT			= '*';						# id_profil = 0
-	const		ROLE_GUEST				= 'guest';					# id_profil = 1
-	const		ROLE_USER				= 'user';					# id_profil = 2
-	const		ROLE_EDITOR				= 'editor';					# id_profil = 3
-	const		ROLE_VALIDATOR			= 'validator';				# id_profil = 4
-	const		ROLE_ADMIN				= 'administrator';			# id_profil = 5
-	const		ROLE_GOD				= 'webmaster';				# id_profil = 6
+	const		ROLE_DEFAULT				= '*';						# id_profil = 0
+	const		ROLE_GUEST					= 'guest';					# id_profil = 1
+	const		ROLE_USER					= 'user';					# id_profil = 2
+	const		ROLE_EDITOR					= 'editor';					# id_profil = 3
+	const		ROLE_VALIDATOR				= 'validator';				# id_profil = 4
+	const		ROLE_ADMINISTRATOR			= 'administrator';			# id_profil = 5
+	const		ROLE_WEBMASTER				= 'webmaster';				# id_profil = 6
 
 	/**
-	 * @brief	const	antes des droits.
+	 * @brief	Constantes des droits.
 	 * @var		string
 	 */
-	const		ROLES_SECTION			= 'roles';
-	const		RESSOURCES_SECTION		= 'ressources';
-	const		ALLOW					= 'allow';
-	const		DENY					= 'deny';
+	const		ROLES_SECTION				= 'roles';
+	const		RESSOURCES_SECTION			= 'ressources';
+	const		ALLOW						= 'allow';
+	const		DENY						= 'deny';
 
-	private 	$_init					= array();
-	protected	$_acl					= array();
-	protected	$_roles					= array();
-	protected	$_ressources			= array();
+	private 	$_init						= array();
+	protected	$_acl						= array();
+	protected	$_roles						= array();
+	protected	$_ressources				= array();
 
 	/**
 	 * Instance du SINGLETON des ACLs.
 	 * @var		AclManager
 	 */
-	private static $oInstance	= null;
+	private static $oInstance				= null;
 
 	/**
 	 * @brief	Chargement des droits ACLs.

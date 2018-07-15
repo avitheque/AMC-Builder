@@ -12,8 +12,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 85 $
- * @since		$LastChangedDate: 2017-12-03 13:24:27 +0100 (Sun, 03 Dec 2017) $
+ * @version		$LastChangedRevision: 136 $
+ * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -368,8 +368,8 @@ class GalleryHelper {
 		// Finalisation du formulaire
 		$sSearch			.= "</ul>
 								<div class=\"margin-20\">
-									<button type=\"reset\" id=\"reset-gallery\" class=\"left no-margin red\">Annuler</button>
-									<button type=\"button\" id=\"search-gallery\" class=\"right no-margin blue\">Rechercher</button>
+									<button type=\"reset\" id=\"reset-gallery\" class=\"left red\">Annuler</button>
+									<button type=\"button\" id=\"search-gallery\" class=\"right blue\">Rechercher</button>
 								</div>
 							</fieldset>
 						</form>";
@@ -391,20 +391,20 @@ class GalleryHelper {
 							complete:	function() {
 								// Initialisation de la fonctionnalité de la Gallery
 								initGallery();
-								
+
 								// Mise à jour de la hauteur de la Gallery selon le résultat de la recherche
 								updateGalleryHeight();
 							}
 						});
 					});
-					
+
 					// Action sur le bouton [Annuler] de la Gallerie
 					$("button#reset-gallery").click(function() {
 						// Suppression du contenu
-						$("section#search-content").html("");	
-								
+						$("section#search-content").html("");
+
 						// Mise à jour de la hauteur de la Gallery selon le résultat de la recherche
-						updateGalleryHeight();	
+						updateGalleryHeight();
 					});';
 
 		// Compression du script avec JavaScriptPacker
@@ -448,7 +448,7 @@ class GalleryHelper {
 								</ul>
 							</div>
 							<input type=\"hidden\" name=\"bibliotheque_exclude\" value=\"" . implode(self::EXCLUDE_SEPARATOR, $this->_exclude) . "\" />
-							<button id=\"show-gallery\" type=\"button\" class=\"green no-margin right\">Afficher la bibliothèque</button>
+							<button id=\"show-gallery\" type=\"button\" class=\"green right\">Afficher la bibliothèque</button>
 							<br />";
 		}
 	}

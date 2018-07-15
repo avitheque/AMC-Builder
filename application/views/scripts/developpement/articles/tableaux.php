@@ -27,7 +27,7 @@ $sArticle .= "	<fieldset class='padding-H-20'>
 							</tr>
 						</thead>
 						<tbody>
-							<tr>
+							<tr class='odd'>
 								<td>Cellule A1</td>
 								<td>Cellule B1</td>
 								<td>Cellule C1</td>
@@ -36,7 +36,7 @@ $sArticle .= "	<fieldset class='padding-H-20'>
 								<td>Cellule F1</td>
 								<td>Cellule G1</td>
 							</tr>
-							<tr>
+							<tr class='even'>
 								<td>Cellule A2</td>
 								<td>Cellule B2</td>
 								<td>Cellule C2</td>
@@ -45,7 +45,7 @@ $sArticle .= "	<fieldset class='padding-H-20'>
 								<td>Cellule F2</td>
 								<td>Cellule G2</td>
 							</tr>
-							<tr>
+							<tr class='odd'>
 								<td>Cellule A3</td>
 								<td>Cellule B3</td>
 								<td>Cellule C3</td>
@@ -54,7 +54,7 @@ $sArticle .= "	<fieldset class='padding-H-20'>
 								<td>Cellule F3</td>
 								<td>Cellule G3</td>
 							</tr>
-							<tr>
+							<tr class='even'>
 								<td>Cellule A4</td>
 								<td>Cellule B4</td>
 								<td>Cellule C4</td>
@@ -63,7 +63,7 @@ $sArticle .= "	<fieldset class='padding-H-20'>
 								<td>Cellule F4</td>
 								<td>Cellule G4</td>
 							</tr>
-							<tr>
+							<tr class='odd'>
 								<td>Cellule A5</td>
 								<td>Cellule B5</td>
 								<td>Cellule C5</td>
@@ -72,7 +72,7 @@ $sArticle .= "	<fieldset class='padding-H-20'>
 								<td>Cellule F5</td>
 								<td>Cellule G5</td>
 							</tr>
-							<tr>
+							<tr class='even'>
 								<td>Cellule A6</td>
 								<td>Cellule B6</td>
 								<td>Cellule C6</td>
@@ -113,7 +113,7 @@ $sArticle .= "	<fieldset class='padding-H-20'>
 								&lt;/thead&gt;
 							</li>
 							<li>&lt;tbody&gt;
-								<ul>&lt;tr&gt;
+								<ul>&lt;tr class=<span class='texte'>\"odd\"</span>&gt;
 									<li>
 										<ul>
 											<li>
@@ -129,7 +129,7 @@ $sArticle .= "	<fieldset class='padding-H-20'>
 									</li>
 									&lt;/tr&gt;
 								</ul>
-								<ul>&lt;tr&gt;
+								<ul>&lt;tr class=<span class='texte'>\"even\"</span>&gt;
 									<li>
 										<ul>
 											<li>
@@ -145,7 +145,7 @@ $sArticle .= "	<fieldset class='padding-H-20'>
 									</li>
 									&lt;/tr&gt;
 								</ul>
-								<ul>&lt;tr&gt;
+								<ul>&lt;tr class=<span class='texte'>\"odd\"</span>&gt;
 									<li>
 										<ul>
 											<li>
@@ -161,7 +161,7 @@ $sArticle .= "	<fieldset class='padding-H-20'>
 									</li>
 									&lt;/tr&gt;
 								</ul>
-								<ul>&lt;tr&gt;
+								<ul>&lt;tr class=<span class='texte'>\"even\"</span>&gt;
 									<li>
 										<ul>
 											<li>
@@ -177,7 +177,7 @@ $sArticle .= "	<fieldset class='padding-H-20'>
 									</li>
 									&lt;/tr&gt;
 								</ul>
-								<ul>&lt;tr&gt;
+								<ul>&lt;tr class=<span class='texte'>\"odd\"</span>&gt;
 									<li>
 										<ul>
 											<li>
@@ -193,7 +193,7 @@ $sArticle .= "	<fieldset class='padding-H-20'>
 									</li>
 									&lt;/tr&gt;
 								</ul>
-								<ul>&lt;tr&gt;
+								<ul>&lt;tr class=<span class='texte'>\"even\"</span>&gt;
 									<li>
 										<ul>
 											<li>

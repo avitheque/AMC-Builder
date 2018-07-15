@@ -7,8 +7,8 @@
  *
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 104 $
- * @since		$LastChangedDate: 2018-01-19 19:36:51 +0100 (Fri, 19 Jan 2018) $
+ * @version		$LastChangedRevision: 136 $
+ * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
  */
 
 input:not([readonly]),
@@ -115,6 +115,16 @@ input[type=radio]:checked:disabled + label:before,
 input[type=checkbox][readonly]:checked + label:before,
 input[type=radio][readonly]:checked + label:before	{
 	color:											#333;
+}
+
+input[type=checkbox]:checked + label				{
+	font-weight:									bold;
+	color:											rgba(44, 56, 194, 1);
+}
+
+input.error + label									{
+	font-weight:									bold;
+	color:											rgba(255, 0, 0, 1);
 }
 
 /* Désactivation du outline lors du focus sous FireFox */

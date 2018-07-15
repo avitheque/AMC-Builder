@@ -29,8 +29,8 @@
  * @subpackage	Libraries
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 81 $
- * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
+ * @version		$LastChangedRevision: 136 $
+ * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -38,19 +38,19 @@
  */
 abstract class AbstractApplicationController implements Interfaces_iAbstractApplicationController {
 
-	protected	$oInstanceStorage	= null;
-	protected	$oSessionMessenger	= null;						// Gestionnaire des messages transmis en session
-	protected	$aMessages			= array();					// Messages transmis par le contrôleur
-	protected	$aParamTypes		= array();					// Métadonnées des paramètres
-	protected	$aParams			= array();					// Données transmises par l'URL et les formulaires
-	protected	$aData				= array();					// Données transmises du contrôleur à la vue
+	protected	$oInstanceStorage			= null;
+	protected	$oSessionMessenger			= null;						// Gestionnaire des messages transmis en session
+	protected	$aMessages					= array();					// Messages transmis par le contrôleur
+	protected	$aParamTypes				= array();					// Métadonnées des paramètres
+	protected	$aParams					= array();					// Données transmises par l'URL et les formulaires
+	protected	$aData						= array();					// Données transmises du contrôleur à la vue
 
-	protected	$_controller		= FW_DEFAULTCONTROLLER;
-	protected	$_subController		= null;
-	protected	$_action			= FW_DEFAULTACTION;
-	protected	$_subAction			= null;
-	protected	$_option			= null;
-	protected	$_view				= FW_DEFAULTVIEW;
+	protected	$_controller				= FW_DEFAULTCONTROLLER;
+	protected	$_subController				= null;
+	protected	$_action					= FW_DEFAULTACTION;
+	protected	$_subAction					= null;
+	protected	$_option					= null;
+	protected	$_view						= FW_DEFAULTVIEW;
 
 	/** @brief	Constructeur.
 	 *
@@ -103,10 +103,10 @@ abstract class AbstractApplicationController implements Interfaces_iAbstractAppl
 
 		// Initialisation des variables JAVASCRIPT injectées dans la vue
 		$aScriptsList						= array(
-			'var CONTROLLER="' . $this->_controller . '";',
-			'var ACTION="' . $this->_action . '";',
-			'var OPTION="' . $this->_option . '";',
-			'var VIEW="' . $this->_view . '";'
+			'var CONTROLLER="'	. $this->_controller	. '";',
+			'var ACTION="'		. $this->_action		. '";',
+			'var OPTION="'		. $this->_option		. '";',
+			'var VIEW="'		. $this->_view			. '";'
 		);
 
 		// Compression des scripts avec JavaScriptPacker

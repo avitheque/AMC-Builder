@@ -262,6 +262,13 @@ function resetTooltip(className, selector, option) {
 			});
 			break;
 
+		case "tooltip-left":
+			// Activation des TOOLTIPS statiques
+			$(selector).tooltip({
+				position:	{my: "left+20", at: "center"}
+			});
+			break;
+
         case "tooltip-right":
             // Activation des TOOLTIPS qui suivent la souris de l'utilisateur
             $(selector).tooltip({
@@ -313,6 +320,9 @@ $(document).ready(function() {
 
 	// Activation des TOOLTIPS statiques
 	resetTooltip("tooltip");
+
+    // Activation des TOOLTIPS positionnés à droite
+    resetTooltip("tooltip-left");
 
     // Activation des TOOLTIPS positionnés à droite
     resetTooltip("tooltip-right");

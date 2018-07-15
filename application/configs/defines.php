@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 134 $
- * @since		$LastChangedDate: 2018-06-02 08:51:35 +0200 (Sat, 02 Jun 2018) $
+ * @version		$LastChangedRevision: 136 $
+ * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
  */
 
 /**
@@ -33,6 +33,8 @@ define('IMAGES_PATH',				'/images');
 define('JQUERY_PATH',				'/jquery');
 define('SCRIPTS_PATH',				'/scripts');
 define('STYLES_PATH',				'/styles');
+define('PUBLIC_SCRIPTS_PATH',		PUBLIC_PATH . SCRIPTS_PATH);
+define('PUBLIC_STYLES_PATH',		PUBLIC_PATH . STYLES_PATH);
 
 /**
  * Paramètres du framework
@@ -95,7 +97,6 @@ define('VIEW_MD5',					"MD5");
 $aApplicationSessions = array(
 	AUTHENTICATE,
     SESSION_MESSENGER,
-	SESSION_NOTIFICATION,
 	VIEW_BODY,
 	VIEW_CACHE,
 	VIEW_DEBUG,

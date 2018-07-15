@@ -10,14 +10,19 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 134 $
- * @since		$LastChangedDate: 2018-06-02 08:51:35 +0200 (Sat, 02 Jun 2018) $
+ * @version		$LastChangedRevision: 136 $
+ * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
  */
 class SessionMessenger extends SessionManager {
+
+	const	FIRST_RENDER	= 'FIRST_RENDER';
+	const	LAST_RENDER		= 'LAST_RENDER';
+	const	VIEW_RENDER		= 'VIEW_RENDER';
+	const	VIEW_START		= 'VIEW_START';
 
 	/**
 	 * @brief	Instanciation du SINGLETON.
@@ -47,7 +52,7 @@ class SessionMessenger extends SessionManager {
 	 * @return	void
 	 */
 	public function setFirstRender($fTime = null) {
-		$this->setIndex('FIRST_RENDER', !empty($fTime) ? (float) $fTime : DataHelper::getTime());
+		$this->setIndex(self::FIRST_RENDER, !empty($fTime) ? (float) $fTime : DataHelper::getTime());
 	}
 
 	/**
@@ -58,7 +63,8 @@ class SessionMessenger extends SessionManager {
 	 * @return	float
 	 */
 	public function getFirstRender() {
-		return $this->getIndex('FIRST_RENDER');
+		// Renvoi du temps
+		return $this->issetIndex(self::FIRST_RENDER) ? $this->getIndex(self::FIRST_RENDER) : $this->setFirstRender();
 	}
 
 	/**
@@ -70,7 +76,7 @@ class SessionMessenger extends SessionManager {
 	 * @return	void
 	 */
 	public function setViewRender($fTime = null) {
-		$this->setIndex('VIEW_RENDER', !empty($fTime) ? (float) $fTime : DataHelper::getTime());
+		$this->setIndex(self::VIEW_RENDER, !empty($fTime) ? (float) $fTime : DataHelper::getTime());
 	}
 
 	/**
@@ -81,7 +87,7 @@ class SessionMessenger extends SessionManager {
 	 * @return	float
 	 */
 	public function getViewRender() {
-		return $this->getIndex('VIEW_RENDER');
+		return $this->getIndex(self::VIEW_RENDER);
 	}
 
 	/**
@@ -93,7 +99,7 @@ class SessionMessenger extends SessionManager {
 	 * @return	void
 	 */
 	public function setLastRender($fTime = null) {
-		$this->setIndex('LAST_RENDER', !empty($fTime) ? (float) $fTime : DataHelper::getTime());
+		$this->setIndex(self::LAST_RENDER, !empty($fTime) ? (float) $fTime : DataHelper::getTime());
 	}
 
 	/**
@@ -104,9 +110,9 @@ class SessionMessenger extends SessionManager {
 	 * @return	float
 	 */
 	public function getLastRender() {
-		return $this->getIndex('LAST_RENDER');
+		return $this->issetIndex(self::LAST_RENDER) ? $this->getIndex(self::LAST_RENDER) : $this->setLastRender();
 	}
-	
+
 	//#############################################################################################
 	//	@todo	SESSION_MESSENGER
 	//#############################################################################################
@@ -124,8 +130,6 @@ class SessionMessenger extends SessionManager {
 		// Purge du contenu s'il existe
 		if (!is_null($xTag) && $this->issetMessageByType($sType, $xTag)) {
 			unset($_SESSION[SESSION_MESSENGER][$sType][$xTag]);
-		} elseif ($this->issetMessageByType($sType)) {
-			unset($_SESSION[SESSION_MESSENGER][$sType]);
 		}
 	}
 
@@ -170,13 +174,13 @@ class SessionMessenger extends SessionManager {
 		if (isset($_SESSION[SESSION_MESSENGER][$sType])) {
 			// Parcours de l'ensemble des messages selon le type en paramètre
 			foreach ($_SESSION[SESSION_MESSENGER][$sType] as $fTime => $sMessage) {
-				// Fonctionnalité réalisée si le message est périmé
-				if ($fTime <= self::getFirstRender()) {
-					// Suppression du message périmé
-					unset($_SESSION[SESSION_MESSENGER][$sType][$fTime]);
-				} else {
+				// Fonctionnalité réalisée si le message n'est pas périmé
+				if (!DataHelper::isValidNumeric($fTime) || $fTime > $this->getFirstRender()) {
 					// Récupération du message
 					$aMessages[$fTime] = $sMessage;
+				} else {
+					// Suppression du message périmé
+					unset($_SESSION[SESSION_MESSENGER][$sType][$fTime]);
 				}
 			}
 		}
@@ -272,7 +276,7 @@ class SessionMessenger extends SessionManager {
 		// Ajout d'un message à la collection
 		$this->setMessageByType(ViewRender::MESSAGE_WARNING, $sMessage, $xTag);
 	}
-	
+
 	//#############################################################################################
 	//	@todo	SESSION_NOTIFICATION
 	//#############################################################################################
@@ -290,8 +294,6 @@ class SessionMessenger extends SessionManager {
 		// Purge du contenu s'il existe
 		if (!is_null($xTag) && $this->issetNotificationByType($sType, $xTag)) {
 			unset($_SESSION[SESSION_NOTIFICATION][$sType][$xTag]);
-		} elseif ($this->issetNotificationByType($sType)) {
-			unset($_SESSION[SESSION_NOTIFICATION][$sType]);
 		}
 	}
 
@@ -307,7 +309,7 @@ class SessionMessenger extends SessionManager {
 	public function issetNotificationByType($sType = ViewRender::MESSAGE_DEFAULT, $xTag = null) {
 		// Initialisation de la liste de(s) message(s)
 		$bExists = false;
-		
+
 		// Récupération du message
 		if (!is_null($xTag)) {
 			// Recherche si le message existe par son titre
@@ -316,11 +318,11 @@ class SessionMessenger extends SessionManager {
 			// Recherche si le message existe par sa présence
 			$bExists = isset($_SESSION[SESSION_NOTIFICATION][$sType]);
 		}
-	
+
 		// Renvoi de la vérification
 		return $bExists;
 	}
-	
+
 	/**
 	 * @brief	Récupération d'une notification.
 	 *
@@ -332,22 +334,21 @@ class SessionMessenger extends SessionManager {
 	public function getNotification($sType = ViewRender::MESSAGE_DEFAULT) {
 		// Initialisation de la liste de(s) message(s)
 		$aNotification = array();
-	
+
 		// Fonctionnalité réalisée si le type de message existe dans la collection
 		if (isset($_SESSION[SESSION_NOTIFICATION][$sType])) {
-			// Parcours de l'ensemble des messages selon le type en paramètre
+			// Parcours de l'ensemble des notifications selon le type en paramètre
 			foreach ($_SESSION[SESSION_NOTIFICATION][$sType] as $fTime => $sNotification) {
-				// Fonctionnalité réalisée si le message est périmé
-				if ($fTime <= self::getFirstRender()) {
-					// Suppression du message périmé
-					unset($_SESSION[SESSION_NOTIFICATION][$sType][$fTime]);
-				} else {
-					// Récupération du message
+				// Fonctionnalité réalisée si la notification n'est pas périmé
+				if (DataHelper::isValidString($fTime) || $fTime > self::getFirstRender()) {
+					// Récupération de la notification
 					$aNotification[$fTime] = unserialize($sNotification);
 				}
+				// Suppression du message périmé
+				unset($_SESSION[SESSION_NOTIFICATION][$sType][$fTime]);
 			}
 		}
-	
+
 		// Renvoi de la liste de(s) message(s)
 		return $aNotification;
 	}

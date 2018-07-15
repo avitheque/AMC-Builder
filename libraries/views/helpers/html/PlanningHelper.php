@@ -8,8 +8,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 120 $
- * @since		$LastChangedDate: 2018-05-07 21:15:40 +0200 (Mon, 07 May 2018) $
+ * @version		$LastChangedRevision: 136 $
+ * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -37,12 +37,14 @@ abstract class PlanningHelper {
 	const		PLANNING_HEPHEMERIDE				= 86400;
 	const		PLANNING_REPAS_HEURE				= 13;
 	const		PLANNING_REPAS_DUREE				= 1;
-	
+
 	/**
 	 * Constante de construction de la liste des éléments du formulaire de recherche.
 	 * @var		string
 	 */
 	const		TYPE_SELECT							= "select";
+	const		TYPE_NUMBER							= "number";
+	const		TYPE_TEXT							= "text";
 
 	/**
 	 * Singleton de l'instance des échanges entre contrôleurs.
@@ -111,7 +113,7 @@ abstract class PlanningHelper {
 	const		PLANNING_DATE_FORMAT				= "d/m/o";
 	const		PLANNING_WEEK_FORMAT				= "W";
 	const		PLANNING_TIME_FORMAT				= "%02d:%02d";
-	
+
 	protected	$_planning_annee					= 1970;
 	protected	$_planning_mois						= 1;
 	protected	$_timestamp_debut					= 0;
@@ -259,7 +261,7 @@ abstract class PlanningHelper {
 		// Récupération du titre
 		$sTitre										= $oItem->getTitle();
 		$nDuration									= $oItem->getDuration();
-		
+
 		// Initalisation de l'identifiant de l'entrée à partir des paramètres de la DATE
 		$sDateMySQL									= $oItem->getDate("Y-m-d");
 		$sTimeMySQL									= $oItem->getTime("H:i");
@@ -273,26 +275,26 @@ abstract class PlanningHelper {
 			$nDuration								= $oItem->getDuration();
 			while ($nHour > $this->_planning_debut) {
 				$nHour--;
-				
+
 				//array_key_exists($sTimeBeforeMySQL, $this->_aItems[$sDateMySQL])) {
 				$sTimeBeforeMySQL					= sprintf("%02d:%02d", $nHour, $oItem->getTime("i"));
-				
+
 				// Fonctionnalité réalisée si la nouvelle cellule est la continuité du cours précédent
 				if (array_key_exists($sTimeBeforeMySQL, $this->_aItems[$sDateMySQL])) {
 					$oItemBefore					= $this->_aItems[$sDateMySQL][$sTimeBeforeMySQL];
-					
+
 					$sTitreBefore					= $oItemBefore->getTitle();
 					$sDurationBefore				= $oItemBefore->getDuration();
-					
+
 					// La tâche est identique
 					if ($this->_isItemIdentiqual($oItem, $oItemBefore)) {
 						// Suppression de l'élément précédent
 						unset($this->_aItems[$sDateMySQL][$sTimeMySQL]);
-						
+
 						// Mise à jour de la durée
 						$nDuration					+= $oItemBefore->getDuration();
 						$oItem->setDuration($nDuration);
-						
+
 						// Mise à jour de l'heure de début
 						$sTimeMySQL					= $sTimeBeforeMySQL;
 						$oItem->setFullTime($sTimeMySQL);
@@ -307,7 +309,7 @@ abstract class PlanningHelper {
 		// Ajout de l'élément à la collection
 		$this->_aItems[$sDateMySQL][$sTimeMySQL]	= $oItem;
 	}
-	
+
 	/**
 	 * @brief	Initialisation du message de résultat vide.
 	 *
@@ -327,5 +329,5 @@ abstract class PlanningHelper {
 	public function setExcludeByListId($aListExcludeId = array()) {
 		$this->_exclude								= $aListExcludeId;
 	}
-	
+
 }

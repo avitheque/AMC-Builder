@@ -10,8 +10,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 81 $
- * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
+ * @version		$LastChangedRevision: 136 $
+ * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -105,7 +105,7 @@ class SessionManager {
 	 */
 	public function issetIndex($sIndex) {
 		// Renvoi du résultat
-		return isset($_SESSION[$this->getNameSpace()][$sIndex]);
+		return isset($_SESSION[$this->getNameSpace()][$sIndex]) ? !is_null($_SESSION[$this->getNameSpace()][$sIndex]) : false;
 	}
 
 	/** @brief	Récupère une variable.
@@ -126,5 +126,5 @@ class SessionManager {
 		// Renvoi de la valeur
 		return $xValue;
 	}
-	
+
 }

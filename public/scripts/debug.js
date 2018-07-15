@@ -15,6 +15,9 @@ var DEBUG_PANEL_OVERFLOW_Y	= "auto";
 
 // Initialisation du panneau de debuggage
 function initDebug() {
+	// Suppression de la classe HIDDEN
+	$("#article-debug").removeClass("hidden");
+
 	// Récupération de la taille du message de débuggage
 	DEBUG_PANEL_HEIGHT	= $("#ul-debug", "#article-debug").height() + 15;
 	DEBUG_PANEL_WIDTH	= $("body").width();

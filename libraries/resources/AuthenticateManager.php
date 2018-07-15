@@ -11,8 +11,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 58 $
- * @since		$LastChangedDate: 2017-07-06 19:25:04 +0200 (Thu, 06 Jul 2017) $
+ * @version		$LastChangedRevision: 140 $
+ * @since		$LastChangedDate: 2018-07-14 19:29:36 +0200 (Sat, 14 Jul 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -20,18 +20,31 @@
  */
 class AuthenticateManager {
 
+	const		FIELD_DISPLAY_NAME				= 'display_name';								// Champ du libellé de l'utilisateur
+	const		FIELD_GRADE_ID					= 'id_grade';									// Champ d'identification du grade
+	const		FIELD_GROUPE_DROITE				= 'borne_droite';								// Champ de la BORNE DROITE du groupe
+	const		FIELD_GROUPE_GAUCHE				= 'borne_gauche';								// Champ de la BORNE GAUCHE du groupe
+	const		FIELD_GROUPE_ID					= 'id_groupe';									// Champ d'identification du groupe
+	const		FIELD_GROUPE_LABEL				= 'libelle_groupe';								// Champ du libellé du groupe
+	const		FIELD_PROFIL_ID					= 'id_profil';									// Champ de l'identifiant du profil
+	const		FIELD_PROFIL_LABEL				= 'libelle_profil';								// Champ du libellé du profil
+	const		FIELD_PROFIL_ROLE				= 'role_profil';								// Champ du rôle du profil
+	const		FIELD_USER_ID					= 'id_utilisateur';								// Champ d'identification de l'utilisateur
+	const		FIELD_USER_LOGIN				= 'login_utilisateur';							// Champ du login de l'utilisateur
+	const		FIELD_USER_STATUS				= 'modifiable_utilisateur';						// Champ d'autorisation de modification
+
 	const		DEFAULT_BORNE_DROITE			= 2;
 	const		DEFAULT_BORNE_GAUCHE			= 1;
-	const		DEFAULT_DISPLAY_NAME			= "Utilisateur non authentifié";
+	const		DEFAULT_DISPLAY_NAME			= Constantes::LOGIN_GUEST;
 	const		DEFAULT_ID_GRADE				= 0;
 	const		DEFAULT_ID_GROUPE				= 0;
-	const		DEFAULT_ID_PROFIL				= AclManager::ID_PROFIL_UNDEFINED;
+	const		DEFAULT_ID_PROFIL				= AclManager::ID_PROFIL_GUEST;
 	const		DEFAULT_ID_UTILISATEUR			= 0;
-	const		DEFAULT_LIBELLE_GROUPE			= "public";
-	const		DEFAULT_LIBELLE_PROFIL			= Constantes::PROFIL_GUEST;
+	const		DEFAULT_LIBELLE_GROUPE			= null;
+	const		DEFAULT_LIBELLE_PROFIL			= AclManager::LABEL_PROFIL_GUEST;
 	const		DEFAULT_LOGIN					= Constantes::LOGIN_GUEST;
-	const		DEFAULT_MODIFIABLE_UTILISATEUR	= false;
 	const		DEFAULT_ROLE					= AclManager::ROLE_GUEST;
+	const		DEFAULT_USER_STATUS				= false;
 
 	/**
 	 * @brief	Paramètres d'authentification par défaut.
@@ -39,18 +52,21 @@ class AuthenticateManager {
 	 * @var		array
 	 */
 	static public $DEFAULT_PARAMS 				= array(
-		'borne_droite'				=> self::DEFAULT_BORNE_DROITE,								// INTEGER	Borne DROITE du groupe de l'utilisateur
-		'borne_gauche'				=> self::DEFAULT_BORNE_GAUCHE,								// INTEGER	Borne GAUCHE du groupe de l'utilisateur
-		'display_name'				=> self::DEFAULT_DISPLAY_NAME,								// STRING	Libellé de présentation de l'utilisateur
-		'id_grade'					=> self::DEFAULT_ID_GRADE,									// INTEGER	Identifiant du grade de l'utilisateur
-		'id_groupe'					=> self::DEFAULT_ID_GROUPE,									// INTEGER	Identifiant du groupe de l'utilisateur
-		'id_profil'					=> self::DEFAULT_ID_PROFIL,									// INTEGER	Identifiant du profil de l'utilisateur
-		'id_utilisateur'			=> self::DEFAULT_ID_UTILISATEUR,							// STRING	Identifiant de l'utilisateur
-		'libelle_groupe'			=> self::DEFAULT_LIBELLE_GROUPE,							// STRING	Libellé du groupe de l'utilisateur
-		'libelle_profil'			=> self::DEFAULT_LIBELLE_PROFIL,							// STRING	Libelle du profil de l'utilisateur
-		'login_utilisateur'			=> self::DEFAULT_LOGIN,										// STRING	Login de l'utilisateur
-		'modifiable_utilisateur'	=> self::DEFAULT_MODIFIABLE_UTILISATEUR,					// BOOLEAN	Droit de modification pour l'utilisateur
-		'role_profil'				=> self::DEFAULT_ROLE										// STRING	Rôle de l'utilisateur
+		// INFORMATIONS DE L'UTILISATEUR
+		self::FIELD_USER_STATUS		=> self::DEFAULT_USER_STATUS,								// BOOLEAN	Statut d'accès de l'utilisateur
+		self::FIELD_USER_ID			=> self::DEFAULT_ID_UTILISATEUR,							// INTEGER	Identifiant du compte utilisateur
+		self::FIELD_USER_LOGIN		=> self::DEFAULT_LOGIN,										// STRING	Login de l'utilisateur
+		self::FIELD_DISPLAY_NAME	=> self::DEFAULT_DISPLAY_NAME,								// STRING	Libellé de présentation de l'utilisateur
+		self::FIELD_GRADE_ID		=> self::DEFAULT_ID_GRADE,									// INTEGER	Identifiant du grade de l'utilisateur
+		// GESTION DU GROUPE
+		self::FIELD_GROUPE_DROITE	=> self::DEFAULT_BORNE_DROITE,								// INTEGER	Borne DROITE du groupe de l'utilisateur
+		self::FIELD_GROUPE_GAUCHE	=> self::DEFAULT_BORNE_GAUCHE,								// INTEGER	Borne GAUCHE du groupe de l'utilisateur
+		self::FIELD_GROUPE_ID		=> self::DEFAULT_ID_GROUPE,									// INTEGER	Identifiant du groupe de l'utilisateur
+		self::FIELD_GROUPE_LABEL	=> self::DEFAULT_LIBELLE_GROUPE,							// STRING	Libellé du groupe de l'utilisateur
+		// GESTION DU PROFIL
+		self::FIELD_PROFIL_ID		=> self::DEFAULT_ID_PROFIL,									// INTEGER	Identifiant du profil de l'utilisateur
+		self::FIELD_PROFIL_LABEL	=> self::DEFAULT_LIBELLE_PROFIL,							// STRING	Libelle du profil de l'utilisateur
+		self::FIELD_PROFIL_ROLE		=> self::DEFAULT_ROLE										// STRING	Rôle de l'utilisateur
 	);
 
 	/**
@@ -154,14 +170,24 @@ class AuthenticateManager {
 	}
 
 	/**
+	 * @brief	Recherche si un paramètre d'authentification est défini.
+	 *
+	 * @param	string	$sParam		: nom du paramètre.
+	 * @return	string|integer
+	 */
+	public function issetParam($sParam) {
+		return isset($this->_params[$sParam]) && !empty($this->_params[$sParam]);
+	}
+
+	/**
 	 * @brief	Initialisation d'un paramètre d'authentification.
 	 *
 	 * @param	string	$sParam		: nom du paramètre.
 	 * @param	mixed	$xValue		: valeur du paramètre.
 	 * @return	void
 	 */
-	private function setParam($sParam, $xValue) {
-		$this->_{$sParam} = $xValue;
+	public function setParam($sParam, $xValue) {
+		$this->_param[$sParam] = $xValue;
 	}
 
 	/**
@@ -190,8 +216,8 @@ class AuthenticateManager {
 	 * @return	string
 	 */
 	public function reset($aParams = array()) {
-		$_SESSION = array();
-		$this->_params = $aParams;
+		$_SESSION		= array();
+		$this->_params	= $aParams;
 	}
 
 	/**
@@ -212,7 +238,7 @@ class AuthenticateManager {
 	 * @return	boolean
 	 */
 	public function isAuthenticated() {
-		return (bool) $this->getParam('id_utilisateur');
+		return (bool) $this->getParam(self::FIELD_USER_ID);
 	}
 
 	/**
@@ -220,13 +246,13 @@ class AuthenticateManager {
 	 *
 	 * @li	Selon le principe de hiérarchie, en recherche étendue, le profil supérieur inclu forcément le profil inférieur.
 	 * @code
-	 * 	AclManager::ID_PROFIL_WEBMASTER		= 6; #		      .
-	 * 	AclManager::ID_PROFIL_ADMINISTRATOR	= 5; #	         / \
-	 * 	AclManager::ID_PROFIL_VALIDATOR		= 4; #		    /   \
-	 * 	AclManager::ID_PROFIL_EDITOR		= 3; #		   /     \
-	 * 	AclManager::ID_PROFIL_USER			= 2; #		  /       \
-	 * 	AclManager::ID_PROFIL_GUEST			= 1; #		 /         \
-	 * 	AclManager::ID_PROFIL_UNDEFINED		= 0; #		/___________\
+	 * 	AclManager::ID_PROFIL_WEBMASTER		= 6; #            .
+	 * 	AclManager::ID_PROFIL_ADMINISTRATOR	= 5; #           / \
+	 * 	AclManager::ID_PROFIL_VALIDATOR		= 4; #          /   \
+	 * 	AclManager::ID_PROFIL_EDITOR		= 3; #         /     \
+	 * 	AclManager::ID_PROFIL_USER			= 2; #        /       \
+	 * 	AclManager::ID_PROFIL_GUEST			= 1; #       /         \
+	 * 	AclManager::ID_PROFIL_UNDEFINED		= 0; #      /___________\
 	 * @endcode
 	 *
 	 * @param	integer	$nSearch			: identifiant du profil à tester.
@@ -234,7 +260,7 @@ class AuthenticateManager {
 	 * @return boolean
 	 */
 	public function isProfil($nSearch, $bStrict = false) {
-		//						COMPARAISON STRICTE							|	COMPARAISON ÉTENDUE (Principe de hiérarchie)
+		//						COMPARAISON STRICTE									|	COMPARAISON ÉTENDUE (Principe de hiérarchie)
 		return ($bStrict) ?		$this->getParam('id_profil') == $nSearch	: $this->getParam('id_profil') >= $nSearch;
 	}
 
@@ -267,22 +293,23 @@ class AuthenticateManager {
 	 * 		string	$aUtilisateur['nom_utilisateur']		: nom de l'utilisateur
 	 * 		string	$aUtilisateur['prenom_utilisateur']		: prénom de l'utilisateur
 	 * @endcode
+     * @throws	ApplicationException
 	 */
 	public function authenticate($aUtilisateur = array()) {
-		if (!$this->isAuthenticated() && DataHelper::isValidArray($aUtilisateur)) {
+		if (!$this->isAuthenticated() && DataHelper::isValidArray($aUtilisateur, null, true)) {
 			// Nom de l'utilisateur du type NOM Prénom (GRADE)
 			if (!isset($aUtilisateur['display_name']) || empty($aUtilisateur['display_name'])) {
 				// Construction du DISPLAYNAME
-				$aUtilisateur['display_name']	= strtoupper($aUtilisateur['nom_utilisateur']) . " " . ucfirst($aUtilisateur['prenom_utilisateur']) . " (" . strtoupper($aUtilisateur['libelle_court_grade']) . ")";
+				$aUtilisateur['display_name']			= strtoupper($aUtilisateur['nom']) . " " . ucfirst($aUtilisateur['prenom']) . " (" . strtoupper($aUtilisateur['grade_court']) . ")";
 			}
 
 			// Initialisation des informations de connexion
-			$aUtilisateur['id_session']			= session_id();
-			$aUtilisateur['ip_adresse']			= $_SERVER['REMOTE_ADDR'];
+			$aUtilisateur['id_session']					= session_id();
+			$aUtilisateur['ip_adresse']					= $_SERVER['REMOTE_ADDR'];
 
 			// Ajout des données de l'utilisateur connecté
 			foreach (self::$DEFAULT_PARAMS as $sKey => $xValue) {
-				$this->_params[$sKey]			= $aUtilisateur[$sKey];
+				$this->_params[$sKey]					= $aUtilisateur[$sKey];
 			}
 		} else {
 			throw new ApplicationException('EAuthNotFind', $aUtilisateur);
@@ -304,16 +331,7 @@ class AuthenticateManager {
 	 * @return	string
 	 */
 	public function getIdUtilisateur() {
-		return $this->_params['id_utilisateur'];
-	}
-
-	/**
-	 * @brief	Récupère le profil de l'utilisateur.
-	 *
-	 * @return	string
-	 */
-	public function getLibelleProfil() {
-		return $this->_params['libelle_profil'];
+		return DataHelper::get($this->_params,self::FIELD_USER_ID,		DataHelper::DATA_TYPE_INT_ABS);
 	}
 
 	/**
@@ -322,52 +340,16 @@ class AuthenticateManager {
 	 * @return	string
 	 */
 	public function getIdProfil() {
-		return $this->_params['id_profil'];
+		return DataHelper::get($this->_params,self::FIELD_PROFIL_ID,		DataHelper::DATA_TYPE_INT_ABS);
 	}
 
 	/**
-	 * @brief	Récupère l'identifiant du groupe de l'utilisateur.
+	 * @brief	Récupère le profil de l'utilisateur.
 	 *
 	 * @return	string
 	 */
-	public function getIdGroupe() {
-		return $this->_params['id_groupe'];
-	}
-
-	/**
-	 * @brief	Récupère le libellé du groupe de l'utilisateur.
-	 *
-	 * @return	string
-	 */
-	public function getLibelleGroupe() {
-		return $this->_params['libelle_groupe'];
-	}
-
-	/**
-	 * @brief	Récupère la borne gauche du groupe de l'utilisateur.
-	 *
-	 * @return	string
-	 */
-	public function getBorneGauche() {
-		return $this->_params['borne_gauche'];
-	}
-
-	/**
-	 * @brief	Récupère la borne droite du groupe de l'utilisateur.
-	 *
-	 * @return	string
-	 */
-	public function getBorneDroite() {
-		return $this->_params['borne_droite'];
-	}
-
-	/**
-	 * @brief	Récupère l'identifiant du grade de l'utilisateur.
-	 *
-	 * @return	string
-	 */
-	public function getIdGrade() {
-		return $this->_params['id_grade'];
+	public function getLibelleProfil() {
+		return DataHelper::get($this->_params,self::FIELD_PROFIL_LABEL);
 	}
 
 	/**
@@ -376,7 +358,52 @@ class AuthenticateManager {
 	 * @return	string
 	 */
 	public function getRole() {
-		return $this->_params['role_profil'];
+		return DataHelper::get($this->_params,self::FIELD_PROFIL_ROLE);
+	}
+
+	/**
+	 * @brief	Récupère l'identifiant du groupe de l'utilisateur.
+	 *
+	 * @return	string
+	 */
+	public function getIdGroupe() {
+		return DataHelper::get($this->_params,self::FIELD_GROUPE_ID,			DataHelper::DATA_TYPE_INT_ABS);
+	}
+
+	/**
+	 * @brief	Récupère le libellé du groupe de l'utilisateur.
+	 *
+	 * @return	string
+	 */
+	public function getLibelleGroupe() {
+		return DataHelper::get($this->_params,self::FIELD_GROUPE_LABEL);
+	}
+
+	/**
+	 * @brief	Récupère la borne droite du groupe de l'utilisateur.
+	 *
+	 * @return	string
+	 */
+	public function getBorneDroite() {
+		return DataHelper::get($this->_params, self::FIELD_GROUPE_DROITE,	DataHelper::DATA_TYPE_INT_ABS);
+	}
+
+	/**
+	 * @brief	Récupère la borne gauche du groupe de l'utilisateur.
+	 *
+	 * @return	string
+	 */
+	public function getBorneGauche() {
+		return DataHelper::get($this->_params, self::FIELD_GROUPE_GAUCHE,	DataHelper::DATA_TYPE_INT_ABS);
+	}
+
+	/**
+	 * @brief	Récupère l'identifiant du grade de l'utilisateur.
+	 *
+	 * @return	string
+	 */
+	public function getIdGrade() {
+		return DataHelper::get($this->_params, self::FIELD_GRADE_ID);
 	}
 
 	/**
@@ -385,7 +412,7 @@ class AuthenticateManager {
 	 * @return	string
 	 */
 	public function getLogin() {
-		return $this->_params['login_utilisateur'];
+		return DataHelper::get($this->_params, self::FIELD_USER_LOGIN);
 	}
 
 	/**
@@ -394,7 +421,7 @@ class AuthenticateManager {
 	 * @return	string
 	 */
 	public function getDisplayName() {
-		return $this->_params['display_name'];
+		return DataHelper::get($this->_params, self::FIELD_DISPLAY_NAME);
 	}
 
 	/**
@@ -403,7 +430,7 @@ class AuthenticateManager {
 	 * @return	bool
 	 */
 	public function isModifiable() {
-		return (bool) $this->_params['modifiable_utilisateur'];
+		return DataHelper::get($this->_params, self::FIELD_USER_STATUS, DataHelper::DATA_TYPE_BOOL);
 	}
 
 }

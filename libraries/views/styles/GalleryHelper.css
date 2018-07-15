@@ -11,29 +11,29 @@
 @CHARSET "UTF-8";
 
 /* SOURCE */
-#gallery						{ float: left; min-height: 7em; max-height: 315px; display: block; overflow: auto; }
-.gallery.custom-state-active	{ background: #FBEC88; border: solid 1px #FAD42E; }
-.gallery li						{ float: left; width: auto; padding: 0.4em; margin: 0 0.4em 0.4em 0; text-align: center; white-space: nowrap; }
-.gallery li h5					{ margin: 0 0 0.4em; cursor: move; }
-.gallery li a					{ float: right; }
-.gallery li a.ui-icon-zoomin	{ float: left; }
+ul#gallery						{ float: left; min-height: 7em; max-height: 315px; display: block; overflow: auto; }
+ul.gallery.custom-state-active	{ background: #FBEC88; border: solid 1px #FAD42E; }
+ul.gallery li					{ float: left; width: auto; padding: 0.4em; margin: 0 0.4em 0.4em 0; text-align: center; white-space: nowrap; }
+ul.gallery li h5				{ margin: 0 0 0.4em; cursor: move; }
+ul.gallery li a					{ float: right; }
+ul.gallery li a.ui-icon-zoomin	{ float: left; }
 
 
 /* CIBLE */
-#panel							{ min-height: 6em; margin: 20px; padding: 5px; overflow: hidden; overflow-y: auto; }
-#panel li						{ width: auto; white-space: nowrap; }
-#panel h4						{ line-height: 20px; margin: 0 0 0.4em; }
-#panel h4 .ui-icon				{ float: left; }
-#panel .gallery h5				{ display: none; }
+div#panel						{ min-height: 6em; margin: 20px; padding: 5px; overflow: hidden; overflow-y: auto; }
+div#panel li					{ width: auto; white-space: nowrap; }
+div#panel h4					{ line-height: 20px; margin: 0 0 0.4em; }
+div#panel h4 .ui-icon			{ float: left; }
+div#panel .gallery h5			{ display: none; }
 
 
 /* MINIATURE */
-.miniature						{ width: 200px; min-height: 55px; overflow: hidden; cursor: pointer; }
-.miniature h3					{ font-size: 14px; cursor: pointer; }
-.miniature p					{ font-size: 10px; cursor: pointer; height: 25px; }
-.miniature span					{ font-size: 10px; cursor: pointer; }
+article.miniature				{ width: 200px; min-height: 55px; overflow: hidden; cursor: pointer; }
+article.miniature h3			{ font-size: 14px; cursor: pointer; }
+article.miniature p				{ font-size: 10px; cursor: pointer; height: 25px; }
+article.miniature span			{ font-size: 10px; cursor: pointer; }
 
-.miniature:active,
-.miniature h3:active,
-.miniature p:active,
-.miniature span:active			{ cursor: move; }
+article.miniature:active,
+article.miniature h3:active,
+article.miniature p:active,
+article.miniature span:active	{ cursor: move; }

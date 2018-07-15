@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 104 $
- * @since		$LastChangedDate: 2018-01-19 19:36:51 +0100 (Fri, 19 Jan 2018) $
+ * @version		$LastChangedRevision: 136 $
+ * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -184,7 +184,7 @@ class FormulaireHelper {
 		// Dans le cas de la création / édition : Ajout d'un bouton [Ajouter une question]
 		$this->_sBoutonAjouter			= "";
 		if (! $this->_bDisable) {
-			$this->_sBoutonAjouter		= "<button type=\"submit\" id=\"bouton-ajouter\" class=\"blue no-margin right\" name=\"button\" value=\"ajouter\" role=\"touche_N\">Ajouter une question</button>";
+			$this->_sBoutonAjouter		= "<button type=\"submit\" id=\"bouton-ajouter\" class=\"blue right\" name=\"button\" value=\"ajouter\" role=\"touche_N\">Ajouter une question</button>";
 		}
 
 		// Construction de l'entête du questionnaire
@@ -355,7 +355,7 @@ class FormulaireHelper {
 
 		// Fonctionnalité réalisée si le formulaire est valide
 		if (!empty($this->_nIdFormulaire)) {
-			$this->_correction			= "<a href=\"/visualisation?id_formulaire=" . $this->_nIdFormulaire . "\" class=\"button red no-margin right tooltip\" target=\"_blank\" title=\"Affiche la feuille de correction\" role=\"touche_P\">Aperçu de la correction</a>";
+			$this->_correction			= "<a href=\"/visualisation?id_formulaire=" . $this->_nIdFormulaire . "\" class=\"button red right tooltip\" target=\"_blank\" title=\"Affiche la feuille de correction\" role=\"touche_P\">Aperçu de la correction</a>";
 		}
 
 		// Nom du questionnaire
@@ -446,7 +446,7 @@ class FormulaireHelper {
 															<li>
 																<input type=\"checkbox\" id=\"idStrictCheckboxDefaut\" name=\"strict_defaut\" value=\"true\" $sStrictChecked $sDisabled/>
 																<label for=\"idStrictCheckboxDefaut\">Réponse stricte attendue aux questions par défaut (tout ou rien)</label>
-								
+
 																<input type=\"hidden\" id=\"idFormulaireStrictDefaut\" name=\"formulaire_strict\" value=\"" . $sStrictFormulaireValue . "\" />
 															</li>
 															<li id=\"idPenalite\" class=\"" . $sClassFacteur . "\">

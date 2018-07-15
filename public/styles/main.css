@@ -17,8 +17,8 @@
  *
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 122 $
- * @since		$LastChangedDate: 2018-05-16 19:39:10 +0200 (Wed, 16 May 2018) $
+ * @version		$LastChangedRevision: 136 $
+ * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
  */
 
 /** GLOBAL ***************************************************************************************/
@@ -289,6 +289,12 @@ a.page-bottom:hover				{
 	color:						#220979;
 	font-size:					20px;
 }
+
+
+/** ZONE DE CHANGEMENT DE RENDU ******************************************************************/
+#view-render					{ position: 			fixed;						top:				0; 				right: 			0;			font-size:				21px;			z-index: 			500; }
+#view-render button				{ display:				none;						margin:				7px 3px;		width:			35px; }
+#view-render #fullscreen		{ display:				block; }
 
 
 /** CLASSES D'AFFICHAGE **************************************************************************/

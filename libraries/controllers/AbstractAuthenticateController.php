@@ -23,14 +23,18 @@
  * @subpackage	Libraries
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 81 $
- * @since		$LastChangedDate: 2017-12-02 15:25:25 +0100 (Sat, 02 Dec 2017) $
+ * @version		$LastChangedRevision: 140 $
+ * @since		$LastChangedDate: 2018-07-14 19:29:36 +0200 (Sat, 14 Jul 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
  */
 abstract class AbstractAuthenticateController extends AbstractApplicationController {
+
+	const		RENDER_PANEL	 	= "panel";
+	const		RENDER_FULLSCREEN 	= "fullscreen";
+	const		DEFAULT_RENDER	 	= self::RENDER_PANEL;
 
 	/**
 	 * @brief	Nom de session de stockage du contrôleur.
@@ -65,11 +69,17 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 	 * @var		TaskbarHelper
 	 */
 	private		$_oBar				= null;
-	
+
 	/**
 	 * @var		Tableau
 	 */
 	protected	$_aMessages			= array();
+
+	/**
+	 * @brief	Format de rendu de la vue
+	 * @var		array
+	 */
+	protected	$_render			= self::DEFAULT_RENDER;
 
 	/**
 	 * Constructeur de la classe de l'application.
@@ -77,23 +87,23 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 	 * @overload	AbstractApplicationController::construct($sNameSpace = __CLASS__)
 	 *
 	 * @param	string $sNameSpace		: Nom du contrôleur à appeler, par défaut le nom de la classe.
+     * @throws	ApplicationException
 	 */
 	public function __construct($sNameSpace = __CLASS__) {
 		// Initialisation du contôleur
 		parent::__construct($sNameSpace);
-		
+
 		// Envoi d'un message de debuggage uniquement en MODE_DEBUG
-		$this->debug('<span class="left width-150">CONTROLLER :</span>' . $sNameSpace);
-		$this->debug('<span class="left width-150">FIRST_RENDER :</span>' . $this->oSessionMessenger->getFirstRender());
-		$this->debug('<span class="left width-150">VIEW_RENDER :</span>' . $this->oSessionMessenger->getViewRender());
-		$this->debug('<span class="left width-150">LAST_RENDER :</span>' . $this->oSessionMessenger->getLastRender());
+		$this->debug('<span class="left width-150">CONTROLLER :</span>'		. $sNameSpace);
+		$this->debug('<span class="left width-150">FIRST_RENDER :</span>'	. $this->oSessionMessenger->getFirstRender());
+		$this->debug('<span class="left width-150">VIEW_RENDER :</span>'	. $this->oSessionMessenger->getViewRender());
+		$this->debug('<span class="left width-150">LAST_RENDER :</span>'	. $this->oSessionMessenger->getLastRender());
 
 		// Récupération du SINGLETON de l'instance AuthenticateManager
 		$this->_oAuth	= AuthenticateManager::getInstance();
 
 		// Récupération du SINGLETON de l'instance SessionManager
-		$this->_oSession= SessionManager::getInstance();
-		$this->_oSession->setNameSpace($sNameSpace);
+		$this->_oSession= SessionManager::getInstance($sNameSpace);
 
 		// Récupération du rôle de l'utilisateur
 		$sRole			= $this->_oAuth->getRole();
@@ -109,6 +119,17 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 			throw new ApplicationException('EAclNotAllowed', $sRessource);
 		}
 
+		// Récupération de la valeur du rendu
+		if ($this->issetParam('render')) {
+			// Le paramètre est passé dans l'URL
+			$this->_render	= $this->issetParam('render') ? $this->getParam('render') : self::DEFAULT_RENDER;
+		} else {
+			// Récupération du paramètre en SESSION
+			$this->_render	= DataHelper::get($_SESSION, 'RENDER', DataHelper::DATA_TYPE_STR, self::DEFAULT_RENDER);
+		}
+		// Enregistrement du paramètre en SESSION
+		$_SESSION['RENDER'] = $this->_render;
+
 		// Initialisation du menu
 		$this->_oMenu	= new MenuHelper($this->_oAcl->getAcl($sRole), $this->_controller, $this->_action);
 
@@ -118,7 +139,14 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 		// Enregistrement des paramètres d'accès à l'application
 		$this->addToData('CONTROLLER',	$this->_controller);
 		$this->addToData('ACTION',		$this->_action);
-		$this->addToData('RENDER',		$this->getParam('render'));
+		$this->addToData('RENDER',		$this->_render);
+
+		// Fonctionnalité réalisée selon le format du RENDER
+		switch ($this->_render) {
+			case self::RENDER_FULLSCREEN:
+				ViewRender::addToStylesheet(PUBLIC_STYLES_PATH . "/fullscreen.css");
+				break;
+		}
 	}
 
 	/**
@@ -268,6 +296,7 @@ abstract class AbstractAuthenticateController extends AbstractApplicationControl
 	 * @param	array	$aForm			: ensemble des noms de champ du formulaire.
 	 * @param	string	$sIndex			: nom de stockage de la variable.
 	 * @return	array
+     * @throws	ApplicationException
 	 */
 	public function addFormToSession(array $aForm, $sIndex) {
 		// Initialisation du tableau par le contenu en session

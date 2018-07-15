@@ -51,7 +51,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 	var PLANNING_MD5_PREFIXE	= "planning-item-";
 	var PLANNING_ITEM_REGEXP	= /^planning-[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}-[0-9]+$/;
 	var PLANNING_ITEM_ATTRIBUTE	= ["task_year", "task_month", "task_day", "task_hour"];
-	var PLANNING_ITEM_IGNORE	= ["task_matterId", "task_locationId", "task_teamId", "task_duration"];
+	var PLANNING_ITEM_IGNORE	= ["task_matterId", "task_matterInfo", "task_locationId", "task_locationInfo", "task_teamId", "task_teamInfo", "task_duration"];
 	var PLANNING_MOUSEHOVER		= false;
 	var PLANNING_ERROR			= false;
 	var PLANNING_HELPER			= new Array();
@@ -530,6 +530,9 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 				// Ajout de l'identifiant de la tâche dans la CELLULE
 				$("#" + $aItem.join("-"), "section#" + MD5).addClass(uniqueId);
 			}
+
+			// Prise en compte de la modification du formulaire
+			FW_FORM_UPDATE				= true;
 		} else {
 			// Écrasement de la valeur par la durée d'origine
 			newDuree					= origineDuree;
@@ -573,6 +576,54 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 		$(this).css({width: newWidth + "px"});
 	};
 
+	// Transfert des paramètres d'une tâche à partir de la source passée en paramètre
+	$.fn.updateItem						= function(source) {
+		// Récupération de l'identifiant unique de la tâche
+		var origineUniqueId				= this.getUniqueId();
+
+		// Récupération des nouveaux paramètres de LOCALISATION
+		var newLocationId				= $("input[name^=task_locationId]", source).val();
+		var newLocationInfo				= $("input[name^=task_locationInfo]", source).val();
+		var newLocationLabel			= $("p.planning-item-location", source).text();
+
+		// Fonctionnalité réalisée si un élément a été modifié
+		if ($("input[name^=task_locationId]", this).val() != newLocationId
+			|| $("input[name^=task_locationInfo]", this).val() != newLocationInfo) {
+			// Ajout de l'indicateur de modification de l'élément
+			$("input[name^=task_update]", this).val(PLANNING_UPDATE);
+
+			// Prise en compte de la modification du formulaire
+			FW_FORM_UPDATE				= true;
+		}
+
+		// Modification de la LOCALISATION
+		$("input[name^=task_locationId]", this).val(newLocationId);
+		$("input[name^=task_locationInfo]", this).val(newLocationInfo);
+		$("p.planning-item-location", this).text(newLocationLabel);
+
+		// Récupération des nouveaux paramètres de TEAM
+		var newTeamId					= $("input[name^=task_teamId]", source).val();
+		var newTeamInfo					= $("input[name^=task_teamInfo]", source).val();
+		var newTeamFirstContent			= $("li.principal", source).html();
+		var newTeamSecondContent		= $("li.secondaire", source).html();
+
+		// Fonctionnalité réalisée si un élément a été modifié
+		if ($("input[name^=task_teamId]", this).val() != newTeamId
+			|| $("input[name^=task_teamInfo]", this).val() != newTeamInfo) {
+			// Ajout de l'indicateur de modification de l'élément
+			$("input[name^=task_update]", this).val(PLANNING_UPDATE);
+
+			// Prise en compte de la modification du formulaire
+			FW_FORM_UPDATE				= true;
+		}
+
+		// Modification des PARTICIPANTS
+		$("input[name^=task_teamId]", this).val(newTeamId);
+		$("input[name^=task_teamInfo]", this).val(newTeamInfo);
+		$("li.principal", this).html(newTeamFirstContent);
+		$("li.secondaire", this).html(newTeamSecondContent);
+	};
+
 	// Affichage d'un MODAL contenant la tâche sélectionnée
 	$.fn.viewItem						= function() {
 		// Fonctionnalité réalisée si le MODE_DEBUG est actif sur `PLANNING_HELPER`
@@ -598,7 +649,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 		}
 
 		// Suppression éventuelle de toutes les MODALES précédentes
-		$("#panning-viewer").each(function() {
+		$("#planning-viewer").each(function() {
 			$(this).dialog("close");
 			$(this).remove();
 		});
@@ -609,13 +660,17 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 		// Fonctionnalité réalisée si le contenu est valide
 		if (typeof($article) != 'undefined' && $article.length > 0) {
 			// Construction d'un MODAL avec le contenu
-			var $modal					= $("<article id=\"panning-viewer\" class=\"modal center blue hidden\">" + $article + "</article>").appendTo("dialog");
+			var $modal					= $("<article id=\"planning-viewer\" class=\"modal center blue hidden\">" + $article + "</article>").appendTo("dialog");
+
+			$modal.find("section[class*=hidden]").each(function() {
+				$(this).removeClass("hidden");
+			});
 
 			// Variables temporaires de manipulation des éléments
 			var $item					= $(this);
 			var MD5						= $item.parents("section").attr("id");
 			var $dureeItem				= $item.find("input[name^=task_duration]");
-			var dureeValue				= $dureeItem.val();
+			var dureeValue				= parseInt($dureeItem.val());
 
 			// Champs DUREE
 			$modal.append("<hr /><label for=\"id_modal_duree\" class=\"strong title\">Durée :</label><input type=\"number\" id=\"id_modal_duree\" name=\"modal_duree\" value=\"" + dureeValue + "\"/>");
@@ -632,13 +687,31 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 				$modal.find("input[name^=task_duration]").val($(this).val());
 			});
 
+			// Récupération de la date
+			var jour					= parseInt($item.find("input[name^=task_day]").val());
+			var mois					= parseInt($item.find("input[name^=task_month]").val());
+			var annee					= parseInt($item.find("input[name^=task_year]").val());
+			var $dDate					= new Date(annee + "-" + mois + "-" + jour);
+
+			// Récupération de l'horaire
+			var heureDebut				= parseInt($item.find("input[name^=task_hour]").val());
+			var heureFin				= heureDebut + dureeValue;
+			var horaire					= " de "
+										+ (heureDebut < 10	? "0" + heureDebut	: heureDebut) + ":00 à "
+										+ (heureFin < 10	? "0" + heureFin	: heureFin) + ":00";
+
+			// Mise en surbrillance de chaque élément dans le planning
+			for (var heure = heureDebut ; heure < (heureDebut + dureeValue) ; heure++) {
+				$("#planning-" + annee + "-" + mois + "-" + jour + "-" + heure, "section#" + MD5).addClass("selected");
+			}
+
 			// Affichage du MODAL après un délais
 			setTimeout(function() {
 				// Activation du MODAL
 				$modal.dialog({
 					closeText:			"Fermer",
-					title:				"Édition d'une tâche",
-					width:				300,
+					title:				"Édition de la tâche du " + $dDate.toLocaleDateString("fr-FR") + " " + horaire,
+					width:				500,
 					maxHeight:			document.body.clientHeight - 100,
 					modal:				true,
 					create:				function(event, ui) {
@@ -660,10 +733,18 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 							// Mise à jour de la durée de l'élément
 							$item.updateDuree($("#id_modal_duree").val(), MD5);
 
+							// Mise à jour des paramètres de l'élément à partir du MODAL
+							$item.updateItem($("#planning-viewer"));
+
 							// Mise à jour de la durée de la tâche
 							if (typeof(PLANNING[MD5]) != 'undefined') {
 								PLANNING[MD5].update($item, $("#id_modal_duree").val(), true);
 							}
+
+							// Suppression de la surbrillance de l'élément dans le planning
+							$("dd[id^=planning-" + annee + "-" + mois + "-" + jour + "-]", "section#" + MD5).each(function() {
+								$(this).removeClass("selected");
+							});
 
 							// Fermeture du MODAL
 							$modal.dialog("close");
@@ -678,6 +759,11 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 						$modal.remove();
 						// Réinitialisation du compteur
 						compteurModal	= 0;
+
+						// Suppression de la surbrillance de l'élément dans le planning
+						$("dd[id^=planning-" + annee + "-" + mois + "-" + jour + "-]", "section#" + MD5).each(function() {
+							$(this).removeClass("selected");
+						});
 					}
 				});
 			}, 10);
@@ -700,13 +786,13 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 		// Récupération de l'identifiant unique selon les attributs de la tâche
 		var uniqueId					= $(this).getUniqueId();
 		var idRegExpPannel				= new RegExp('planning\-[0-9]+\-[0-9]+\-[0-9]+\-[0-9]+');
-		
+
 		// Fonctionnalité réalisée si l'élément est valide
 		if (idRegExpPannel.test(uniqueId)) {
 			// Tâche
 			var planningItem			= $("dd[class*=" + uniqueId + "]", "section#" + MD5).find("ul.planning-item");
 			var tacheItem				= $("dd[class*=" + uniqueId + "]", "section#" + MD5).find("li.item");
-			
+
 			// Fonctionnalité réalisée si plusieurs éléments sont présents dans la même cellule
 			if (tacheItem.length > 1) {
 				// Recherche des éléments à supprimer
@@ -715,7 +801,7 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 					var mois	= parseInt($(this).find("input[name^=task_month]").val());		// mois de la tâche
 					var jour	= parseInt($(this).find("input[name^=task_day]").val());		// jour de la tâche
 					var heure	= parseInt($(this).find("input[name^=task_hour]").val());		// heure de la tâche
-				
+
 					// Fonctionnalité réalisée si la tâche correspond à celle devant être supprimée
 					if (uniqueId == "planning-" + annee + "-" + mois + "-" + jour + "-" + heure) {
 						// Suppression du contenu
@@ -731,14 +817,14 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 			$("dd[class*=" + uniqueId + "]", "section#" + MD5)
 				.removeClass(uniqueId)
 				.removeClass("set");
-	
+
 			// Supprime l'élément sélectionné
 			$(this).fadeOut(function() {
 				$(this).find("a.ui-icon-trash").each(function() {
 					$(this).remove();
 				});
 			});
-	
+
 			// Mise à jour de l'instance du PLANNING ***************************************************
 			if (typeof(PLANNING[MD5]) != 'undefined') {
 				PLANNING[MD5].remove($(this), true);
@@ -762,8 +848,12 @@ if (typeof(PLANNING_HELPER) == 'undefined') {
 				'hour':					parseInt($(this).find("input[name^=task_hour]").val()),		// heure de la tâche
 				'minute':				parseInt($(this).find("input[name^=task_minute]").val()),	// minute de la tâche
 				'duration':				parseInt($(this).find("input[name^=task_duration]").val()),	// durée de la tâche
+				'matterId':				$(this).find("input[name^=task_matterId]").val(),			// identifiant de la matière
+				'matterInfo':			$(this).find("input[name^=task_matterInfo]").val(),			// information complémentaire de la matière
 				'locationId':			$(this).find("input[name^=task_locationId]").val(),			// identifiant de la localisation
+				'locationInfo':			$(this).find("input[name^=task_locationInfo]").val(),		// information complémentaire de la localisation
 				'teamId':				$(this).find("input[name^=task_teamId]").val(),				// identifiant du groupe des participants affecté à la tâche
+				'teamInfo':				$(this).find("input[name^=task_teamInfo]").val(),			// information complémentaire du groupe des participants
 				'update':				parseInt($(this).find("input[name^=task_update]").val())	// indicateur de modification de la tâche
 			});
 		});

@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 129 $
- * @since		$LastChangedDate: 2018-05-29 22:12:23 +0200 (Tue, 29 May 2018) $
+ * @version		$LastChangedRevision: 136 $
+ * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -74,7 +74,11 @@ class PlanningController extends AbstractFormulaireController {
 		 *		'task_minute'		=> null,														//  /
 		 *		'task_duration'		=> null,														// /
 		 *
+		 *		'task_content'		=> null,														// Contenu HTML complémentaire
+		 *
 		 *		'task_update'		=> 0															// Indicateur de modification de la tâche
+		 *
+		 *		'task_background'	=> "#RGB"														// Couleur de fond de la tâche
 		 *	);
 		 * @encode
 		 */
@@ -84,9 +88,9 @@ class PlanningController extends AbstractFormulaireController {
 				'task_id'			=> 1000,
 				'task_matter'		=> "Élément A",
 		 		'task_matterId'		=> 1,
-				'task_location'		=> "Description de la tâche...",
+				'task_location'		=> "SALLE 001",
 				'task_locationId'	=> 1,
-				'task_team'			=> array("<B>John DOE</B>"),		
+				'task_team'			=> array("<B>John DOE</B>"),
 				'task_teamId'		=> 1,
 				'task_year'			=> null,
 				'task_month'		=> null,
@@ -94,15 +98,16 @@ class PlanningController extends AbstractFormulaireController {
 				'task_hour'			=> null,
 				'task_minute'		=> null,
 				'task_duration'		=> $nDuree,
+				'task_information'	=> "Description de la tâche...",
 				'task_update'		=> 0
 			),
 			array(
 				'task_id'			=> 1001,
 				'task_matter'		=> "Élément B",
 		 		'task_matterId'		=> 2,
-				'task_location'		=> "Description de la tâche...",
-				'task_locationId'	=> 1,
-				'task_team'			=> array("<B>John DOE</B>"),		
+				'task_location'		=> "SALLE 002",
+				'task_locationId'	=> 2,
+				'task_team'			=> array("<B>John DOE</B>"),
 				'task_teamId'		=> 1,
 				'task_year'			=> null,
 				'task_month'		=> null,
@@ -110,15 +115,16 @@ class PlanningController extends AbstractFormulaireController {
 				'task_hour'			=> null,
 				'task_minute'		=> null,
 				'task_duration'		=> $nDuree,
+				'task_information'	=> "Description de la tâche...",
 				'task_update'		=> 0
 			),
 			array(
-				'task_id'			=> 1002,
+				'task_id'			=> 1010,
 				'task_matter'		=> "Élément C",
 		 		'task_matterId'		=> 3,
-				'task_location'		=> "Description de la tâche...",
-				'task_locationId'	=> 1,
-				'task_team'			=> array("<B>John DOE</B>"),		
+				'task_location'		=> "SALLE 003",
+				'task_locationId'	=> 3,
+				'task_team'			=> array("<B>John DOE</B>"),
 				'task_teamId'		=> 1,
 				'task_year'			=> null,
 				'task_month'		=> null,
@@ -126,15 +132,16 @@ class PlanningController extends AbstractFormulaireController {
 				'task_hour'			=> null,
 				'task_minute'		=> null,
 				'task_duration'		=> $nDuree,
+				'task_information'	=> "Description de la tâche...",
 				'task_update'		=> 0
 			),
 			array(
-				'task_id'			=> 1003,
+				'task_id'			=> 1011,
 				'task_matter'		=> "Élément D",
 		 		'task_matterId'		=> 4,
-				'task_location'		=> "Description de la tâche...",
-				'task_locationId'	=> 1,
-				'task_team'			=> array("<B>John DOE</B>"),		
+				'task_location'		=> "SALLE 004",
+				'task_locationId'	=> 4,
+				'task_team'			=> array("<B>John DOE</B>"),
 				'task_teamId'		=> 1,
 				'task_year'			=> null,
 				'task_month'		=> null,
@@ -142,6 +149,7 @@ class PlanningController extends AbstractFormulaireController {
 				'task_hour'			=> null,
 				'task_minute'		=> null,
 				'task_duration'		=> $nDuree,
+				'task_information'	=> "Description de la tâche...",
 				'task_update'		=> 0
 			)
 		);

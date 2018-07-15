@@ -17,7 +17,7 @@ $sArticle .= "<fieldset><legend>Boutons de l'application</legend>
 					<tr>
 						<td class=\"width-45p\">
 							<span class=\"strong titre right\">Élement INPUT</span><br />
-							<span class=\"right\">&lt;input type=''button'' /&gt;</span>
+							<span class=\"right code\">&lt;input type=\"button\" /&gt;</span>
 						</td>
 						<td class=\"width-5p\">
 							&nbsp;
@@ -41,7 +41,7 @@ $sArticle .= "<fieldset><legend>Boutons de l'application</legend>
 					<tr>
 						<td class=\"width-45p\">
 							<span class=\"strong titre right\">Élement BUTTON</span><br />
-							<span class=\"right\">&lt;button&gt;&lt;/button&gt;</span>
+							<span class=\"right code\">&lt;button&gt;&lt;/button&gt;</span>
 						</td>
 						<td class=\"width-5p\">
 							&nbsp;
@@ -55,13 +55,13 @@ $sArticle .= "<fieldset><legend>Boutons de l'application</legend>
 									<button type=\"button\" disabled>Disabled</button>
 								</li>
 								<li class=\"margin-V-5\">
-									<button class=\"red\">class=\"red\"</button>
+									<button type=\"button\" class=\"red\">class=\"red\"</button>
 								</li>
 								<li class=\"margin-V-5\">
-									<button class=\"green\">class=\"green\"</button>
+									<button type=\"button\" class=\"green\">class=\"green\"</button>
 								</li>
 								<li class=\"margin-V-5\">
-									<button class=\"blue\">class=\"blue\"</button>
+									<button type=\"button\" class=\"blue\">class=\"blue\"</button>
 								</li>
 							</ul>
 						</td>
@@ -74,7 +74,7 @@ $sArticle .= "<fieldset><legend>Boutons de l'application</legend>
 					<tr>
 						<td class=\"width-45p\">
 							<span class=\"strong titre right\">Élement ANCHOR</span><br />
-							<span class=\"right\">&lt;a class=''button''&gt;&lt;/a&gt;</span>
+							<span class=\"right code\">&lt;a class=\"button\"&gt;&lt;/a&gt;</span>
 						</td>
 						<td class=\"width-5p\">
 							&nbsp;

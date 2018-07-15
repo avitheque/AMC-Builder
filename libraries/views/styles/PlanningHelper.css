@@ -14,7 +14,7 @@
 /* SOURCE / CIBLE - SUPPORT DES ÉLÉMENTS */
 .diary															{ margin: 5px 0 20px; }
 .planning														{ display: inline-block; min-height: 96px; padding: 3px 0 5px; overflow: hidden; overflow-y: auto; }
-.planning-item													{ display: block; overflow: auto; }
+.planning-item													{ display: block; overflow: auto; max-height: 250px; }
 .planning-item.custom-state-active								{ background: #FBEC88; border: solid 1px #FAD42E; }
 .planning-item li.item											{ float: left; padding: 4px; text-align: center; white-space: nowrap; }
 .planning-item li.item h5										{ margin: 0 0 0.4em; cursor: move; }
@@ -27,6 +27,7 @@
 .planning-item li.item a.ui-icon-pin-s							{ bottom: -5px; margin: 0px; }
 .planning-item li.item a.ui-icon-trash							{ position: absolute; left: 0; }
 .planning-item li.item a.ui-icon-zoomin							{ position: absolute; right: 0; }
+.planning-item li.item .planning-item-information				{ display: none; position: relative; width: 100%; float: left; font-size: 10px; line-height: 5px; }
 
 
 /* ITEM - MINIATURES */
@@ -72,7 +73,9 @@ section.item-bottom												{ display: inline-flex; text-align: center; min-w
 /* CIBLE - Apparence des cellules selon leur état */
 .holiday .planning												{ background: #3C75BF; border-color: #3C75BF; }
 .planning.set													{ background: #446693; border-color: #446693; opacity: 1; }
-.planning.hover													{ background: orange !important; opacity: 1; border-color: transparent; }
+.planning.selected,
+.planning.selected li.item										{ background: orange; border-color: orange; }
+.planning.hover													{ background: #8AE234 !important; opacity: 1; border-color: transparent; }
 .planning.conflict,
 .planning.error,
 .holiday .planning.set,
@@ -90,6 +93,7 @@ main .planning-item li.item										{ position: absolute; }
 
 
 /* ZONE DE RECHERCHE UNIQUEMENT */
+section.modal-search li.item .planning-item-information			{ display: block; }
 section.modal-search li.item .content							{ height: auto; }
 
 
@@ -120,22 +124,22 @@ section[id^=search-content-] li.item .ui-icon,
 
 
 /* CONTENU - Apparence du contenu de la TÂCHE */
-.planning-item-participant										{ white-space: normal; font-size: 8px; margin: 0; padding: 0; font-variant: all-small-caps; line-height: 7px; }
+.planning-item-team												{ white-space: normal; font-size: 8px; margin: 0; padding: 0; font-variant: all-small-caps; line-height: 7px; }
 
 
 /* PARTICIPANTS - Apparence des personnels associés à la TÂCHE */
-.planning-item-participant .principal							{ margin-top: 5px; font-variant: normal; line-height: 10px; font-weight: bold; }
-.planning-item-participant .secondaire							{ position: relative; line-height: 7px; }
+.planning-item-team .principal									{ margin-top: 5px; font-variant: normal; line-height: 10px; font-weight: bold; }
+.planning-item-team .secondaire									{ position: relative; line-height: 7px; }
 
 
 /* CONFLIT - Affichage d'un conflit sur la progression */
 .planning-item .panel-conflict									{ background: #c5dbec; }
 .planning-item .item-conflict,
-.planning-item-participant .item-conflict						{ color: red; }
+.planning-item-team .item-conflict								{ color: red; }
 
 
 /* MODAL - Affichage de la progression */
-#panning-viewer,
-#panning-viewer .planning-item-participant						{ font-size: 15px; font-variant: normal; }
-#panning-viewer .planning-item-participant .principal			{ font-weight: bold; line-height: 20px; }
-#panning-viewer .planning-item-participant .secondaire			{ position: inherit; line-height: 12px; }
+#planning-viewer,
+#planning-viewer .planning-item-team							{ font-size: 15px; font-variant: normal; }
+#planning-viewer .planning-item-team .principal					{ font-weight: bold; line-height: 20px; }
+#planning-viewer .planning-item-team .secondaire				{ position: inherit; line-height: 12px; }

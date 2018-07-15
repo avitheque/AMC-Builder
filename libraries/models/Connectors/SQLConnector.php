@@ -8,8 +8,8 @@
  * @package		Connector
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
- * @version		$LastChangedRevision: 24 $
- * @since		$LastChangedDate: 2017-04-30 20:38:39 +0200 (dim., 30 avr. 2017) $
+ * @version		$LastChangedRevision: 137 $
+ * @since		$LastChangedDate: 2018-07-14 17:27:47 +0200 (Sat, 14 Jul 2018) $
  * 
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -64,12 +64,12 @@ class Connectors_SQLConnector {
 		try {
 			// Initialisation de la connexion PDO
 			$this->oPDO = new PDO($sConnection, $sUser, $sPassword, $aOptions);
-			
+
 			// Désactivation de la configuration `ONLY_FULL_GROUP_BY` de MySQL
 			if (defined('PDO_DISABLE_FULL_GROUP_BY') && (bool) PDO_DISABLE_FULL_GROUP_BY) {
 				$this->oPDO->query("SET SESSION sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION';");
 			}
-			
+
 			$this->bConnected = true;
 			$this->oPDO->beginTransaction();
 		} catch (Exception $e) {
@@ -124,7 +124,7 @@ class Connectors_SQLConnector {
 	 * @return	object.
 	 */
 	public function prepare($xQuery) {
-	  	return $this->oStatement = $this->oPDO->prepare($xQuery);
+			return $this->oStatement = $this->oPDO->prepare($xQuery);
 	}
 
 	/** @brief	Exécution de Requete SQL
@@ -134,17 +134,17 @@ class Connectors_SQLConnector {
 	 * @return	boolean, traduisant le succès de la requête.
 	 */
 	public function execute($xQuery) {
-	  	$this->oStatement = $this->oPDO->prepare($xQuery);
-	  	if ($this->oStatement == false) {
-	  		$a = $this->oStatement->errorInfo();
-	  		$this->sError = $a[2];
-	  		return false;
-	  	}
+			$this->oStatement = $this->oPDO->prepare($xQuery);
+			if ($this->oStatement == false) {
+				$a = $this->oStatement->errorInfo();
+				$this->sError = $a[2];
+				return false;
+			}
 
 		if ($this->oStatement->execute() == false) {
-	  		$a = $this->oStatement->errorInfo();
-	  		$this->sError = $a[2];
-	  		return false;
+				$a = $this->oStatement->errorInfo();
+				$this->sError = $a[2];
+				return false;
 		}
 
 		$n = $this->oPDO->lastInsertId();
@@ -303,14 +303,39 @@ class Connectors_SQLConnector {
 	 *
 	 * Méthode permettant de récupérer la description d'une table.
 	 *
-	 * @author	durandcedric
-	 * @param	string		$sTable		: Nom de la table en base de données.
-	 * @return	array
+	 * @param	string		$sTable			: Nom de la table en base de données.
+	 * @param	string		$iFetchAll		: Type du format PDO du résultat.
+	 * @return	array|object
 	 */
-	public function describe($sTable) {
-	  	$this->oStatement = $this->oPDO->prepare(sprintf("DESCRIBE %s;", $sTable));
-	  	if ($this->oStatement->execute()) {
-			return $this->oStatement->fetchAll(PDO::FETCH_COLUMN);
-	  	}
+	public function describe($sTable, $iFetchAll = PDO::FETCH_COLUMN) {
+		// Préparation de la requête
+		$this->oStatement					= $this->oPDO->prepare(sprintf("DESCRIBE `%s`;", $sTable));
+		// Exécution de la requête
+		if ($this->oStatement->execute()) {
+			// Renvoi du résultat selon le format attendu
+			return $this->oStatement->fetchAll($iFetchAll);
+		}
 	}
+
+	/** @brief	Récupère le prochain identifiant d'une table.
+	 *
+	 * Méthode permettant de récupérer la description d'une table.
+	 *
+	 * @param	string		$sTable			: Nom de la table en base de données.
+	 * @param	string		$sPrimary		: Clé primaire de la table.
+	 * @return	integer
+	 */
+	public function nextInsertId($sTable, $sPrimary) {
+		// Préparation de la requête
+		$this->oStatement					= $this->oPDO->prepare(sprintf("SELECT MAX(`%s`) AS 'next_id' FROM `%s`;", $sPrimary, $sTable));
+
+		// Exécution de la requête
+		if ($this->oStatement->execute()) {
+			// Récupération du résultat au format TABLEAU
+			$aQuery = $this->oStatement->fetchAll(PDO::FETCH_COLUMN);
+			// Renvoi du résultat
+			return (int) $aQuery[0] + 1;
+		}
+	}
+
 }

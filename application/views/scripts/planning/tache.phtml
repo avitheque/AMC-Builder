@@ -31,6 +31,8 @@ $nDureeDefaut		= $oInstanceStorage->issetData('item_duree')	? $oInstanceStorage-
  *		'task_matter'		=> "Élément A",													// Titre de la matière affectée à la tâche
  *		'task_matterId'		=> 1,															// Identifiant de la matière
  *
+ *		'task_information'	=> null,														// Informations complémentaires non transmises lors du déplacement
+ *
  *		'task_location'		=> "Localisation de la tâche...",								// Libellé de la localisation affectée à la tâche
  *		'task_locationId'	=> 1,															// Identifiant de la localisation
  *
@@ -44,7 +46,11 @@ $nDureeDefaut		= $oInstanceStorage->issetData('item_duree')	? $oInstanceStorage-
  *		'task_minute'		=> null,														//  /
  *		'task_duration'		=> null,														// /
  *
+ *		'task_content'		=> null,														// Contenu HTML complémentaire
+ *
  *		'task_update'		=> 0															// Indicateur de modification de la tâche
+ *
+ *		'task_background'	=> "#RGB"														// Couleur de fond de la tâche
  *	);
  * @encode
  */
@@ -73,8 +79,12 @@ foreach ($aListeElements as $aItem) {
 	$nHour			= DataHelper::get($aItem,	'task_hour',		DataHelper::DATA_TYPE_INT,		null);
 	// DUREE		: durée de la tâche si présente, sinon celle par défaut
 	$nDuration 		= DataHelper::get($aItem,	'task_duration',	DataHelper::DATA_TYPE_INT,		$nDureeDefaut);
-	// UPDATE		: indicateur de modification de la tâch
+	// INFORMATION	: informations complémentaires de la tâche
+	$sInformation	= DataHelper::get($aItem,	'task_information',	DataHelper::DATA_TYPE_STR,		null);
+	// UPDATE		: indicateur de modification de la tâche
 	$bUpdate 		= DataHelper::get($aItem,	'task_update',		DataHelper::DATA_TYPE_BOOL,		false);
+	// BACKGROUND	: indicateur de modification de la tâche
+	$sBackground	= DataHelper::get($aItem,	'task_background',	DataHelper::DATA_TYPE_STR,		null);
 
 	// Création d'un nouvel élément
 	$oItem = new Planning_ItemHelper($nId);
@@ -86,6 +96,8 @@ foreach ($aListeElements as $aItem) {
 	$oItem->setMatter($nIdMatter, $sMatter);			# Matière de la tâche
 	$oItem->setLocation($nIdLocation, $sLocation);		# Localisation de la tâche
 	$oItem->setTeam($nIdTeam, $aListTeam);				# Liste des participants
-	$oItem->setUpdateStatus($bUpdate);					# Indicateur de modification
+	$oItem->setInformation($sInformation);				# Informations complémentaires de la tâche
+	$oItem->setUpdateStatus($bUpdate);					# Indicateur de modification de la tâche
+	$oItem->setBackground($sBackground);				# Couleur de fond de la tâche
 	print $oItem->renderHTML();
 }

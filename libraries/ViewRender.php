@@ -15,8 +15,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 134 $
- * @since		$LastChangedDate: 2018-06-02 08:51:35 +0200 (Sat, 02 Jun 2018) $
+ * @version		$LastChangedRevision: 136 $
+ * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -86,7 +86,7 @@ class ViewRender {
 	static function render() {
 		// Récupération de l'instance de `SessionMessenger`
 		$oSessionMessenger = SessionMessenger::getInstance();
-		
+
 		//=========================================================================================
 
 		// Création d'un message par défaut
@@ -99,7 +99,7 @@ class ViewRender {
 		self::setMessageSuccess(null, $oSessionMessenger->getMessage(self::MESSAGE_SUCCESS));
 		// Création des messages d'avertissement
 		self::setMessageWarning(null, $oSessionMessenger->getMessage(self::MESSAGE_WARNING));
-		
+
 		//=========================================================================================
 
 		// Création d'une notification par défaut
@@ -370,7 +370,11 @@ class ViewRender {
 	 */
 	static function addToStyles($sString) {
 		$_SESSION[VIEW_STYLES]		= !empty($_SESSION[VIEW_STYLES])		? $_SESSION[VIEW_STYLES]			: "";
-		$_SESSION[VIEW_STYLES]		.= $sString;
+		// Fonctionnaltié réalisée si la chaîne correspond à un fichier.
+		if (file_exists($sString)) {
+			$sString				= file_get_contents($sString);
+		}
+		$_SESSION[VIEW_STYLES]		.= trim($sString);
 	}
 
 	/**
@@ -386,6 +390,7 @@ class ViewRender {
 
 		// Encodage du style au format MD5
 		$MD5 = md5($sFilename);
+
 		// Ajout du style à la collection s'il n'est pas présent
 		if (file_exists($sFilename) && empty($_SESSION[VIEW_MD5][VIEW_STYLESHEET]) || !in_array($MD5, $_SESSION[VIEW_MD5][VIEW_STYLESHEET])) {
 			// Compression du fichier CSS avec MiniCSS
@@ -534,7 +539,7 @@ class ViewRender {
 	}
 
 	//=============================================================================================
-	
+
 	/*
 	 * @brief	Initialisation de la VARIABLE GLOBALE JavaScript `FW_FORM_UPDATE`
 	 * @see		ViewRender::setFormUpdateStatus(boolean);
@@ -680,7 +685,7 @@ class ViewRender {
 	static function setNotificationError($sTitre = null, $sMessage = null, $nTimeOut = self::NOTIFICATION_TIMEOUT_DELAY) {
 		self::setMessageBox($sTitre, $sMessage, $sClass = "notify alert", $nTimeOut);
 	}
-	
+
 	/**
 	 * @brief	Création d'une notification d'information.
 	 *
@@ -691,7 +696,7 @@ class ViewRender {
 	static function setNotificationInfo($sTitre = null, $sMessage = null, $nTimeOut = self::NOTIFICATION_TIMEOUT_DELAY) {
 		self::setMessageBox($sTitre, $sMessage, $sClass = "notify info", $nTimeOut);
 	}
-	
+
 	/**
 	 * @brief	Création d'une notification de succès.
 	 *
@@ -702,7 +707,7 @@ class ViewRender {
 	static function setNotificationSuccess($sTitre = null, $sMessage = null, $nTimeOut = self::NOTIFICATION_TIMEOUT_DELAY) {
 		self::setMessageBox($sTitre, $sMessage, $sClass = "notify success", $nTimeOut);
 	}
-	
+
 	/**
 	 * @brief	Création d'une notification d'avertissement.
 	 *
@@ -713,5 +718,5 @@ class ViewRender {
 	static function setNotificationWarning($sTitre = null, $sMessage = null, $nTimeOut = self::NOTIFICATION_TIMEOUT_DELAY) {
 		self::setMessageBox($sTitre, $sMessage, $sClass = "notify warning", $nTimeOut);
 	}
-	
+
 }

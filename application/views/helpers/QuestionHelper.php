@@ -13,8 +13,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 104 $
- * @since		$LastChangedDate: 2018-01-19 19:36:51 +0100 (Fri, 19 Jan 2018) $
+ * @version		$LastChangedRevision: 136 $
+ * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -598,7 +598,7 @@ class QuestionHelper {
 		// Fonctionnalité réalisable uniquement si le formulaire est en cours de rédaction et que le formulaire existe en base
 		if (!$this->_bEpreuve && !$this->_bReadonly && !empty($this->_nIdFormulaire)) {
 			// Bouton de suppression
-			$sRemoveQuestion				.= "<button type=\"submit\" class=\"no-margin red confirm right delete\" name=\"button\" value=\"retirer_" . $nQuestion . "\" title=\"Retirer la question au QCM\">X</button>";
+			$sRemoveQuestion				.= "<button type=\"submit\" class=\"red confirm right delete\" name=\"button\" value=\"retirer_" . $nQuestion . "\" title=\"Retirer la question au QCM\">X</button>";
 		}
 
 		//#########################################################################################
@@ -743,22 +743,22 @@ class QuestionHelper {
 																<div>
 																	<input type=\"checkbox\" id=\"idStrictCheckbox_" . $nQuestion . "\" name=\"question_stricte_checkbox[" . $nQuestion . "]\" value=\"true\" $sStrictChecked $sDisabled/>
 																	<label for=\"idStrictCheckbox_" . $nQuestion . "\">Réponse stricte attendue à la question (tout ou rien)</label>
-				
+
 																	<div id=\"facteur_" . $nQuestion . "\" class=\"strong " . $sClassFacteur . "\">
 																		<label for=\"idPenalite_" . $nQuestion . "\">Facteur de pénalité</label>
 																		<input maxlength=" . FormulaireManager::QUESTION_PENALITE_MAXLENGTH . " type=\"text\" id=\"idPenalite_" . $nQuestion . "\" class=\"numeric center width-50\" name=\"question_penalite[" . $nQuestion . "]\" value=\"" . intval($pPenalite) . "\" $sReadonly/>
 																		<label for=\"idPenalite_" . $nQuestion . "\">%</label>
 																	</div>
-				
+
 																	<input type=\"hidden\" id=\"idStricteValue_" . $nQuestion . "\" name=\"question_stricte[" . $nQuestion . "]\" value=\"" . $sStrictValue . "\"/>
 																</div>
 																<hr class=\"margin-V-25\"/>
 																<div>
 																	<input type=\"checkbox\" id=\"idLibreCheckbox_" . $nQuestion . "\" name=\"question_libre_checkbox[" . $nQuestion . "]\" value=\"true\" $sLibreChecked $sDisabled/>
 																	<label for=\"idLibreCheckbox_" . $nQuestion . "\">Réponse libre du candidat (pas de case à cocher)</label>
-				
+
 																	<input type=\"hidden\" id=\"idLibreValue_" . $nQuestion . "\" name=\"question_libre[" . $nQuestion . "]\" value=\"" . $sLibreValue . "\"/>
-				
+
 																	<div id=\"idLignesQuestion_" . $nQuestion . "\" class=\"strong " . $this->_sClassLibreReponse . "\">
 																		<label for=\"idLignes_" . $nQuestion . "\">Nombre de lignes allouées pour la réponse</label>
 																		<input maxlength=" . FormulaireManager::QUESTION_LIBRE_LIGNES_MAX . "type=\"number\" id=\"idLignes_" . $nQuestion . "\" class=\"numeric center width-50\" name=\"question_lignes[" . $nQuestion . "]\" value=\"" . $nLignesQuestion . "\" $sDisabled/>

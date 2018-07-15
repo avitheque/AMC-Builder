@@ -12,7 +12,7 @@ if (typeof(PLANNING_ITEM) == 'undefined') {
 	var PLANNING_ITEM_FACTEUR	= 0.65;
 	var PLANNING_ITEM_MARGIN	= 10;
 	var PLANNING_ITEM_ATTRIBUTE	= ["task_year", "task_month", "task_day", "task_hour", "task_minute"];
-	var PLANNING_ITEM_IGNORE	= ["task_id", "task_duration", "task_locationId", "task_teamId"];
+	var PLANNING_ITEM_IGNORE	= ["task_id", "task_duration", "task_locationId", "task_locationInfo", "task_teamId", "task_teamInfo"];
 }
 
 /**
@@ -61,7 +61,7 @@ PlanningItem = function(id, duration, htmlElement) {
 
 		// Concaténation avec la durée
 		message += this.duration;
-		
+
 		// Renvoi du contenu du message de DEBUG
 		return message;
 	};

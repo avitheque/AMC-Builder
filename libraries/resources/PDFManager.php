@@ -13,8 +13,8 @@ require_once FW_HELPERS . "/fpdf/fpdf.php";
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 120 $
- * @since		$LastChangedDate: 2018-05-07 21:15:40 +0200 (Mon, 07 May 2018) $
+ * @version		$LastChangedRevision: 136 $
+ * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
  * @see			{ROOT_PATH}/libraries/helpers/fpdf.php
  * 
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
@@ -73,7 +73,7 @@ class PDFManager extends FPDF {
 	const		DEFAULT_FONT_SIZE			= 10;
 	const		DEFAULT_FONT_STYLE			= self::STYLE_DEFAULT;
 	const		DEFAULT_FONT_COLOR			= "0,0,0";
-	
+
 	protected	$_default_font_family		= self::DEFAULT_FONT_FAMILY;
 	protected	$_default_font_size			= self::DEFAULT_FONT_SIZE;
 	protected	$_default_font_style		= self::DEFAULT_FONT_STYLE;
@@ -163,6 +163,13 @@ class PDFManager extends FPDF {
 		if ($this->decodeUtf8) {
 			$sFilename						= utf8_decode($sFilename);
 		}
+
+		// Suppression de l'extension PDF en trop
+		preg_match("@^(.*\.)+(pdf|PDF)*$@", $sFilename, $aMatched);
+		if (isset($aMatched[2])) {
+			$sFilename						= substr($aMatched[1], 0 , strlen($aMatched[1]) -1);
+		}
+
 		// Formatage du nom du fichier
 		$this->_filename					= DataHelper::convertToString($sFilename, DataHelper::DATA_TYPE_FILE);
 	}
@@ -190,7 +197,7 @@ class PDFManager extends FPDF {
 	//=============================================================================================
 	//	@todo	INITIALISATION DES PARAMÈTRES DU DOCUMENT
 	//=============================================================================================
-	
+
 	/**
 	 * @brief	Initialisation de la couleur du TEXT par défault du document.
 	 *
@@ -211,21 +218,21 @@ class PDFManager extends FPDF {
 			// Typage du premier argument
 			$nR					= (int) $nR;
 		}
-		
+
 		// Initialisation du paramètre GREEN à partir de RED
 		if (is_null($nG)) {
 			$nG					= (int) $nR;
 		}
-		
+
 		// Initialisation du paramètre BLUE à partir de GREEN
 		if (is_null($nB)) {
 			$nB					= (int) $nG;
 		}
-		
+
 		// Inititialisation de la couleur du FONT
 		$this->setTextColor($nR, $nG, $nB);
 	}
-	
+
 	/**
 	 * @brief	Réinitialisation du FONT par défault du document.
 	 *
@@ -237,7 +244,7 @@ class PDFManager extends FPDF {
 		// Initialisation de la couleur du TEXT
 		$this->setFontColor($this->_default_font_color);
 	}
-	
+
 	/**
 	 * @brief	Initialisation du FONT par défault du document.
 	 *
@@ -628,7 +635,7 @@ class PDFManager extends FPDF {
 
 		// Réinitialisation de la couleur du text initial
 		$this->setTextColor(intval($nR * 255), intval($nG * 255), intval($nB * 255));
-		
+
 		// Saut de lignes
 		$this->addLine(5);
 
@@ -730,7 +737,7 @@ class PDFManager extends FPDF {
 			// Désactivation des entêtes et pieds de pages
 			$this->_showHeader				= false;
 			$this->_showFooter				= false;
-			
+
 			// Réinitialisation de la couleur de texte par défaut
 			$this->setTextColor(0, 0, 0);
 
@@ -746,7 +753,7 @@ class PDFManager extends FPDF {
 			$this->testMargesPosition();
 			$this->testMiddlePosition();
 		}
-		
+
 		// Remplacement des caractères spéciaux
 		$sFileName = DataHelper::convertToString(trim($dest), DataHelper::DATA_TYPE_FILE);
 
@@ -806,12 +813,12 @@ class PDFManager extends FPDF {
 		if ($this->CurLine > $this->getPageHeight()) {
 			$this->CurLine					= $this->getTopMargin();
 		}
-		
+
 		// Fonctionnalité de mise à jour de la position de la ligne
 		if ($bPositionY) {
 			$this->setY($this->CurLine);
 		}
-		
+
 		// Fonctionnalité réalisée si la position LEFT est passée en argument
 		if (! is_null($nX)) {
 			$this->setX($nX);

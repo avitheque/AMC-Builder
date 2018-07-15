@@ -22,21 +22,25 @@ var GALLERY_DRAGGABLE	= true;
 // Mise à jour du MODAL
 function updateGalleryHeight() {
 	// Récupération des éléments du MODAL
-	var titleItem		= $("#modal-gallery").parent().find("div.ui-dialog-titlebar");
-	var searchItem		= $("#gallery");
+	var titleItem		= $("article#modal-gallery").parent().find("div.ui-dialog-titlebar");
+	var searchItem		= $("ul#gallery");
 	var formItem		= $("form#search-bibliotheque");
 	var documentItem	= $(document);
 
-	// Adaptation de la zone de recherche selon le résultat
+	// Adaptation de la hauteur de la MODALE de selon le résultat
 	var newHeight		= searchItem.innerHeight() + formItem.innerHeight() + titleItem.innerHeight() * 1.5 + GALLERY_MARGIN_ITEM;
 
-	// Fonctionnalité réalisée si la nouvelle hauteur est trop grande
+	// Fonctionnalité réalisée si la nouvelle hauteur est trop grande par rapport à la zone d'affichage
 	if (documentItem.innerHeight() <= newHeight) {
-		newHeight		= documentItem.innerHeight() - formItem.innerHeight() - titleItem.innerHeight();
+		// Récupération de la hauteur disponible
+		newHeight		= documentItem.innerHeight() - formItem.innerHeight() + titleItem.innerHeight() * 1.5 + GALLERY_MARGIN_ITEM;
+
+		// Réduction de la zone de résultat en conséquence
+		searchItem.css({height: parseInt(newHeight - formItem.innerHeight() - titleItem.innerHeight() * 1.5) + "px"});
 	}
 
 	// Mise à jour de la nouvelle hauteur du MODAL
-	$("#modal-gallery").dialog("option", "height", newHeight);
+	$("article#modal-gallery").dialog("option", "height", newHeight);
 };
 
 // Affichage d'un modal contenant la question
@@ -135,8 +139,8 @@ function deleteFromExclude($element) {
  */
 function initGallery() {
 	// Déclaration des éléments SOURCE / CIBLE
-	var $gallery	= $("#gallery");	// Bibliothèque
-	var $panel		= $("#panel");		// Zone d'importation de la bibliothèque (dans le formulaire)
+	var $gallery	= $("ul#gallery");		// Bibliothèque
+	var $panel		= $("div#panel");		// Zone d'importation de la bibliothèque (dans le formulaire)
 
 	// Initialisation du déplacement de la SOURCE
 	$("li", $gallery).draggable({
@@ -166,7 +170,7 @@ function initGallery() {
 				// Modification du style pour extraire le clône de sont conteneur
 				$position = "fixed";
 			}
-			
+
 			// Modification du style pour extraire le clône de sont conteneur
 			ui.helper.css({position: $position, top: ui.position.top+"px", left: ui.position.left+"px", zIndex: 10000});
 
@@ -176,13 +180,13 @@ function initGallery() {
 				if (typeof(event.keyCode) != 'undefined' && event.keyCode == 27) {
 					// Protection contre la propagation intempestive
 					event.stopPropagation();
-					
+
 					// Désactivation du déplacement
 					GALLERY_DRAGGABLE = false;
-					
+
 					// Arrêt du déplacement de l'élément clôné
 					ui.helper.stop();
-					
+
 					// Mascage de l'élément clôné
 					ui.helper.hide();
 
@@ -196,12 +200,12 @@ function initGallery() {
 
 	// Initialisation de la CIBLE
 	$panel.droppable({
-		accept:				"#gallery > li",
+		accept:				"ul#gallery > li",
 		activeClass:		"ui-state-highlight",
 		drop:				function(event, ui) {
 			// Protection contre la propagation intempestive
 			event.stopPropagation();
-			
+
 			// Fonctionnalité réalisée si le déplacement est autorisé
 			if (GALLERY_DRAGGABLE) {
 				// Ajout de l'élément
@@ -212,7 +216,7 @@ function initGallery() {
 
 	// Initialisation de la SOURCE, permet de retourner un élément dans la bibliothèque
 	$gallery.droppable({
-		accept:				"#panel li",
+		accept:				"div#panel li",
 		activeClass:		"custom-state-active",
 		drop:				function(event, ui) {
 			// Protection contre la propagation intempestive

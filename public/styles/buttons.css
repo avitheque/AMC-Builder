@@ -7,8 +7,8 @@
  *
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 120 $
- * @since		$LastChangedDate: 2018-05-07 21:15:40 +0200 (Mon, 07 May 2018) $
+ * @version		$LastChangedRevision: 136 $
+ * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
  */
 
 /** STANDARD *************************************************************************************/
@@ -23,7 +23,6 @@ a.button					{
 	border:					none;
 	border-radius:			5px;
 	padding:				5px 10px;
-	margin:					15px 20px;
 	text-decoration:		none;
 	font-size:				16px;
 	font-weight:			700;
@@ -99,7 +98,7 @@ a.button.green:active		{
 button.blue,
 a.button.blue				{
 	background:				rgba(125, 185, 232, 1);
-	color:					blue;
+	color:					#003ae1;
 }
 button.blue:hover,
 a.button.blue:hover			{
@@ -111,6 +110,26 @@ a.button.blue:active		{
 	background:				rgba(76, 158, 217, 1);
 	box-shadow:				0px 0px 24px rgba(76, 158, 217, 1);
 	color:					rgba(125, 185, 232, 1);
+}
+
+/** WHITE ****************************************************************************************/
+button.white,
+a.button.white				{
+	background:				rgba(240, 240, 240, 1);
+	border-color:			#4297d7;
+	color:					#4297d7;
+}
+button.white:hover,
+a.button.white:hover			{
+	background:				linear-gradient(to bottom, rgba(255, 255, 255, 1) 0%, rgba(207, 233, 255) 50%, rgba(166, 215, 255) 51%, rgba(228, 243, 255, 1) 100%);
+	box-shadow:				6px 6px 12px rgba(255, 255, 255, 1);
+	color:					#FFFFFF;
+}
+button.white:active,
+a.button.white:active		{
+	background:				rgba(228, 243, 255, 1);
+	box-shadow:				0px 0px 24px rgba(228, 243, 255, 1);
+	color:					rgba(255, 255, 255, 1);
 }
 
 

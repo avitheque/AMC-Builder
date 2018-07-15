@@ -8,8 +8,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 5 $
- * @since		$LastChangedDate: 2017-03-02 22:16:57 +0100 (jeu., 02 mars 2017) $
+ * @version		$LastChangedRevision: 136 $
+ * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -22,18 +22,18 @@ class TaskbarHelper extends ViewRender {
 	 */
 	public function __construct($aAuth = array()) {
 		// Récupération de l'identifiant de l'utilisateur
-		$nIdUtilisateur	= DataHelper::get($aAuth, 'id_utilisateur',		DataHelper::DATA_TYPE_STR,	AuthenticateManager::DEFAULT_ID_UTILISATEUR);
+		$nIdUtilisateur	= DataHelper::get($aAuth,	AuthenticateManager::FIELD_USER_ID,		DataHelper::DATA_TYPE_STR,	AuthenticateManager::DEFAULT_ID_UTILISATEUR);
 		// Ajout du bouton de déconnexion si l'utilisateur est authentifié
 		$this->setExitButton($nIdUtilisateur);
 
 		// Récupération du login de l'utilisateur
-		$sLogin			= DataHelper::get($aAuth, 'login_utilisateur',	DataHelper::DATA_TYPE_ANY,	AuthenticateManager::DEFAULT_LOGIN);
+		$sLogin			= DataHelper::get($aAuth,	AuthenticateManager::FIELD_USER_LOGIN,	DataHelper::DATA_TYPE_ANY,	AuthenticateManager::DEFAULT_LOGIN);
 		// Récupération du libellé de l'utilisateur
-		$sDisplayName	= DataHelper::get($aAuth, 'display_name',		DataHelper::DATA_TYPE_ANY,	AuthenticateManager::DEFAULT_DISPLAY_NAME);
+		$sDisplayName	= DataHelper::get($aAuth,	AuthenticateManager::FIELD_DISPLAY_NAME,	DataHelper::DATA_TYPE_ANY,	AuthenticateManager::DEFAULT_DISPLAY_NAME);
 		// Récupération du rôle du compte utilisateur
-		$sRole			= DataHelper::get($aAuth, 'role_profil',		DataHelper::DATA_TYPE_ANY,	AuthenticateManager::DEFAULT_ROLE);
+		$sRole			= DataHelper::get($aAuth,	AuthenticateManager::FIELD_PROFIL_ROLE,	DataHelper::DATA_TYPE_ANY,	AuthenticateManager::DEFAULT_ROLE);
 		// Récupération du profil de l'utilisateur
-		$sProfil		= DataHelper::get($aAuth, 'libelle_profil',		DataHelper::DATA_TYPE_STR,	AuthenticateManager::DEFAULT_LIBELLE_PROFIL);
+		$sProfil		= DataHelper::get($aAuth,	AuthenticateManager::FIELD_PROFIL_LABEL,	DataHelper::DATA_TYPE_STR,	AuthenticateManager::DEFAULT_LIBELLE_PROFIL);
 
 		// Ajout de l'utilisateur à la barre
 		$this->setIdentity($sLogin, $sDisplayName, $sRole);
@@ -59,7 +59,7 @@ class TaskbarHelper extends ViewRender {
 			$sRessource	= "compte";
 		} else {
 			// L'utilisateur est non identifié
-			$sLogin		= AuthenticateManager::DEFAULT_DISPLAY_NAME;
+			$sLogin		= AuthenticateManager::DEFAULT_LOGIN;
 		}
 
 		// Construction de l'affichage de l'utilisateur

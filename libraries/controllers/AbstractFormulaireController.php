@@ -20,8 +20,8 @@
  * @subpackage	Libraries
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 119 $
- * @since		$LastChangedDate: 2018-05-05 13:46:10 +0200 (Sat, 05 May 2018) $
+ * @version		$LastChangedRevision: 136 $
+ * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
  * 
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -29,16 +29,16 @@
  */
 abstract class AbstractFormulaireController extends AbstractAuthenticateController {
 
-	const	ACTION_ANNULER					= "annuler";
-	const	ACTION_ENREGISTRER				= "enregistrer";
-	const	ACTION_MODIFIER 				= "modifier";
-	const	ACTION_SUPPRIMER 				= "supprimer";
+	const		ACTION_ANNULER				= "annuler";
+	const		ACTION_ENREGISTRER			= "enregistrer";
+	const		ACTION_MODIFIER 			= "modifier";
+	const		ACTION_SUPPRIMER 			= "supprimer";
 
 	/**
 	 * @brief	Données du formulaire sous forme de tableau.
 	 * @var		array
 	 */
-	protected $_aForm						= array();
+	protected	$_aForm						= array();
 
 	/**
 	 * @brief	Constructeur de la classe.
@@ -118,7 +118,7 @@ abstract class AbstractFormulaireController extends AbstractAuthenticateControll
 	 */
 	public function getFormulaire($sIndex = null, $iType = DataHelper::DATA_TYPE_ANY, $xDefault = null, $bForceEmpty = false) {
 		if (!is_null($sIndex)) {
-			return DataHelper::get($this->_aForm, $sIndex, $iType, $xDefault, $bForceEmpty);
+			return trim(DataHelper::get($this->_aForm, $sIndex, $iType, $xDefault, $bForceEmpty));
 		} else {
 			return $this->_aForm;
 		}
@@ -167,7 +167,7 @@ abstract class AbstractFormulaireController extends AbstractAuthenticateControll
 		// Renvoi du résultat
 		return empty($xData);
 	}
-	
+
 	/**
 	 * @brief	Réinitialisation les données du formulaire.
 	 * 

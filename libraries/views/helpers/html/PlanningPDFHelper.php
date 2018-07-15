@@ -10,8 +10,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 133 $
- * @since		$LastChangedDate: 2018-05-30 20:17:07 +0200 (Wed, 30 May 2018) $
+ * @version		$LastChangedRevision: 136 $
+ * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -76,6 +76,12 @@ class PlanningPDFHelper extends PlanningHelper {
 	 * @var		PDFManager
 	 */
 	protected	$_document						= null;
+
+	/**
+	 * @brief	Instance ItemHelper du planning.
+	 * @var		Planning_ItemHelper
+	 */
+	protected	$_item							= null;
 
 	/**
 	 * @brief	Entête du document portant le nom du Centre.
@@ -330,7 +336,7 @@ class PlanningPDFHelper extends PlanningHelper {
 				$this->_document->setXY($nPositionLeft, $nPositionTop);
 
 				// Récupération de la progression si elle existe
-				$oItem							= @$this->_aItems[$dNow][sprintf('%02d:%02d', $heure, 0)];
+				$this->_item					= @$this->_aItems[$dNow][sprintf('%02d:%02d', $heure, 0)];
 
 				// Initialisation de la largeur de cellule
 				$nWidth							= $this->_planning_cell_width;
@@ -341,7 +347,7 @@ class PlanningPDFHelper extends PlanningHelper {
 					$aStart[$dNow]				= $heure;
 
 					// Fonctionnalité réalisée si la première heure est vide
-					if (!is_object($oItem)) {
+					if (!is_object($this->_item)) {
 						// Remplissage de la couleur de fond du jour entier
 						$this->_document->setFillColor(200, 200, 200);
 						$this->_document->cell($this->_document->getLineWidth(), $this->_planning_cell_height, null, 1, 1, PDFManager::ALIGN_CENTER, true);
@@ -372,9 +378,9 @@ class PlanningPDFHelper extends PlanningHelper {
 					}
 				} else {
 					// Fonctionnalité réalisée si une tâche est présente dans le créneau horaire
-					if (is_object($oItem)) {
+					if (is_object($this->_item)) {
 						// Couleur de fond de la tâche
-						if ($oItem->hasConflict()) {
+						if ($this->_item->hasConflict()) {
 							// Couleur de fond du document JAUNE
 							$this->_document->setFillColor(243, 247, 129);
 						} else {
@@ -384,7 +390,7 @@ class PlanningPDFHelper extends PlanningHelper {
 
 						// Récupération de la position de la cellule
 						$nPositionX				= $this->_document->getX();
-						$nDuree					= $oItem->getDuration();
+						$nDuree					= $this->_item->getDuration();
 						$nCellWidth				= $this->_planning_cell_width * $nDuree;
 
 						// Fonctionnalité si le fond du planning n'a pas été initialisé
@@ -407,8 +413,7 @@ class PlanningPDFHelper extends PlanningHelper {
 						$this->_document->setXY($nPositionX, $nPositionTitre);
 						$this->_document->setFontStyle(PDFManager::STYLE_BOLD);
 
-						$nTextWidth				= strlen($oItem->getMatter()) * $this->_document->getFontSizePt();
-						//$nLineHeight			= (self::PDF_INTERLINE_TITRE_SIZE - ($nTextWidth/$nCellWidth)) * 2;
+						$nTextWidth				= strlen($this->_item->getMatter(true)) * $this->_document->getFontSizePt();
 						$fWidthFactor			= $nCellWidth/$nTextWidth;
 
 						$fTestText				= $nTextWidth + $this->_document->getFontSizePt();
@@ -422,7 +427,7 @@ class PlanningPDFHelper extends PlanningHelper {
 						if (intval($fTestText) / intval($fTestCell) >= self::PDF_INTERVAL_FACTEUR_RESIZE) {
 							// Taille du texte réduite
 							$this->_document->setFontSize(6);
-							$nLineHeight		= self::PDF_INTERLINE_TITRE_SIZE / str_word_count($oItem->getMatter());
+							$nLineHeight		= self::PDF_INTERLINE_TITRE_SIZE / str_word_count($this->_item->getMatter(true));
 							$nDecalage			= $this->_document->getFontSize();
 						} else {
 							// Taille du texte normale
@@ -431,30 +436,30 @@ class PlanningPDFHelper extends PlanningHelper {
 
 						// Ajout de la matière associée à la TÂCHE
 						$this->_document->setXY($nPositionX, $nPositionTop + $nDecalage + self::PDF_INTERLINE_TITRE_SIZE%($nLineHeight<1 ? 1 : intval($nLineHeight)));
-						$this->_document->addCell($nCellWidth, $this->_document->getFontSize(), nl2br($oItem->getMatter()), null, PDFManager::ALIGN_CENTER);
+						$this->_document->addCell($nCellWidth, $this->_document->getFontSize(), nl2br($this->_item->getMatter()), null, PDFManager::ALIGN_CENTER);
 
 						// Ajout de la localisation de la TÂCHE
 						$this->_document->setXY($nPositionX, $nPositionDescription);
 						$this->_document->setFontSize(8);
 						$this->_document->setFontStyle(PDFManager::STYLE_DEFAULT);
-						$this->_document->addCell($nCellWidth, $this->_document->getFontSize(), nl2br($oItem->getLocation()), null, PDFManager::ALIGN_CENTER);
+						$this->_document->addCell($nCellWidth, $this->_document->getFontSize(), $this->_item->getLocation(true), null, PDFManager::ALIGN_CENTER);
 
 						// Ajout des participants PRINCIPAUX
 						$this->_document->setXY($nPositionX, $nPositionParticipant);
 						$this->_document->resetFontDefault();
 						$this->_document->setFontStyle(PDFManager::STYLE_BOLD);
-						$this->_document->addCell($nCellWidth, self::PDF_INTERLINE_PARTICIPANT_SIZE, implode(" - ", $oItem->getTeam(Planning_ItemHelper::TYPE_PRINCIPAL, DataHelper::DATA_TYPE_PDF)), null, PDFManager::ALIGN_CENTER);
+						$this->_document->addCell($nCellWidth, self::PDF_INTERLINE_PARTICIPANT_SIZE, implode(" - ", $this->_item->getTeam(Planning_ItemHelper::TYPE_PRINCIPAL, DataHelper::DATA_TYPE_PDF)), null, PDFManager::ALIGN_CENTER);
 
 						// Ajout des participants SECONDAIRE
 						$this->_document->setX($nPositionX);
 						$this->_document->setFontStyle(PDFManager::STYLE_DEFAULT);
-						$this->_document->addCell($nCellWidth, self::PDF_INTERLINE_PARTICIPANT_SIZE, nl2br(implode(" - ", $oItem->getTeam(Planning_ItemHelper::TYPE_SECONDAIRE, DataHelper::DATA_TYPE_PDF))), null, PDFManager::ALIGN_CENTER);
+						$this->_document->addCell($nCellWidth, self::PDF_INTERLINE_PARTICIPANT_SIZE, nl2br(implode(" - ", $this->_item->getTeam(Planning_ItemHelper::TYPE_SECONDAIRE, DataHelper::DATA_TYPE_PDF))), null, PDFManager::ALIGN_CENTER);
 					} elseif (!$aBackground[$dNow] && $heure >= $aStart[$dNow]) {
 						// Récupération de la progression si elle existe
-						$oItem					= @$this->_aItems[$dNow][sprintf('%02d:%02d', $aStart[$dNow], 0)];
+						$this->_item			= @$this->_aItems[$dNow][sprintf('%02d:%02d', $aStart[$dNow], 0)];
 
 						// Fonctionnalité réalisée si le créneau horaire est libre
-						if (! is_object($oItem)) {
+						if (! is_object($this->_item)) {
 							// Calcul de la durée du remplissage de fond
 							$nDuree				= $this->_planning_fin - $aStart[$dNow];
 
@@ -560,6 +565,8 @@ class PlanningPDFHelper extends PlanningHelper {
 
 	/**
 	 * @brief	Rendu final de l'élément sous forme PDF.
+	 * 
+	 * @li		Ajoute automatiquement l'extension du fichier.
 	 *
 	 * @param	string	$sFilename
 	 * @return	PDFManager::render()

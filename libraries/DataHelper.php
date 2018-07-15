@@ -10,8 +10,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 126 $
- * @since		$LastChangedDate: 2018-05-22 19:53:26 +0200 (Tue, 22 May 2018) $
+ * @version		$LastChangedRevision: 136 $
+ * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -27,33 +27,34 @@ class DataHelper {
 	const	COLOR_BLUE					= "0,0,255";
 	const	COLOR_GREEN					= "0,255,0";
 	const	COLOR_RED					= "255,0,0";
-	
+
 	const	DATA_TYPE_NONE				= -1;			# Type non pris en compte
 	const	DATA_TYPE_ANY				= 0;			# Type quelconque, pris tel quel
 	const	DATA_TYPE_BOOL				= 1;			# Type Booléen
 	const	DATA_TYPE_MYBOOL			= 2;			# Type Booléen au format MySQL		(TINYINT 0/1)
 	const	DATA_TYPE_INT				= 3;			# Type Entier
 	const	DATA_TYPE_INT_ABS			= 4;			# Type Entier en valeur absolue		(SIGNED)
-	const	DATA_TYPE_FLT				= 5;			# Type Float au format FR avec séparateur décimal [,]
-	const	DATA_TYPE_FLT_ABS			= 6;			# Type Float en valeur absolue au format FR avec séparateur décimal [,]
-	const	DATA_TYPE_MYFLT				= 7;			# Type Float au format MySQL avec séparateur décimal [.]
-	const	DATA_TYPE_MYFLT_ABS			= 8;			# Type Float en valeur absolue au format MySQL avec séparateur décimal [.]
-	const	DATA_TYPE_ARRAY				= 9;			# Type Array
-	const	DATA_TYPE_MYARRAY			= 10;			# Type Array au format MySQL [item1|item2|item3]
-	const	DATA_TYPE_MYARRAY_NUM		= 11;			# Type Array au format MySQL [item1|item2|item3] mais uniquement avec des valeurs numériques
-	const	DATA_TYPE_STR				= 12;			# Type Chaîne
-	const	DATA_TYPE_NAME				= 13;			# Type nom (que des lettres, lettres accentuées, espace, tiret, apostrophe)
-	const	DATA_TYPE_CLASSID			= 14;			# Type identifiant de classe (que des lettre, pas d'espace)
-	const	DATA_TYPE_FILE				= 15;			# Type nom de fichier (que des lettre, pas d'espace)
-	const	DATA_TYPE_TXT				= 16;			# Type Texte pouvant être vide par défaut
-	const	DATA_TYPE_MYTXT				= 17;			# Type Texte au format MySQL
-	const	DATA_TYPE_HTML				= 18;			# Type Texte au format HTML
-	const	DATA_TYPE_LATEX				= 19;			# Type Texte au format LaTeX
-	const	DATA_TYPE_DATE				= 20;			# Type Date au format FR	[d/m/Y]
-	const	DATA_TYPE_MYDATE			= 21;			# Type Date au format MySQL	[Y-m-d]
-	const	DATA_TYPE_TIME				= 22;			# Type Time au format FR	[H:i]
-	const	DATA_TYPE_DATETIME			= 23;			# Type Date-Time sous MySQL [Y-m-d H:i:s]
-	const	DATA_TYPE_PDF				= 24;			# Type texte PDF
+	const	DATA_TYPE_MYINT				= 5;			# Type Entier en valeur absolue > 0	(SIGNED)
+	const	DATA_TYPE_FLT				= 6;			# Type Float au format FR avec séparateur décimal [,]
+	const	DATA_TYPE_FLT_ABS			= 7;			# Type Float en valeur absolue au format FR avec séparateur décimal [,]
+	const	DATA_TYPE_MYFLT				= 8;			# Type Float au format MySQL avec séparateur décimal [.]
+	const	DATA_TYPE_MYFLT_ABS			= 9;			# Type Float en valeur absolue au format MySQL avec séparateur décimal [.]
+	const	DATA_TYPE_ARRAY				= 10;			# Type Array
+	const	DATA_TYPE_MYARRAY			= 11;			# Type Array au format MySQL [item1|item2|item3]
+	const	DATA_TYPE_MYARRAY_NUM		= 12;			# Type Array au format MySQL [item1|item2|item3] mais uniquement avec des valeurs numériques
+	const	DATA_TYPE_STR				= 13;			# Type Chaîne
+	const	DATA_TYPE_NAME				= 14;			# Type nom (que des lettres, lettres accentuées, espace, tiret, apostrophe)
+	const	DATA_TYPE_CLASSID			= 15;			# Type identifiant de classe (que des lettre, pas d'espace)
+	const	DATA_TYPE_FILE				= 16;			# Type nom de fichier (que des lettre, pas d'espace)
+	const	DATA_TYPE_TXT				= 17;			# Type Texte pouvant être vide par défaut
+	const	DATA_TYPE_MYTXT				= 18;			# Type Texte au format MySQL
+	const	DATA_TYPE_HTML				= 19;			# Type Texte au format HTML
+	const	DATA_TYPE_LATEX				= 20;			# Type Texte au format LaTeX
+	const	DATA_TYPE_DATE				= 21;			# Type Date au format FR	[d/m/Y]
+	const	DATA_TYPE_MYDATE			= 22;			# Type Date au format MySQL	[Y-m-d]
+	const	DATA_TYPE_TIME				= 23;			# Type Time au format FR	[H:i]
+	const	DATA_TYPE_DATETIME			= 24;			# Type Date-Time sous MySQL [Y-m-d H:i:s]
+	const	DATA_TYPE_PDF				= 25;			# Type texte PDF
 
 	const	ONCE						= 0;
 	const	SHORT						= 1;
@@ -64,6 +65,20 @@ class DataHelper {
 	static public $LIBELLE_MOIS_SHORT	= array("SHORT", "JAN", "FÉV", "MAR", "AVR", "MAI", "JUN", "JUL", "AOÛ", "SEP", "OCT", "NOV", "DÉC");
 	static public $LIBELLE_MOIS_LOWER	= array("LOWER", "janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre");
 	static public $LIBELLE_MOIS_UPPER	= array("UPPER", "JANVIER", "FÉVRIER", "MARS", "AVRIL", "MAI", "JUIN", "JUILLET", "AOÛT", "SEPTEMBRE", "OCTOBRE", "NOVEMBRE", "DÉCEMBRE");
+
+	const	WEEK_DAY_MONDAY				= 'monday';
+	const	WEEK_DAY_TUESDAY			= 'tuesday';
+	const	WEEK_DAY_WEDNESDAY			= 'wednesday';
+	const	WEEK_DAY_THURSDAY			= 'thursday';
+	const	WEEK_DAY_FRIDAY				= 'friday';
+	const	WEEK_DAY_SATURDAY			= 'saturday';
+	const	WEEK_DAY_SUNDAY				= 'sunday';
+
+	/**
+	 * @brief	Nombre de secondes dans une journée
+	 * @var	integer
+	 */
+	const	EPHEMERIDE					= 86400;
 
 	/** @brief	Vérifie le type d'une valeur
 	 *
@@ -127,10 +142,14 @@ class DataHelper {
 				// Fonctionnalité réalisée si le tableau n'est pas vide
 				$bValide = count($aArray) >= 1;
 			}
-			
+
 			// Test de la validité d'au moins une entrée
-			if (!is_null($bNotEmpty) && $bNotEmpty && $bValide && count($aArray) >= 1) {
-				$bValide = !empty($aArray[0]);
+			if (!is_null($bNotEmpty) && $bNotEmpty && $bValide && count($aArray) >= 1 && isset($aArray[0])) {
+				// Récupération de la chaîne de caractères
+				$sString = trim($aArray[0]);
+
+				// Fonctionnalité réalisée si la chaîne n'est pas vide
+				$bValide = !empty($sString);
 			}
 		}
 		// Renvoi du résultat
@@ -387,7 +406,7 @@ class DataHelper {
 	public static function dateTimeMyToTimestamp($sDateTime) {
 		// Extraction des éléments de la DATE
 		$aParams = self::extractParamsFromDateTime($sDateTime);
-	
+
 		// Renvoi le TIMESTAMP
 		return mktime($aParams['H'], $aParams['i'], $aParams['s'], $aParams['m'], $aParams['d'], $aParams['Y']);
 	}
@@ -428,6 +447,265 @@ class DataHelper {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * @brief	Récupère le libellé du jour de la semaine.
+	 *
+	 * @param	integer		$nDayOfWeek		: numéro du jour de la semaine (0 à 7).
+	 * @param	boolean		$bLong			: (optionnel) récupère le libellé long, sinon le court.
+	 * @return	string
+	 */
+	public static function getDay($nDayOfWeek, $bLong = false){
+		switch ($nDayOfWeek){
+			case 1:
+				$sLong	="lundi";
+				$sShort	="L";
+			break;
+
+			case 2:
+				$sLong	="mardi";
+				$sShort	="M";
+			break;
+
+			case 3:
+				$sLong	="mercredi";
+				$sShort	="M";
+			break;
+
+			case 4:
+				$sLong	="jeudi";
+				$sShort	="J";
+			break;
+
+			case 5:
+				$sLong	="vendredi";
+				$sShort	="V";
+			break;
+
+			case 6:
+				$sLong	="samedi";
+				$sShort	="S";
+				break;
+
+			case 0:
+			case 7:
+				$sLong	="dimanche";
+				$sShort	="D";
+				break;
+		}
+
+		// Récupération du libellé court par défaut
+		$sLabel = $sShort;
+		if ($bLong) {
+			// Récupération du libellé long
+			$sLabel = $sLong;
+		}
+
+		// Renvoi du libellé
+		return $sLabel;
+	}
+
+	/**
+	 * @brief	Récupère le libellé du mois.
+	 *
+	 * @param	integer		$dMonth			: nombre correspondant au mois de la DATE.
+	 * @param	integer		$dYear			: nombre correspondant à l'année de la DATE.
+	 * @return	string
+	 */
+	public static function getMonth($dMonth, $dYear){
+		switch (date("n", strtotime($dMonth . "/01/" . $dYear))) {
+			case "1":
+				$sLabel = "Janvier";
+				break;
+			case "2":
+				$sLabel = "Février";
+				break;
+			case "3":
+				$sLabel = "Mars";
+				break;
+			case "4":
+				$sLabel = "Avril";
+				break;
+			case "5":
+				$sLabel = "Mai";
+				break;
+			case "6":
+				$sLabel = "Juin";
+				break;
+			case "7":
+				$sLabel = "Juillet";
+				break;
+			case "8":
+				$sLabel = "Août";
+				break;
+			case "9":
+				$sLabel = "Septembre";
+				break;
+			case "10":
+				$sLabel = "Octobre";
+				break;
+			case "11":
+				$sLabel = "Novembre";
+				break;
+			case "12":
+				$sLabel = "Décembre";
+				break;
+		}
+		return $sLabel;
+	}
+
+	/**
+	 * @brief	Recherche si la date est un jour férié.
+	 * 
+	 * @remark	Les jours fériés religieux se basent sur le dimanche de Pâques.
+	 * 
+	 * @param	date	$dDate		: date à rechercher.
+	 * @return	string|boolean
+	 */
+	public static function isDateFerie($dDate) {
+		// Récupération de la DATE au format MySQL
+		$dDateMySQL	= self::dateFrToMy($dDate);
+		$nTimestamp	= self::dateTimeMyToTimestamp($dDateMySQL);
+
+		// Récupération du dimanche de Pâques de l'année
+		$dim_paques	= easter_date(date('Y', $nTimestamp));
+		$jour		= 3600*24;
+		switch(date('d/m', $nTimestamp)) {
+			case "01/01":
+				$sLabel = "Jour de l'an";
+				break;
+			case date("d/m", $dim_paques + $jour):
+				$sLabel = "Lundi de Pâques";
+				break;
+			case "01/05":
+				$sLabel = "Fête du travail";
+				break;
+			case "08/05":
+				$sLabel = "Victoire 1945";
+				break;
+			case date("d/m", $dim_paques + (39 * $jour)):
+				$sLabel = "Jeudi Ascension";
+				break;
+			case date("d/m", $dim_paques + (50 * $jour)):
+				$sLabel = "Pentecôte";
+				break;
+			case "14/07":
+				$sLabel = "Fête nationale";
+				break;
+			case "15/08":
+				$sLabel = "Assomption";
+				break;
+			case "01/11":
+				$sLabel = "Toussaint";
+				break;
+			case "11/11":
+				$sLabel = "Armistice 1918";
+				break;
+			case "25/12":
+				$sLabel = "Noël";
+				break;
+			default:
+				$sLabel = false;
+				break;
+		}
+		return $sLabel;
+	}
+
+	/**
+	 * @brief	Récupère le premier et dernier jour de la semaine.
+	 * @param	integer	$nYear			: année de la semaine à rechercher.
+	 * @param	integer	$nWeek			: numéro de la semaine à rechercher.
+	 * @param	integer	$sLastDayLabel	: libellé du dernier jour de la semaine à considérer (nom du jour anglophone).
+	 * @return	array
+	 */
+	public static function getFirstAndLastDaysFromWeek($nYear, $nWeek, $sLastDayLabel = self::WEEK_DAY_SUNDAY) {
+		// Initialisation de la DATE à partir de la semaine
+		$oDate		= new DateTime();
+		$oDate->setISODate($nYear, $nWeek);
+
+		// Initialisation de la DATE de début
+		$oFirstDate	= new DateTime($oDate->format('Y-m-d'));
+		// Modification de la date afin de se focaliser sur le premier jour de la semaine
+		$oFirstDate->modify(self::WEEK_DAY_MONDAY);
+
+		// Initialisation de la DATE de fin
+		$oLastDate	= new DateTime($oDate->format('Y-m-d'));
+		// Modification de la date afin de se focaliser sur le dernier jour de la semaine à considérer
+		$oLastDate->modify($sLastDayLabel);
+
+		// Renvoi du premier et dernier jour de la semaine
+		return array($oFirstDate, $oLastDate);
+	}
+
+	/**
+	 * @brief	Récupère la coloration de la date selon son statut.
+	 * @param	date	$dDate		: date à rechercher.
+	 * @param	date	$bCurrent	: (optionnel) coloration de la date courante.
+	 * @return string
+	 */
+	public static function getDateStatusColor($dDate, $bCurrent = false) {
+		$dDateMySQL	= self::dateFrToMy($dDate);
+		$nTimestamp	= self::dateTimeMyToTimestamp($dDateMySQL);
+		$day		= date("w", $nTimestamp);
+
+		$testFerie	= self::isDateFerie($dDate);
+		if (strlen($testFerie) > 0) {
+			$color	= "lightgrey";
+		}
+
+		// Fonctionnalité réalisée selon le jour de la semaine
+		if ($day == 0 || $day == 6) {
+			// Le jour est dans un week-end
+			$color	= "lightgrey";
+		} else {
+			// Le jour est oeuvré
+			$color	= "white";
+		}
+
+		// Fonctionnalité réalisée si le jour courant doit être mis en évicence
+		if ($bCurrent && date('Y-m-d') == $dDateMySQL){
+			$color="tomato";
+		}
+
+		// Renvoi de la couleur du statut
+		return $color;
+	}
+
+	/**
+	 * @brief	Récupére une intervale entre deux dates
+	 * @param	date	$dDateA
+	 * @param	date	$dDateB
+	 * @param	string	$sFormat	: format de l'interval.
+	 * @return	integer
+	 */
+	public static function getIntervalBetweenDates($dDateA, $dDateB, $sFormat = '%a') {
+		// Construction de la première DATE
+		$oDateA	= new DateTime(self::dateFrToMy($dDateA));
+
+		// Construction de la deuxième DATE
+		$oDateB	= new DateTime(self::dateFrToMy($dDateB));
+
+		// Renvoi de la différence entre les deux intervalles
+		return $oDateA->diff($oDateB)->format($sFormat);
+	}
+
+	/**
+	 * @brief	Construit un tableau de DATES selon le nombre de jour(s) souhaité(s).
+	 * @param	integer		$dDay			: nombre correspondant au jour de la DATE.
+	 * @param	integer		$dMonth			: nombre correspondant au mois de la DATE.
+	 * @param	integer		$dYear			: nombre correspondant à l'année de la DATE.
+	 * @param	integer		$nOccurrence	: nombre de jour(s) à construire.
+	 * @return	array
+	 */
+	public static function arrayFromDateByDays($dDay, $dMonth, $dYear, $nOccurrence = 0) {
+		$aDate				= array();
+		for ($nCount = 0 ; $nCount <= $nOccurrence; $nCount++){
+			// Construction de la nouvelle DATE
+			$timestamp		= mktime(0, 0, 0, $dMonth, $dDay + $nCount, $dYear);
+			$aDate[$nCount]	= date("d-m-Y", $timestamp);
+		}
+		return $aDate;
 	}
 
 	/**
@@ -827,7 +1105,7 @@ class DataHelper {
 		}
 
 		// Suppression des espaces en trop
-		return preg_replace("/\s\s+/", chr(32), strtr($sText, array(chr(9) => chr(32), chr(10) => chr(32), chr(13) => chr(32))));
+		return trim(preg_replace("/\s\s+/", chr(32), strtr($sText, array(chr(9) => chr(32), chr(10) => chr(32), chr(13) => chr(32)))));
 	}
 
 	/**
@@ -1217,7 +1495,7 @@ class DataHelper {
 
 		// Extraction des éléments de la DATE
 		preg_match('@^([0-9]+)\-([0-9]+)\-([0-9]+)\s*([0-9]+)*:*([0-9]+)*:*([0-9]*)*@', $dDateTime, $aMatches);
-		
+
 		// Extraction des éléments de la DATE
 		return array(
 			'Y' => self::get($aMatches, 1, self::DATA_TYPE_INT, 0),
@@ -1480,6 +1758,12 @@ class DataHelper {
 			// Integer en valeur absolue
 			case self::DATA_TYPE_INT_ABS:
 				return intval(abs($xValue));
+			break;
+
+			// Integer en valeur absolue non vide
+			case self::DATA_TYPE_MYINT:
+				$xValue = intval(abs($xValue));
+				return $xValue > 0 ? $xValue : "''";
 			break;
 
 			// Float
