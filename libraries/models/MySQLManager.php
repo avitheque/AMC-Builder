@@ -15,8 +15,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 92 $
- * @since		$LastChangedDate: 2017-12-29 05:09:06 +0100 (Fri, 29 Dec 2017) $
+ * @version		$LastChangedRevision: 141 $
+ * @since		$LastChangedDate: 2018-08-12 18:05:58 +0200 (Sun, 12 Aug 2018) $
  * @see			{ROOT_PATH}/libraries/models/AbstractDataManager.php
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
@@ -106,6 +106,45 @@ class MySQLManager extends AbstractDataManager {
 	/**********************************************************************************************
 	 * @todo	RECHERCHER
 	 **********************************************************************************************/
+
+    /** @brief  Récupère la liste des noms de champ d'une table
+     *
+     * Méthode permettant de récupérer la description d'une table.
+     *
+     * @param   string      $sTable         : Nom de la table en base de données.
+     * @param   string      $iFetchAll      : Type du format PDO du résultat.
+     * @return  array|object
+     */
+    public function describe($sTable, $iFetchAll = PDO::FETCH_COLUMN) {
+        // Préparation de la requête
+        $this->oStatement                   = $this->oSQLConnector->prepare(sprintf("DESCRIBE `%s`;", $sTable));
+        // Exécution de la requête
+        if ($this->oStatement->execute()) {
+            // Renvoi du résultat selon le format attendu
+            return $this->oStatement->fetchAll($iFetchAll);
+        }
+    }
+
+    /** @brief  Récupère le prochain identifiant d'une table.
+     *
+     * Méthode permettant de récupérer la description d'une table.
+     *
+     * @param   string      $sTable         : Nom de la table en base de données.
+     * @param   string      $sPrimary       : Clé primaire de la table.
+     * @return  integer
+     */
+    public function nextInsertId($sTable, $sPrimary) {
+        // Préparation de la requête
+        $this->oStatement                   = $this->oSQLConnector->prepare(sprintf("SELECT MAX(`%s`) AS 'next_id' FROM `%s`;", $sPrimary, $sTable));
+
+        // Exécution de la requête
+        if ($this->oStatement->execute()) {
+            // Récupération du résultat au format TABLEAU
+            $aQuery = $this->oStatement->fetchAll(PDO::FETCH_COLUMN);
+            // Renvoi du résultat
+            return (int) $aQuery[0] + 1;
+        }
+    }
 
 	/**
 	 * @brief	Méthode générique de récupération des données d'une table par son idendifiant.

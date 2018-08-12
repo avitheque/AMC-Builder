@@ -78,24 +78,77 @@ var waitForFinalEvent = (function() {
 	};
 })();
 
+/**
+ * @var		Constante de paramètres du DatePicker 
+ */
+var DATEPICKER_OPTIONS = {
+	renderer:			$.ui.datepicker.defaultRenderer,
+	showOn:				"button",
+	showWeek:			true,
+	changeMonth:		true,
+	changeYear:			true,
+	buttonImage:		"/images/calendar.png",
+	buttonImageOnly:	true,
+	buttonText:			"Sélection de la date",
+	isRTL:				false,
+	onSelect:			function(dateText, inst) {
+		// Activation de l'indicateur de modification du formulaire
+		FW_FORM_UPDATE = true;
+		
+		// Supprime le statut précédent lors de la sélection
+		$(this).removeClass("valid");
+		$(this).removeClass("invalid");
+	} 
+};
+
 // Initialisation du plugin DatePicker
-function setDatePicker(selector) {
+function setDatePicker(selector, bAllowOnReadonly) {
 	// Le champ ne doit pas être en lecture seule
-	$(selector).not("[readonly]").datepicker({
-		'renderer':			$.ui.datepicker.defaultRenderer,
-		'showOn':			"both",
-		'buttonImage':		"/images/calendar.png",
-		'buttonImageOnly':	true,
-		'showWeek':			true,
-		'changeMonth':		true,
-		'changeYear':		true,
-		'showButtonPanel':	true,
-		'isRTL':			false,
-		'onSelect':			function(dateText, inst) {
-			// Remove input state when select
-			$(this).removeClass("valid");
-			$(this).removeClass("invalid");
-		}
+	$(selector).not("[readonly]").datepicker(DATEPICKER_OPTIONS);
+	$(selector).not("[readonly]").datepicker("option", "showOn", "both");
+	
+	// Fonctionnalité réalisée si le datePicker est autorisé sur un champ même en lecture seule
+	if ($(selector).is("[readonly]") && typeof(bAllowOnReadonly) == 'boolean' && bAllowOnReadonly) {
+		// Forçage du DatePicker sur le champ en lecture seule
+		$(selector).datepicker(DATEPICKER_OPTIONS);
+		
+		// Fonctionnalité réalisée au clic sur le champ
+		$(selector).click(function() {
+			$(this).datepicker("show");
+		});
+	}
+};
+
+// Initialisation des champs DatePicker pour une période Début/Fin
+function setPeriodeByDatePicker(debut, fin, maxDate) {
+	// Initialisation du DatePicker de début
+	setDatePicker(debut, true);
+
+	// Initialisation du DatePicker de fin
+	setDatePicker(fin, true);
+
+	// Fonctionnalité réalisée si une date maximum est spécifiée
+	if (typeof(maxDate) != 'undefined') {
+		// Affectation de la date maximum sur le champ de début de période
+		$(debut).datepicker("option", "maxDate", maxDate);
+		// Affectation de la date maximum sur le champ de fin de période
+		$(fin).datepicker("option", "maxDate", maxDate);
+	}
+	
+	//#############################################################################################
+	// GESTION DE DATE DEBUT / FIN
+	//#############################################################################################
+
+	// Initialisation de la date de fin à partir de la saisie de la date de début
+	if ($(debut).val()) {
+		// Affectation de la date minimum sur le champ de fin de période
+		$(fin).datepicker("option", "minDate", $(debut).datepicker('getDate'));
+	}
+
+	// Fonctionnalité réalisée lors de la modification de la date de début
+	$(debut).datepicker("option", "onSelect", function(event) {
+		// Affectation de la date minimum sur le champ de fin de période
+		$(fin).datepicker("option", "minDate", $(debut).datepicker('getDate'));
 	});
 };
 
@@ -149,6 +202,12 @@ function setDialogConfirm(selector, button_or_url) {
 				// Activation de l'arrière-plan de protection contre les cliqueurs intempestifs durant le chargement
 				$("div#stop-click").css({display: "block"});
 
+				// Fonctionnalité réalisée si le bouton n'est pas vide
+				if (button != "") {
+					// Ajout de la valeur du bouton à l'URL
+					url += "?button=" + button;
+				}
+				
 				// Traitement de la redirection de la page
 				window.location = url;
 			},

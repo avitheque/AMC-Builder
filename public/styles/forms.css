@@ -7,8 +7,8 @@
  *
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 136 $
- * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
+ * @version		$LastChangedRevision: 145 $
+ * @since		$LastChangedDate: 2018-08-12 21:14:32 +0200 (Sun, 12 Aug 2018) $
  */
 
 input:not([readonly]),
@@ -124,7 +124,7 @@ input[type=checkbox]:checked + label				{
 
 input.error + label									{
 	font-weight:									bold;
-	color:											rgba(255, 0, 0, 1);
+	color:											rgba(255, 0, 0, 1) !important;
 }
 
 /* Désactivation du outline lors du focus sous FireFox */
@@ -203,4 +203,12 @@ textarea[disabled] + label,
 section.disabled label,
 fieldset.disabled label								{
 	cursor:											default !important;
+}
+
+/*************************************************/
+
+input.hasDatepicker									{
+	width:											100px;
+	text-align:										center;
+	cursor:											pointer;
 }

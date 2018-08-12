@@ -62,8 +62,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 136 $
- * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
+ * @version		$LastChangedRevision: 141 $
+ * @since		$LastChangedDate: 2018-08-12 18:05:58 +0200 (Sun, 12 Aug 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -966,7 +966,7 @@ class Planning_ItemHelper {
 
 													// Création du formulaire MODAL de sélection des SALLES
 													$("div#location-' . $sMD5 . '").dialog({
-														title:			"Séletionnez la(les) salle(s) et le volume horaire de réservation",
+														title:			"Sélectionnez la(les) salle(s) et le volume horaire de réservation",
 														maxHeight:		$("article#main-article").height() - 100 + " px",
 														width:			"90%",
 														dialogClass:	"no-close",
@@ -1078,7 +1078,7 @@ class Planning_ItemHelper {
 
 													// Création du formulaire MODAL de sélection des FORMATEURS
 													$("div#team-' . $sMD5 . '").dialog({
-														title:			"Séletionnez le(les) formateurs(s) et le volume horaire de réservation",
+														title:			"Sélectionnez le(les) formateurs(s) et le volume horaire de réservation",
 														maxHeight:		$("article#main-article").height() - 100 + " px",
 														width:			"90%",
 														dialogClass:	"no-close",

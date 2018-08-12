@@ -17,8 +17,8 @@
  *
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 136 $
- * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
+ * @version		$LastChangedRevision: 142 $
+ * @since		$LastChangedDate: 2018-08-12 18:20:29 +0200 (Sun, 12 Aug 2018) $
  */
 
 /** GLOBAL ***************************************************************************************/
@@ -95,8 +95,8 @@ main							{
 	overflow-y:					auto;
 	background:					radial-gradient(circle at 20% -120% , rgb(255, 255, 255) 70%, #777 100%) no-repeat scroll center center transparent;
 	width:						90%;
-	height:						80%;
-	margin:						3% auto 0;
+	height:						85%;
+	margin:						2% auto 0;
 	box-shadow:					6px 6px 12px rgba(0, 0, 0, 0.8);
 }
 

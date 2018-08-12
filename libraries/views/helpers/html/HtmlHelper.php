@@ -8,8 +8,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 87 $
- * @since		$LastChangedDate: 2017-12-20 19:19:01 +0100 (Wed, 20 Dec 2017) $
+ * @version		$LastChangedRevision: 141 $
+ * @since		$LastChangedDate: 2018-08-12 18:05:58 +0200 (Sun, 12 Aug 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -24,6 +24,7 @@ class HtmlHelper {
 	const		DESC			= 'rsort';
 	const		KEY_ASC			= 'ksort';
 	const		KEY_DESC		= 'krsort';
+	const		NONE			= 'none';
 
 	private		$_tag			= null;
 	private		$_attribute		= array();
@@ -50,7 +51,7 @@ class HtmlHelper {
 	 * @return	string
 	 * @author durandcedric
 	 */
-	public static function buildListOptions($aListe, $xValues = array(), $sFirst = null, $sTri = null, $bDisabled = false, $sFormat = "<option %s value=\"%s\" >%s</option>") {
+	public static function buildListOptions($aListe, $xValues = array(), $sFirst = null, $sTri = self::NONE, $bDisabled = false, $sFormat = "<option %s value=\"%s\" >%s</option>") {
 		// Tri de la liste
 		switch ($sTri) {
 			case self::ASC:
@@ -69,6 +70,7 @@ class HtmlHelper {
 				krsort($aListe);
 				break;
 
+			case self::NONE:
 			default:
 				break;
 		}
@@ -76,7 +78,7 @@ class HtmlHelper {
 		// Création de la première entrée
 		$sPrefix = null;
 		if (isset($sFirst) && !$bDisabled) {
-			$sPrefix = self::buildListOptions(array(0 => $sFirst), array(), null, null, $bDisabled, $sFormat);
+			$sPrefix = self::buildListOptions(array(0 => $sFirst), array(), null, self::NONE, $bDisabled, $sFormat);
 		}
 
 		// Initialisation de la liste
@@ -95,7 +97,7 @@ class HtmlHelper {
 
 		// Finalisation si aucune valeur n'est valide
 		if (empty($sOptions) && $bDisabled) {
-			$sPrefix = self::buildListOptions(array(0 => '-'), array(), null, null, false, $sFormat);
+			$sPrefix = self::buildListOptions(array(0 => '-'), array(), null, self::NONE, false, $sFormat);
 		}
 
 		return $sPrefix . $sOptions;

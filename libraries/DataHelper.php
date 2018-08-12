@@ -10,8 +10,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 136 $
- * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
+ * @version		$LastChangedRevision: 144 $
+ * @since		$LastChangedDate: 2018-08-12 20:24:19 +0200 (Sun, 12 Aug 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -144,12 +144,17 @@ class DataHelper {
 			}
 
 			// Test de la validité d'au moins une entrée
-			if (!is_null($bNotEmpty) && $bNotEmpty && $bValide && count($aArray) >= 1 && isset($aArray[0])) {
-				// Récupération de la chaîne de caractères
-				$sString = trim($aArray[0]);
-
-				// Fonctionnalité réalisée si la chaîne n'est pas vide
-				$bValide = !empty($sString);
+			$aHeader = array_keys($aArray);
+			if (!is_null($bNotEmpty) && $bNotEmpty && $bValide && count($aArray) >= 1 && isset($aArray[$aHeader[0]])) {
+				if (is_array($aArray[$aHeader[0]])) {
+					// Vérifie la validité de la première entrée
+					$bValide = self::isValidArray($aArray[$aHeader[0]], $nCount, $bNotEmpty);
+				} else {
+					// Récupération de la chaîne de caractères
+					$sString = trim($aArray[$aHeader[0]]);
+					// Fonctionnalité réalisée si la chaîne n'est pas vide
+					$bValide = !empty($sString);
+				}
 			}
 		}
 		// Renvoi du résultat
@@ -212,6 +217,28 @@ class DataHelper {
 	 */
 	static function isValidMonth($nNumber) {
 		return $nNumber >= 1 && $nNumber <= 12;
+	}
+
+	/** @brief	Validation d'un DATETIME.
+	 * Méthode permettant de vérifier la validité d'un DATETIME.
+	 * @param	string		$sString		: chaîne de caractères représentant une date.
+	 * @param	bool		$bMySQL			: (optionnel) si la chaîne est au format [Y-m-d].
+	 * @return	bool résultat de la vérification.
+	 */
+	static function isValidDateTime($sString, $bMySQL = false) {
+		$bValide = false;
+
+		// Fonctionnalité réalisée si la date est au format MySQL
+		if ($bMySQL && preg_match('@^([0-9]{2,4})\-([0-9]{1,2})\-([0-9]{1,2})\s([0-9]{1,2}):([0-9]{1,2}):*([0-9]{1,2})*$@', $sString, $aMatched)) {
+			// Test le format de DATE [Y-m-d]
+			$bValide = self::isValidMonth($aMatched[2]) && self::isValidDay($aMatched[3]);
+		} elseif (!$bMySQL && preg_match('@^([0-9]{1,2}).([0-9]{1,2}).([0-9]{2,4})\s([0-9]{1,2}):([0-9]{1,2}):*([0-9]{1,2})*$@', $sString, $aMatched)) {
+			// Test le format de DATE [d/m/Y]
+			$bValide = self::isValidDay($aMatched[1]) && self::isValidMonth($aMatched[2]);
+		}
+
+		// Renvoi du résultat
+		return $bValide;
 	}
 
 	/** @brief	Validation d'une date.
@@ -513,7 +540,7 @@ class DataHelper {
 	 * @param	integer		$dYear			: nombre correspondant à l'année de la DATE.
 	 * @return	string
 	 */
-	public static function getMonth($dMonth, $dYear){
+	public static function getMonth($dMonth, $dYear, $bShowYear = false){
 		switch (date("n", strtotime($dMonth . "/01/" . $dYear))) {
 			case "1":
 				$sLabel = "Janvier";
@@ -552,6 +579,11 @@ class DataHelper {
 				$sLabel = "Décembre";
 				break;
 		}
+		
+		// Fonctionnalité réalisée si l'année doit être ajouté
+		if ($bShowYear) {
+			$sLabel		= sprintf("%s %d", $sLabel, $dYear);
+		}
 		return $sLabel;
 	}
 
@@ -564,9 +596,14 @@ class DataHelper {
 	 * @return	string|boolean
 	 */
 	public static function isDateFerie($dDate) {
-		// Récupération de la DATE au format MySQL
-		$dDateMySQL	= self::dateFrToMy($dDate);
-		$nTimestamp	= self::dateTimeMyToTimestamp($dDateMySQL);
+		if (self::isValidNumeric($dDate)) {
+			$nTimestamp = $dDate;
+		} else {
+			// Récupération de la DATE au format MySQL
+			$aDateItem	= explode(' ', $dDate);
+			$dDateMySQL	= self::dateFrToMy($aDateItem[0]);
+			$nTimestamp	= self::dateTimeMyToTimestamp($dDateMySQL);
+		}
 
 		// Récupération du dimanche de Pâques de l'année
 		$dim_paques	= easter_date(date('Y', $nTimestamp));
@@ -612,31 +649,140 @@ class DataHelper {
 		return $sLabel;
 	}
 
+    /**
+     * @brief	Récupère le premier jour de la semaine à partir d'une date.
+     * @param	mixed	$xDate			: date à rechercher, peut être l'instance d'un objet Datetime.
+     * @param	integer	$sFirstDayLabel	: libellé du premier jour de la semaine à considérer (nom du jour anglophone).
+     * @return	dateTime
+     */
+    public static function getFirstDayFromWeekByDate($xDate, $sFirstDayLabel = self::WEEK_DAY_MONDAY) {
+        if (is_object($xDate)) {
+            // Récupération de la DATE
+            $oDate  = $xDate;
+        } elseif (self::isValidString($xDate)) {
+            // Initialisation de la DATE
+            $oDate  = new DateTime(self::dateFrToMy($xDate));
+        } else {
+            $oDate  = new DateTime();
+        }
+
+        // Initialisation de la DATE de début
+        $oFirstDate	= new DateTime($oDate->format('Y-m-d'));
+        // Modification de la date afin de se focaliser sur le premier jour de la semaine
+        $oFirstDate->modify($sFirstDayLabel);
+
+        // Renvoi du premier et dernier jour de la semaine
+        return $oFirstDate;
+    }
+
+    /**
+     * @brief	Récupère le premier jour de la semaine à partir du numéro de semaine.
+     * @param	integer	$nYear			: année de la semaine à rechercher.
+     * @param	integer	$nWeek			: numéro de la semaine à rechercher.
+     * @param	integer	$sFirstDayLabel	: libellé du premier jour de la semaine à considérer (nom du jour anglophone).
+     * @return	dateTime
+     */
+    public static function getFirstDayFromWeek($nYear, $nWeek, $sFirstDayLabel = self::WEEK_DAY_MONDAY) {
+        // Initialisation de la DATE à partir de la semaine
+        $oDate		= new DateTime();
+        $oDate->setISODate($nYear, $nWeek);
+
+        // Renvoi du premier jour de la semaine
+        return self::getFirstDayFromWeekByDate($oDate, $sFirstDayLabel);
+    }
+
+    /**
+     * @brief	Récupère le premier jour de la semaine à partir d'une date.
+     * @param	mixed	$xDate			: date à rechercher, peut être l'instance d'un objet Datetime.
+     * @param	integer	$sLastDayLabel	: libellé du dernier jour de la semaine à considérer (nom du jour anglophone).
+     * @return	dateTime
+     */
+    public static function getLastDayFromWeekByDate($xDate, $sLastDayLabel = self::WEEK_DAY_MONDAY) {
+        if (is_object($xDate)) {
+            // Récupération de la DATE
+            $oDate  = $xDate;
+        } elseif (self::isValidString($xDate)) {
+            // Initialisation de la DATE
+            $oDate  = new DateTime(self::dateFrToMy($xDate));
+        } else {
+            $oDate  = new DateTime();
+        }
+
+        // Initialisation de la DATE de fin
+        $oLastDate	= new DateTime($oDate->format('Y-m-d'));
+        // Modification de la date afin de se focaliser sur le dernier jour de la semaine à considérer
+        $oLastDate->modify($sLastDayLabel);
+
+        // Renvoi du dernier jour de la semaine
+        return $oLastDate;
+    }
+
+    /**
+     * @brief	Récupère le dernier jour de la semaine à partir du numéro de semaine.
+     * @param	integer	$nYear			: année de la semaine à rechercher.
+     * @param	integer	$nWeek			: numéro de la semaine à rechercher.
+     * @param	integer	$sLastDayLabel	: libellé du dernier jour de la semaine à considérer (nom du jour anglophone).
+     * @return	dateTime
+     */
+    public static function getLastDayFromWeek($nYear, $nWeek, $sLastDayLabel = self::WEEK_DAY_SUNDAY) {
+        // Initialisation de la DATE à partir de la semaine
+        $oDate		= new DateTime();
+        $oDate->setISODate($nYear, $nWeek);
+
+        // Renvoi du dernier jour de la semaine
+        return self::getFirstDayFromWeekByDate($oDate, $sLastDayLabel);
+    }
+
 	/**
-	 * @brief	Récupère le premier et dernier jour de la semaine.
+	 * @brief	Récupère le premier et dernier jour de la semaine à partir du numéro de semaine.
 	 * @param	integer	$nYear			: année de la semaine à rechercher.
 	 * @param	integer	$nWeek			: numéro de la semaine à rechercher.
+     * @param	integer	$sFirstDayLabel	: libellé du premier jour de la semaine à considérer (nom du jour anglophone).
 	 * @param	integer	$sLastDayLabel	: libellé du dernier jour de la semaine à considérer (nom du jour anglophone).
 	 * @return	array
 	 */
-	public static function getFirstAndLastDaysFromWeek($nYear, $nWeek, $sLastDayLabel = self::WEEK_DAY_SUNDAY) {
+	public static function getFirstAndLastDaysFromWeek($nYear, $nWeek, $sFirstDayLabel = self::WEEK_DAY_MONDAY, $sLastDayLabel = self::WEEK_DAY_SUNDAY) {
 		// Initialisation de la DATE à partir de la semaine
 		$oDate		= new DateTime();
 		$oDate->setISODate($nYear, $nWeek);
 
 		// Initialisation de la DATE de début
-		$oFirstDate	= new DateTime($oDate->format('Y-m-d'));
-		// Modification de la date afin de se focaliser sur le premier jour de la semaine
-		$oFirstDate->modify(self::WEEK_DAY_MONDAY);
+		$oFirstDate	= self::getFirstDayFromWeekByDate($oDate, $sFirstDayLabel);
 
 		// Initialisation de la DATE de fin
-		$oLastDate	= new DateTime($oDate->format('Y-m-d'));
-		// Modification de la date afin de se focaliser sur le dernier jour de la semaine à considérer
-		$oLastDate->modify($sLastDayLabel);
+		$oLastDate	= self::getLastDayFromWeekByDate($oDate, $sLastDayLabel);
 
 		// Renvoi du premier et dernier jour de la semaine
 		return array($oFirstDate, $oLastDate);
 	}
+
+    /**
+     * @brief	Récupère le premier et dernier jour de la semaine à partir d'une date.
+     * @param	mixed	$xDate			: date à rechercher, peut être l'instance d'un objet Datetime.
+     * @param	integer	$sFirstDayLabel	: libellé du premier jour de la semaine à considérer (nom du jour anglophone).
+     * @param	integer	$sLastDayLabel	: libellé du dernier jour de la semaine à considérer (nom du jour anglophone).
+     * @return	array
+     */
+    public static function getFirstAndLastDaysFromWeekByDate($xDate, $sFirstDayLabel = self::WEEK_DAY_MONDAY, $sLastDayLabel = self::WEEK_DAY_SUNDAY) {
+        if (is_object($xDate)) {
+            // Récupération de la DATE
+            $oDate  = $xDate;
+        } elseif (self::isValidString($xDate)) {
+            // Initialisation de la DATE
+            $oDate  = new DateTime(self::dateFrToMy($xDate));
+        } else {
+            $oDate  = new DateTime();
+        }
+
+        // Initialisation de la DATE de début
+        $oFirstDate	= self::getFirstDayFromWeekByDate($oDate, $sFirstDayLabel);
+
+        // Initialisation de la DATE de fin
+        $oLastDate	= self::getLastDayFromWeekByDate($oDate, $sLastDayLabel);
+
+        // Renvoi du premier et dernier jour de la semaine
+        return array($oFirstDate, $oLastDate);
+    }
 
 	/**
 	 * @brief	Récupère la coloration de la date selon son statut.
@@ -644,28 +790,29 @@ class DataHelper {
 	 * @param	date	$bCurrent	: (optionnel) coloration de la date courante.
 	 * @return string
 	 */
-	public static function getDateStatusColor($dDate, $bCurrent = false) {
-		$dDateMySQL	= self::dateFrToMy($dDate);
-		$nTimestamp	= self::dateTimeMyToTimestamp($dDateMySQL);
-		$day		= date("w", $nTimestamp);
-
-		$testFerie	= self::isDateFerie($dDate);
-		if (strlen($testFerie) > 0) {
-			$color	= "lightgrey";
+	public static function getDateStatusColor($dDate, $bCurrent = false, $sDefault = 'transparent') {
+		if (self::isValidNumeric($dDate)) {
+			$nTimestamp	= $dDate;
+			$dDateMySQL	= date('Y-m-d', $nTimestamp);
+		} else {
+			$aDateItem	= explode(' ', $dDate);
+			$dDateMySQL	= self::dateFrToMy($aDateItem[0]);
+			$nTimestamp	= self::dateTimeMyToTimestamp($dDateMySQL);
 		}
+		$day		= date("w", $nTimestamp);
 
 		// Fonctionnalité réalisée selon le jour de la semaine
 		if ($day == 0 || $day == 6) {
 			// Le jour est dans un week-end
 			$color	= "lightgrey";
 		} else {
-			// Le jour est oeuvré
-			$color	= "white";
+			// Le jour est oeuvré s'il n'est pas férié
+			$color	= self::isDateFerie($dDateMySQL) ? "lightgrey" : $sDefault;
 		}
 
 		// Fonctionnalité réalisée si le jour courant doit être mis en évicence
 		if ($bCurrent && date('Y-m-d') == $dDateMySQL){
-			$color="tomato";
+			$color	= "tomato";
 		}
 
 		// Renvoi de la couleur du statut

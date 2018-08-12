@@ -10,8 +10,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 136 $
- * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
+ * @version		$LastChangedRevision: 143 $
+ * @since		$LastChangedDate: 2018-08-12 20:20:22 +0200 (Sun, 12 Aug 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -328,7 +328,7 @@ class PlanningPDFHelper extends PlanningHelper {
 			// Création du corps du planning
 			$nPositionTop						+= 5;
 			// Parcours de chaque jour
-			for ($timestamp = $this->_timestamp_debut ; $timestamp < $this->_timestamp_fin ; $timestamp += self::PLANNING_HEPHEMERIDE) {
+			for ($timestamp = $this->_timestamp_debut ; $timestamp <= $this->_timestamp_fin ; $timestamp += self::PLANNING_HEPHEMERIDE) {
 				// Récupération du jour
 				$dNow							= date("o-m-d", $timestamp);
 

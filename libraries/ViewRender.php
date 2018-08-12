@@ -15,8 +15,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 136 $
- * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
+ * @version		$LastChangedRevision: 141 $
+ * @since		$LastChangedDate: 2018-08-12 18:05:58 +0200 (Sun, 12 Aug 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -567,14 +567,14 @@ class ViewRender {
 	 * @param	integer	$nTimeOut		: Délais d'attente avant la suppression de la notification en millisecondes.
 	 * @return	void
 	 */
-	static function setMessageBox($sTitre = null, $xMessage = null, $sClass = "message", $nTimeOut = null, $xFadeOut = self::NOTIFICATION_FADEOUT) {
+	static function setMessageBox($sTitre = null, $xMessage = null, $sClass = "", $nTimeOut = null, $xFadeOut = self::NOTIFICATION_FADEOUT) {
 		// Fonctionnalité réalisée si au moins un paramètre est présent
 		if (!empty($sTitre) || !empty($xMessage)) {
 			// Construction de l'identifiant unique du message
 			$sMD5				= md5(time() . $sTitre . $xMessage . $sClass);
 
 			// Création du conteneur
-			$sMessageBox		= "<section id=\"" . $sMD5 . "\" class=\"" . $sClass . "\" >";
+			$sMessageBox		= "<section id=\"" . $sMD5 . "\" class=\"message " . $sClass . "\" >";
 			// Ajout d'une ancre pour la fermeture du message
 			$sMessageBox		.= "<a href=\"#\" class=\"margin-0 close\">x</a>";
 
@@ -615,7 +615,7 @@ class ViewRender {
 	 * @return	void
 	 */
 	static function setMessageDefault($sTitre = null, $sMessage = null) {
-		self::setMessageBox($sTitre, $sMessage, $sClass = "message");
+		self::setMessageBox($sTitre, $sMessage, self::MESSAGE_DEFAULT);
 	}
 
 	/**
@@ -626,7 +626,7 @@ class ViewRender {
 	 * @return	void
 	 */
 	static function setMessageError($sTitre = null, $sMessage = null) {
-		self::setMessageBox($sTitre, $sMessage, $sClass = "message alert");
+		self::setMessageBox($sTitre, $sMessage, self::MESSAGE_ERROR);
 	}
 
 	/**
@@ -637,7 +637,7 @@ class ViewRender {
 	 * @return	void
 	 */
 	static function setMessageInfo($sTitre = null, $sMessage = null) {
-		self::setMessageBox($sTitre, $sMessage, $sClass = "message info");
+		self::setMessageBox($sTitre, $sMessage, self::MESSAGE_INFO);
 	}
 
 	/**
@@ -648,7 +648,7 @@ class ViewRender {
 	 * @return	void
 	 */
 	static function setMessageSuccess($sTitre = null, $sMessage = null) {
-		self::setMessageBox($sTitre, $sMessage, $sClass = "message success");
+		self::setMessageBox($sTitre, $sMessage, self::MESSAGE_SUCCESS);
 	}
 
 	/**
@@ -659,7 +659,7 @@ class ViewRender {
 	 * @return	void
 	 */
 	static function setMessageWarning($sTitre = null, $sMessage = null) {
-		self::setMessageBox($sTitre, $sMessage, $sClass = "message warning");
+		self::setMessageBox($sTitre, $sMessage, self::MESSAGE_WARNING);
 	}
 
 	//=============================================================================================

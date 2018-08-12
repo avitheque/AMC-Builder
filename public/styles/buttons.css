@@ -7,8 +7,8 @@
  *
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 136 $
- * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
+ * @version		$LastChangedRevision: 142 $
+ * @since		$LastChangedDate: 2018-08-12 18:20:29 +0200 (Sun, 12 Aug 2018) $
  */
 
 /** STANDARD *************************************************************************************/
@@ -132,6 +132,12 @@ a.button.white:active		{
 	color:					rgba(255, 255, 255, 1);
 }
 
+/** TRANSPARENT **********************************************************************************/
+button.transparent,
+a.button.transparent		{
+	background:				transparent;
+	box-shadow:				none;
+}
 
 /** DISABLED *************************************************************************************/
 button[disabled],

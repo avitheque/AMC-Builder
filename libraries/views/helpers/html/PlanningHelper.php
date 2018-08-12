@@ -8,8 +8,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 136 $
- * @since		$LastChangedDate: 2018-07-14 17:20:16 +0200 (Sat, 14 Jul 2018) $
+ * @version		$LastChangedRevision: 143 $
+ * @since		$LastChangedDate: 2018-08-12 20:20:22 +0200 (Sun, 12 Aug 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -165,10 +165,16 @@ abstract class PlanningHelper {
 		$this->_md5									= md5($dDateStart . $nNbDays . $nStartHour . $nEndHour . time());
 
 		// Récupération de la date de début au format MySQL [Y-m-d]
-		$sDateStart									= DataHelper::dateFrToMy($dDateStart);
-		list($annee, $mois, $jour)					= explode('-', $sDateStart);
-		$this->_timestamp_debut						= mktime(0, 0, 0, $mois, $jour, $annee);
-		$this->_timestamp_fin						= mktime(0, 0, 0, $mois, ($jour + $nNbDays), $annee);
+        $sDateStart                                 = DataHelper::dateFrToMy($dDateStart);
+        list($annee, $mois, $jour)					= explode('-', $sDateStart);
+
+        // Initialisation de l'objet DateTime à partir de la date au format MySQL [Y-m-d]
+		$oDateTime									= new DateTime($sDateStart);
+		$this->_timestamp_debut						= $oDateTime->getTimestamp();
+
+        // Récupération de la date de fin par addition du nombre de jours
+		$oDateTime->modify("+ " . ($nNbDays - 1) . " days");
+		$this->_timestamp_fin						= $oDateTime->getTimestamp();
 
 		// Initialisation des paramètres de progression
 		$this->_planning_annee						= $annee;
