@@ -1,2 +1,2 @@
 <?php
-define("LIBRARY_VERSION", "18.08.12");
+define("LIBRARY_VERSION", "18.08.15");

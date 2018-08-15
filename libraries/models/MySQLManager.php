@@ -15,8 +15,8 @@
  * @subpackage	Application
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 141 $
- * @since		$LastChangedDate: 2018-08-12 18:05:58 +0200 (Sun, 12 Aug 2018) $
+ * @version		$LastChangedRevision: 146 $
+ * @since		$LastChangedDate: 2018-08-15 13:10:06 +0200 (Wed, 15 Aug 2018) $
  * @see			{ROOT_PATH}/libraries/models/AbstractDataManager.php
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
@@ -39,7 +39,10 @@ class MySQLManager extends AbstractDataManager {
 	/**
 	 * @brief	Constructeur de la classe
 	 */
-	public function __construct() {
+	public function __construct($sBaseName = PDO_DBNAME, $bAutoCommit = false) {
+		// Constructeur de la classe parent
+		$this->beginTransaction($sBaseName, $bAutoCommit);
+		
 		// Récupération du SINGLETON de l'instance AuthenticateManager
 		$this->_oAuth			= AuthenticateManager::getInstance();
 
@@ -195,7 +198,7 @@ class MySQLManager extends AbstractDataManager {
 	protected function _save($aInitQuery, $aSet, $aBind, $bFinalCommit = true) {
 		// Activation de la transaction
 		if (!$bFinalCommit) {
-			$this->beginTransaction($bFinalCommit);
+			$this->beginTransaction($this->_DB_NAME, $bFinalCommit);
 		}
 
 		// Initialisation du résultat
@@ -244,7 +247,7 @@ class MySQLManager extends AbstractDataManager {
 	protected function _delete($aQuery, $aBind, $bFinalCommit = true) {
 		// Activation de la transaction
 		if (!$bFinalCommit) {
-			$this->beginTransaction($bFinalCommit);
+			$this->beginTransaction($this->_DB_NAME, $bFinalCommit);
 		}
 
 		// Initialisation du résultat

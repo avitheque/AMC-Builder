@@ -17,8 +17,8 @@
  *
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 142 $
- * @since		$LastChangedDate: 2018-08-12 18:20:29 +0200 (Sun, 12 Aug 2018) $
+ * @version		$LastChangedRevision: 147 $
+ * @since		$LastChangedDate: 2018-08-15 13:13:17 +0200 (Wed, 15 Aug 2018) $
  */
 
 /**
@@ -41,6 +41,7 @@ main							{
 	width:						100%;
 	height:						100%;
 	margin:						0;
+	border-radius:				0;
 	box-shadow:					none;
 	z-index:					50;
 }

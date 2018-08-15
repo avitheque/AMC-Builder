@@ -10,8 +10,8 @@
  * @subpackage	Framework
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 144 $
- * @since		$LastChangedDate: 2018-08-12 20:24:19 +0200 (Sun, 12 Aug 2018) $
+ * @version		$LastChangedRevision: 148 $
+ * @since		$LastChangedDate: 2018-08-15 14:02:16 +0200 (Wed, 15 Aug 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -149,7 +149,7 @@ class DataHelper {
 				if (is_array($aArray[$aHeader[0]])) {
 					// Vérifie la validité de la première entrée
 					$bValide = self::isValidArray($aArray[$aHeader[0]], $nCount, $bNotEmpty);
-				} else {
+				} elseif (is_string($aArray[$aHeader[0]])) {
 					// Récupération de la chaîne de caractères
 					$sString = trim($aArray[$aHeader[0]]);
 					// Fonctionnalité réalisée si la chaîne n'est pas vide
@@ -1170,21 +1170,21 @@ class DataHelper {
 	 * @return	string
 	 */
 	public static function convertToText($xInput = null, $sGlue = " ") {
+        $sString	    = "";
 		if (empty($xInput)) {
 			return		"";
 		} elseif (is_array($xInput)) {
-			$sString	= "";
 			// Parcours du contenu du tableau sans utiliser la méthode de PHP implode() à cause des N dimensions
 			foreach ($xInput as $sElement) {
 				if (is_array($sElement)) {
+				    // Ajout de la convertion en chaîne de caractères
 					$sString .= self::convertToText($sElement, $sGlue);
-				} elseif (!empty($sString)) {
-					$sString .= $sGlue . trim($sElement);
-				} else {
-					$sString .= trim($sElement);
+				} elseif (is_string($sElement)) {
+				    // Ajout de la chaîne de caractères
+					$sString .= (empty($sString) ? "" : $sGlue) . trim($sElement);
 				}
 			}
-		} else {
+		} elseif (is_string($xInput)) {
 			$sString	= trim($xInput);
 		}
 
@@ -2388,25 +2388,35 @@ class DataHelper {
 					}
 
 					// Récupération des paramètres de l'exception
-					$sTextParams = "";
 					if (method_exists($oException, 'getParams') && $aParams = $oException->getParams()) {
 						if (self::isValidArray($aParams)) {
+                            $sTextParams = "<ul>";
 							foreach ($aParams as $sValue) {
-								$sTextParams .= '<ul>' . $sValue . '</ul>';
+								$sTextParams .= '<li>' . DataHelper::convertToString($sValue, DataHelper::DATA_TYPE_ARRAY) . '</li>';
 							}
-							$sExceptionHTML .= sprintf('<li id="exception-params no-wrap"><span>Params[] : </span>%s</li>', $sTextParams);
+                            $sTextParams .= "</ul>";
+                            // Fonctionnalité réalisée si un contenu a été trouvé
+                            if (strlen($sTextParams) >= 10) {
+                                $sExceptionHTML .= sprintf('<li id="exception-params no-wrap"><span>Params[] : </span>%s</li>', $sTextParams);
+                            }
 						}
 					}
 
 					/** OPTIONNEL */
 					// Récupération de l'action du contrôleur ayant l'exception
-					$sTextExtras = "";
 					if (method_exists($oException, 'getExtra') && $aExtras = $oException->getExtra()) {
-						if (self::isValidArray($aExtras)) {
+						if (self::isValidArray($aExtras, null, true)) {
+                            $sTextExtras = "<ul>";
 							foreach ($aExtras as $sValue) {
-								$sTextExtras .= '<ul>' . $sValue . '</ul>';
+								if (!is_object($sValue) && !empty($sValue)) {
+									$sTextExtras .= '<li>' . DataHelper::convertToString($sValue, DataHelper::DATA_TYPE_ARRAY) . '</li>';
+								}
 							}
-							$sExceptionHTML .= sprintf('<li id="exception-extras no-wrap">%s</li>', $sTextExtras);
+                            $sTextExtras .= "</ul>";
+							// Fonctionnalité réalisée si un contenu a été trouvé
+							if (strlen($sTextExtras) >= 10) {
+                                $sExceptionHTML .= sprintf('<li id="exception-extras no-wrap">%s</li>', $sTextExtras);
+                            }
 						}
 					}
 				}

@@ -14,8 +14,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 129 $
- * @since		$LastChangedDate: 2018-05-29 22:12:23 +0200 (Tue, 29 May 2018) $
+ * @version		$LastChangedRevision: 146 $
+ * @since		$LastChangedDate: 2018-08-15 13:10:06 +0200 (Wed, 15 Aug 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -23,7 +23,7 @@
  */
 abstract class AbstractDataManager {
 	
-	protected static $DB_NAME	= PDO_DBNAME;
+	protected $_DB_NAME			= PDO_DBNAME;
 	
 	protected $oSQLConnector	= null;
 	protected $oLDAPConnector	= null;
@@ -47,11 +47,11 @@ abstract class AbstractDataManager {
 	 */
 	public function useDatabase($sBaseName = PDO_DBNAME) {
 		// Fonctionnalité réalisée si l'instance de la base de données a changé
-		if ((bool) PDO_ACTIVE && is_object($this->oSQLConnector) && $sBaseName != self::$DB_NAME) {
+		if ((bool) PDO_ACTIVE && is_object($this->oSQLConnector) && $sBaseName != $this->_DB_NAME) {
 			unset($this->oSQLConnector);
 		}
 		// Modification du nom de la Base de données
-		self::$DB_NAME = $sBaseName;
+		$this->_DB_NAME			= $sBaseName;
 	}
 
 	/**
@@ -62,14 +62,17 @@ abstract class AbstractDataManager {
 	 * La méthode effectue une connexion à la base de données à l'aide d'un tableau de paramètres
 	 * construit à partir des constantes définie dans le fichier @a defines.php
 	 */
-	protected function beginTransaction($bAutoCommit = false) {
+	protected function beginTransaction($sBaseName = PDO_DBNAME, $bAutoCommit = false) {
 		// Fonctionnalité réalisée si le connecteur SQL n'existe pas encore
 		if ((bool) PDO_ACTIVE && is_null($this->oSQLConnector)) {
 			// Récupération de l'instance de connexion
 			$oFactory = Connectors_ConnectorFactory::getInstance();
 
+			// Initialisation du nom de la Base de données
+			$this->_DB_NAME 	= $sBaseName;
+
 			// Initialisation du paramètre de connexion à la base
-			$sConnection		= 'mysql:dbname=' . self::$DB_NAME . ';host=' . PDO_HOST . ';port=' . PDO_PORT;
+			$sConnection		= 'mysql:dbname=' . $this->_DB_NAME . ';host=' . PDO_HOST . ';port=' . PDO_PORT;
 
 			// Construction du tableau de paramètres
 			$aPDOConf = array(
@@ -96,7 +99,7 @@ abstract class AbstractDataManager {
 	protected function connectPDO() {
 		// Conctionnalité réalisée si la connexion n'est pas valide
 		if (is_null($this->oSQLConnector)) {
-			$this->beginTransaction(PDO_AUTO_COMMIT);
+			$this->beginTransaction($this->_DB_NAME, PDO_AUTO_COMMIT);
 		}
 	}
 

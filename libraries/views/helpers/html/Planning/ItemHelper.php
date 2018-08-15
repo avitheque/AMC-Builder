@@ -62,8 +62,8 @@
  * @subpackage	Library
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 141 $
- * @since		$LastChangedDate: 2018-08-12 18:05:58 +0200 (Sun, 12 Aug 2018) $
+ * @version		$LastChangedRevision: 149 $
+ * @since		$LastChangedDate: 2018-08-15 14:23:09 +0200 (Wed, 15 Aug 2018) $
  *
  * Copyright (c) 2015-2017 Cédric DURAND (durandcedric@avitheque.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -147,7 +147,7 @@ class Planning_ItemHelper {
 	protected	$_hour					= 0;
 	protected	$_minute				= 0;
 	protected	$_duration				= 1;
-	protected	$_count					= null;
+	protected	$_count					= 0;
 	protected	$_update				= 0;
 
 	protected	$_timer					= 60;
@@ -237,7 +237,7 @@ class Planning_ItemHelper {
 	 * @return	integer
 	 */
 	public function getYear() {
-		return $this->_year;
+		return (int) $this->_year;
 	}
 
 	/**
@@ -245,7 +245,7 @@ class Planning_ItemHelper {
 	 * @return	integer
 	 */
 	public function getMonth() {
-		return $this->_month;
+		return (int) $this->_month;
 	}
 
 	/**
@@ -253,7 +253,7 @@ class Planning_ItemHelper {
 	 * @return	integer
 	 */
 	public function getDay() {
-		return $this->_day;
+		return (int) $this->_day;
 	}
 
 	/**
@@ -261,7 +261,7 @@ class Planning_ItemHelper {
 	 * @return	integer
 	 */
 	public function getHour() {
-		return $this->_hour;
+		return (int) $this->_hour;
 	}
 
 	/**
@@ -269,7 +269,7 @@ class Planning_ItemHelper {
 	 * @return	integer
 	 */
 	public function getMinute() {
-		return $this->_minute;
+		return (int) $this->_minute;
 	}
 
 	/**
@@ -277,7 +277,7 @@ class Planning_ItemHelper {
 	 * @return	integer
 	 */
 	public function getDuration() {
-		return $this->_duration;
+		return (int) $this->_duration;
 	}
 
 	/**
@@ -285,7 +285,7 @@ class Planning_ItemHelper {
 	 * @return	integer
 	 */
 	public function getCompteur() {
-		return $this->_count;
+		return (int) $this->_count;
 	}
 
 	/**
@@ -544,11 +544,11 @@ class Planning_ItemHelper {
 	 * @return	void
 	 */
 	public function setTimeStamp($dTimeStamp) {
-		$this->_year					= date("Y", $dTimeStamp);
-		$this->_month					= date("m", $dTimeStamp);
-		$this->_day						= date("d", $dTimeStamp);
-		$this->_hour					= date("H", $dTimeStamp);
-		$this->_minute					= date("i", $dTimeStamp);
+		$this->_year					= (int) date("Y", $dTimeStamp);
+		$this->_month					= (int) date("m", $dTimeStamp);
+		$this->_day						= (int) date("d", $dTimeStamp);
+		$this->_hour					= (int) date("H", $dTimeStamp);
+		$this->_minute					= (int) date("i", $dTimeStamp);
 	}
 
 	/**
@@ -562,13 +562,13 @@ class Planning_ItemHelper {
 		$aDateParams					= DataHelper::extractParamsFromDateTime($dDateTime);
 
 		// Extraction des paramètres de la DATE
-		$this->_year					= $aDateParams['Y'];
-		$this->_month					= $aDateParams['m'];
-		$this->_day						= $aDateParams['d'];
+		$this->_year					= (int) $aDateParams['Y'];
+		$this->_month					= (int) $aDateParams['m'];
+		$this->_day						= (int) $aDateParams['d'];
 
 		// Extraction des paramètres du TIME
-		$this->_hour					= $aDateParams['H'];
-		$this->_minute					= $aDateParams['i'];
+		$this->_hour					= (int) $aDateParams['H'];
+		$this->_minute					= (int) $aDateParams['i'];
 	}
 
 	/**
@@ -656,8 +656,8 @@ class Planning_ItemHelper {
 	 * @param	integer	$nCount			: numéro du volume horaire.
 	 * @return	void
 	 */
-	public function setCompteur($nCount = null) {
-		$this->_count					= $nCount;
+	public function setCompteur($nCount = 1) {
+		$this->_count					= intval($nCount);
 	}
 
 	/**
@@ -691,7 +691,7 @@ class Planning_ItemHelper {
 		$this->_matterInfo				= trim($sInfo);
 		// Fonctionnalité réalisée si un compteur est passé en paramètre
 		if (!is_null($nCount)) {
-			$this->_count				= $nCount;
+			$this->_count				= intval($nCount);
 		}
 	}
 
@@ -745,7 +745,8 @@ class Planning_ItemHelper {
 	 * @return	void
 	 */
 	public function setUpdateStatus($bStatus = false) {
-		$this->_update					= (int) $bStatus;
+	    // Le type de la variable est enregistré en NUMÉRIQUE bien qu'il s'agisse d'un bouléen
+		$this->_update					= $bStatus ? 1 : 0;
 	}
 
 	/**

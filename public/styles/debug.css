@@ -7,18 +7,20 @@
  *
  * @author		durandcedric@avitheque.net
  * @update		$LastChangedBy: durandcedric $
- * @version		$LastChangedRevision: 2 $
- * @since		$LastChangedDate: 2017-02-27 18:41:31 +0100 (lun., 27 févr. 2017) $
+ * @version		$LastChangedRevision: 147 $
+ * @since		$LastChangedDate: 2018-08-15 13:13:17 +0200 (Wed, 15 Aug 2018) $
  */
 
 #article-debug					{
 	position:					fixed;
-	border-radius:				0 0 10px;
 	background:					#555;
 	top:						44px;
 	left:						0;
+	height:						30px;
 	width:						100%;
-	padding-top:				31px;
+	margin:						0;
+	padding:					20px 0 0 0;
+	border-radius:				0;
 	z-index:					100;
 }
 
@@ -31,11 +33,10 @@
 	line-height:				26px;
 	width:						14px;
 	margin:						0;
-	padding:					0;
+	padding:					0 2px;
 	font-size:					22px;
 	opacity:					0.5;
 	cursor:						pointer;
-
 }
 
 #article-debug span.icon:hover	{
@@ -51,12 +52,9 @@
 }
 
 #article-debug #ul-debug		{
-	position:					absolute;
 	overflow-y:					auto;
-	border-radius:				0 0 10px;
 	background:					#555;
 	width:						95%;
-	margin:						0px 2.5%;
 	max-height:					445px;
 	text-align:					justify;
 	color:						#FFF;
@@ -65,7 +63,7 @@
 
 #article-debug span.icon.close	{
 	position:					relative;
-	top:						-31px;
+	bottom:						30px;
 	border-radius:				5px 0 0 5px;
 	left:						0;
 	z-index:					10;
@@ -74,10 +72,6 @@
 #article-debug.closed #ul-debug {
 	color:						transparent;
 	overflow:					auto;
-}
-
-#ul-debug li					{
-	margin-bottom:				10px;
 }
 
 var#var-debug					{
